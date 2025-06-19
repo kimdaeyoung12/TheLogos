@@ -7,14 +7,13 @@ on:
 permissions:
   contents: read
   pages: write
-  id-token: write       # deploy-pages 액션이 필요
+  id-token: write            # deploy-pages 액션이 필요
 
 jobs:
   build-deploy:
     runs-on: ubuntu-latest
-    
-   environment:
-     name: github-pages        # ← 반드시 이렇게!
+    environment:
+      name: github-pages     # ← 반드시 이렇게!
 
     steps:
       - uses: actions/checkout@v4
@@ -25,13 +24,12 @@ jobs:
           extended: true
 
       - name: Build site
-        run: hugo --gc --minify                    # ./public 생성
+        run: hugo --gc --minify
 
-      # 👉 GitHub Pages 전용 단계 두 개
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./public                           # Hugo 빌드 산출물
+          path: ./public
 
       - name: Deploy to Pages
         uses: actions/deploy-pages@v4
