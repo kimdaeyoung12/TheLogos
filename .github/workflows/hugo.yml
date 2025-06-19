@@ -1,0 +1,34 @@
+name: Deploy Hugo site to GitHub Pages
+
+on:
+  push:
+    branches: [main]        # main에 커밋될 때마다 실행
+
+permissions:
+  contents: read            # 코드 읽기
+  pages: write              # Pages에 쓰기
+  id-token: write           # 배포용 토큰 발급
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Setup Hugo
+        uses: peaceiris/actions-hugo@v3
+        with:
+          hugo-version: '0.125.3'   # 설치할 Hugo 버전
+          extended: true            # SCSS 빌드를 위해 extended 사용
+
+      - name: Build site
+        run: hugo --gc --minify
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public       # Hugo가 만든 HTML 위치
+          publish_branch: gh-pages    # 배포용 브랜치
