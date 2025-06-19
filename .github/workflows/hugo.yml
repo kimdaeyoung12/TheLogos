@@ -12,6 +12,10 @@ permissions:
 jobs:
   build-deploy:
     runs-on: ubuntu-latest
+    
+   environment:
+     name: github-pages        # ← 반드시 이렇게!
+
     steps:
       - uses: actions/checkout@v4
 
