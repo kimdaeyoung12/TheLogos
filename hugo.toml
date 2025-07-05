@@ -1,4 +1,3 @@
 baseURL      = "https://thelogos.dev/"
 languageCode = "en-us"
 title        = "The Logos"
-theme        = "PaperMod"
