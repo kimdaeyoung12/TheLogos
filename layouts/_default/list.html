@@ -2,7 +2,11 @@
 <h2>{{ .Title }}</h2>
 <ul>
 {{ range .Pages }}
-    <li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>
+    <li>
+        <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+        <small>({{ .Date.Format "2006-01-02" }}) 조회수: <span data-slug="{{ .File.BaseFileName }}">0</span></small>
+    </li>
 {{ end }}
 </ul>
+<script src="/js/views.js"></script>
 {{ end }}
