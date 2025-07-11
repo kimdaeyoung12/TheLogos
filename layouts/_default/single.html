@@ -1,6 +1,10 @@
 {{ define "main" }}
 <article>
     <h2>{{ .Title }}</h2>
+    <p>작성일: {{ .Date.Format "2006-01-02" }}</p>
+    <p>조회수: <span id="view-count">0</span></p>
     {{ .Content }}
+    <meta name="post-slug" content="{{ .File.BaseFileName }}">
 </article>
+<script src="/js/views.js"></script>
 {{ end }}
