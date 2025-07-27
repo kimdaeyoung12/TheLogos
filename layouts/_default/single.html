@@ -1,10 +1,739 @@
 {{ define "main" }}
-<article>
-    <h2>{{ .Title }}</h2>
-    <p>작성일: {{ .Date.Format "2006-01-02" }}</p>
-    <p>조회수: <span id="view-count">0</span></p>
-    {{ .Content }}
-    <meta name="post-slug" content="{{ .File.BaseFileName }}">
+<article class="article" itemscope itemtype="https://schema.org/BlogPosting">
+    <header class="article-header">
+        <div class="header-background"></div>
+        <div class="header-content">
+            <div class="article-meta-top">
+                {{ with .Params.categories }}
+                <div class="article-category">
+                    {{ range first 1 . }}
+                    <a href="{{ "categories/" | absURL }}{{ . | urlize }}" rel="category">{{ . }}</a>
+                    {{ end }}
+                </div>
+                {{ end }}
+                
+                <time class="article-date" datetime="{{ .Date.Format "2006-01-02T15:04:05Z07:00" }}" itemprop="datePublished">
+                    {{ .Date.Format "2006년 1월 2일" }}
+                </time>
+            </div>
+            
+            <h1 class="article-title" itemprop="headline">{{ .Title }}</h1>
+            
+            {{ with .Params.description }}
+            <p class="article-description" itemprop="description">{{ . }}</p>
+            {{ end }}
+            
+            <div class="article-meta-bottom">
+                <div class="author-info">
+                    <div class="author-avatar">
+                        <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                            <circle cx="20" cy="20" r="20" fill="#E5E7EB"/>
+                            <path d="M20 21C23.3137 21 26 18.3137 26 15C26 11.6863 23.3137 9 20 9C16.6863 9 14 11.6863 14 15C14 18.3137 16.6863 21 20 21Z" fill="#9CA3AF"/>
+                            <path d="M30 31C30 26.5817 25.5228 23 20 23C14.4772 23 10 26.5817 10 31" fill="#9CA3AF"/>
+                        </svg>
+                    </div>
+                    <div class="author-details">
+                        <span class="author-name" itemprop="author">{{ .Site.Params.author | default "DaeYoung Kim" }}</span>
+                        <div class="article-stats">
+                            <span class="reading-time">{{ .ReadingTime }}분 읽기</span>
+                            <span class="word-count">{{ .WordCount }}자</span>
+                        </div>
+                    </div>
+                </div>
+                
+                {{ with .Params.tags }}
+                <div class="article-tags">
+                    {{ range . }}
+                    <a href="{{ "tags/" | absURL }}{{ . | urlize }}" class="tag-link" rel="tag">#{{ . }}</a>
+                    {{ end }}
+                </div>
+                {{ end }}
+            </div>
+        </div>
+    </header>
+    
+    <div class="article-container">
+        {{ if .Params.toc }}
+        <aside class="table-of-contents">
+            <div class="toc-header">
+                <h2 class="toc-title">목차</h2>
+                <button class="toc-toggle" aria-label="목차 토글">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 6h12M4 10h12M4 14h12"/>
+                    </svg>
+                </button>
+            </div>
+            <nav class="toc-content">
+                {{ .TableOfContents }}
+            </nav>
+        </aside>
+        {{ end }}
+        
+        <div class="article-content" itemprop="articleBody">
+            {{ .Content }}
+        </div>
+    </div>
+    
+    <footer class="article-footer">
+        <div class="share-section">
+            <h3 class="share-title">공유하기</h3>
+            <div class="share-buttons">
+                <button class="share-button twitter" data-url="{{ .Permalink }}" data-title="{{ .Title }}">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M6.29 18.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0020 3.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.073 4.073 0 01.8 7.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 010 16.407a11.616 11.616 0 006.29 1.84"/>
+                    </svg>
+                    <span>Twitter</span>
+                </button>
+                
+                <button class="share-button facebook" data-url="{{ .Permalink }}">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M20 10c0-5.523-4.477-10-10-10S0 4.477 0 10c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V10h2.54V7.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V10h2.773l-.443 2.89h-2.33v6.988C16.343 19.128 20 14.991 20 10z"/>
+                    </svg>
+                    <span>Facebook</span>
+                </button>
+                
+                <button class="share-button copy" data-url="{{ .Permalink }}">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="5" y="5" width="11" height="11" rx="2"/>
+                        <path d="M4 15H3a2 2 0 01-2-2V3a2 2 0 012-2h10a2 2 0 012 2v1"/>
+                    </svg>
+                    <span>링크 복사</span>
+                </button>
+            </div>
+        </div>
+        
+        {{ if or .NextInSection .PrevInSection }}
+        <nav class="article-navigation">
+            {{ with .PrevInSection }}
+            <a href="{{ .RelPermalink }}" class="nav-link nav-prev">
+                <span class="nav-arrow">←</span>
+                <div class="nav-content">
+                    <span class="nav-label">이전 글</span>
+                    <span class="nav-title">{{ .Title }}</span>
+                </div>
+            </a>
+            {{ end }}
+            
+            {{ with .NextInSection }}
+            <a href="{{ .RelPermalink }}" class="nav-link nav-next">
+                <div class="nav-content">
+                    <span class="nav-label">다음 글</span>
+                    <span class="nav-title">{{ .Title }}</span>
+                </div>
+                <span class="nav-arrow">→</span>
+            </a>
+            {{ end }}
+        </nav>
+        {{ end }}
+    </footer>
+    
+    <meta itemprop="url" content="{{ .Permalink }}">
+    <meta itemprop="wordCount" content="{{ .WordCount }}">
+    {{ range .Params.tags }}
+    <meta itemprop="keywords" content="{{ . }}">
+    {{ end }}
 </article>
-<script src="/js/views.js"></script>
+
+<style>
+/* Variables */
+:root {
+    --primary-color: #3b82f6;
+    --primary-dark: #1e40af;
+    --primary-light: #dbeafe;
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --text-tertiary: #94a3b8;
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8fafc;
+    --bg-tertiary: #f1f5f9;
+    --border-color: #e2e8f0;
+    --code-bg: #1e293b;
+    --code-text: #e2e8f0;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --text-primary: #f1f5f9;
+        --text-secondary: #cbd5e1;
+        --text-tertiary: #64748b;
+        --bg-primary: #0f172a;
+        --bg-secondary: #1e293b;
+        --bg-tertiary: #334155;
+        --border-color: #334155;
+        --code-bg: #0f172a;
+    }
+}
+
+/* Article Layout */
+.article {
+    background: var(--bg-primary);
+    min-height: 100vh;
+}
+
+/* Article Header */
+.article-header {
+    position: relative;
+    padding: 80px 0 60px;
+    margin-bottom: 60px;
+    overflow: hidden;
+}
+
+.header-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, var(--primary-light) 0%, var(--bg-secondary) 100%);
+    opacity: 0.5;
+}
+
+@media (prefers-color-scheme: dark) {
+    .header-background {
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, var(--bg-secondary) 100%);
+    }
+}
+
+.header-content {
+    position: relative;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.article-meta-top {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.article-category a {
+    display: inline-block;
+    padding: 6px 16px;
+    background: var(--primary-color);
+    color: white;
+    font-size: 0.875rem;
+    font-weight: 600;
+    border-radius: 20px;
+    text-decoration: none;
+    transition: background 0.2s ease;
+}
+
+.article-category a:hover {
+    background: var(--primary-dark);
+}
+
+.article-date {
+    color: var(--text-tertiary);
+    font-size: 0.875rem;
+}
+
+.article-title {
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 800;
+    line-height: 1.2;
+    color: var(--text-primary);
+    margin-bottom: 16px;
+}
+
+.article-description {
+    font-size: 1.25rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 32px;
+}
+
+.article-meta-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 24px;
+}
+
+.author-info {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.author-avatar {
+    flex-shrink: 0;
+}
+
+.author-name {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.article-stats {
+    display: flex;
+    gap: 16px;
+    color: var(--text-tertiary);
+    font-size: 0.875rem;
+}
+
+.article-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.tag-link {
+    display: inline-block;
+    padding: 6px 14px;
+    background: var(--bg-tertiary);
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.tag-link:hover {
+    background: var(--primary-color);
+    color: white;
+    transform: translateY(-1px);
+}
+
+/* Article Container */
+.article-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: grid;
+    grid-template-columns: 1fr 800px 1fr;
+    gap: 60px;
+    align-items: start;
+}
+
+@media (max-width: 1200px) {
+    .article-container {
+        grid-template-columns: 200px 1fr;
+        max-width: 900px;
+    }
+}
+
+@media (max-width: 768px) {
+    .article-container {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Table of Contents */
+.table-of-contents {
+    position: sticky;
+    top: 20px;
+    max-height: calc(100vh - 40px);
+    overflow-y: auto;
+}
+
+@media (max-width: 768px) {
+    .table-of-contents {
+        position: relative;
+        top: 0;
+        margin-bottom: 40px;
+        background: var(--bg-secondary);
+        padding: 20px;
+        border-radius: 12px;
+    }
+}
+
+.toc-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.toc-title {
+    font-size: 0.875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-tertiary);
+}
+
+.toc-toggle {
+    display: none;
+    background: none;
+    border: none;
+    color: var(--text-tertiary);
+    cursor: pointer;
+}
+
+@media (max-width: 768px) {
+    .toc-toggle {
+        display: block;
+    }
+}
+
+.toc-content {
+    font-size: 0.875rem;
+}
+
+.toc-content ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.toc-content ul ul {
+    padding-left: 16px;
+    margin-top: 4px;
+}
+
+.toc-content li {
+    margin-bottom: 8px;
+}
+
+.toc-content a {
+    color: var(--text-tertiary);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.toc-content a:hover {
+    color: var(--primary-color);
+}
+
+/* Article Content */
+.article-content {
+    font-size: 1.125rem;
+    line-height: 1.8;
+    color: var(--text-primary);
+}
+
+.article-content h2,
+.article-content h3,
+.article-content h4,
+.article-content h5,
+.article-content h6 {
+    margin-top: 48px;
+    margin-bottom: 24px;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.article-content h2 {
+    font-size: 2rem;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.article-content h3 {
+    font-size: 1.5rem;
+}
+
+.article-content h4 {
+    font-size: 1.25rem;
+}
+
+.article-content p {
+    margin-bottom: 24px;
+}
+
+.article-content a {
+    color: var(--primary-color);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+    transition: all 0.2s ease;
+}
+
+.article-content a:hover {
+    text-decoration-thickness: 2px;
+}
+
+/* Blockquote */
+.article-content blockquote {
+    margin: 32px 0;
+    padding: 24px 32px;
+    background: var(--bg-secondary);
+    border-left: 4px solid var(--primary-color);
+    border-radius: 0 8px 8px 0;
+    font-style: italic;
+    color: var(--text-secondary);
+}
+
+.article-content blockquote p:last-child {
+    margin-bottom: 0;
+}
+
+/* Code */
+.article-content pre {
+    margin: 32px 0;
+    padding: 24px;
+    background: var(--code-bg);
+    border-radius: 8px;
+    overflow-x: auto;
+    font-size: 0.875rem;
+    line-height: 1.6;
+}
+
+.article-content pre code {
+    color: var(--code-text);
+    background: none;
+    padding: 0;
+}
+
+.article-content code {
+    padding: 2px 6px;
+    background: var(--bg-tertiary);
+    border-radius: 4px;
+    font-size: 0.875em;
+    font-family: 'Consolas', 'Monaco', monospace;
+}
+
+/* Lists */
+.article-content ul,
+.article-content ol {
+    margin-bottom: 24px;
+    padding-left: 32px;
+}
+
+.article-content li {
+    margin-bottom: 8px;
+}
+
+/* Images */
+.article-content img {
+    max-width: 100%;
+    height: auto;
+    margin: 32px 0;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+/* Tables */
+.article-content table {
+    width: 100%;
+    margin: 32px 0;
+    border-collapse: collapse;
+    overflow-x: auto;
+    display: block;
+}
+
+.article-content th,
+.article-content td {
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.article-content th {
+    background: var(--bg-secondary);
+    font-weight: 600;
+}
+
+.article-content tbody tr:hover {
+    background: var(--bg-secondary);
+}
+
+/* Article Footer */
+.article-footer {
+    max-width: 800px;
+    margin: 80px auto 0;
+    padding: 0 20px 60px;
+}
+
+/* Share Section */
+.share-section {
+    padding: 40px;
+    background: var(--bg-secondary);
+    border-radius: 16px;
+    text-align: center;
+    margin-bottom: 60px;
+}
+
+.share-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 24px;
+    color: var(--text-primary);
+}
+
+.share-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.share-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: var(--bg-tertiary);
+    border: none;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.share-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.share-button.twitter:hover {
+    background: #1DA1F2;
+    color: white;
+}
+
+.share-button.facebook:hover {
+    background: #1877F2;
+    color: white;
+}
+
+.share-button.copy:hover {
+    background: var(--primary-color);
+    color: white;
+}
+
+.share-button.copy.copied {
+    background: #10b981;
+    color: white;
+}
+
+/* Article Navigation */
+.article-navigation {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+
+@media (max-width: 768px) {
+    .article-navigation {
+        grid-template-columns: 1fr;
+    }
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 24px;
+    background: var(--bg-secondary);
+    border-radius: 12px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border: 1px solid var(--border-color);
+}
+
+.nav-link:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-color: var(--primary-color);
+}
+
+.nav-arrow {
+    font-size: 1.5rem;
+    color: var(--text-tertiary);
+}
+
+.nav-content {
+    flex-grow: 1;
+}
+
+.nav-prev {
+    text-align: left;
+}
+
+.nav-next {
+    text-align: right;
+    justify-content: flex-end;
+}
+
+.nav-label {
+    display: block;
+    font-size: 0.875rem;
+    color: var(--text-tertiary);
+    margin-bottom: 4px;
+}
+
+.nav-title {
+    display: block;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .article-header {
+        padding: 60px 0 40px;
+    }
+    
+    .article-title {
+        font-size: 2rem;
+    }
+    
+    .article-description {
+        font-size: 1.125rem;
+    }
+    
+    .article-content {
+        font-size: 1rem;
+    }
+    
+    .article-content h2 {
+        font-size: 1.5rem;
+    }
+    
+    .article-content h3 {
+        font-size: 1.25rem;
+    }
+}
+</style>
+
+<script>
+// Share functionality
+document.addEventListener('DOMContentLoaded', function() {
+    // Twitter share
+    document.querySelector('.share-button.twitter')?.addEventListener('click', function() {
+        const url = this.dataset.url;
+        const title = this.dataset.title;
+        window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`, '_blank');
+    });
+    
+    // Facebook share
+    document.querySelector('.share-button.facebook')?.addEventListener('click', function() {
+        const url = this.dataset.url;
+        window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
+    });
+    
+    // Copy link
+    document.querySelector('.share-button.copy')?.addEventListener('click', async function() {
+        const url = this.dataset.url;
+        try {
+            await navigator.clipboard.writeText(url);
+            this.classList.add('copied');
+            const originalText = this.querySelector('span').textContent;
+            this.querySelector('span').textContent = '복사됨!';
+            
+            setTimeout(() => {
+                this.classList.remove('copied');
+                this.querySelector('span').textContent = originalText;
+            }, 2000);
+        } catch (err) {
+            console.error('Failed to copy:', err);
+        }
+    });
+    
+    // TOC toggle
+    const tocToggle = document.querySelector('.toc-toggle');
+    const tocContent = document.querySelector('.toc-content');
+    
+    if (tocToggle && tocContent) {
+        tocToggle.addEventListener('click', function() {
+            tocContent.style.display = tocContent.style.display === 'none' ? 'block' : 'none';
+        });
+    }
+});
+</script>
 {{ end }}
