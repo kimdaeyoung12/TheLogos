@@ -1,15 +1,7 @@
 ---
 title: "{{ replace .File.ContentBaseName "-" " " | title }}"
 date: {{ .Date }}
-lastmod: {{ .Date }}
 draft: true
-description: ""
-featured_image: ""
-tags: []
-categories: []
-series: []
-toc: true
-author: '{{ .Site.Params.author | default "DaeYoung Kim" }}'
 ---
 
 ## 서론
