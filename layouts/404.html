@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="{{ .Site.Language.Lang }}" dir="{{ .Language.LanguageDirection | default "auto" }}">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - 페이지를 찾을 수 없습니다 | {{ .Site.Title }}</title>
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+    <script>
+        const theme = localStorage.getItem('theme') || 'auto';
+        if (theme === 'dark' || (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        }
+    </script>
+</head>
+<body>
+    <div class="error-page">
+        <div class="error-container">
+            <div class="error-icon">
+                <svg width="120" height="120" viewBox="0 0 120 120" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <circle cx="60" cy="60" r="50" />
+                    <path d="M40 80s10-20 20-20 20 20 20 20" />
+                    <circle cx="40" cy="40" r="5" fill="currentColor" />
+                    <circle cx="80" cy="40" r="5" fill="currentColor" />
+                </svg>
+            </div>
+            
+            <h1 class="error-code">404</h1>
+            <h2 class="error-title">페이지를 찾을 수 없습니다</h2>
+            
+            <p class="error-message">
+                요청하신 페이지가 존재하지 않거나 이동되었습니다.<br>
+                주소를 다시 확인해 주세요.
+            </p>
+            
+            <div class="error-search">
+                <form action="/search/" method="get" class="search-form">
+                    <input type="search" 
+                           name="q" 
+                           placeholder="검색어를 입력하세요..." 
+                           class="search-input"
+                           aria-label="검색">
+                    <button type="submit" class="search-button" aria-label="검색하기">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <circle cx="8" cy="8" r="6" />
+                            <path d="M14 14l4 4" />
+                        </svg>
+                    </button>
+                </form>
+            </div>
+            
+            <div class="error-actions">
+                <a href="/" class="button button-primary">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <path d="M10 2L3 9h7v9h0v-9h7L10 2z" />
+                    </svg>
+                    홈으로 돌아가기
+                </a>
+                <a href="/posts/" class="button button-secondary">
+                    글 목록 보기
+                </a>
+            </div>
+            
+            <div class="error-suggestions">
+                <h3>이런 콘텐츠를 찾으시나요?</h3>
+                <ul class="suggestion-list">
+                    <li><a href="/tags/">태그별 글 보기</a></li>
+                    <li><a href="/categories/">카테고리별 글 보기</a></li>
+                    <li><a href="/about/">블로그 소개</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .error-page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-lg);
+            background-color: var(--bg-primary);
+        }
+        
+        .error-container {
+            max-width: 600px;
+            text-align: center;
+        }
+        
+        .error-icon {
+            display: inline-block;
+            color: var(--text-tertiary);
+            margin-bottom: var(--space-xl);
+            opacity: 0.5;
+        }
+        
+        .error-code {
+            font-size: 6rem;
+            font-weight: 800;
+            line-height: 1;
+            margin-bottom: var(--space-md);
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .error-title {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: var(--space-lg);
+            color: var(--text-primary);
+        }
+        
+        .error-message {
+            font-size: 1.125rem;
+            color: var(--text-secondary);
+            line-height: 1.8;
+            margin-bottom: var(--space-2xl);
+        }
+        
+        .error-search {
+            margin-bottom: var(--space-2xl);
+        }
+        
+        .search-form {
+            display: flex;
+            max-width: 400px;
+            margin: 0 auto;
+            background-color: var(--bg-secondary);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .search-input {
+            flex: 1;
+            padding: var(--space-md);
+            border: none;
+            background: transparent;
+            color: var(--text-primary);
+            font-size: 1rem;
+            outline: none;
+        }
+        
+        .search-input::placeholder {
+            color: var(--text-tertiary);
+        }
+        
+        .search-button {
+            padding: 0 var(--space-lg);
+            background-color: var(--color-primary);
+            border: none;
+            color: white;
+            cursor: pointer;
+            transition: background-color var(--transition-base);
+        }
+        
+        .search-button:hover {
+            background-color: var(--color-primary-dark);
+        }
+        
+        .error-actions {
+            display: flex;
+            gap: var(--space-md);
+            justify-content: center;
+            margin-bottom: var(--space-2xl);
+        }
+        
+        .button {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-sm);
+            padding: var(--space-sm) var(--space-lg);
+            border-radius: 8px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all var(--transition-base);
+        }
+        
+        .button-primary {
+            background-color: var(--color-primary);
+            color: white;
+        }
+        
+        .button-primary:hover {
+            background-color: var(--color-primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .button-secondary {
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+        
+        .button-secondary:hover {
+            background-color: var(--bg-secondary);
+            transform: translateY(-2px);
+        }
+        
+        .error-suggestions {
+            padding-top: var(--space-xl);
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .error-suggestions h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: var(--space-md);
+            color: var(--text-primary);
+        }
+        
+        .suggestion-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .suggestion-list li {
+            margin-bottom: var(--space-sm);
+        }
+        
+        .suggestion-list a {
+            color: var(--color-primary);
+            text-decoration: none;
+            transition: color var(--transition-base);
+        }
+        
+        .suggestion-list a:hover {
+            color: var(--color-primary-dark);
+            text-decoration: underline;
+        }
+        
+        @media (max-width: 767px) {
+            .error-code {
+                font-size: 4rem;
+            }
+            
+            .error-title {
+                font-size: 1.5rem;
+            }
+            
+            .error-actions {
+                flex-direction: column;
+            }
+            
+            .button {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+    
+    <script src="/js/theme.js"></script>
+</body>
+</html>
