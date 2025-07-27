@@ -1,436 +1,198 @@
-<section class="hero-section">
-    <div class="hero-content">
-        <h1 class="hero-title">{{ .Site.Title }}</h1>
-        <p class="hero-subtitle">Religion · Philosophy · Engineering</p>
-        <div class="hero-description">
-            <p>종교, 철학, 공학의 교차점에서 탐구하는 블로그입니다.</p>
-            <p>인간의 정신적 차원과 기술적 진보가 만나는 지점을 탐색합니다.</p>
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head>
+	<meta name="generator" content="Hugo 0.147.8"><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="noindex, nofollow">
+<title>TheLogos</title>
+
+<meta name="description" content="">
+<meta name="author" content="">
+<link rel="canonical" href="http://localhost:1313/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.36819bea596090d8b48cf10d9831382996197aa7e4fc86f792f7c08c9ca4d23b.css" integrity="sha256-NoGb6llgkNi0jPENmDE4KZYZeqfk/Ib3kvfAjJyk0js=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" type="application/rss+xml" href="http://localhost:1313/index.xml">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+</head>
+
+<body class="list" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="TheLogos (Alt + H)">TheLogos</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
         </div>
-        <div class="hero-actions">
-            <a href="/posts/" class="button button-primary">
-                <span>글 목록 보기</span>
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                    <line x1="5" y1="10" x2="15" y2="10" />
-                    <polyline points="10 5 15 10 10 15" />
-                </svg>
-            </a>
-            <a href="/about/" class="button button-secondary">
-                <span>소개</span>
-            </a>
-        </div>
-    </div>
-</section>
+        <ul id="menu">
+        </ul>
+    </nav>
+</header>
+<main class="main"> 
 
-{{ $paginator := .Paginate (where .Site.RegularPages "Type" "posts") 5 }}
-{{ if $paginator.Pages }}
-<section class="recent-posts">
-    <div class="section-header">
-        <h2 class="section-title">최근 글</h2>
-        <a href="/posts/" class="view-all-link">
-            모든 글 보기
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                <line x1="5" y1="8" x2="11" y2="8" />
-                <polyline points="8 5 11 8 8 11" />
-            </svg>
-        </a>
-    </div>
+<article class="first-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Hello Hugo
+      <span class="entry-hint" title="Draft">
+        <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" fill="currentColor">
+          <path
+            d="M160-410v-60h300v60H160Zm0-165v-60h470v60H160Zm0-165v-60h470v60H160Zm360 580v-123l221-220q9-9 20-13t22-4q12 0 23 4.5t20 13.5l37 37q9 9 13 20t4 22q0 11-4.5 22.5T862.09-380L643-160H520Zm300-263-37-37 37 37ZM580-220h38l121-122-18-19-19-18-122 121v38Zm141-141-19-18 37 37-18-19Z" />
+        </svg>
+      </span>
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p></p>
+  </div>
+  <footer class="entry-footer"><span title='2025-06-19 22:04:56 +0900 KST'>June 19, 2025</span></footer>
+  <a class="entry-link" aria-label="post link to Hello Hugo" href="http://localhost:1313/posts/hello-hugo/"></a>
+</article>
+    </main>
     
-    <div class="posts-grid">
-        {{ range $paginator.Pages }}
-        <article class="post-card" itemscope itemtype="https://schema.org/BlogPosting">
-            {{ if .Params.featured_image }}
-            <div class="post-thumbnail">
-                <img src="{{ .Params.featured_image }}" alt="{{ .Title }}" loading="lazy">
-            </div>
-            {{ end }}
-            
-            <div class="post-content">
-                <header class="post-header">
-                    {{ with .Params.categories }}
-                    <div class="post-category">
-                        {{ range first 1 . }}
-                        <a href="{{ "categories/" | absURL }}{{ . | urlize }}" rel="category">{{ . }}</a>
-                        {{ end }}
-                    </div>
-                    {{ end }}
-                    
-                    <h3 class="post-title" itemprop="headline">
-                        <a href="{{ .RelPermalink }}" itemprop="url">{{ .Title }}</a>
-                    </h3>
-                    
-                    <div class="post-meta">
-                        <time datetime="{{ .Date.Format "2006-01-02T15:04:05Z07:00" }}" itemprop="datePublished">
-                            {{ .Date.Format "2006년 1월 2일" }}
-                        </time>
-                        <span class="meta-separator">·</span>
-                        <span class="reading-time">{{ .ReadingTime }}분 읽기</span>
-                    </div>
-                </header>
-                
-                <div class="post-excerpt" itemprop="description">
-                    {{ .Summary | plainify | truncate 150 }}
-                </div>
-                
-                {{ with .Params.tags }}
-                <div class="post-tags">
-                    {{ range first 3 . }}
-                    <a href="{{ "tags/" | absURL }}{{ . | urlize }}" class="tag-link" rel="tag">#{{ . }}</a>
-                    {{ end }}
-                </div>
-                {{ end }}
-            </div>
-            
-            <meta itemprop="author" content="{{ .Site.Params.author | default "DaeYoung Kim" }}">
-        </article>
-        {{ end }}
-    </div>
-    
-    {{ if gt $paginator.TotalPages 1 }}
-    <div class="pagination-wrapper">
-        {{ template "_internal/pagination.html" . }}
-    </div>
-    {{ end }}
-</section>
-{{ end }}
+<footer class="footer">
+        <span>&copy; 2025 <a href="http://localhost:1313/">TheLogos</a></span> · 
 
-{{ with .Site.Taxonomies.categories }}
-<section class="categories-section">
-    <div class="section-header">
-        <h2 class="section-title">카테고리</h2>
-    </div>
-    
-    <div class="categories-grid">
-        {{ range $name, $taxonomy := . }}
-        <a href="{{ "categories/" | absURL }}{{ $name | urlize }}" class="category-card">
-            <div class="category-icon">
-                {{ if eq $name "religion" }}
-                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                    <path d="M16 2v28M2 16h28M8 8l16 16M24 8L8 24" />
-                </svg>
-                {{ else if eq $name "philosophy" }}
-                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                    <circle cx="16" cy="16" r="14" />
-                    <path d="M16 2a14 14 0 0 1 0 28M16 2a14 14 0 0 0 0 28" />
-                </svg>
-                {{ else if eq $name "engineering" }}
-                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                    <path d="M12 2L2 12l10 10 10-10L12 2zM22 22l8 8M2 22l8 8" />
-                </svg>
-                {{ else }}
-                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                    <rect x="6" y="6" width="20" height="20" rx="2" />
-                </svg>
-                {{ end }}
-            </div>
-            <h3 class="category-name">{{ $name | title }}</h3>
-            <span class="category-count">{{ len $taxonomy }} 글</span>
-        </a>
-        {{ end }}
-    </div>
-</section>
-{{ end }}
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
 
-<style>
-/* Hero Section */
-.hero-section {
-    padding: var(--space-2xl) 0;
-    text-align: center;
-    background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
-    border-radius: 16px;
-    margin-bottom: var(--space-2xl);
-}
-
-.hero-content {
-    max-width: 600px;
-    margin: 0 auto;
-}
-
-.hero-title {
-    font-size: 3.5rem;
-    font-weight: 800;
-    margin-bottom: var(--space-sm);
-    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-
-.hero-subtitle {
-    font-size: 1.25rem;
-    color: var(--text-secondary);
-    font-weight: 500;
-    letter-spacing: 0.1em;
-    margin-bottom: var(--space-lg);
-}
-
-.hero-description {
-    color: var(--text-secondary);
-    line-height: 1.8;
-    margin-bottom: var(--space-xl);
-}
-
-.hero-description p {
-    margin-bottom: var(--space-sm);
-}
-
-.hero-actions {
-    display: flex;
-    gap: var(--space-md);
-    justify-content: center;
-}
-
-/* Buttons */
-.button {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-sm);
-    padding: var(--space-sm) var(--space-lg);
-    border-radius: 8px;
-    font-weight: 500;
-    text-decoration: none;
-    transition: all var(--transition-base);
-}
-
-.button-primary {
-    background-color: var(--color-primary);
-    color: white;
-}
-
-.button-primary:hover {
-    background-color: var(--color-primary-dark);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
-}
-
-.button-secondary {
-    background-color: var(--bg-tertiary);
-    color: var(--text-primary);
-}
-
-.button-secondary:hover {
-    background-color: var(--bg-secondary);
-    transform: translateY(-2px);
-}
-
-/* Recent Posts Section */
-.recent-posts {
-    margin-bottom: var(--space-2xl);
-}
-
-.section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: var(--space-xl);
-}
-
-.section-title {
-    font-size: 2rem;
-    font-weight: 700;
-}
-
-.view-all-link {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-xs);
-    color: var(--color-primary);
-    text-decoration: none;
-    font-weight: 500;
-    transition: gap var(--transition-base);
-}
-
-.view-all-link:hover {
-    gap: var(--space-sm);
-}
-
-/* Posts Grid */
-.posts-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: var(--space-xl);
-}
-
-.post-card {
-    background-color: var(--bg-secondary);
-    border-radius: 12px;
-    overflow: hidden;
-    transition: transform var(--transition-base), box-shadow var(--transition-base);
-}
-
-.post-card:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-lg);
-}
-
-.post-thumbnail {
-    aspect-ratio: 16 / 9;
-    overflow: hidden;
-}
-
-.post-thumbnail img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform var(--transition-slow);
-}
-
-.post-card:hover .post-thumbnail img {
-    transform: scale(1.05);
-}
-
-.post-content {
-    padding: var(--space-lg);
-}
-
-.post-category {
-    margin-bottom: var(--space-sm);
-}
-
-.post-category a {
-    color: var(--color-primary);
-    font-size: 0.813rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    text-decoration: none;
-}
-
-.post-title {
-    font-size: 1.25rem;
-    margin-bottom: var(--space-sm);
-}
-
-.post-title a {
-    color: var(--text-primary);
-    text-decoration: none;
-    transition: color var(--transition-base);
-}
-
-.post-title a:hover {
-    color: var(--color-primary);
-}
-
-.post-meta {
-    display: flex;
-    align-items: center;
-    gap: var(--space-sm);
-    color: var(--text-tertiary);
-    font-size: 0.813rem;
-    margin-bottom: var(--space-md);
-}
-
-.meta-separator {
-    opacity: 0.5;
-}
-
-.post-excerpt {
-    color: var(--text-secondary);
-    line-height: 1.6;
-    margin-bottom: var(--space-md);
-}
-
-.post-tags {
-    display: flex;
-    gap: var(--space-sm);
-    flex-wrap: wrap;
-}
-
-/* Categories Section */
-.categories-section {
-    margin-bottom: var(--space-2xl);
-}
-
-.categories-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: var(--space-lg);
-}
-
-.category-card {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: var(--space-xl);
-    background-color: var(--bg-secondary);
-    border-radius: 12px;
-    text-decoration: none;
-    transition: all var(--transition-base);
-}
-
-.category-card:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-md);
-}
-
-.category-icon {
-    width: 64px;
-    height: 64px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: var(--bg-tertiary);
-    border-radius: 50%;
-    margin-bottom: var(--space-md);
-    transition: background-color var(--transition-base);
-}
-
-.category-card:hover .category-icon {
-    background-color: var(--color-primary);
-}
-
-.category-icon svg {
-    stroke: var(--color-primary);
-    transition: stroke var(--transition-base);
-}
-
-.category-card:hover .category-icon svg {
-    stroke: white;
-}
-
-.category-name {
-    font-size: 1.125rem;
-    font-weight: 600;
-    color: var(--text-primary);
-    margin-bottom: var(--space-xs);
-}
-
-.category-count {
-    font-size: 0.875rem;
-    color: var(--text-tertiary);
-}
-
-/* Pagination */
-.pagination-wrapper {
-    margin-top: var(--space-2xl);
-}
-
-/* Responsive */
-@media (max-width: 767px) {
-    .hero-title {
-        font-size: 2.5rem;
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
     }
-    
-    .hero-actions {
-        flex-direction: column;
-    }
-    
-    .button {
-        width: 100%;
-        justify-content: center;
-    }
-    
-    .section-header {
-        flex-direction: column;
-        gap: var(--space-md);
-        align-items: flex-start;
-    }
-    
-    .posts-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .categories-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-</style>
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>
