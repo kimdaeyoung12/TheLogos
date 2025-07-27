@@ -9,7 +9,7 @@ tags: []
 categories: []
 series: []
 toc: true
-author: "{{ .Site.Params.author | default "DaeYoung Kim" }}"
+author: "DaeYoung Kim"
 ---
 
 ## 서론
