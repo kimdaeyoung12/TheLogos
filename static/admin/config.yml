@@ -1,0 +1,25 @@
+backend:
+  name: git-gateway
+  branch: main
+
+media_folder: static/images
+public_folder: /images
+
+collections:
+  - name: "posts"
+    label: "Posts"
+    folder: "content/posts"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    editor:
+      preview: true
+    fields:
+      - {label: "제목", name: "title", widget: "string"}
+      - {label: "게시일", name: "date", widget: "datetime"}
+      - {label: "카테고리", name: "categories", widget: "select", 
+         options: ["religion", "philosophy", "engineering"],
+         multiple: true}
+      - {label: "태그", name: "tags", widget: "list"}
+      - {label: "설명", name: "description", widget: "text"}
+      - {label: "초안", name: "draft", widget: "boolean", default: false}
+      - {label: "내용", name: "body", widget: "markdown"}
