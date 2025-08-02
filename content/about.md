@@ -47,9 +47,9 @@ description: "The Logos 블로그와 저자 소개"
 - **종교**: 기독교 신학, 종교 간 대화, 현대 영성
 
 ### 연락처
-- Email: [your.email@example.com](mailto:your.email@example.com)
-- GitHub: [@yourusername](https://github.com/yourusername)
-- Twitter: [@yourusername](https://twitter.com/yourusername)
+- Email: [wwht32@gmail.com](mailto:your.wwht32@gmail.com)
+- GitHub: [@kimdaeyoung12](https://github.com/kimdaeyoung12)
+- Instagram: [@kdy_92](https://www.instagram.com/kdy_92/)
 
 ## 블로그의 지향점
 
