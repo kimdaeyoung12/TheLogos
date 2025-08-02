@@ -43,27 +43,34 @@
                     {{ if $religionPosts }}
                         {{ range $religionPosts }}
                         <article class="post-card" data-category="religion">
-                            <div class="post-date">
-                                <span class="month">{{ .Date.Format "1월" }}</span>
-                                <span class="day">{{ .Date.Format "2일" }}</span>
-                                <span class="year">{{ .Date.Format "2006" }}</span>
+                            <!-- 카테고리 헤더 추가 -->
+                            <div class="post-category-header">
+                                <span class="category-icon">🕊️</span>
+                                <span class="category-name">종교</span>
                             </div>
-                            <div class="post-content">
-                                <h3 class="post-title">
-                                    <a href="{{ .RelPermalink }}">{{ .Title }}</a>
-                                </h3>
-                                {{ with .Summary }}
-                                <p class="post-summary">{{ . | plainify }}</p>
-                                {{ end }}
-                                <div class="post-footer">
-                                    <a href="{{ .RelPermalink }}" class="read-more">읽기 →</a>
-                                    {{ with .Params.tags }}
-                                    <div class="post-tags">
-                                        {{ range first 3 . }}
-                                        <span class="tag">#{{ . }}</span>
+                            <div class="post-card-body">
+                                <div class="post-date">
+                                    <span class="month">{{ .Date.Format "1월" }}</span>
+                                    <span class="day">{{ .Date.Format "2일" }}</span>
+                                    <span class="year">{{ .Date.Format "2006" }}</span>
+                                </div>
+                                <div class="post-content">
+                                    <h3 class="post-title">
+                                        <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+                                    </h3>
+                                    {{ with .Summary }}
+                                    <p class="post-summary">{{ . | plainify }}</p>
+                                    {{ end }}
+                                    <div class="post-footer">
+                                        <a href="{{ .RelPermalink }}" class="read-more">읽기 →</a>
+                                        {{ with .Params.tags }}
+                                        <div class="post-tags">
+                                            {{ range first 3 . }}
+                                            <span class="tag">#{{ . }}</span>
+                                            {{ end }}
+                                        </div>
                                         {{ end }}
                                     </div>
-                                    {{ end }}
                                 </div>
                             </div>
                         </article>
@@ -89,27 +96,34 @@
                     {{ if $philosophyPosts }}
                         {{ range $philosophyPosts }}
                         <article class="post-card" data-category="philosophy">
-                            <div class="post-date">
-                                <span class="month">{{ .Date.Format "1월" }}</span>
-                                <span class="day">{{ .Date.Format "2일" }}</span>
-                                <span class="year">{{ .Date.Format "2006" }}</span>
+                            <!-- 카테고리 헤더 추가 -->
+                            <div class="post-category-header">
+                                <span class="category-icon">🤔</span>
+                                <span class="category-name">철학</span>
                             </div>
-                            <div class="post-content">
-                                <h3 class="post-title">
-                                    <a href="{{ .RelPermalink }}">{{ .Title }}</a>
-                                </h3>
-                                {{ with .Summary }}
-                                <p class="post-summary">{{ . | plainify }}</p>
-                                {{ end }}
-                                <div class="post-footer">
-                                    <a href="{{ .RelPermalink }}" class="read-more">읽기 →</a>
-                                    {{ with .Params.tags }}
-                                    <div class="post-tags">
-                                        {{ range first 3 . }}
-                                        <span class="tag">#{{ . }}</span>
+                            <div class="post-card-body">
+                                <div class="post-date">
+                                    <span class="month">{{ .Date.Format "1월" }}</span>
+                                    <span class="day">{{ .Date.Format "2일" }}</span>
+                                    <span class="year">{{ .Date.Format "2006" }}</span>
+                                </div>
+                                <div class="post-content">
+                                    <h3 class="post-title">
+                                        <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+                                    </h3>
+                                    {{ with .Summary }}
+                                    <p class="post-summary">{{ . | plainify }}</p>
+                                    {{ end }}
+                                    <div class="post-footer">
+                                        <a href="{{ .RelPermalink }}" class="read-more">읽기 →</a>
+                                        {{ with .Params.tags }}
+                                        <div class="post-tags">
+                                            {{ range first 3 . }}
+                                            <span class="tag">#{{ . }}</span>
+                                            {{ end }}
+                                        </div>
                                         {{ end }}
                                     </div>
-                                    {{ end }}
                                 </div>
                             </div>
                         </article>
@@ -135,27 +149,34 @@
                     {{ if $engineeringPosts }}
                         {{ range $engineeringPosts }}
                         <article class="post-card" data-category="engineering">
-                            <div class="post-date">
-                                <span class="month">{{ .Date.Format "1월" }}</span>
-                                <span class="day">{{ .Date.Format "2일" }}</span>
-                                <span class="year">{{ .Date.Format "2006" }}</span>
+                            <!-- 카테고리 헤더 추가 -->
+                            <div class="post-category-header">
+                                <span class="category-icon">⚙️</span>
+                                <span class="category-name">공학</span>
                             </div>
-                            <div class="post-content">
-                                <h3 class="post-title">
-                                    <a href="{{ .RelPermalink }}">{{ .Title }}</a>
-                                </h3>
-                                {{ with .Summary }}
-                                <p class="post-summary">{{ . | plainify }}</p>
-                                {{ end }}
-                                <div class="post-footer">
-                                    <a href="{{ .RelPermalink }}" class="read-more">읽기 →</a>
-                                    {{ with .Params.tags }}
-                                    <div class="post-tags">
-                                        {{ range first 3 . }}
-                                        <span class="tag">#{{ . }}</span>
+                            <div class="post-card-body">
+                                <div class="post-date">
+                                    <span class="month">{{ .Date.Format "1월" }}</span>
+                                    <span class="day">{{ .Date.Format "2일" }}</span>
+                                    <span class="year">{{ .Date.Format "2006" }}</span>
+                                </div>
+                                <div class="post-content">
+                                    <h3 class="post-title">
+                                        <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+                                    </h3>
+                                    {{ with .Summary }}
+                                    <p class="post-summary">{{ . | plainify }}</p>
+                                    {{ end }}
+                                    <div class="post-footer">
+                                        <a href="{{ .RelPermalink }}" class="read-more">읽기 →</a>
+                                        {{ with .Params.tags }}
+                                        <div class="post-tags">
+                                            {{ range first 3 . }}
+                                            <span class="tag">#{{ . }}</span>
+                                            {{ end }}
+                                        </div>
                                         {{ end }}
                                     </div>
-                                    {{ end }}
                                 </div>
                             </div>
                         </article>
@@ -325,7 +346,8 @@
     gap: 30px;
     align-items: start;
 }
-/* 대안: 카테고리를 카드 상단에 큰 배너로 표시 */
+
+/* Post Card */
 .post-card {
     background: var(--bg-secondary);
     border-radius: 12px;
@@ -338,18 +360,23 @@
     height: auto;
 }
 
+.post-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+/* 카테고리 헤더 - 새로 추가 */
 .post-category-header {
     background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-    padding: 15px 20px;
+    padding: 12px 20px;
     display: flex;
     align-items: center;
     gap: 10px;
     font-weight: 600;
-    font-size: 1rem;
-    color: #1e40af;
+    font-size: 0.95rem;
+    border-bottom: 1px solid var(--border-color);
 }
 
-    
 .post-card[data-category="religion"] .post-category-header {
     background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
     color: #1e40af;
@@ -365,38 +392,50 @@
     color: #065f46;
 }
 
-.post-category-icon {
-    font-size: 1.5rem;
+.dark .post-card[data-category="religion"] .post-category-header {
+    background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+    color: #dbeafe;
 }
 
+.dark .post-card[data-category="philosophy"] .post-category-header {
+    background: linear-gradient(135deg, #831843 0%, #be185d 100%);
+    color: #fce7f3;
+}
+
+.dark .post-card[data-category="engineering"] .post-category-header {
+    background: linear-gradient(135deg, #064e3b 0%, #065f46 100%);
+    color: #d1fae5;
+}
+
+.post-category-header .category-icon {
+    font-size: 1.25rem;
+}
+
+.post-category-header .category-name {
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Post Card Body - 새로 추가 */
 .post-card-body {
     display: flex;
     flex: 1;
-}
-
-.post-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
 }
 
 /* Post Date */
 .post-date {
     width: 100px;
     min-width: 100px;
-    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    background: var(--bg-tertiary);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     font-weight: 600;
-    color: #1e40af;
+    color: var(--text-secondary);
     flex-shrink: 0;
     padding: 20px 10px;
-}
-
-.dark .post-date {
-    background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
-    color: #dbeafe;
 }
 
 .post-date .month {
@@ -408,6 +447,7 @@
     font-size: 2rem;
     line-height: 1;
     margin: 5px 0;
+    color: var(--text-primary);
 }
 
 .post-date .year {
@@ -511,105 +551,6 @@
     font-style: italic;
 }
 
-/* Category Badges */
-.post-category-badges {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: 12px;
-}
-
-    
-/* 카테고리 배지 스타일 추가 */
-.post-card::before {
-    content: attr(data-category-label);
-    position: absolute;
-    top: 15px;
-    left: 15px;
-    background: var(--bg-primary);
-    padding: 8px 16px;
-    border-radius: 20px;
-    font-size: 0.875rem;
-    font-weight: 600;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    z-index: 1;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-
-
-.category-badge {
-    display: inline-block;
-    padding: 4px 12px;
-    border-radius: 4px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    white-space: nowrap;
-}
-    
-/* 카테고리별 색상 */
-.post-card[data-category="religion"]::before {
-    background: #dbeafe;
-    color: #1e40af;
-}
-
-.post-card[data-category="philosophy"]::before {
-    background: #fce7f3;
-    color: #be185d;
-}
-
-.post-card[data-category="engineering"]::before {
-    background: #d1fae5;
-    color: #065f46;
-}
-
-.dark .post-card[data-category="religion"]::before {
-    background: #1e3a8a;
-    color: #dbeafe;
-}
-
-.dark .post-card[data-category="philosophy"]::before {
-    background: #831843;
-    color: #fce7f3;
-}
-
-.dark .post-card[data-category="engineering"]::before {
-    background: #064e3b;
-    color: #d1fae5;
-}
-
-.category-religion {
-    background: #dbeafe;
-    color: #1e40af;
-}
-
-.category-philosophy {
-    background: #fce7f3;
-    color: #be185d;
-}
-
-.category-engineering {
-    background: #d1fae5;
-    color: #065f46;
-}
-
-.dark .category-religion {
-    background: #1e3a8a;
-    color: #dbeafe;
-}
-
-.dark .category-philosophy {
-    background: #831843;
-    color: #fce7f3;
-}
-
-.dark .category-engineering {
-    background: #064e3b;
-    color: #d1fae5;
-}
-
 /* Responsive Design */
 @media (max-width: 1024px) {
     .posts-grid {
@@ -632,25 +573,20 @@
     }
     
     .post-card {
-        flex-direction: column;
         min-height: auto;
     }
     
-/* Post Date - 위치 조정 */
-.post-date {
-    width: 100px;
-    min-width: 100px;
-    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-weight: 600;
-    color: #1e40af;
-    flex-shrink: 0;
-    padding: 20px 10px;
-    border-radius: 12px 0 0 12px; /* 왼쪽만 둥글게 */
-}
+    .post-card-body {
+        flex-direction: column;
+    }
+    
+    .post-date {
+        width: 100%;
+        min-width: auto;
+        flex-direction: row;
+        padding: 15px;
+        gap: 15px;
+    }
     
     .post-content {
         padding: 20px;
