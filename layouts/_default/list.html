@@ -1,41 +1,323 @@
+{{ define "main" }}
+<section class="posts-list-section">
+    <div class="container">
+        <header class="page-header">
+            <h1 class="page-title">Posts</h1>
+            <p class="page-description">종교, 철학, 공학에 대한 생각과 통찰을 나눕니다</p>
+            
+            <!-- 카테고리 필터 버튼 -->
+            <div class="category-filters">
+                <button class="filter-btn active" data-category="all">
+                    <span class="icon">📚</span>
+                    <span>전체</span>
+                </button>
+                <button class="filter-btn" data-category="religion">
+                    <span class="icon">🕊️</span>
+                    <span>종교</span>
+                </button>
+                <button class="filter-btn" data-category="philosophy">
+                    <span class="icon">🤔</span>
+                    <span>철학</span>
+                </button>
+                <button class="filter-btn" data-category="engineering">
+                    <span class="icon">⚙️</span>
+                    <span>공학</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- 카테고리별 섹션 -->
+        <div class="posts-by-category">
+            <!-- 종교 섹션 -->
+            <section class="category-section" data-category="religion">
+                <div class="category-header">
+                    <h2 class="category-title">
+                        <span class="category-icon">🕊️</span>
+                        종교 (Religion)
+                    </h2>
+                    <p class="category-description">신앙과 영성, 종교적 사유에 관한 글들</p>
+                </div>
+                
+                <div class="posts-grid">
+                    {{ $religionPosts := where .Site.RegularPages "Params.categories" "intersect" (slice "religion") }}
+                    {{ if $religionPosts }}
+                        {{ range $religionPosts }}
+                        <article class="post-card" data-category="religion">
+                            <div class="post-date">
+                                <span class="month">{{ .Date.Format "1월" }}</span>
+                                <span class="day">{{ .Date.Format "2일" }}</span>
+                                <span class="year">{{ .Date.Format "2006" }}</span>
+                            </div>
+                            <div class="post-content">
+                                <h3 class="post-title">
+                                    <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+                                </h3>
+                                {{ with .Summary }}
+                                <p class="post-summary">{{ . | plainify }}</p>
+                                {{ end }}
+                                <div class="post-footer">
+                                    <a href="{{ .RelPermalink }}" class="read-more">읽기 →</a>
+                                    {{ with .Params.tags }}
+                                    <div class="post-tags">
+                                        {{ range first 3 . }}
+                                        <span class="tag">#{{ . }}</span>
+                                        {{ end }}
+                                    </div>
+                                    {{ end }}
+                                </div>
+                            </div>
+                        </article>
+                        {{ end }}
+                    {{ else }}
+                        <p class="no-posts">아직 종교 카테고리의 글이 없습니다.</p>
+                    {{ end }}
+                </div>
+            </section>
+
+            <!-- 철학 섹션 -->
+            <section class="category-section" data-category="philosophy">
+                <div class="category-header">
+                    <h2 class="category-title">
+                        <span class="category-icon">🤔</span>
+                        철학 (Philosophy)
+                    </h2>
+                    <p class="category-description">인간과 세계, 존재와 인식에 대한 철학적 탐구</p>
+                </div>
+                
+                <div class="posts-grid">
+                    {{ $philosophyPosts := where .Site.RegularPages "Params.categories" "intersect" (slice "philosophy") }}
+                    {{ if $philosophyPosts }}
+                        {{ range $philosophyPosts }}
+                        <article class="post-card" data-category="philosophy">
+                            <div class="post-date">
+                                <span class="month">{{ .Date.Format "1월" }}</span>
+                                <span class="day">{{ .Date.Format "2일" }}</span>
+                                <span class="year">{{ .Date.Format "2006" }}</span>
+                            </div>
+                            <div class="post-content">
+                                <h3 class="post-title">
+                                    <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+                                </h3>
+                                {{ with .Summary }}
+                                <p class="post-summary">{{ . | plainify }}</p>
+                                {{ end }}
+                                <div class="post-footer">
+                                    <a href="{{ .RelPermalink }}" class="read-more">읽기 →</a>
+                                    {{ with .Params.tags }}
+                                    <div class="post-tags">
+                                        {{ range first 3 . }}
+                                        <span class="tag">#{{ . }}</span>
+                                        {{ end }}
+                                    </div>
+                                    {{ end }}
+                                </div>
+                            </div>
+                        </article>
+                        {{ end }}
+                    {{ else }}
+                        <p class="no-posts">아직 철학 카테고리의 글이 없습니다.</p>
+                    {{ end }}
+                </div>
+            </section>
+
+            <!-- 공학 섹션 -->
+            <section class="category-section" data-category="engineering">
+                <div class="category-header">
+                    <h2 class="category-title">
+                        <span class="category-icon">⚙️</span>
+                        공학 (Engineering)
+                    </h2>
+                    <p class="category-description">기술과 공학, 미래 사회에 대한 통찰</p>
+                </div>
+                
+                <div class="posts-grid">
+                    {{ $engineeringPosts := where .Site.RegularPages "Params.categories" "intersect" (slice "engineering") }}
+                    {{ if $engineeringPosts }}
+                        {{ range $engineeringPosts }}
+                        <article class="post-card" data-category="engineering">
+                            <div class="post-date">
+                                <span class="month">{{ .Date.Format "1월" }}</span>
+                                <span class="day">{{ .Date.Format "2일" }}</span>
+                                <span class="year">{{ .Date.Format "2006" }}</span>
+                            </div>
+                            <div class="post-content">
+                                <h3 class="post-title">
+                                    <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+                                </h3>
+                                {{ with .Summary }}
+                                <p class="post-summary">{{ . | plainify }}</p>
+                                {{ end }}
+                                <div class="post-footer">
+                                    <a href="{{ .RelPermalink }}" class="read-more">읽기 →</a>
+                                    {{ with .Params.tags }}
+                                    <div class="post-tags">
+                                        {{ range first 3 . }}
+                                        <span class="tag">#{{ . }}</span>
+                                        {{ end }}
+                                    </div>
+                                    {{ end }}
+                                </div>
+                            </div>
+                        </article>
+                        {{ end }}
+                    {{ else }}
+                        <p class="no-posts">아직 공학 카테고리의 글이 없습니다.</p>
+                    {{ end }}
+                </div>
+            </section>
+        </div>
+    </div>
+</section>
+
+<style>
+/* 전역 설정 */
+* {
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+/* Variables */
+:root {
+    --primary-color: #3b82f6;
+    --primary-dark: #1e40af;
+    --secondary-color: #64748b;
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --text-tertiary: #94a3b8;
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8fafc;
+    --bg-tertiary: #f1f5f9;
+    --border-color: #e2e8f0;
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+}
+
+/* Dark mode variables */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --text-primary: #f1f5f9;
+        --text-secondary: #cbd5e1;
+        --text-tertiary: #64748b;
+        --bg-primary: #0f172a;
+        --bg-secondary: #1e293b;
+        --bg-tertiary: #334155;
+        --border-color: #334155;
+    }
+}
+
+/* Container */
+.container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    overflow-x: hidden;
+}
+
+/* Section */
+.posts-list-section {
+    min-height: calc(100vh - 200px);
+    padding: 60px 0;
+    background-color: var(--bg-primary);
+}
+
+/* Page Header */
+.page-header {
+    text-align: center;
+    margin-bottom: 60px;
+}
+
+.page-title {
+    font-size: 3rem;
+    font-weight: 800;
+    margin-bottom: 12px;
+    background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.page-description {
+    font-size: 1.25rem;
+    color: var(--text-secondary);
+    margin-bottom: 30px;
+}
+
+/* Category Filters */
+.category-filters {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 30px;
+}
+
+.filter-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: var(--bg-secondary);
+    border: 2px solid var(--border-color);
+    border-radius: 25px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: var(--text-primary);
+}
+
+.filter-btn .icon {
+    font-size: 1.2rem;
+}
+
 .filter-btn:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
+
 .filter-btn.active {
     background: #3b82f6;
     color: white;
     border-color: #3b82f6;
 }
+
 /* Category Sections */
 .category-section {
     margin-bottom: 80px;
     opacity: 1;
     transition: opacity 0.3s ease;
 }
+
 .category-section.hidden {
     display: none;
 }
+
 .category-header {
     margin-bottom: 40px;
     padding-bottom: 20px;
     border-bottom: 2px solid var(--border-color);
 }
+
 .category-title {
     font-size: 2rem;
     font-weight: 700;
     margin-bottom: 10px;
-    background: white;
+    display: flex;
     align-items: center;
     gap: 12px;
 }
+
 .category-icon {
     font-size: 2.5rem;
 }
+
 .category-description {
     color: var(--text-secondary);
     font-size: 1.1rem;
 }
+
 /* Posts Grid */
 .posts-grid {
     display: grid;
@@ -43,6 +325,7 @@
     gap: 30px;
     align-items: start;
 }
+
 /* Post Card */
 .post-card {
     background: var(--bg-secondary);
@@ -54,10 +337,12 @@
     min-height: 200px;
     height: auto;
 }
+
 .post-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
 }
+
 /* Post Date */
 .post-date {
     width: 100px;
@@ -65,4 +350,302 @@
     background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
     display: flex;
     flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    color: #1e40af;
+    flex-shrink: 0;
+    padding: 20px 10px;
 }
+
+.dark .post-date {
+    background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+    color: #dbeafe;
+}
+
+.post-date .month {
+    font-size: 0.875rem;
+    text-transform: uppercase;
+}
+
+.post-date .day {
+    font-size: 2rem;
+    line-height: 1;
+    margin: 5px 0;
+}
+
+.post-date .year {
+    font-size: 0.75rem;
+    opacity: 0.8;
+}
+
+/* Post Content */
+.post-content {
+    flex: 1;
+    padding: 25px;
+    display: flex;
+    flex-direction: column;
+    overflow: visible;
+    min-width: 0;
+}
+
+/* Post Title */
+.post-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+    line-height: 1.4;
+    overflow: visible;
+    text-overflow: initial;
+    white-space: normal;
+    word-wrap: break-word;
+    word-break: keep-all;
+    hyphens: auto;
+}
+
+.post-title a {
+    color: var(--text-primary);
+    text-decoration: none;
+    transition: color 0.2s ease;
+    display: block;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: keep-all;
+}
+
+.post-title a:hover {
+    color: #3b82f6;
+}
+
+/* Post Summary */
+.post-summary {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    flex-grow: 1;
+    margin-bottom: 15px;
+    overflow: visible;
+    text-overflow: initial;
+    display: block;
+    white-space: normal;
+    word-wrap: break-word;
+    word-break: keep-all;
+}
+
+/* Post Footer */
+.post-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.read-more {
+    color: #3b82f6;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.read-more:hover {
+    transform: translateX(5px);
+}
+
+/* Post Tags */
+.post-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.tag {
+    font-size: 0.75rem;
+    color: var(--text-tertiary);
+    white-space: nowrap;
+}
+
+/* No Posts Message */
+.no-posts {
+    text-align: center;
+    color: var(--text-secondary);
+    padding: 40px;
+    font-style: italic;
+}
+
+/* Category Badges */
+.post-category-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.category-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.category-religion {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.category-philosophy {
+    background: #fce7f3;
+    color: #be185d;
+}
+
+.category-engineering {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.dark .category-religion {
+    background: #1e3a8a;
+    color: #dbeafe;
+}
+
+.dark .category-philosophy {
+    background: #831843;
+    color: #fce7f3;
+}
+
+.dark .category-engineering {
+    background: #064e3b;
+    color: #d1fae5;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .posts-grid {
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .page-title {
+        font-size: 2rem;
+    }
+    
+    .page-description {
+        font-size: 1rem;
+    }
+    
+    .posts-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .post-card {
+        flex-direction: column;
+        min-height: auto;
+    }
+    
+    .post-date {
+        width: 100%;
+        min-width: auto;
+        flex-direction: row;
+        padding: 15px;
+        gap: 15px;
+    }
+    
+    .post-content {
+        padding: 20px;
+    }
+    
+    .filter-btn {
+        padding: 8px 16px;
+        font-size: 0.875rem;
+    }
+    
+    .post-title {
+        font-size: 1.125rem;
+    }
+    
+    .category-title {
+        font-size: 1.5rem;
+    }
+    
+    .category-icon {
+        font-size: 2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .posts-grid {
+        padding: 0 10px;
+    }
+    
+    .post-card {
+        margin: 0 -10px;
+        border-radius: 0;
+        border-left: none;
+        border-right: none;
+    }
+    
+    .post-content {
+        padding: 15px;
+    }
+    
+    .page-title {
+        font-size: 1.75rem;
+    }
+    
+    .filter-btn {
+        padding: 6px 12px;
+        font-size: 0.813rem;
+    }
+    
+    .filter-btn .icon {
+        font-size: 1rem;
+    }
+}
+
+/* All text elements protection */
+p, h1, h2, h3, h4, h5, h6, a, span {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    const categorySections = document.querySelectorAll('.category-section');
+    
+    filterBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            // 버튼 활성화 상태 변경
+            filterBtns.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            
+            const selectedCategory = this.dataset.category;
+            
+            if (selectedCategory === 'all') {
+                // 전체 보기: 모든 카테고리 섹션 표시
+                categorySections.forEach(section => {
+                    section.classList.remove('hidden');
+                });
+            } else {
+                // 특정 카테고리만 보기
+                categorySections.forEach(section => {
+                    if (section.dataset.category === selectedCategory) {
+                        section.classList.remove('hidden');
+                    } else {
+                        section.classList.add('hidden');
+                    }
+                });
+            }
+        });
+    });
+});
+</script>
+{{ end }}
