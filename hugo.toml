@@ -1,3 +1,43 @@
 baseURL      = "https://thelogos.dev/"
-languageCode = "en-us"
+languageCode = "ko-kr"
 title        = "The Logos"
+theme        = "PaperMod"
+
+[menu]
+  [[menu.main]]
+    name = "홈"
+    url = "/"
+    weight = 1
+    
+  [[menu.main]]
+    name = "Posts"
+    url = "/posts/"
+    weight = 2
+    hasChildren = true
+    
+  [[menu.main]]
+    parent = "Posts"
+    name = "종교"
+    url = "/categories/religion/"
+    weight = 1
+    
+  [[menu.main]]
+    parent = "Posts"
+    name = "철학"
+    url = "/categories/philosophy/"
+    weight = 2
+    
+  [[menu.main]]
+    parent = "Posts"
+    name = "공학"
+    url = "/categories/engineering/"
+    weight = 3
+    
+  [[menu.main]]
+    name = "About"
+    url = "/about/"
+    weight = 3
+
+[taxonomies]
+  category = "categories"
+  tag = "tags"
