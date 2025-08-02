@@ -53,7 +53,7 @@
                                     <a href="{{ .RelPermalink }}">{{ .Title }}</a>
                                 </h3>
                                 {{ with .Summary }}
-                                <p class="post-summary">{{ . | plainify | truncate 150 }}</p>
+                                <p class="post-summary">{{ . | plainify }}</p>
                                 {{ end }}
                                 <div class="post-footer">
                                     <a href="{{ .RelPermalink }}" class="read-more">읽기 →</a>
@@ -99,7 +99,7 @@
                                     <a href="{{ .RelPermalink }}">{{ .Title }}</a>
                                 </h3>
                                 {{ with .Summary }}
-                                <p class="post-summary">{{ . | plainify | truncate 150 }}</p>
+                                <p class="post-summary">{{ . | plainify }}</p>
                                 {{ end }}
                                 <div class="post-footer">
                                     <a href="{{ .RelPermalink }}" class="read-more">읽기 →</a>
@@ -145,7 +145,7 @@
                                     <a href="{{ .RelPermalink }}">{{ .Title }}</a>
                                 </h3>
                                 {{ with .Summary }}
-                                <p class="post-summary">{{ . | plainify | truncate 150 }}</p>
+                                <p class="post-summary">{{ . | plainify }}</p>
                                 {{ end }}
                                 <div class="post-footer">
                                     <a href="{{ .RelPermalink }}" class="read-more">읽기 →</a>
@@ -166,53 +166,63 @@
                 </div>
             </section>
         </div>
-
-        <!-- 전체 글 목록 (필터링용) -->
-        <div class="all-posts" style="display: none;">
-            {{ range .Pages }}
-            <article class="post-card all-post-card" 
-                     data-categories="{{ range .Params.categories }}{{ . }} {{ end }}">
-                <div class="post-date">
-                    <span class="month">{{ .Date.Format "1월" }}</span>
-                    <span class="day">{{ .Date.Format "2일" }}</span>
-                    <span class="year">{{ .Date.Format "2006" }}</span>
-                </div>
-                <div class="post-content">
-                    <div class="post-category-badges">
-                        {{ range .Params.categories }}
-                        <span class="category-badge category-{{ . }}">
-                            {{ if eq . "religion" }}종교
-                            {{ else if eq . "philosophy" }}철학
-                            {{ else if eq . "engineering" }}공학
-                            {{ else }}{{ . }}{{ end }}
-                        </span>
-                        {{ end }}
-                    </div>
-                    <h3 class="post-title">
-                        <a href="{{ .RelPermalink }}">{{ .Title }}</a>
-                    </h3>
-                    {{ with .Summary }}
-                    <p class="post-summary">{{ . | plainify | truncate 150 }}</p>
-                    {{ end }}
-                    <div class="post-footer">
-                        <a href="{{ .RelPermalink }}" class="read-more">읽기 →</a>
-                        {{ with .Params.tags }}
-                        <div class="post-tags">
-                            {{ range first 3 . }}
-                            <span class="tag">#{{ . }}</span>
-                            {{ end }}
-                        </div>
-                        {{ end }}
-                    </div>
-                </div>
-            </article>
-            {{ end }}
-        </div>
     </div>
 </section>
 
 <style>
-/* 페이지 헤더 */
+/* 전역 설정 */
+* {
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+/* Variables */
+:root {
+    --primary-color: #3b82f6;
+    --primary-dark: #1e40af;
+    --secondary-color: #64748b;
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --text-tertiary: #94a3b8;
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8fafc;
+    --bg-tertiary: #f1f5f9;
+    --border-color: #e2e8f0;
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+}
+
+/* Dark mode variables */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --text-primary: #f1f5f9;
+        --text-secondary: #cbd5e1;
+        --text-tertiary: #64748b;
+        --bg-primary: #0f172a;
+        --bg-secondary: #1e293b;
+        --bg-tertiary: #334155;
+        --border-color: #334155;
+    }
+}
+
+/* Container */
+.container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    overflow-x: hidden;
+}
+
+/* Section */
+.posts-list-section {
+    min-height: calc(100vh - 200px);
+    padding: 60px 0;
+    background-color: var(--bg-primary);
+}
+
+/* Page Header */
 .page-header {
     text-align: center;
     margin-bottom: 60px;
@@ -230,11 +240,11 @@
 
 .page-description {
     font-size: 1.25rem;
-    color: var(--secondary);
+    color: var(--text-secondary);
     margin-bottom: 30px;
 }
 
-/* 카테고리 필터 */
+/* Category Filters */
 .category-filters {
     display: flex;
     justify-content: center;
@@ -248,14 +258,14 @@
     align-items: center;
     gap: 8px;
     padding: 10px 20px;
-    background: var(--entry);
-    border: 2px solid var(--border);
+    background: var(--bg-secondary);
+    border: 2px solid var(--border-color);
     border-radius: 25px;
     font-size: 0.95rem;
     font-weight: 500;
     cursor: pointer;
     transition: all 0.3s ease;
-    color: var(--primary);
+    color: var(--text-primary);
 }
 
 .filter-btn .icon {
@@ -273,7 +283,7 @@
     border-color: #3b82f6;
 }
 
-/* 카테고리 섹션 */
+/* Category Sections */
 .category-section {
     margin-bottom: 80px;
     opacity: 1;
@@ -287,7 +297,7 @@
 .category-header {
     margin-bottom: 40px;
     padding-bottom: 20px;
-    border-bottom: 2px solid var(--border);
+    border-bottom: 2px solid var(--border-color);
 }
 
 .category-title {
@@ -304,27 +314,28 @@
 }
 
 .category-description {
-    color: var(--secondary);
+    color: var(--text-secondary);
     font-size: 1.1rem;
 }
 
-/* 그리드 컨테이너도 조정 */
+/* Posts Grid */
 .posts-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
     gap: 30px;
-    align-items: start;  /* 카드 높이가 다를 때 상단 정렬 */
+    align-items: start;
 }
 
-/* 포스트 카드 수정 */
+/* Post Card */
 .post-card {
-    background: var(--entry);
+    background: var(--bg-secondary);
     border-radius: 12px;
-    overflow: hidden;
+    overflow: visible;
     transition: all 0.3s ease;
-    border: 1px solid var(--border);
+    border: 1px solid var(--border-color);
     display: flex;
-    min-height: 250px;  /* height를 min-height로 변경 */
+    min-height: 200px;
+    height: auto;
 }
 
 .post-card:hover {
@@ -332,9 +343,10 @@
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
 }
 
-/* 날짜 영역도 유연하게 */
+/* Post Date */
 .post-date {
     width: 100px;
+    min-width: 100px;
     background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
     display: flex;
     flex-direction: column;
@@ -343,9 +355,8 @@
     font-weight: 600;
     color: #1e40af;
     flex-shrink: 0;
-    padding: 20px 10px;  /* 패딩 추가 */
+    padding: 20px 10px;
 }
-
 
 .dark .post-date {
     background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
@@ -368,16 +379,106 @@
     opacity: 0.8;
 }
 
-/* 포스트 콘텐츠 영역 */
+/* Post Content */
 .post-content {
     flex: 1;
     padding: 25px;
     display: flex;
     flex-direction: column;
-    overflow: visible;  /* hidden이 있다면 제거 */
+    overflow: visible;
+    min-width: 0;
 }
+
+/* Post Title */
+.post-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+    line-height: 1.4;
+    overflow: visible;
+    text-overflow: initial;
+    white-space: normal;
+    word-wrap: break-word;
+    word-break: keep-all;
+    hyphens: auto;
+}
+
+.post-title a {
+    color: var(--text-primary);
+    text-decoration: none;
+    transition: color 0.2s ease;
+    display: block;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: keep-all;
+}
+
+.post-title a:hover {
+    color: #3b82f6;
+}
+
+/* Post Summary */
+.post-summary {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    flex-grow: 1;
+    margin-bottom: 15px;
+    overflow: visible;
+    text-overflow: initial;
+    display: block;
+    white-space: normal;
+    word-wrap: break-word;
+    word-break: keep-all;
+}
+
+/* Post Footer */
+.post-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.read-more {
+    color: #3b82f6;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.read-more:hover {
+    transform: translateX(5px);
+}
+
+/* Post Tags */
+.post-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.tag {
+    font-size: 0.75rem;
+    color: var(--text-tertiary);
+    white-space: nowrap;
+}
+
+/* No Posts Message */
+.no-posts {
+    text-align: center;
+    color: var(--text-secondary);
+    padding: 40px;
+    font-style: italic;
+}
+
+/* Category Badges */
 .post-category-badges {
     display: flex;
+    flex-wrap: wrap;
     gap: 8px;
     margin-bottom: 12px;
 }
@@ -389,6 +490,7 @@
     font-size: 0.75rem;
     font-weight: 600;
     text-transform: uppercase;
+    white-space: nowrap;
 }
 
 .category-religion {
@@ -421,102 +523,42 @@
     color: #d1fae5;
 }
 
-/* 포스트 제목 수정 */
-.post-title {
-    font-size: 1.25rem;
-    font-weight: 700;
-    margin-bottom: 12px;
-    line-height: 1.4;
-    /* 아래 속성들 제거 또는 수정 */
-    overflow: visible;  /* hidden 제거 */
-    text-overflow: clip;  /* ellipsis 제거 */
-    display: block;  /* -webkit-box 제거 */
-    /* -webkit-line-clamp 제거 */
-    /* -webkit-box-orient 제거 */
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .posts-grid {
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    }
 }
 
-.post-title a {
-    color: var(--primary);
-    text-decoration: none;
-    transition: color 0.2s ease;
-    display: block;  /* 블록 레벨로 변경 */
-    word-wrap: break-word;  /* 긴 단어 줄바꿈 */
-    word-break: keep-all;  /* 한글 단어 단위로 줄바꿈 */
-}
-
-
-.post-title a:hover {
-    color: #3b82f6;
-}
-
-/* 포스트 요약 수정 */
-.post-summary {
-    color: var(--secondary);
-    font-size: 0.95rem;
-    line-height: 1.6;
-    flex-grow: 1;
-    margin-bottom: 15px;
-    overflow: visible;  /* hidden 제거 */
-    display: block;  /* -webkit-box 제거 */
-    /* -webkit-line-clamp 제거 */
-    /* -webkit-box-orient 제거 */
-}
-
-.post-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.read-more {
-    color: #3b82f6;
-    font-weight: 500;
-    text-decoration: none;
-    transition: all 0.2s ease;
-}
-
-.read-more:hover {
-    transform: translateX(5px);
-}
-
-.post-tags {
-    display: flex;
-    gap: 8px;
-}
-
-.tag {
-    font-size: 0.75rem;
-    color: var(--secondary);
-}
-
-.no-posts {
-    text-align: center;
-    color: var(--secondary);
-    padding: 40px;
-    font-style: italic;
-}
-
-/* 반응형 수정 */
 @media (max-width: 768px) {
     .page-title {
         font-size: 2rem;
     }
     
+    .page-description {
+        font-size: 1rem;
+    }
+    
     .posts-grid {
         grid-template-columns: 1fr;
+        gap: 20px;
     }
     
     .post-card {
         flex-direction: column;
-        height: auto;
-        min-height: auto;  /* 모바일에서는 최소 높이 제거 */
+        min-height: auto;
     }
     
     .post-date {
         width: 100%;
+        min-width: auto;
         flex-direction: row;
         padding: 15px;
         gap: 15px;
+    }
+    
+    .post-content {
+        padding: 20px;
     }
     
     .filter-btn {
@@ -524,10 +566,53 @@
         font-size: 0.875rem;
     }
     
-    /* 모바일에서 제목이 잘리지 않도록 */
     .post-title {
         font-size: 1.125rem;
     }
+    
+    .category-title {
+        font-size: 1.5rem;
+    }
+    
+    .category-icon {
+        font-size: 2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .posts-grid {
+        padding: 0 10px;
+    }
+    
+    .post-card {
+        margin: 0 -10px;
+        border-radius: 0;
+        border-left: none;
+        border-right: none;
+    }
+    
+    .post-content {
+        padding: 15px;
+    }
+    
+    .page-title {
+        font-size: 1.75rem;
+    }
+    
+    .filter-btn {
+        padding: 6px 12px;
+        font-size: 0.813rem;
+    }
+    
+    .filter-btn .icon {
+        font-size: 1rem;
+    }
+}
+
+/* All text elements protection */
+p, h1, h2, h3, h4, h5, h6, a, span {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 </style>
 
@@ -535,8 +620,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     const filterBtns = document.querySelectorAll('.filter-btn');
     const categorySections = document.querySelectorAll('.category-section');
-    const allPostsContainer = document.querySelector('.all-posts');
-    const categoryContainer = document.querySelector('.posts-by-category');
     
     filterBtns.forEach(btn => {
         btn.addEventListener('click', function() {
@@ -547,9 +630,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const selectedCategory = this.dataset.category;
             
             if (selectedCategory === 'all') {
-                // 전체 보기: 카테고리별 섹션 표시
-                categoryContainer.style.display = 'block';
-                allPostsContainer.style.display = 'none';
+                // 전체 보기: 모든 카테고리 섹션 표시
                 categorySections.forEach(section => {
                     section.classList.remove('hidden');
                 });
