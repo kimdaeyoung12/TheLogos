@@ -308,14 +308,15 @@
     font-size: 1.1rem;
 }
 
-/* 포스트 그리드 */
+/* 그리드 컨테이너도 조정 */
 .posts-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
     gap: 30px;
+    align-items: start;  /* 카드 높이가 다를 때 상단 정렬 */
 }
 
-/* 포스트 카드 */
+/* 포스트 카드 수정 */
 .post-card {
     background: var(--entry);
     border-radius: 12px;
@@ -323,7 +324,7 @@
     transition: all 0.3s ease;
     border: 1px solid var(--border);
     display: flex;
-    height: 250px;
+    min-height: 250px;  /* height를 min-height로 변경 */
 }
 
 .post-card:hover {
@@ -331,6 +332,7 @@
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
 }
 
+/* 날짜 영역도 유연하게 */
 .post-date {
     width: 100px;
     background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
@@ -341,7 +343,9 @@
     font-weight: 600;
     color: #1e40af;
     flex-shrink: 0;
+    padding: 20px 10px;  /* 패딩 추가 */
 }
+
 
 .dark .post-date {
     background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
@@ -364,13 +368,14 @@
     opacity: 0.8;
 }
 
+/* 포스트 콘텐츠 영역 */
 .post-content {
     flex: 1;
     padding: 25px;
     display: flex;
     flex-direction: column;
+    overflow: visible;  /* hidden이 있다면 제거 */
 }
-
 .post-category-badges {
     display: flex;
     gap: 8px;
@@ -416,29 +421,45 @@
     color: #d1fae5;
 }
 
+/* 포스트 제목 수정 */
 .post-title {
     font-size: 1.25rem;
     font-weight: 700;
     margin-bottom: 12px;
     line-height: 1.4;
+    /* 아래 속성들 제거 또는 수정 */
+    overflow: visible;  /* hidden 제거 */
+    text-overflow: clip;  /* ellipsis 제거 */
+    display: block;  /* -webkit-box 제거 */
+    /* -webkit-line-clamp 제거 */
+    /* -webkit-box-orient 제거 */
 }
 
 .post-title a {
     color: var(--primary);
     text-decoration: none;
     transition: color 0.2s ease;
+    display: block;  /* 블록 레벨로 변경 */
+    word-wrap: break-word;  /* 긴 단어 줄바꿈 */
+    word-break: keep-all;  /* 한글 단어 단위로 줄바꿈 */
 }
+
 
 .post-title a:hover {
     color: #3b82f6;
 }
 
+/* 포스트 요약 수정 */
 .post-summary {
     color: var(--secondary);
     font-size: 0.95rem;
     line-height: 1.6;
     flex-grow: 1;
     margin-bottom: 15px;
+    overflow: visible;  /* hidden 제거 */
+    display: block;  /* -webkit-box 제거 */
+    /* -webkit-line-clamp 제거 */
+    /* -webkit-box-orient 제거 */
 }
 
 .post-footer {
@@ -475,7 +496,7 @@
     font-style: italic;
 }
 
-/* 반응형 */
+/* 반응형 수정 */
 @media (max-width: 768px) {
     .page-title {
         font-size: 2rem;
@@ -488,6 +509,7 @@
     .post-card {
         flex-direction: column;
         height: auto;
+        min-height: auto;  /* 모바일에서는 최소 높이 제거 */
     }
     
     .post-date {
@@ -500,6 +522,11 @@
     .filter-btn {
         padding: 8px 16px;
         font-size: 0.875rem;
+    }
+    
+    /* 모바일에서 제목이 잘리지 않도록 */
+    .post-title {
+        font-size: 1.125rem;
     }
 }
 </style>
