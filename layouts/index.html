@@ -39,14 +39,20 @@
         </header>
         
         <div class="posts-grid">
-            {{ range first 3 (where .Site.RegularPages "Type" "posts") }}
+            {{ range first 6 (where .Site.RegularPages "Type" "posts") }}
             <article class="post-card">
                 <div class="post-card-inner">
-                    {{ if .Params.featured_image }}
-                    <div class="post-thumbnail">
-                        <img src="{{ .Params.featured_image }}" alt="{{ .Title }}" loading="lazy">
+                    <!-- 카테고리 배지 추가 -->
+                    <div class="post-categories">
+                        {{ range .Params.categories }}
+                        <span class="category-badge category-{{ . }}">
+                            {{ if eq . "religion" }}🕊️ 종교
+                            {{ else if eq . "philosophy" }}🤔 철학
+                            {{ else if eq . "engineering" }}⚙️ 공학
+                            {{ else }}{{ . }}{{ end }}
+                        </span>
+                        {{ end }}
                     </div>
-                    {{ end }}
                     
                     <div class="post-content">
                         <header class="post-header">
