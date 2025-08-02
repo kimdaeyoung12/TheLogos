@@ -325,18 +325,53 @@
     gap: 30px;
     align-items: start;
 }
-/* Post Card - 카테고리 표시 부분 수정 */
+/* 대안: 카테고리를 카드 상단에 큰 배너로 표시 */
 .post-card {
     background: var(--bg-secondary);
     border-radius: 12px;
-    overflow: visible;
+    overflow: hidden;
     transition: all 0.3s ease;
     border: 1px solid var(--border-color);
     display: flex;
-    flex-direction: column; /* 세로 방향으로 변경 */
-    min-height: 250px;
+    flex-direction: column;
+    min-height: 280px;
     height: auto;
-    position: relative; /* 카테고리 배지 위치를 위해 추가 */
+}
+
+.post-category-header {
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+    font-size: 1rem;
+    color: #1e40af;
+}
+
+    
+.post-card[data-category="religion"] .post-category-header {
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    color: #1e40af;
+}
+
+.post-card[data-category="philosophy"] .post-category-header {
+    background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%);
+    color: #be185d;
+}
+
+.post-card[data-category="engineering"] .post-category-header {
+    background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+    color: #065f46;
+}
+
+.post-category-icon {
+    font-size: 1.5rem;
+}
+
+.post-card-body {
+    display: flex;
+    flex: 1;
 }
 
 .post-card:hover {
