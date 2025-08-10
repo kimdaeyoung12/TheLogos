@@ -16,8 +16,8 @@ collections:
     fields:
       - {label: "제목", name: "title", widget: "string"}
       - {label: "게시일", name: "date", widget: "datetime"}
-      - {label: "카테고리", name: "categories", widget: "select", 
-         options: ["religion", "philosophy", "engineering"],
+      - {label: "카테고리", name: "categories", widget: "select",
+         options: ["religion", "philosophy", "engineering", "writing"],
          multiple: true}
       - {label: "태그", name: "tags", widget: "list"}
       - {label: "설명", name: "description", widget: "text"}
