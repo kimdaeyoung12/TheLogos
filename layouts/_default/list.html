@@ -3,7 +3,7 @@
     <div class="container">
         <header class="page-header">
             <h1 class="page-title">Posts</h1>
-            <p class="page-description">종교, 철학, 공학에 대한 생각과 통찰을 나눕니다</p>
+            <p class="page-description">종교, 철학, 공학, 글쓰기에 대한 생각과 통찰을 나눕니다</p>
             
             <!-- 카테고리 필터 버튼 -->
             <div class="category-filters">
@@ -22,6 +22,10 @@
                 <button class="filter-btn" data-category="engineering">
                     <span class="icon">⚙️</span>
                     <span>공학</span>
+                </button>
+                <button class="filter-btn" data-category="writing">
+                    <span class="icon">✍️</span>
+                    <span>글쓰기</span>
                 </button>
             </div>
         </header>
@@ -183,6 +187,58 @@
                         {{ end }}
                     {{ else }}
                         <p class="no-posts">아직 공학 카테고리의 글이 없습니다.</p>
+                    {{ end }}
+                </div>
+            </section>
+
+            <!-- 글쓰기 섹션 -->
+            <section class="category-section" data-category="writing">
+                <div class="category-header">
+                    <h2 class="category-title">
+                        <span class="category-icon">✍️</span>
+                        글쓰기 (Writing)
+                    </h2>
+                    <p class="category-description">개인적인 생각과 글을 모았습니다</p>
+                </div>
+
+                <div class="posts-grid">
+                    {{ $writingPosts := where .Site.RegularPages "Params.categories" "intersect" (slice "writing") }}
+                    {{ if $writingPosts }}
+                        {{ range $writingPosts }}
+                        <article class="post-card" data-category="writing">
+                            <div class="post-category-header">
+                                <span class="category-icon">✍️</span>
+                                <span class="category-name">글쓰기</span>
+                            </div>
+                            <div class="post-card-body">
+                                <div class="post-date">
+                                    <span class="month">{{ .Date.Format "1월" }}</span>
+                                    <span class="day">{{ .Date.Format "2일" }}</span>
+                                    <span class="year">{{ .Date.Format "2006" }}</span>
+                                </div>
+                                <div class="post-content">
+                                    <h3 class="post-title">
+                                        <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+                                    </h3>
+                                    {{ with .Summary }}
+                                    <p class="post-summary">{{ . | plainify }}</p>
+                                    {{ end }}
+                                    <div class="post-footer">
+                                        <a href="{{ .RelPermalink }}" class="read-more">읽기 →</a>
+                                        {{ with .Params.tags }}
+                                        <div class="post-tags">
+                                            {{ range first 3 . }}
+                                            <span class="tag">#{{ . }}</span>
+                                            {{ end }}
+                                        </div>
+                                        {{ end }}
+                                    </div>
+                                </div>
+                            </div>
+                        </article>
+                        {{ end }}
+                    {{ else }}
+                        <p class="no-posts">아직 글쓰기 카테고리의 글이 없습니다.</p>
                     {{ end }}
                 </div>
             </section>
@@ -393,6 +449,11 @@
     color: #065f46;
 }
 
+.post-card[data-category="writing"] .post-category-header {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    color: #92400e;
+}
+
 .dark .post-card[data-category="religion"] .post-category-header {
     background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
     color: #dbeafe;
@@ -406,6 +467,11 @@
 .dark .post-card[data-category="engineering"] .post-category-header {
     background: linear-gradient(135deg, #064e3b 0%, #065f46 100%);
     color: #d1fae5;
+}
+
+.dark .post-card[data-category="writing"] .post-category-header {
+    background: linear-gradient(135deg, #78350f 0%, #92400e 100%);
+    color: #fef3c7;
 }
 
 .post-category-header .category-icon {
