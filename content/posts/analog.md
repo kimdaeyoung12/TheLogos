@@ -1,6 +1,6 @@
 +++
 title = "analog"
-date = 2025-08-11T00:00:00+09:00
+date = 2022-12-06T00:00:00+09:00
 draft = false
 categories = ["writing"]
 tags = ["글쓰기", "아날로그", "시작"]
