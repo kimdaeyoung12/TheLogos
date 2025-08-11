@@ -1,6 +1,6 @@
 +++
 title = "jeju"
-date = 2025-08-10T00:00:00+09:00
+date = 2025-08-11T00:00:00+09:00
 draft = false
 categories = ["writing"]
 tags = ["제주도", "마하나임" , "임원"]
