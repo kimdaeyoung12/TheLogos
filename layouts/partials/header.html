@@ -40,7 +40,7 @@
         <div class="logo">
             {{- $label_text := (site.Params.label.text | default site.Title) }}
             {{- if site.Title }}
-            <a href="{{ "" | absLangURL }}" accesskey="h" title="{{ $label_text }} (Alt + H)">
+            <a href="{{ "" | absLangURL }}" accesskey="h" title="{{ $label_text }} (Alt + H)" class="logo-link">
                 {{- if site.Params.label.icon }}
                 {{- $img := resources.Get site.Params.label.icon }}
                 {{- if $img }}
@@ -101,7 +101,7 @@
             {{- if .HasChildren }}
             <li class="menu-item-has-children">
                 <a href="{{ .URL | absLangURL }}" title="{{ .Title | default .Name }} {{- cond $is_search (" (Alt + /)" | safeHTMLAttr) ("" | safeHTMLAttr ) }}"
-                {{- cond $is_search (" accesskey=/" | safeHTMLAttr) ("" | safeHTMLAttr ) }}>
+                {{- cond $is_search (" accesskey=/" | safeHTMLAttr) ("" | safeHTMLAttr ) }} class="menu-link">
                     <span {{- if eq $menu_item_url $page_url }} class="active" {{- end }}>
                         {{ .Pre }}{{ .Name }}{{ .Post }}
                         <svg class="menu-dropdown-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -112,7 +112,7 @@
                 <ul class="sub-menu">
                     {{- range .Children }}
                     <li>
-                        <a href="{{ .URL | absLangURL }}" title="{{ .Title | default .Name }}">
+                        <a href="{{ .URL | absLangURL }}" title="{{ .Title | default .Name }}" class="sub-menu-link">
                             {{ .Pre }}{{ .Name }}{{ .Post }}
                         </a>
                     </li>
@@ -122,7 +122,7 @@
             {{- else }}
             <li>
                 <a href="{{ .URL | absLangURL }}" title="{{ .Title | default .Name }} {{- cond $is_search (" (Alt + /)" | safeHTMLAttr) ("" | safeHTMLAttr ) }}"
-                {{- cond $is_search (" accesskey=/" | safeHTMLAttr) ("" | safeHTMLAttr ) }}>
+                {{- cond $is_search (" accesskey=/" | safeHTMLAttr) ("" | safeHTMLAttr ) }} class="menu-link">
                     <span {{- if eq $menu_item_url $page_url }} class="active" {{- end }}>
                         {{ .Pre }}{{ .Name }}{{ .Post }}
                     </span>
@@ -135,6 +135,33 @@
 </header>
 
 <style>
+/* 헤더 기본 스타일 */
+.header {
+    background: var(--theme);
+    border-bottom: 1px solid var(--border);
+}
+
+/* 로고와 네비게이션 링크 색상 */
+.logo-link,
+.menu-link,
+.sub-menu-link {
+    color: var(--primary) !important;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.logo-link:hover,
+.menu-link:hover,
+.sub-menu-link:hover {
+    color: var(--secondary) !important;
+}
+
+/* 활성화된 메뉴 스타일 */
+.menu-link .active {
+    font-weight: 600;
+    border-bottom: 2px solid var(--primary);
+}
+
 /* 드롭다운 메뉴 스타일 */
 .menu-item-has-children {
     position: relative;
@@ -184,7 +211,7 @@
 .sub-menu a {
     display: block;
     padding: 10px 16px;
-    color: var(--primary);
+    color: var(--primary) !important;
     text-decoration: none;
     transition: all 0.2s ease;
     font-size: 14px;
@@ -192,7 +219,7 @@
 
 .sub-menu a:hover {
     background: var(--border);
-    color: var(--primary);
+    color: var(--primary) !important;
 }
 
 .sub-menu li:first-child a {
@@ -204,6 +231,11 @@
 }
 
 /* 다크 모드 스타일 */
+.dark .header {
+    background: var(--theme);
+    border-color: var(--border);
+}
+
 .dark .sub-menu {
     background: var(--entry);
     border-color: var(--border);
@@ -244,25 +276,6 @@
 
 <script>
 // 모바일에서 드롭다운 토글
-document.addEventListener('DOMContentLoaded', function() {
-    const menuItems = document.querySelectorAll('.menu-item-has-children');
-    
-    menuItems.forEach(item => {
-        const link = item.querySelector('a');
-        
-        // 모바일에서만 클릭 이벤트로 토글
-        if (window.innerWidth <= 768) {
-            link.addEventListener('click', function(e) {
-                if (item.querySelector('.sub-menu')) {
-                    e.preventDefault();
-                    item.classList.toggle('active');
-                }
-            });
-        }
-    });
-});
-</script>
-<script>
 document.addEventListener('DOMContentLoaded', function() {
     const menuItems = document.querySelectorAll('.menu-item-has-children');
     const isMobile = window.innerWidth <= 768;
