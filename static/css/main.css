@@ -4,29 +4,34 @@ body {
     padding: 0;
     line-height: 1.6;
 }
-/* 
-header {
-    background: #333;
-    color: #fff;
-    padding: 1em;
-}
-*/
+
+/* 헤더 관련 스타일 제거 (custom.css에서 처리) */
 header h1 {
     margin: 0;
 }
+
+/* nav 링크 스타일 - 테마 변수 사용 */
 nav a {
-    color: #fff;
+    color: var(--primary);  /* 흰색 대신 테마 변수 사용 */
     margin-right: 1em;
     text-decoration: none;
+    transition: color 0.2s ease;
 }
+
+nav a:hover {
+    color: var(--secondary);
+}
+
 main {
     padding: 1em;
 }
-/* 
+
+/* footer 배경색 - 테마 변수 사용 */
 footer {
-    background: #f4f4f4;
+    background: var(--theme);  /* 흰색 대신 테마 변수 사용 */
     text-align: center;
     padding: 1em;
     margin-top: 2em;
+    border-top: 1px solid var(--border);
+    color: var(--secondary);
 }
-*/
