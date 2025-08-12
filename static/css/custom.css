@@ -19,21 +19,50 @@
     transform: rotate(45deg);
 }
 
-/* 카테고리별 색상 */
-.sub-menu a[href*="religion"]:hover {
-    background: rgba(59, 130, 246, 0.1);
-    color: #3b82f6;
+/* 표 가독성 강화: 테두리/헤더/호버 */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+  border: 1.5px solid var(--border); /* 전체 테두리 진하게 */
+  border-radius: 6px;
+  overflow: hidden; /* radius 유지 */
 }
 
-.sub-menu a[href*="philosophy"]:hover {
-    background: rgba(236, 72, 153, 0.1);
-    color: #ec4899;
+th, td {
+  border: 1px solid var(--border);
+  padding: 0.6rem 0.75rem;
+  text-align: left;
 }
 
-.sub-menu a[href*="engineering"]:hover {
-    background: rgba(34, 197, 94, 0.1);
-    color: #22c55e;
+th {
+  background: rgba(var(--theme-rgb), 0.08);
+  color: var(--text);
+  font-weight: 600;
+  border-bottom: 1.5px solid var(--border); /* 헤더 경계 강조 */
 }
+
+tr:nth-child(even) {
+  background: rgba(var(--theme-rgb), 0.05);
+}
+
+tbody tr:hover {
+  background: rgba(var(--theme-rgb), 0.12); /* 호버 시 행 강조 */
+}
+
+/* 표가 좁은 사이드 영역에서도 넘침 방지용 스크롤 래퍼 */
+.table-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+/* 사이드(좁은 영역)에서 셀 간격 좀 더 촘촘하게 */
+@media (max-width: 1024px) {
+  th, td {
+    padding: 0.5rem 0.6rem;
+  }
+}
+
 
 .sub-menu a[href*="writing"]:hover {
     background: rgba(250, 204, 21, 0.1);
