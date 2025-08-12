@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <title>{{ .Site.Title }}</title>
     <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="{{ "css/main.css" | relURL }}">
+    <link rel="stylesheet" href="{{ "css/posts.css" | relURL }}">
+    <link rel="stylesheet" href="{{ "css/custom.css" | relURL }}"> <!-- 이 줄 추가 (맨 마지막) -->
 </head>
 <body>
     <header>
