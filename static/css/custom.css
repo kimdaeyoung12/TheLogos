@@ -39,3 +39,18 @@
     background: rgba(250, 204, 21, 0.1);
     color: #facc15;
 }
+
+/* 표 가독성 향상 */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+}
+th, td {
+    border: 1px solid var(--border);
+    padding: 0.5rem;
+    text-align: left;
+}
+tr:nth-child(even) {
+    background: rgba(var(--theme-rgb), 0.05);
+}
