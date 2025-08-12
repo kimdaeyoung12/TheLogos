@@ -5,7 +5,8 @@ body {
     line-height: 1.6;
 }
 header {
-    color: #fff;
+    background: transparent;  /* 투명 배경 */
+    color: #1e293b;
     padding: 1em;
 }
 header h1 {
