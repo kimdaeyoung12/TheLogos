@@ -147,36 +147,6 @@
         --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.3);
         --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.4);
     }
-    
-    /* 다크모드에서 최근 글 섹션 */
-    .recent-posts-section {
-        background: #0f172a;
-    }
-    
-    /* 다크모드에서 포스트 카드 */
-    .post-card {
-        background: #1e293b;
-        border-color: #334155;
-    }
-    
-    .post-card:hover {
-        border-color: #60a5fa;
-    }
-    
-    /* 다크모드에서 제목 */
-    .post-title a {
-        color: #f1f5f9;
-    }
-    
-    .post-title a:hover {
-        color: #60a5fa;
-    }
-    
-    /* 다크모드에서 태그 */
-    .tag {
-        background: #334155;
-        color: #94a3b8;
-    }
 }
 
 /* Reset and Base Styles */
@@ -205,7 +175,7 @@ body {
     min-height: 70vh;
     display: flex;
     align-items: center;
-    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     position: relative;
     overflow: hidden;
 }
@@ -213,17 +183,11 @@ body {
 .hero-section::before {
     content: '';
     position: absolute;
-    top: -50%;
-    right: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle, rgba(59, 130, 246, 0.05) 0%, transparent 70%);
-    animation: float 20s ease-in-out infinite;
-}
-
-@keyframes float {
-    0%, 100% { transform: translate(0, 0) rotate(0deg); }
-    50% { transform: translate(-30px, -30px) rotate(180deg); }
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat;
 }
 
 .hero-container {
@@ -239,7 +203,7 @@ body {
     max-width: 700px;
     margin: 0 auto;
     text-align: center;
-    color: #1e293b;
+    color: white;
 }
 
 .hero-title {
@@ -254,16 +218,12 @@ body {
     font-size: clamp(3rem, 8vw, 5rem);
     font-weight: 800;
     letter-spacing: -0.02em;
-    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    text-shadow: 2px 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .title-divider {
     font-size: 2rem;
-    color: #3b82f6;
-    opacity: 0.6;
+    opacity: 0.7;
 }
 
 .hero-subtitle {
@@ -271,14 +231,14 @@ body {
     font-weight: 300;
     letter-spacing: 0.1em;
     margin-bottom: 30px;
-    color: #64748b;
+    opacity: 0.95;
 }
 
 .hero-description {
     margin-bottom: 40px;
     font-size: 1.125rem;
     line-height: 1.8;
-    color: #475569;
+    opacity: 0.9;
 }
 
 .hero-description p {
@@ -308,32 +268,33 @@ body {
 }
 
 .button-primary {
-    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-    color: white;
-    box-shadow: 0 4px 14px 0 rgba(59, 130, 246, 0.3);
+    background: white;
+    color: #764ba2;
+    box-shadow: 0 4px 14px 0 rgba(0, 0, 0, 0.15);
 }
 
 .button-primary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px 0 rgba(59, 130, 246, 0.4);
+    box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.2);
 }
 
 .button-secondary {
-    background: white;
-    color: #3b82f6;
-    border: 2px solid #e0f2fe;
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(10px);
 }
 
 .button-secondary:hover {
-    background: #f0f9ff;
+    background: rgba(255, 255, 255, 0.25);
     transform: translateY(-2px);
-    border-color: #3b82f6;
+    border-color: rgba(255, 255, 255, 0.5);
 }
 
 /* Recent Posts Section - 개선된 스타일 */
 .recent-posts-section {
     padding: 80px 0;
-    background: #ffffff; /* 흰색 배경으로 변경 */
+    background: var(--bg-secondary); /* 밝은 회색 배경 유지 */
 }
 
 .section-header {
@@ -357,7 +318,7 @@ body {
     left: 0;
     width: 60px;
     height: 4px;
-    background: linear-gradient(90deg, #3b82f6 0%, #2563eb 100%);
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
     border-radius: 2px;
 }
 
@@ -388,12 +349,12 @@ body {
 
 /* Post Card - 카드 스타일 개선 */
 .post-card {
-    background: #ffffff; /* 흰색 배경 */
+    background: var(--bg-card); /* 흰색 배경 */
     border-radius: 16px;
     overflow: hidden;
     transition: all var(--transition-slow);
-    border: 1px solid #e5e7eb; /* 연한 회색 테두리 */
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08); /* 더 연한 그림자 */
+    border: 1px solid var(--border-light);
+    box-shadow: var(--shadow-sm);
     position: relative;
 }
 
@@ -404,15 +365,15 @@ body {
     left: 0;
     right: 0;
     height: 3px;
-    background: linear-gradient(90deg, #3b82f6 0%, #2563eb 100%);
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
     opacity: 0;
     transition: opacity var(--transition-base);
 }
 
 .post-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12); /* 호버 시 더 선명한 그림자 */
-    border-color: #3b82f6; /* 파란색 테두리 */
+    box-shadow: var(--shadow-lg);
+    border-color: transparent;
 }
 
 .post-card:hover::before {
@@ -446,27 +407,27 @@ body {
 }
 
 .category-religion {
-    background: linear-gradient(135deg, #dbeafe20, #bfdbfe20);
-    color: #3b82f6;
-    border: 1px solid #3b82f630;
+    background: linear-gradient(135deg, #667eea20, #764ba220);
+    color: #667eea;
+    border: 1px solid #667eea30;
 }
 
 .category-philosophy {
-    background: linear-gradient(135deg, #fce7f320, #fbcfe820);
-    color: #ec4899;
-    border: 1px solid #ec489930;
+    background: linear-gradient(135deg, #f093fb20, #f5576c20);
+    color: #f5576c;
+    border: 1px solid #f5576c30;
 }
 
 .category-engineering {
-    background: linear-gradient(135deg, #d1fae520, #a7f3d020);
-    color: #10b981;
-    border: 1px solid #10b98130;
+    background: linear-gradient(135deg, #4facfe20, #00f2fe20);
+    color: #4facfe;
+    border: 1px solid #4facfe30;
 }
 
 .category-writing {
-    background: linear-gradient(135deg, #fef3c720, #fde68a20);
-    color: #f59e0b;
-    border: 1px solid #f59e0b30;
+    background: linear-gradient(135deg, #43e97b20, #38f9d720);
+    color: #43e97b;
+    border: 1px solid #43e97b30;
 }
 
 /* Post Content */
@@ -489,13 +450,13 @@ body {
 }
 
 .post-title a {
-    color: #1e293b; /* 진한 검정색으로 가독성 향상 */
+    color: var(--text-primary);
     text-decoration: none;
     transition: color var(--transition-base);
 }
 
 .post-title a:hover {
-    color: #3b82f6; /* 호버 시 파란색 */
+    color: #667eea;
 }
 
 .post-date {
@@ -527,9 +488,9 @@ body {
 
 .tag {
     font-size: 0.75rem;
-    color: #6b7280; /* 중간 회색 텍스트 */
+    color: var(--text-tertiary);
     padding: 2px 8px;
-    background: #f3f4f6; /* 매우 연한 회색 배경 */
+    background: var(--bg-hover);
     border-radius: 4px;
 }
 
@@ -537,7 +498,7 @@ body {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    color: #3b82f6;
+    color: #667eea;
     font-weight: 600;
     text-decoration: none;
     font-size: 0.875rem;
