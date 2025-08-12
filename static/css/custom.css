@@ -127,3 +127,26 @@ body:not(.dark) .header nav a:visited {
     color: rgb(30, 30, 30) !important;
     text-decoration: none !important;
 }
+/* 헤더 통일 색상 */
+header {
+  color: var(--header-fg);
+}
+
+/* 링크는 밑줄 제거 + 헤더 색을 그대로 상속 */
+header nav a,
+header nav a:visited,
+header nav a:focus,
+header nav a:active {
+  color: inherit !important;
+  text-decoration: none !important;
+  font-weight: 500;
+}
+header nav a:hover { opacity: .8; }
+
+/* 라이트/다크 각각 원하는 색으로 */
+@media (prefers-color-scheme: light) {
+  :root { --header-fg: #0f172a; }  /* 진한 남회색 */
+}
+@media (prefers-color-scheme: dark) {
+  :root { --header-fg: #e6edf3; }  /* 밝은 회색(가독성 좋음) */
+}
