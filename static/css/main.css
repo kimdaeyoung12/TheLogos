@@ -10,17 +10,8 @@ header h1 {
     margin: 0;
 }
 
-/* nav 링크 스타일 - 테마 변수 사용 */
-nav a {
-    color: var(--primary);  /* 흰색 대신 테마 변수 사용 */
-    margin-right: 1em;
-    text-decoration: none;
-    transition: color 0.2s ease;
-}
-
-nav a:hover {
-    color: var(--secondary);
-}
+/* nav 링크 스타일 제거 - custom.css에서 처리 */
+/* nav 스타일은 custom.css의 헤더 섹션에서 관리됩니다 */
 
 main {
     padding: 1em;
