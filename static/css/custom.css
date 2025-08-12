@@ -36,55 +36,22 @@ nav a:any-link {
     opacity: 0.8;
 }
 
-/* 네비게이션 링크 - 모든 nav a 태그에 적용 */
+/* 헤더/내비 링크를 일반 텍스트처럼 보이게 */
 header nav a,
-.header nav a,
-nav a {
-    color: var(--primary) !important;
-    margin-right: 1em;
-    text-decoration: none !important;
-    font-weight: 500;
-    font-size: 16px;
-    transition: all 0.2s ease;
-    border: none !important;
-    outline: none !important;
-    box-shadow: none !important;
-    background: transparent !important;
-    text-shadow: none !important;
-    -webkit-text-decoration: none !important;
-    text-underline-offset: 0 !important;
-    text-decoration-line: none !important;
-    text-decoration-style: initial !important;
-    text-decoration-color: initial !important;
-}
-
-header nav a:hover,
-.header nav a:hover,
-nav a:hover {
-    color: var(--secondary) !important;
-    text-decoration: none !important;
-    opacity: 0.8;
-    background: transparent !important;
-}
-
 header nav a:visited,
-.header nav a:visited,
-nav a:visited {
-    color: var(--primary) !important;
-    text-decoration: none !important;
+header nav a:focus,
+header nav a:active {
+  color: inherit !important;
+  text-decoration: none !important;
+  font-weight: 500;
 }
 
-header nav a:active,
-header nav a:focus,
-.header nav a:active,
-.header nav a:focus,
-nav a:active,
-nav a:focus {
-    color: var(--primary) !important;
-    text-decoration: none !important;
-    outline: none !important;
-    background: transparent !important;
+/* 호버 시만 살짝 반응 */
+header nav a:hover {
+  opacity: .75;
+  text-decoration: none !important;
 }
+
 
 /* 메뉴 링크 */
 #menu a {
