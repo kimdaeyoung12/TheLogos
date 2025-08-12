@@ -24,13 +24,31 @@
 nav a {
     color: var(--primary) !important;
     margin-right: 1em;
-    text-decoration: none;
-    transition: color 0.2s ease;
+    text-decoration: none !important;
+    font-weight: 500;
+    font-size: 16px;
+    transition: all 0.2s ease;
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
 }
 
 nav a:hover {
     color: var(--secondary) !important;
+    text-decoration: none !important;
     opacity: 0.8;
+}
+
+nav a:visited {
+    color: var(--primary) !important;
+    text-decoration: none !important;
+}
+
+nav a:active,
+nav a:focus {
+    color: var(--primary) !important;
+    text-decoration: none !important;
+    outline: none !important;
 }
 
 /* 메뉴 링크 */
@@ -81,8 +99,15 @@ nav a:hover {
 /* 라이트모드 명시적 스타일 */
 body:not(.dark) nav a {
     color: rgb(30, 30, 30) !important;
+    text-decoration: none !important;
 }
 
 body:not(.dark) nav a:hover {
     color: rgb(108, 108, 108) !important;
+    text-decoration: none !important;
+}
+
+body:not(.dark) nav a:visited {
+    color: rgb(30, 30, 30) !important;
+    text-decoration: none !important;
 }
