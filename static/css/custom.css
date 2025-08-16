@@ -186,3 +186,40 @@ header nav a:hover {
     --header-link-hover:#ffffff;  /* 호버 시 흰색 */
   }
 }
+/* Dark mode header text improvements */
+.dark .header .logo,
+.dark .header .logo a {
+    color: #f1f5f9 !important; /* 밝은 회색 */
+}
+
+.dark .header #menu a,
+.dark .header .menu a {
+    color: #e2e8f0 !important; /* 약간 더 밝은 회색 */
+}
+
+.dark .header #menu a:hover,
+.dark .header .menu a:hover {
+    color: #60a5fa !important; /* 호버 시 밝은 파란색 */
+}
+
+/* 헤더 배경이 너무 어두운 경우 약간 밝게 조정 */
+.dark .header {
+    background-color: #1e293b !important; /* 기존보다 약간 밝은 배경 */
+}
+
+/* 로고 텍스트 강조 */
+.dark .logo {
+    font-weight: 600;
+}
+
+/* 메뉴 아이템 가독성 향상 */
+.dark #menu li a {
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+/* 활성 메뉴 아이템 강조 */
+.dark #menu .active {
+    color: #3b82f6 !important;
+    border-bottom-color: #3b82f6 !important;
+}
