@@ -154,3 +154,33 @@ body:not(.dark) .entry-hint {
     background-color: rgba(248, 113, 113, 0.1);
     color: #f87171 !important;
 }
+
+/* 네비게이션 바 배경 그라데이션 (선택사항) */
+.dark .header {
+    background: linear-gradient(to right, #1e293b, #334155);
+}
+
+body:not(.dark) .header {
+    background: linear-gradient(to right, #f8fafc, #f1f5f9);
+}
+
+/* 네비게이션 링크 애니메이션 (선택사항) */
+#menu a {
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+#menu a::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: currentColor;
+    transition: width 0.3s ease;
+}
+
+#menu a:hover::after {
+    width: 100%;
+}
