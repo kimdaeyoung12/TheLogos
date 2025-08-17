@@ -1,190 +1,338 @@
-/* static/css/custom.css - 영역별 배경색 대비 최적화 */
+/* static/css/custom.css - 전체 페이지 통합 디자인 */
 
 /* ========================================
-   PaperMod 테마 배경색 분석
-   
-   [다크모드]
-   - 헤더/네비: #1e293b (더 진한 남색)
-   - 본문 배경: #0f172a ~ #1a202c (매우 진한 남색)
-   - 카드 배경: #1e293b (진한 남색)
-   
-   [라이트모드]
-   - 헤더/네비: #ffffff (흰색)
-   - 본문 배경: #f8fafc (연한 회색)
-   - 카드 배경: #ffffff (흰색)
+   전역 색상 변수 정의
    ======================================== */
+
+:root {
+    /* 라이트 모드 */
+    --light-bg-primary: #ffffff;
+    --light-bg-secondary: #f8fafc;
+    --light-text-primary: #0f172a;
+    --light-text-secondary: #334155;
+    --light-text-tertiary: #64748b;
+    --light-border: #e2e8f0;
+    --light-card-bg: #ffffff;
+    
+    /* 다크 모드 */
+    --dark-bg-primary: #0f172a;
+    --dark-bg-secondary: #1e293b;
+    --dark-text-primary: #f1f5f9;
+    --dark-text-secondary: #cbd5e1;
+    --dark-text-tertiary: #94a3b8;
+    --dark-border: #334155;
+    --dark-card-bg: #1e293b;
+}
 
 /* ========================================
-   헤더/네비게이션 영역 (별도 배경)
+   헤더/네비게이션 스타일
    ======================================== */
 
-/* 다크모드 헤더 - 배경: #1e293b */
-.dark .header,
-.dark header {
-    background-color: #1e293b !important;
-}
-
-.dark .header a,
-.dark .header .logo,
-.dark .header .logo a,
-.dark .header #menu a,
-.dark header nav a {
-    color: #f1f5f9 !important; /* 밝은 회색 */
-    text-decoration: none !important;
-}
-
-.dark .header a:hover,
-.dark .header #menu a:hover,
-.dark header nav a:hover {
-    color: #ffffff !important; /* 호버시 완전 흰색 */
-    opacity: 1 !important;
-}
-
-.dark #theme-toggle {
-    color: #f1f5f9 !important;
-}
-
-/* 라이트모드 헤더 - 배경: #ffffff */
+/* 라이트모드 헤더 */
 body:not(.dark) .header,
 body:not(.dark) header {
-    background-color: #ffffff !important;
-    border-bottom: 1px solid #e2e8f0 !important;
+    background-color: var(--light-bg-primary) !important;
+    border-bottom: 1px solid var(--light-border) !important;
 }
 
 body:not(.dark) .header a,
-body:not(.dark) .header .logo,
 body:not(.dark) .header .logo a,
-body:not(.dark) .header #menu a,
-body:not(.dark) header nav a {
-    color: #0f172a !important; /* 매우 진한 남색 */
+body:not(.dark) #menu a {
+    color: var(--light-text-primary) !important;
     text-decoration: none !important;
 }
 
 body:not(.dark) .header a:hover,
-body:not(.dark) .header #menu a:hover,
-body:not(.dark) header nav a:hover {
-    color: #020617 !important; /* 호버시 거의 검정 */
-    opacity: 1 !important;
+body:not(.dark) #menu a:hover {
+    color: var(--light-text-secondary) !important;
 }
 
+/* 다크모드 헤더 */
+.dark .header,
+.dark header {
+    background-color: var(--dark-bg-secondary) !important;
+    border-bottom: 1px solid var(--dark-border) !important;
+}
+
+.dark .header a,
+.dark .header .logo a,
+.dark #menu a {
+    color: var(--dark-text-primary) !important;
+    text-decoration: none !important;
+}
+
+.dark .header a:hover,
+.dark #menu a:hover {
+    color: #ffffff !important;
+}
+
+/* 테마 토글 버튼 */
 body:not(.dark) #theme-toggle {
-    color: #0f172a !important;
+    color: var(--light-text-primary) !important;
+}
+
+.dark #theme-toggle {
+    color: var(--dark-text-primary) !important;
 }
 
 /* ========================================
-   메인 콘텐츠 영역 (본문 배경)
+   메인 콘텐츠 영역 (모든 페이지 공통)
    ======================================== */
 
-/* 다크모드 본문 - 배경: #0f172a (매우 진한) */
+/* 라이트모드 메인 배경 */
+body:not(.dark) {
+    background-color: var(--light-bg-secondary) !important;
+}
+
+body:not(.dark) main,
+body:not(.dark) .main {
+    background-color: var(--light-bg-secondary) !important;
+}
+
+/* 다크모드 메인 배경 */
+.dark {
+    background-color: var(--dark-bg-primary) !important;
+}
+
 .dark main,
 .dark .main {
-    background-color: #0f172a !important;
+    background-color: var(--dark-bg-primary) !important;
 }
 
-/* 다크모드 포스트 카드 - 배경: #1e293b */
+/* ========================================
+   Posts 리스트 페이지 카드 디자인 개선
+   ======================================== */
+
+/* 카드 컨테이너 - 자연스러운 통합 디자인 */
+body:not(.dark) .post-entry,
+body:not(.dark) .first-entry,
+body:not(.dark) article.post-card {
+    background: linear-gradient(to right, #f1f5f9 100px, #ffffff 100px) !important;
+    border: 1px solid var(--light-border) !important;
+    border-radius: 8px !important;
+    overflow: hidden !important;
+    margin-bottom: 20px !important;
+}
+
 .dark .post-entry,
 .dark .first-entry,
-.dark article {
-    background-color: #1e293b !important;
+.dark article.post-card {
+    background: linear-gradient(to right, #334155 100px, #1e293b 100px) !important;
+    border: 1px solid var(--dark-border) !important;
+    border-radius: 8px !important;
+    overflow: hidden !important;
+    margin-bottom: 20px !important;
 }
 
-/* 다크모드 본문 텍스트 (어두운 배경에 맞춤) */
-.dark .main h1,
-.dark .main h2,
-.dark .main h3,
-.dark .entry-header h2,
-.dark .entry-header h2 a,
-.dark .post-title,
-.dark .post-title a {
-    color: #f8fafc !important; /* 거의 흰색 */
-    font-weight: 600 !important;
+/* 날짜 영역 스타일 개선 */
+body:not(.dark) .post-date {
+    background: transparent !important;
+    color: var(--light-text-secondary) !important;
 }
 
-.dark .main p,
-.dark .post-content,
-.dark .entry-content,
-.dark article p {
-    color: #cbd5e1 !important; /* 밝은 회색 */
+.dark .post-date {
+    background: transparent !important;
+    color: var(--dark-text-secondary) !important;
+}
+
+/* 카테고리 헤더 배경 제거하고 심플하게 */
+.post-category-header {
+    background: transparent !important;
+    padding: 12px 20px !important;
+    border-bottom: none !important;
+}
+
+body:not(.dark) .post-category-header {
+    color: var(--light-text-tertiary) !important;
+}
+
+.dark .post-category-header {
+    color: var(--dark-text-tertiary) !important;
+}
+
+/* ========================================
+   About 페이지 및 일반 페이지 텍스트
+   ======================================== */
+
+/* 라이트모드 - 모든 텍스트 요소 */
+body:not(.dark) h1,
+body:not(.dark) h2,
+body:not(.dark) h3,
+body:not(.dark) h4,
+body:not(.dark) h5,
+body:not(.dark) h6 {
+    color: var(--light-text-primary) !important;
+    font-weight: 700 !important;
+}
+
+body:not(.dark) p,
+body:not(.dark) li,
+body:not(.dark) .content,
+body:not(.dark) .post-content,
+body:not(.dark) article {
+    color: var(--light-text-secondary) !important;
     line-height: 1.7 !important;
 }
 
-.dark .post-meta,
-.dark .entry-footer,
-.dark time,
-.dark .reading-time {
-    color: #94a3b8 !important; /* 중간 밝기 */
+/* 다크모드 - 모든 텍스트 요소 */
+.dark h1,
+.dark h2,
+.dark h3,
+.dark h4,
+.dark h5,
+.dark h6 {
+    color: var(--dark-text-primary) !important;
+    font-weight: 600 !important;
 }
 
-/* 라이트모드 본문 - 배경: #f8fafc (연한 회색) */
-body:not(.dark) main,
-body:not(.dark) .main {
-    background-color: #f8fafc !important;
+.dark p,
+.dark li,
+.dark .content,
+.dark .post-content,
+.dark article {
+    color: var(--dark-text-secondary) !important;
+    line-height: 1.7 !important;
 }
 
-/* 라이트모드 포스트 카드 - 배경: #ffffff */
-body:not(.dark) .post-entry,
-body:not(.dark) .first-entry,
-body:not(.dark) article {
-    background-color: #ffffff !important;
-    border: 1px solid #e2e8f0 !important;
-}
+/* ========================================
+   Posts 리스트 제목 및 메타 정보
+   ======================================== */
 
-/* 라이트모드 본문 텍스트 (밝은 배경에 맞춤) */
-body:not(.dark) .main h1,
-body:not(.dark) .main h2,
-body:not(.dark) .main h3,
+/* 라이트모드 포스트 제목 */
 body:not(.dark) .entry-header h2,
 body:not(.dark) .entry-header h2 a,
 body:not(.dark) .post-title,
 body:not(.dark) .post-title a {
-    color: #020617 !important; /* 거의 검정 */
+    color: var(--light-text-primary) !important;
     font-weight: 700 !important;
 }
 
-body:not(.dark) .main p,
-body:not(.dark) .post-content,
-body:not(.dark) .entry-content,
-body:not(.dark) article p {
-    color: #1e293b !important; /* 진한 남회색 */
-    line-height: 1.7 !important;
+body:not(.dark) .entry-header h2 a:hover {
+    color: #2563eb !important;
 }
 
+/* 다크모드 포스트 제목 */
+.dark .entry-header h2,
+.dark .entry-header h2 a,
+.dark .post-title,
+.dark .post-title a {
+    color: var(--dark-text-primary) !important;
+    font-weight: 600 !important;
+}
+
+.dark .entry-header h2 a:hover {
+    color: #60a5fa !important;
+}
+
+/* 메타 정보 (날짜, 읽기 시간 등) */
 body:not(.dark) .post-meta,
 body:not(.dark) .entry-footer,
-body:not(.dark) time,
-body:not(.dark) .reading-time {
-    color: #64748b !important; /* 중간 회색 */
+body:not(.dark) time {
+    color: var(--light-text-tertiary) !important;
+}
+
+.dark .post-meta,
+.dark .entry-footer,
+.dark time {
+    color: var(--dark-text-tertiary) !important;
 }
 
 /* ========================================
-   링크 색상 (모든 영역 공통)
+   링크 스타일 (About 페이지 포함)
    ======================================== */
 
-/* 다크모드 링크 */
-.dark a:not(.header a):not(#menu a),
-.dark a:not(.header a):not(#menu a):visited {
-    color: #60a5fa !important; /* 밝은 파란색 */
-}
-
-.dark a:not(.header a):not(#menu a):hover {
-    color: #93c5fd !important; /* 더 밝은 파란색 */
-}
-
 /* 라이트모드 링크 */
-body:not(.dark) a:not(.header a):not(#menu a),
-body:not(.dark) a:not(.header a):not(#menu a):visited {
-    color: #2563eb !important; /* 진한 파란색 */
+body:not(.dark) a:not(.header a):not(#menu a) {
+    color: #2563eb !important;
 }
 
 body:not(.dark) a:not(.header a):not(#menu a):hover {
-    color: #1d4ed8 !important; /* 더 진한 파란색 */
+    color: #1d4ed8 !important;
+    text-decoration: underline !important;
+}
+
+/* 다크모드 링크 */
+.dark a:not(.header a):not(#menu a) {
+    color: #60a5fa !important;
+}
+
+.dark a:not(.header a):not(#menu a):hover {
+    color: #93c5fd !important;
+    text-decoration: underline !important;
 }
 
 /* ========================================
-   특수 요소들
+   블록쿼트 스타일 (About 페이지)
    ======================================== */
 
-/* Draft 뱃지 */
+body:not(.dark) blockquote {
+    background-color: #f1f5f9 !important;
+    border-left: 4px solid #3b82f6 !important;
+    color: var(--light-text-secondary) !important;
+    padding: 1rem !important;
+    margin: 1rem 0 !important;
+}
+
+.dark blockquote {
+    background-color: var(--dark-bg-secondary) !important;
+    border-left: 4px solid #60a5fa !important;
+    color: var(--dark-text-secondary) !important;
+    padding: 1rem !important;
+    margin: 1rem 0 !important;
+}
+
+/* ========================================
+   코드 블록 스타일
+   ======================================== */
+
+body:not(.dark) code {
+    background-color: #f1f5f9 !important;
+    color: #0f172a !important;
+    padding: 2px 6px !important;
+    border-radius: 4px !important;
+}
+
+.dark code {
+    background-color: #334155 !important;
+    color: #f1f5f9 !important;
+    padding: 2px 6px !important;
+    border-radius: 4px !important;
+}
+
+/* ========================================
+   카테고리 필터 버튼 스타일 개선
+   ======================================== */
+
+body:not(.dark) .filter-btn {
+    background: #ffffff !important;
+    border: 2px solid var(--light-border) !important;
+    color: var(--light-text-secondary) !important;
+}
+
+body:not(.dark) .filter-btn:hover,
+body:not(.dark) .filter-btn.active {
+    background: #3b82f6 !important;
+    color: #ffffff !important;
+    border-color: #3b82f6 !important;
+}
+
+.dark .filter-btn {
+    background: var(--dark-bg-secondary) !important;
+    border: 2px solid var(--dark-border) !important;
+    color: var(--dark-text-secondary) !important;
+}
+
+.dark .filter-btn:hover,
+.dark .filter-btn.active {
+    background: #60a5fa !important;
+    color: #0f172a !important;
+    border-color: #60a5fa !important;
+}
+
+/* ========================================
+   Draft 뱃지
+   ======================================== */
+
 .entry-hint {
     padding: 4px 8px !important;
     border-radius: 4px !important;
@@ -194,131 +342,53 @@ body:not(.dark) a:not(.header a):not(#menu a):hover {
 body:not(.dark) .entry-hint {
     background-color: #fee2e2 !important;
     color: #dc2626 !important;
-    border: 1px solid #fca5a5 !important;
 }
 
 .dark .entry-hint {
     background-color: rgba(220, 38, 38, 0.2) !important;
     color: #fca5a5 !important;
-    border: 1px solid #f87171 !important;
-}
-
-/* 카테고리/태그 뱃지 */
-.dark .post-tag,
-.dark .tag-entry {
-    background-color: rgba(148, 163, 184, 0.15) !important;
-    color: #e2e8f0 !important;
-    border: 1px solid rgba(226, 232, 240, 0.3) !important;
-}
-
-body:not(.dark) .post-tag,
-body:not(.dark) .tag-entry {
-    background-color: rgba(100, 116, 139, 0.1) !important;
-    color: #334155 !important;
-    border: 1px solid rgba(51, 65, 85, 0.2) !important;
 }
 
 /* ========================================
-   모바일 특별 대응
+   섹션 헤더 스타일
+   ======================================== */
+
+body:not(.dark) .category-header {
+    background: transparent !important;
+    border-bottom: 2px solid var(--light-border) !important;
+}
+
+.dark .category-header {
+    background: transparent !important;
+    border-bottom: 2px solid var(--dark-border) !important;
+}
+
+/* ========================================
+   모바일 대응
    ======================================== */
 
 @media (max-width: 768px) {
-    /* 모바일 다크모드 헤더 */
-    .dark .header,
-    .dark .header * {
-        color: #f1f5f9 !important;
+    /* 모바일에서 카드 디자인 단순화 */
+    body:not(.dark) .post-entry,
+    body:not(.dark) .first-entry,
+    .dark .post-entry,
+    .dark .first-entry {
+        background: var(--light-card-bg) !important;
     }
     
-    /* 모바일 다크모드 본문 제목 - 더 밝게 */
-    .dark .main h1,
-    .dark .main h2,
-    .dark .main h3,
-    .dark .entry-header h2,
-    .dark .entry-header h2 a,
-    .dark .post-title,
-    .dark .post-title a {
+    .dark .post-entry,
+    .dark .first-entry {
+        background: var(--dark-card-bg) !important;
+    }
+    
+    /* 모바일 텍스트 가독성 강화 */
+    .dark h1, .dark h2, .dark h3 {
         color: #ffffff !important;
-        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5) !important;
     }
     
-    /* 모바일 다크모드 본문 텍스트 - 더 밝게 */
-    .dark .main p,
-    .dark .post-content,
-    .dark .entry-content {
-        color: #e2e8f0 !important;
-    }
-    
-    /* 모바일 라이트모드 헤더 */
-    body:not(.dark) .header,
-    body:not(.dark) .header * {
-        color: #0f172a !important;
-    }
-    
-    /* 모바일 라이트모드 본문 제목 - 더 진하게 */
-    body:not(.dark) .main h1,
-    body:not(.dark) .main h2,
-    body:not(.dark) .main h3,
-    body:not(.dark) .entry-header h2,
-    body:not(.dark) .entry-header h2 a,
-    body:not(.dark) .post-title,
-    body:not(.dark) .post-title a {
+    body:not(.dark) h1,
+    body:not(.dark) h2,
+    body:not(.dark) h3 {
         color: #000000 !important;
-        font-weight: 700 !important;
     }
-    
-    /* 모바일 라이트모드 본문 텍스트 - 더 진하게 */
-    body:not(.dark) .main p,
-    body:not(.dark) .post-content,
-    body:not(.dark) .entry-content {
-        color: #0f172a !important;
-    }
-}
-
-/* ========================================
-   활성 메뉴 아이템 표시
-   ======================================== */
-
-#menu .active {
-    font-weight: 600 !important;
-    position: relative !important;
-}
-
-.dark #menu .active {
-    color: #ffffff !important;
-}
-
-body:not(.dark) #menu .active {
-    color: #020617 !important;
-}
-
-#menu .active::after {
-    content: '' !important;
-    position: absolute !important;
-    bottom: -3px !important;
-    left: 0 !important;
-    right: 0 !important;
-    height: 2px !important;
-    background-color: currentColor !important;
-}
-
-/* ========================================
-   푸터 영역 (있는 경우)
-   ======================================== */
-
-.dark footer {
-    background-color: #0f172a !important;
-    color: #94a3b8 !important;
-}
-
-body:not(.dark) footer {
-    background-color: #f1f5f9 !important;
-    color: #64748b !important;
-}
-
-.dark footer a {
-    color: #60a5fa !important;
-}
-
-body:not(.dark) footer a {
-    color: #2563eb !important;
 }
