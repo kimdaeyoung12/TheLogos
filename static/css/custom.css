@@ -1,336 +1,120 @@
-/* static/css/custom.css - 전체 코드 */
+/* static/css/custom.css - 다크모드 가독성 개선 버전 */
 
 /* ========================================
-   CSS 변수 정의 (전역 색상 팔레트)
+   PaperMod 테마 기본 색상 보존
+   기존 테마 색상을 해치지 않으면서
+   필요한 부분만 개선
    ======================================== */
-
-/* 라이트 모드 변수 */
-:root {
-    --title-color-light: #0f172a;      /* 매우 진한 남색 - 제목 */
-    --title-hover-light: #1e40af;      /* 진한 파란색 - 제목 호버 */
-    --text-primary-light: #1e293b;     /* 진한 남회색 - 주요 텍스트 */
-    --text-secondary-light: #334155;   /* 중간 회색 - 본문 */
-    --text-tertiary-light: #64748b;    /* 연한 회색 - 메타 정보 */
-    --link-color-light: #3b82f6;       /* 파란색 - 링크 */
-    --header-bg-light: #ffffff;        /* 헤더 배경 */
-    --header-border-light: #e2e8f0;    /* 헤더 테두리 */
-}
-
-/* 다크 모드 변수 */
-.dark {
-    --title-color-dark: #f1f5f9;       /* 밝은 회색 - 제목 */
-    --title-hover-dark: #60a5fa;       /* 밝은 파란색 - 제목 호버 */
-    --text-primary-dark: #e2e8f0;      /* 밝은 회색 - 주요 텍스트 */
-    --text-secondary-dark: #cbd5e1;    /* 중간 밝은 회색 - 본문 */
-    --text-tertiary-dark: #94a3b8;     /* 연한 밝은 회색 - 메타 정보 */
-    --link-color-dark: #60a5fa;        /* 밝은 파란색 - 링크 */
-    --header-bg-dark: #1e293b;         /* 헤더 배경 */
-    --header-border-dark: #334155;     /* 헤더 테두리 */
-}
 
 /* ========================================
-   헤더 및 네비게이션 스타일
+   포스트 제목 가독성 개선
    ======================================== */
 
-/* 헤더 기본 스타일 */
-.header {
-    border-bottom: 1px solid var(--header-border-light);
+/* 라이트 모드 - 포스트 제목만 진하게 */
+@media (prefers-color-scheme: light) {
+    .post-entry .entry-header h2,
+    .first-entry .entry-header h2,
+    article.post-entry h2,
+    article.first-entry h2,
+    .post-title,
+    .post-title a {
+        color: #0f172a !important; /* 매우 진한 남색 */
+        font-weight: 700;
+    }
+    
+    .post-entry h2 a:hover,
+    .first-entry h2 a:hover {
+        color: #1e40af !important; /* 진한 파란색 */
+    }
 }
 
-.dark .header {
-    background-color: var(--header-bg-dark) !important;
-    border-bottom-color: var(--header-border-dark);
+/* 다크 모드 - PaperMod 기본 색상 유지하되 약간 밝게 */
+@media (prefers-color-scheme: dark) {
+    .post-entry .entry-header h2,
+    .first-entry .entry-header h2,
+    article.post-entry h2,
+    article.first-entry h2,
+    .post-title,
+    .post-title a {
+        color: #e2e8f0 !important; /* 밝은 회색 */
+        font-weight: 600;
+    }
+    
+    .post-entry h2 a:hover,
+    .first-entry h2 a:hover {
+        color: #60a5fa !important; /* 밝은 파란색 */
+    }
 }
 
-/* 로고/타이틀 */
-.logo a {
-    font-weight: 700;
-    font-size: 24px;
-    text-decoration: none;
-    transition: opacity 0.3s ease;
-}
-
-body:not(.dark) .logo a {
-    color: var(--title-color-light) !important;
-}
-
-.dark .logo a {
-    color: var(--title-color-dark) !important;
-}
-
-.logo a:hover {
-    opacity: 0.8;
-}
-
-/* 메뉴 링크 */
-#menu a,
-header nav a {
-    font-size: 16px;
-    font-weight: 500;
-    text-decoration: none !important;
-    transition: all 0.3s ease;
-}
-
-body:not(.dark) #menu a,
-body:not(.dark) header nav a {
-    color: var(--text-primary-light) !important;
-}
-
-.dark #menu a,
-.dark header nav a {
-    color: var(--text-primary-dark) !important;
-}
-
-body:not(.dark) #menu a:hover,
-body:not(.dark) header nav a:hover {
-    color: var(--link-color-light) !important;
-    opacity: 0.9;
-}
-
-.dark #menu a:hover,
-.dark header nav a:hover {
-    color: var(--link-color-dark) !important;
-}
-
-/* 활성 메뉴 아이템 */
-#menu .active {
-    font-weight: 600;
-    padding-bottom: 2px;
-}
-
-body:not(.dark) #menu .active {
-    border-bottom: 2px solid var(--link-color-light);
-}
-
-.dark #menu .active {
-    color: var(--link-color-dark) !important;
-    border-bottom: 2px solid var(--link-color-dark);
-}
-
-/* 테마 토글 버튼 */
-body:not(.dark) #theme-toggle {
-    color: var(--text-primary-light) !important;
-}
-
-.dark #theme-toggle {
-    color: var(--text-primary-dark) !important;
-}
-
-/* ========================================
-   포스트 제목 및 헤딩 스타일
-   ======================================== */
-
-/* 모든 헤딩 태그 기본 스타일 */
-h1, h2, h3, h4, h5, h6 {
-    font-weight: 700;
-    line-height: 1.4;
-}
-
-/* 라이트 모드 헤딩 */
-body:not(.dark) h1,
-body:not(.dark) h2,
-body:not(.dark) h3,
-body:not(.dark) h4,
-body:not(.dark) h5,
-body:not(.dark) h6 {
-    color: var(--title-color-light) !important;
-}
-
-/* 다크 모드 헤딩 */
-.dark h1,
-.dark h2,
-.dark h3,
-.dark h4,
-.dark h5,
-.dark h6 {
-    color: var(--title-color-dark) !important;
-}
-
-/* 포스트 리스트 제목 특별 강조 */
+/* 수동 다크모드 토글 대응 */
 body:not(.dark) .post-entry .entry-header h2,
 body:not(.dark) .first-entry .entry-header h2,
 body:not(.dark) article.post-entry h2,
-body:not(.dark) article.first-entry h2 {
-    color: var(--title-color-light) !important;
+body:not(.dark) article.first-entry h2,
+body:not(.dark) .post-title,
+body:not(.dark) .post-title a {
+    color: #0f172a !important;
     font-weight: 700;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .dark .post-entry .entry-header h2,
 .dark .first-entry .entry-header h2,
 .dark article.post-entry h2,
-.dark article.first-entry h2 {
-    color: var(--title-color-dark) !important;
+.dark article.first-entry h2,
+.dark .post-title,
+.dark .post-title a {
+    color: #e2e8f0 !important;
     font-weight: 600;
 }
 
-/* 포스트 제목 링크 */
-body:not(.dark) .post-entry h2 a,
-body:not(.dark) .first-entry h2 a,
-body:not(.dark) article h2 a,
-body:not(.dark) .post-title a {
-    color: inherit !important;
-    text-decoration: none;
-}
-
-.dark .post-entry h2 a,
-.dark .first-entry h2 a,
-.dark article h2 a,
-.dark .post-title a {
-    color: inherit !important;
-    text-decoration: none;
-}
-
-/* 포스트 제목 호버 효과 */
-body:not(.dark) .post-entry h2 a:hover,
-body:not(.dark) .first-entry h2 a:hover,
-body:not(.dark) article h2 a:hover,
-body:not(.dark) .post-title a:hover {
-    color: var(--title-hover-light) !important;
-    text-decoration: underline;
-}
-
-.dark .post-entry h2 a:hover,
-.dark .first-entry h2 a:hover,
-.dark article h2 a:hover,
-.dark .post-title a:hover {
-    color: var(--title-hover-dark) !important;
-}
-
-/* 방문한 링크도 동일한 색상 유지 */
-body:not(.dark) .post-entry h2 a:visited,
-body:not(.dark) .first-entry h2 a:visited {
-    color: var(--title-color-light) !important;
-}
-
-.dark .post-entry h2 a:visited,
-.dark .first-entry h2 a:visited {
-    color: var(--title-color-dark) !important;
-}
-
 /* ========================================
-   본문 및 콘텐츠 영역
+   본문 텍스트 가독성
+   PaperMod 기본값 유지
    ======================================== */
 
-/* 메인 콘텐츠 영역 */
-body:not(.dark) .main {
-    color: var(--text-primary-light) !important;
-}
-
-.dark .main {
-    color: var(--text-primary-dark) !important;
-}
-
-/* 포스트 본문 */
-body:not(.dark) .post-content,
-body:not(.dark) .entry-content {
-    color: var(--text-secondary-light) !important;
-}
-
+/* 다크모드 본문 - 기본값보다 약간만 밝게 */
 .dark .post-content,
-.dark .entry-content {
-    color: var(--text-secondary-dark) !important;
+.dark .entry-content,
+.dark .post-entry .entry-content {
+    color: #cbd5e1; /* 기본값보다 살짝 밝게 */
 }
 
 /* ========================================
-   메타 정보 및 부가 요소
+   헤더는 PaperMod 기본값 사용
+   불필요한 오버라이드 제거
    ======================================== */
 
-/* 메타 정보 (날짜, 읽기 시간 등) */
-body:not(.dark) .post-meta,
-body:not(.dark) .entry-footer {
-    color: var(--text-tertiary-light) !important;
+/* ========================================
+   링크 호버 효과만 추가
+   ======================================== */
+
+body:not(.dark) a:hover {
+    opacity: 0.8;
 }
 
-.dark .post-meta,
-.dark .entry-footer {
-    color: var(--text-tertiary-dark) !important;
+.dark a:hover {
+    opacity: 0.9;
 }
 
-/* Draft 표시 뱃지 */
+/* ========================================
+   Draft 뱃지 가독성
+   ======================================== */
+
 body:not(.dark) .entry-hint {
-    color: #dc2626 !important;
+    color: #dc2626;
     font-weight: 600;
 }
 
 .dark .entry-hint {
-    color: #f87171 !important;
+    color: #f87171;
+    font-weight: 600;
 }
 
 /* ========================================
-   브라우저 기본 스타일 오버라이드
+   메타 정보 가독성
    ======================================== */
 
-/* 모든 링크의 기본 스타일 제거 */
-header a:-webkit-any-link,
-nav a:-webkit-any-link {
-    text-decoration: none !important;
-    cursor: pointer;
-}
-
-header a:any-link,
-nav a:any-link {
-    text-decoration: none !important;
-}
-
-/* ========================================
-   반응형 디자인
-   ======================================== */
-
-@media (max-width: 768px) {
-    .logo a {
-        font-size: 20px;
-    }
-    
-    #menu a,
-    header nav a {
-        font-size: 14px;
-    }
-}
-
-/* ========================================
-   애니메이션 및 트랜지션
-   ======================================== */
-
-/* 부드러운 색상 전환 */
-* {
-    transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
-}
-
-/* 빠른 반응이 필요한 요소 */
-a, button {
-    transition: all 0.2s ease;
-}
-
-/* ========================================
-   추가 유틸리티 클래스
-   ======================================== */
-
-/* 텍스트 선택 시 색상 */
-body:not(.dark) ::selection {
-    background-color: rgba(59, 130, 246, 0.2);
-    color: var(--title-color-light);
-}
-
-.dark ::selection {
-    background-color: rgba(96, 165, 250, 0.3);
-    color: var(--title-color-dark);
-}
-
-/* 스크롤바 스타일링 (웹킷 브라우저) */
-body:not(.dark) ::-webkit-scrollbar-thumb {
-    background-color: #cbd5e1;
-}
-
-.dark ::-webkit-scrollbar-thumb {
-    background-color: #475569;
-}
-
-::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-}
-
-::-webkit-scrollbar-track {
-    background: transparent;
+.dark .post-meta,
+.dark .entry-footer {
+    color: #94a3b8; /* 약간 밝게 */
 }
