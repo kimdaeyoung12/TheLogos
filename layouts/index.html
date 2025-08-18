@@ -42,28 +42,33 @@
             {{ range first 6 (where .Site.RegularPages "Type" "posts") }}
             <article class="post-card">
                 <div class="post-card-inner">
-                    <!-- 카테고리 배지 -->
-                    <div class="post-categories">
-                        {{ range .Params.categories }}
-                        <span class="category-badge category-{{ . }}">
-                            {{ if eq . "religion" }}🕊️ 종교
-                            {{ else if eq . "philosophy" }}🤔 철학
-                            {{ else if eq . "engineering" }}⚙️ 공학
-                            {{ else if eq . "writing" }}✍️ 글쓰기
-                            {{ else }}{{ . }}{{ end }}
-                        </span>
-                        {{ end }}
+                    <!-- 날짜 영역 -->
+                    <div class="post-date-section">
+                        <div class="date-box">
+                            <span class="date-month">{{ .Date.Format "1월" }}</span>
+                            <span class="date-day">{{ .Date.Format "2" }}</span>
+                            <span class="date-year">{{ .Date.Format "2006" }}</span>
+                        </div>
                     </div>
                     
-                    <div class="post-content">
-                        <header class="post-header">
-                            <h3 class="post-title">
-                                <a href="{{ .RelPermalink }}">{{ .Title }}</a>
-                            </h3>
-                            <time class="post-date" datetime="{{ .Date.Format "2006-01-02" }}">
-                                {{ .Date.Format "2006년 1월 2일" }}
-                            </time>
-                        </header>
+                    <!-- 콘텐츠 영역 -->
+                    <div class="post-content-section">
+                        <!-- 카테고리 배지 -->
+                        <div class="post-categories">
+                            {{ range .Params.categories }}
+                            <span class="category-badge category-{{ . }}">
+                                {{ if eq . "religion" }}🕊️ 종교
+                                {{ else if eq . "philosophy" }}🤔 철학
+                                {{ else if eq . "engineering" }}⚙️ 공학
+                                {{ else if eq . "writing" }}✍️ 글쓰기
+                                {{ else }}{{ . }}{{ end }}
+                            </span>
+                            {{ end }}
+                        </div>
+                        
+                        <h3 class="post-title">
+                            <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+                        </h3>
                         
                         <p class="post-excerpt">
                             {{ .Summary | plainify | truncate 120 }}
@@ -291,10 +296,10 @@ body {
     border-color: rgba(255, 255, 255, 0.5);
 }
 
-/* Recent Posts Section - 개선된 스타일 */
+/* Recent Posts Section */
 .recent-posts-section {
     padding: 80px 0;
-    background: var(--bg-secondary); /* 밝은 회색 배경 유지 */
+    background: var(--bg-secondary);
 }
 
 .section-header {
@@ -347,9 +352,9 @@ body {
     gap: 30px;
 }
 
-/* Post Card - 카드 스타일 개선 */
+/* Post Card - 가로 레이아웃으로 수정 */
 .post-card {
-    background: var(--bg-card); /* 흰색 배경 */
+    background: var(--bg-card);
     border-radius: 16px;
     overflow: hidden;
     transition: all var(--transition-slow);
@@ -381,24 +386,70 @@ body {
 }
 
 .post-card-inner {
+    display: flex;
     height: 100%;
+}
+
+/* 날짜 섹션 - 왼쪽 영역 */
+.post-date-section {
+    width: 100px;
+    min-width: 100px;
+    background: var(--bg-hover);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 10px;
+}
+
+.date-box {
+    text-align: center;
+    font-weight: 600;
+}
+
+.date-box span {
+    display: block;
+}
+
+.date-month {
+    font-size: 0.875rem;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+}
+
+.date-day {
+    font-size: 2rem;
+    line-height: 1.2;
+    color: var(--text-primary);
+    margin: 5px 0;
+}
+
+.date-year {
+    font-size: 0.75rem;
+    color: var(--text-tertiary);
+}
+
+/* 콘텐츠 섹션 - 오른쪽 영역 */
+.post-content-section {
+    flex: 1;
+    padding: 20px;
     display: flex;
     flex-direction: column;
+    min-width: 0;
 }
 
 /* Category Badges */
 .post-categories {
-    padding: 16px 20px 0;
     display: flex;
     gap: 8px;
     flex-wrap: wrap;
+    margin-bottom: 12px;
 }
 
 .category-badge {
     display: inline-flex;
     align-items: center;
     gap: 4px;
-    padding: 4px 12px;
+    padding: 4px 10px;
     border-radius: 20px;
     font-size: 0.75rem;
     font-weight: 600;
@@ -407,45 +458,34 @@ body {
 }
 
 .category-religion {
-    background: linear-gradient(135deg, #667eea20, #764ba220);
+    background: rgba(102, 126, 234, 0.1);
     color: #667eea;
-    border: 1px solid #667eea30;
+    border: 1px solid rgba(102, 126, 234, 0.2);
 }
 
 .category-philosophy {
-    background: linear-gradient(135deg, #f093fb20, #f5576c20);
+    background: rgba(245, 87, 108, 0.1);
     color: #f5576c;
-    border: 1px solid #f5576c30;
+    border: 1px solid rgba(245, 87, 108, 0.2);
 }
 
 .category-engineering {
-    background: linear-gradient(135deg, #4facfe20, #00f2fe20);
+    background: rgba(79, 172, 254, 0.1);
     color: #4facfe;
-    border: 1px solid #4facfe30;
+    border: 1px solid rgba(79, 172, 254, 0.2);
 }
 
 .category-writing {
-    background: linear-gradient(135deg, #43e97b20, #38f9d720);
+    background: rgba(67, 233, 123, 0.1);
     color: #43e97b;
-    border: 1px solid #43e97b30;
+    border: 1px solid rgba(67, 233, 123, 0.2);
 }
 
-/* Post Content */
-.post-content {
-    padding: 20px;
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-}
-
-.post-header {
-    margin-bottom: 16px;
-}
-
+/* Post Title */
 .post-title {
-    font-size: 1.375rem;
+    font-size: 1.25rem;
     font-weight: 700;
-    margin-bottom: 8px;
+    margin-bottom: 12px;
     line-height: 1.4;
 }
 
@@ -459,16 +499,13 @@ body {
     color: #667eea;
 }
 
-.post-date {
-    color: var(--text-tertiary);
-    font-size: 0.875rem;
-}
-
+/* Post Excerpt */
 .post-excerpt {
     color: var(--text-secondary);
     line-height: 1.7;
     margin-bottom: 20px;
     flex-grow: 1;
+    font-size: 0.95rem;
 }
 
 /* Post Footer */
@@ -503,6 +540,7 @@ body {
     text-decoration: none;
     font-size: 0.875rem;
     transition: all var(--transition-base);
+    white-space: nowrap;
 }
 
 .read-more-link:hover {
@@ -548,6 +586,34 @@ body {
     .posts-grid {
         grid-template-columns: 1fr;
         gap: 20px;
+    }
+    
+    /* 모바일에서 카드 레이아웃 세로로 변경 */
+    .post-card-inner {
+        flex-direction: column;
+    }
+    
+    .post-date-section {
+        width: 100%;
+        min-width: auto;
+        padding: 15px;
+    }
+    
+    .date-box {
+        display: flex;
+        gap: 15px;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .date-month,
+    .date-day,
+    .date-year {
+        display: inline-block;
+    }
+    
+    .date-day {
+        font-size: 1.5rem;
     }
 }
 
