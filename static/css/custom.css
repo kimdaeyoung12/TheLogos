@@ -25,6 +25,33 @@
 }
 
 /* ========================================
+   네비게이션 바 Bullet Points 제거
+   ======================================== */
+
+#menu {
+    list-style: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+#menu li {
+    list-style: none !important;
+    list-style-type: none !important;
+}
+
+#menu li::before {
+    content: none !important;
+}
+
+/* 모든 ul 요소의 기본 bullet 제거 */
+.nav ul,
+.header ul,
+header ul {
+    list-style: none !important;
+    padding-left: 0 !important;
+}
+
+/* ========================================
    헤더/네비게이션 스타일
    ======================================== */
 
@@ -76,17 +103,23 @@ body:not(.dark) #theme-toggle {
 }
 
 /* ========================================
-   메인 콘텐츠 영역 (모든 페이지 공통)
+   메인 콘텐츠 영역 - 라이트 모드 흰색 배경
    ======================================== */
 
-/* 라이트모드 메인 배경 */
+/* 라이트모드 - 전체 배경 흰색 */
 body:not(.dark) {
-    background-color: var(--light-bg-secondary) !important;
+    background-color: #ffffff !important;
 }
 
 body:not(.dark) main,
 body:not(.dark) .main {
-    background-color: var(--light-bg-secondary) !important;
+    background-color: #ffffff !important;
+}
+
+/* Posts 페이지 컨테이너 배경도 흰색 */
+body:not(.dark) .posts-list-section,
+body:not(.dark) .recent-posts-section {
+    background-color: #ffffff !important;
 }
 
 /* 다크모드 메인 배경 */
@@ -100,42 +133,52 @@ body:not(.dark) .main {
 }
 
 /* ========================================
-   Posts 리스트 페이지 카드 디자인 개선
+   Posts 리스트 페이지 카드 디자인
    ======================================== */
 
-/* 카드 컨테이너 - 자연스러운 통합 디자인 */
+/* 라이트 모드 - 카드에 미묘한 배경색 차이 */
 body:not(.dark) .post-entry,
 body:not(.dark) .first-entry,
-body:not(.dark) article.post-card {
-    background: linear-gradient(to right, #f1f5f9 100px, #ffffff 100px) !important;
+body:not(.dark) article.post-card,
+body:not(.dark) .post-card {
+    background: #ffffff !important;
     border: 1px solid var(--light-border) !important;
-    border-radius: 8px !important;
+    border-radius: 12px !important;
     overflow: hidden !important;
     margin-bottom: 20px !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
 }
 
+body:not(.dark) .post-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* 다크 모드 카드 */
 .dark .post-entry,
 .dark .first-entry,
-.dark article.post-card {
-    background: linear-gradient(to right, #334155 100px, #1e293b 100px) !important;
+.dark article.post-card,
+.dark .post-card {
+    background: var(--dark-card-bg) !important;
     border: 1px solid var(--dark-border) !important;
-    border-radius: 8px !important;
+    border-radius: 12px !important;
     overflow: hidden !important;
     margin-bottom: 20px !important;
 }
 
-/* 날짜 영역 스타일 개선 */
-body:not(.dark) .post-date {
-    background: transparent !important;
+/* 날짜 영역 스타일 */
+body:not(.dark) .post-date,
+body:not(.dark) .post-date-section {
+    background: #f8fafc !important;
     color: var(--light-text-secondary) !important;
 }
 
-.dark .post-date {
-    background: transparent !important;
+.dark .post-date,
+.dark .post-date-section {
+    background: #334155 !important;
     color: var(--dark-text-secondary) !important;
 }
 
-/* 카테고리 헤더 배경 제거하고 심플하게 */
+/* 카테고리 헤더 */
 .post-category-header {
     background: transparent !important;
     padding: 12px 20px !important;
@@ -266,7 +309,7 @@ body:not(.dark) a:not(.header a):not(#menu a):hover {
    ======================================== */
 
 body:not(.dark) blockquote {
-    background-color: #f1f5f9 !important;
+    background-color: #f8fafc !important;
     border-left: 4px solid #3b82f6 !important;
     color: var(--light-text-secondary) !important;
     padding: 1rem !important;
@@ -300,7 +343,7 @@ body:not(.dark) code {
 }
 
 /* ========================================
-   카테고리 필터 버튼 스타일 개선
+   카테고리 필터 버튼 스타일
    ======================================== */
 
 body:not(.dark) .filter-btn {
@@ -364,21 +407,89 @@ body:not(.dark) .category-header {
 }
 
 /* ========================================
+   페이지 타이틀 및 설명
+   ======================================== */
+
+body:not(.dark) .page-title {
+    color: var(--light-text-primary) !important;
+}
+
+body:not(.dark) .page-description {
+    color: var(--light-text-secondary) !important;
+}
+
+.dark .page-title {
+    color: var(--dark-text-primary) !important;
+}
+
+.dark .page-description {
+    color: var(--dark-text-secondary) !important;
+}
+
+/* ========================================
+   카테고리 섹션 스타일
+   ======================================== */
+
+body:not(.dark) .category-section {
+    background: transparent !important;
+}
+
+body:not(.dark) .category-title {
+    color: var(--light-text-primary) !important;
+}
+
+body:not(.dark) .category-description {
+    color: var(--light-text-secondary) !important;
+}
+
+.dark .category-section {
+    background: transparent !important;
+}
+
+.dark .category-title {
+    color: var(--dark-text-primary) !important;
+}
+
+.dark .category-description {
+    color: var(--dark-text-secondary) !important;
+}
+
+/* ========================================
+   Footer 스타일
+   ======================================== */
+
+body:not(.dark) .footer,
+body:not(.dark) footer {
+    background-color: #f8fafc !important;
+    border-top: 1px solid var(--light-border) !important;
+    color: var(--light-text-secondary) !important;
+}
+
+.dark .footer,
+.dark footer {
+    background-color: var(--dark-bg-secondary) !important;
+    border-top: 1px solid var(--dark-border) !important;
+    color: var(--dark-text-secondary) !important;
+}
+
+/* ========================================
    모바일 대응
    ======================================== */
 
 @media (max-width: 768px) {
-    /* 모바일에서 카드 디자인 단순화 */
+    /* 모바일에서 카드 디자인 유지 */
     body:not(.dark) .post-entry,
     body:not(.dark) .first-entry,
-    .dark .post-entry,
-    .dark .first-entry {
-        background: var(--light-card-bg) !important;
+    body:not(.dark) .post-card {
+        background: #ffffff !important;
+        border: 1px solid var(--light-border) !important;
     }
     
     .dark .post-entry,
-    .dark .first-entry {
+    .dark .first-entry,
+    .dark .post-card {
         background: var(--dark-card-bg) !important;
+        border: 1px solid var(--dark-border) !important;
     }
     
     /* 모바일 텍스트 가독성 강화 */
@@ -391,4 +502,34 @@ body:not(.dark) .category-header {
     body:not(.dark) h3 {
         color: #000000 !important;
     }
+}
+
+/* ========================================
+   PaperMod 테마 기본 스타일 오버라이드
+   ======================================== */
+
+/* 리스트 스타일 제거 */
+.list ul,
+.list ol,
+.post-content ul,
+.post-content ol {
+    list-style: none !important;
+    padding-left: 0 !important;
+}
+
+/* 콘텐츠 내 리스트는 다시 활성화 */
+article .post-content ul,
+article .post-content ol,
+.article-content ul,
+.article-content ol {
+    list-style: initial !important;
+    padding-left: 2rem !important;
+}
+
+article .post-content ul {
+    list-style-type: disc !important;
+}
+
+article .post-content ol {
+    list-style-type: decimal !important;
 }
