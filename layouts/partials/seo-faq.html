@@ -1,0 +1,22 @@
+{{- /* Structured FAQ schema for Google/AI rich results */ -}}
+{{- with .Params.faq }}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {{- range $index, $qa := . -}}
+    {{- if $index }},{{ end -}}
+    {
+      "@type": "Question",
+      "name": {{ jsonify $qa.q }},
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": {{ jsonify $qa.a }}
+      }
+    }
+    {{- end }}
+  ]
+}
+</script>
+{{- end }}
