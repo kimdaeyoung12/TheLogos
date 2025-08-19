@@ -1,0 +1,22 @@
+{{/*
+  Usage: {{< smartimg src="file.jpg" alt="Alternative text" class="optional-css-classes" >}}
+
+  This shortcode uses Hugo image processing to generate responsive WebP images.
+  It falls back to the original source if the image is not found in page resources.
+*/}}
+
+{{ $src := .Get "src" }}
+{{ $alt := .Get "alt" | default "" }}
+{{ $class := .Get "class" | default "smartimg" }}
+{{ $res := .Page.Resources.GetMatch $src }}
+{{ if $res }}
+  {{ $lq := $res.Fit "480x q75 webp" }}
+  {{ $mq := $res.Fit "800x q80 webp" }}
+  {{ $hq := $res.Fit "1200x q80 webp" }}
+  <picture>
+    <source type="image/webp" srcset="{{ $lq.RelPermalink }} 480w, {{ $mq.RelPermalink }} 800w, {{ $hq.RelPermalink }} 1200w">
+    <img loading="lazy" decoding="async" class="{{ $class }}" alt="{{ $alt }}" src="{{ $mq.RelPermalink }}" width="{{ $mq.Width }}" height="{{ $mq.Height }}">
+  </picture>
+{{ else }}
+  <img loading="lazy" decoding="async" class="{{ $class }}" alt="{{ $alt }}" src="{{ $src }}">
+{{ end }}
