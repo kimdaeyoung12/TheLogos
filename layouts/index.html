@@ -26,73 +26,20 @@
     </div>
 </section>
 
-<section class="recent-posts-section">
+<section class="topics-section">
     <div class="container">
         <header class="section-header">
-            <h2 class="section-title">최근 글</h2>
-            <a href="/posts/" class="view-all-link">
-                모든 글 보기
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M6 12l4-4-4-4"/>
-                </svg>
-            </a>
+            <h2 class="section-title">주제별 탐구</h2>
         </header>
         
-        <div class="posts-grid">
-            {{ range first 6 (where .Site.RegularPages "Type" "posts") }}
-            <article class="post-card">
-                <div class="post-card-inner">
-                    <!-- 날짜 영역 -->
-                    <div class="post-date-section">
-                        <div class="date-box">
-                            <span class="date-month">{{ .Date.Format "1월" }}</span>
-                            <span class="date-day">{{ .Date.Format "2" }}</span>
-                            <span class="date-year">{{ .Date.Format "2006" }}</span>
-                        </div>
-                    </div>
-                    
-                    <!-- 콘텐츠 영역 -->
-                    <div class="post-content-section">
-                        <!-- 카테고리 배지 -->
-                        <div class="post-categories">
-                            {{ range .Params.categories }}
-                            <span class="category-badge category-{{ . }}">
-                                {{ if eq . "religion" }}🕊️ 종교
-                                {{ else if eq . "philosophy" }}🤔 철학
-                                {{ else if eq . "engineering" }}⚙️ 공학
-                                {{ else if eq . "writing" }}✍️ 글쓰기
-                                {{ else }}{{ . }}{{ end }}
-                            </span>
-                            {{ end }}
-                        </div>
-                        
-                        <h3 class="post-title">
-                            <a href="{{ .RelPermalink }}">{{ .Title }}</a>
-                        </h3>
-                        
-                        <p class="post-excerpt">
-                            {{ .Summary | plainify | truncate 120 }}
-                        </p>
-                        
-                        <footer class="post-footer">
-                            {{ with .Params.tags }}
-                            <div class="post-tags">
-                                {{ range first 3 . }}
-                                <span class="tag">#{{ . }}</span>
-                                {{ end }}
-                            </div>
-                            {{ end }}
-                            
-                            <a href="{{ .RelPermalink }}" class="read-more-link">
-                                계속 읽기
-                                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M5 10l3-3-3-3"/>
-                                </svg>
-                            </a>
-                        </footer>
-                    </div>
+        <div class="topics-grid">
+            {{ range .Site.Taxonomies.tags }}
+            <a href="{{ .Page.Permalink }}" class="topic-card">
+                <div class="topic-card-inner">
+                    <h3 class="topic-title">{{ .Page.Title }}</h3>
+                    <p class="topic-meta">{{ .Count }}개의 글</p>
                 </div>
-            </article>
+            </a>
             {{ end }}
         </div>
     </div>
@@ -296,12 +243,7 @@ body {
     border-color: rgba(255, 255, 255, 0.5);
 }
 
-/* Recent Posts Section */
-.recent-posts-section {
-    padding: 80px 0;
-    background: var(--bg-secondary);
-}
-
+/* Section Header */
 .section-header {
     display: flex;
     justify-content: space-between;
@@ -327,225 +269,57 @@ body {
     border-radius: 2px;
 }
 
-.view-all-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    color: var(--primary-color);
-    text-decoration: none;
-    font-weight: 600;
-    transition: all var(--transition-base);
-    padding: 8px 16px;
-    border-radius: 8px;
-    background: transparent;
+/* Topics Section */
+.topics-section {
+    padding: 80px 0;
+    background: var(--bg-secondary);
 }
 
-.view-all-link:hover {
-    gap: 10px;
-    background: var(--bg-hover);
-}
-
-/* Posts Grid */
-.posts-grid {
+.topics-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-    gap: 30px;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 25px;
 }
 
-/* Post Card - 가로 레이아웃으로 수정 */
-.post-card {
-    background: var(--bg-card);
-    border-radius: 16px;
-    overflow: hidden;
-    transition: all var(--transition-slow);
-    border: 1px solid var(--border-light);
-    box-shadow: var(--shadow-sm);
-    position: relative;
-}
-
-.post-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-    opacity: 0;
-    transition: opacity var(--transition-base);
-}
-
-.post-card:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-lg);
-    border-color: transparent;
-}
-
-.post-card:hover::before {
-    opacity: 1;
-}
-
-.post-card-inner {
-    display: flex;
-    height: 100%;
-}
-
-/* 날짜 섹션 - 왼쪽 영역 */
-.post-date-section {
-    width: 100px;
-    min-width: 100px;
-    background: var(--bg-hover);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px 10px;
-}
-
-.date-box {
-    text-align: center;
-    font-weight: 600;
-}
-
-.date-box span {
+.topic-card {
     display: block;
-}
-
-.date-month {
-    font-size: 0.875rem;
-    color: var(--text-tertiary);
-    text-transform: uppercase;
-}
-
-.date-day {
-    font-size: 2rem;
-    line-height: 1.2;
-    color: var(--text-primary);
-    margin: 5px 0;
-}
-
-.date-year {
-    font-size: 0.75rem;
-    color: var(--text-tertiary);
-}
-
-/* 콘텐츠 섹션 - 오른쪽 영역 */
-.post-content-section {
-    flex: 1;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
-}
-
-/* Category Badges */
-.post-categories {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    margin-bottom: 12px;
-}
-
-.category-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    padding: 4px 10px;
-    border-radius: 20px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.category-religion {
-    background: rgba(102, 126, 234, 0.1);
-    color: #667eea;
-    border: 1px solid rgba(102, 126, 234, 0.2);
-}
-
-.category-philosophy {
-    background: rgba(245, 87, 108, 0.1);
-    color: #f5576c;
-    border: 1px solid rgba(245, 87, 108, 0.2);
-}
-
-.category-engineering {
-    background: rgba(79, 172, 254, 0.1);
-    color: #4facfe;
-    border: 1px solid rgba(79, 172, 254, 0.2);
-}
-
-.category-writing {
-    background: rgba(67, 233, 123, 0.1);
-    color: #43e97b;
-    border: 1px solid rgba(67, 233, 123, 0.2);
-}
-
-/* Post Title */
-.post-title {
-    font-size: 1.25rem;
-    font-weight: 700;
-    margin-bottom: 12px;
-    line-height: 1.4;
-}
-
-.post-title a {
-    color: var(--text-primary);
+    background: var(--bg-card);
+    border-radius: 12px;
+    padding: 30px 25px;
     text-decoration: none;
+    border: 1px solid var(--border-light);
+    transition: all var(--transition-slow);
+    box-shadow: var(--shadow-sm);
+    text-align: center;
+}
+
+.topic-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--primary-color);
+}
+
+.topic-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 12px;
     transition: color var(--transition-base);
 }
 
-.post-title a:hover {
-    color: #667eea;
+.topic-card:hover .topic-title {
+    color: var(--primary-color);
 }
 
-/* Post Excerpt */
-.post-excerpt {
+.topic-meta {
+    font-size: 0.9rem;
     color: var(--text-secondary);
-    line-height: 1.7;
-    margin-bottom: 20px;
-    flex-grow: 1;
-    font-size: 0.95rem;
+    background-color: var(--bg-hover);
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
 }
 
-/* Post Footer */
-.post-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-top: 16px;
-    border-top: 1px solid var(--border-light);
-}
-
-.post-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-}
-
-.tag {
-    font-size: 0.75rem;
-    color: var(--text-tertiary);
-    padding: 2px 8px;
-    background: var(--bg-hover);
-    border-radius: 4px;
-}
-
-.read-more-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    color: #667eea;
-    font-weight: 600;
-    text-decoration: none;
-    font-size: 0.875rem;
-    transition: all var(--transition-base);
-    white-space: nowrap;
-}
-
-.read-more-link:hover {
-    gap: 10px;
-}
 
 /* Responsive Design */
 @media (max-width: 768px) {
@@ -583,37 +357,8 @@ body {
         font-size: 2rem;
     }
     
-    .posts-grid {
-        grid-template-columns: 1fr;
-        gap: 20px;
-    }
-    
-    /* 모바일에서 카드 레이아웃 세로로 변경 */
-    .post-card-inner {
-        flex-direction: column;
-    }
-    
-    .post-date-section {
-        width: 100%;
-        min-width: auto;
-        padding: 15px;
-    }
-    
-    .date-box {
-        display: flex;
-        gap: 15px;
-        align-items: center;
-        justify-content: center;
-    }
-    
-    .date-month,
-    .date-day,
-    .date-year {
-        display: inline-block;
-    }
-    
-    .date-day {
-        font-size: 1.5rem;
+    .topics-grid {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     }
 }
 
@@ -629,16 +374,16 @@ body {
     }
 }
 
-.post-card {
+.topic-card {
     animation: fadeInUp 0.6s ease-out;
     animation-fill-mode: both;
 }
 
-.post-card:nth-child(1) { animation-delay: 0.1s; }
-.post-card:nth-child(2) { animation-delay: 0.2s; }
-.post-card:nth-child(3) { animation-delay: 0.3s; }
-.post-card:nth-child(4) { animation-delay: 0.4s; }
-.post-card:nth-child(5) { animation-delay: 0.5s; }
-.post-card:nth-child(6) { animation-delay: 0.6s; }
+.topic-card:nth-child(1) { animation-delay: 0.1s; }
+.topic-card:nth-child(2) { animation-delay: 0.2s; }
+.topic-card:nth-child(3) { animation-delay: 0.3s; }
+.topic-card:nth-child(4) { animation-delay: 0.4s; }
+.topic-card:nth-child(5) { animation-delay: 0.5s; }
+.topic-card:nth-child(6) { animation-delay: 0.6s; }
 </style>
 {{ end }}
