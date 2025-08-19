@@ -1,0 +1,11 @@
+<!-- Footer extensions for TheLogos -->
+
+<!-- Translation hint bar, reading progress bar, and back-to-top button -->
+<script src="/js/translate-hint.js" defer></script>
+<script src="/js/progress.js" defer></script>
+<script src="/js/back-to-top.js" defer></script>
+
+<!-- Privacy-friendly analytics (optional) -->
+{{ if .Site.Params.analytics.plausibleDomain }}
+<script defer data-domain="{{ .Site.Params.analytics.plausibleDomain }}" src="https://plausible.io/js/script.js"></script>
+{{ end }}
