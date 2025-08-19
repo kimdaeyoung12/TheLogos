@@ -1,0 +1,11 @@
+<!-- Additional head elements and metadata for TheLogos -->
+
+<!-- Define document language explicitly for accessibility -->
+<meta http-equiv="content-language" content="ko">
+
+<!-- Preload custom stylesheets to improve performance -->
+<link rel="preload" href="/css/custom.css" as="style">
+<link rel="stylesheet" href="/css/custom.css">
+
+<!-- Inject FAQ structured data if defined in the page front matter -->
+{{ partial "seo-faq.html" . }}
