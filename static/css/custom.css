@@ -533,3 +533,122 @@ article .post-content ul {
 article .post-content ol {
     list-style-type: decimal !important;
 }
+
+/* Custom styles for TheLogos */
+
+/* Reading progress bar at top of the page */
+#reading-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  width: 0;
+  z-index: 9999;
+  /* Use the theme's primary color if available */
+  background: var(--primary, #6366f1);
+}
+
+/* Back-to-top button styling */
+#back-to-top {
+  position: fixed;
+  right: 1rem;
+  bottom: 1.5rem;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+  opacity: 0;
+  z-index: 9999;
+}
+
+/* Translation hint bar styling */
+.translate-hint {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--theme, #fff);
+  color: var(--content, #111);
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  z-index: 9998;
+  box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.08);
+}
+.translate-hint__content {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0.6rem 1rem;
+  display: flex;
+  gap: 0.8rem;
+  align-items: center;
+  font-size: 0.95rem;
+}
+.translate-hint__help summary {
+  cursor: pointer;
+}
+.translate-hint__close {
+  margin-left: auto;
+  background: transparent;
+  border: none;
+  font-size: 1.2rem;
+  line-height: 1;
+  cursor: pointer;
+  color: inherit;
+}
+
+/* Improve readability of post content */
+.post-content,
+.single .post-content {
+  line-height: 1.75;
+  font-size: 1.05rem;
+}
+
+/* Table styling for better visibility */
+.post-content table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  overflow-x: auto;
+  display: block;
+}
+.post-content table th,
+.post-content table td {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  padding: 0.6rem 0.7rem;
+  vertical-align: top;
+}
+.post-content table thead th {
+  background: rgba(0, 0, 0, 0.035);
+  font-weight: 600;
+}
+@media (prefers-color-scheme: dark) {
+  .post-content table {
+    border-color: rgba(255, 255, 255, 0.15);
+  }
+  .post-content table th,
+  .post-content table td {
+    border-color: rgba(255, 255, 255, 0.12);
+  }
+  .post-content table thead th {
+    background: rgba(255, 255, 255, 0.05);
+  }
+}
+
+/* Code block improvements */
+.post-content pre code {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  tab-size: 2;
+}
+.post-content pre {
+  border-radius: 0.75rem;
+}
+
+/* Touch target sizing for links and buttons */
+.post-content a,
+.post-content button {
+  min-height: 44px;
+}
