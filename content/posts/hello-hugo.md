@@ -5,7 +5,7 @@ title = 'Hello Hugo'
 +++
 <script type="application/ld+json">
 {
-  "@context": "https://https://thelogos.dev/",
+  "@context": "https://thelogos.dev/",
   "@type": "BlogPosting",
   "headline": "Religion, Philosophy, Engineering",
   "author": {
