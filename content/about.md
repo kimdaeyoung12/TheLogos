@@ -44,7 +44,7 @@ description: "The Logos 블로그 소개"
 - **종교**: 조직신학, 성경신학, 변증 등
 
 ### 연락처
-- Email: [wwht32@gmail.com](mailto:your.wwht32@gmail.com)
+- Email: [wwht32@gmail.com](mailto:wwht32@gmail.com)
 - GitHub: [@kimdaeyoung12](https://github.com/kimdaeyoung12)
 - Instagram: [@kdy_92](https://www.instagram.com/kdy_92/)
 - Youtube: [@Pilgrim_92_i3p9h](https://www.youtube.com/@Pilgrim_92_i3p9h)
