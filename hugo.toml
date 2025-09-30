@@ -1,19 +1,23 @@
 baseURL      = "https://thelogos.dev/"
-languageCode = "ko-kr"
+languageCode = "ko-KR"
+defaultContentLanguage = "ko"
 title        = "The Logos"
 theme        = "PaperMod"
+
+[params]
+  description = "AI-friendly Korean/English knowledge hub designed for fast crawling while remaining welcoming to human visitors."
 
 [menu]
   [[menu.main]]
     name = "홈"
     url = "/"
     weight = 1
-    
+
   [[menu.main]]
     name = "Posts"
     url = "/posts/"
     weight = 2
-    
+
   [[menu.main]]
     name = "About"
     url = "/about/"

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="{{ with site.Language }}{{ .Lang }}{{ else }}{{ site.LanguageCode | default "en" }}{{ end }}" dir="auto">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {{- $title := cond .IsHome site.Title (printf "%s | %s" .Title site.Title) -}}
+    <title>{{ $title }}</title>
+    {{- $description := .Description -}}
+    {{- if not $description }}
+        {{- with .Params.description }}{{ $description = . }}{{ end }}
+    {{- end -}}
+    {{- if not $description }}
+        {{- with site.Params.description }}{{ $description = . }}{{ end }}
+    {{- end -}}
+    {{- if and (not $description) (eq .Kind "page") }}
+        {{- $description = .Summary }}
+    {{- end -}}
+    {{- if $description }}
+    <meta name="description" content="{{ $description }}">
+    {{- end }}
+    {{- if or .Params.draft .Params.noindex }}
+    <meta name="robots" content="noindex, nofollow">
+    {{- else }}
+    <meta name="robots" content="index, follow">
+    {{- end }}
+    <link rel="canonical" href="{{ .Permalink }}">
+    <link rel="icon" href="{{ "favicon.ico" | absURL }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ "favicon-16x16.png" | absURL }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ "favicon-32x32.png" | absURL }}">
+    <link rel="apple-touch-icon" href="{{ "apple-touch-icon.png" | absURL }}">
+    <meta name="theme-color" content="#2e2e33">
+    <link rel="stylesheet" href="{{ "css/custom.css" | absURL }}">
+    {{ partial "extend_head.html" . }}
+    {{ block "head" . }}{{ end }}
+</head>
+<body>
+    {{ partial "header.html" . }}
+    <main id="main-content">
+        {{ block "main" . }}{{ end }}
+    </main>
+    {{ partial "extend_footer.html" . }}
+</body>
+</html>
