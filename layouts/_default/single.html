@@ -1,4 +1,56 @@
 {{ define "main" }}
+{{- $publishDate := .PublishDate | default .Date -}}
+{{- $lastmod := .Lastmod | default $publishDate -}}
+{{- $authorName := .Params.author | default (.Site.Params.author | default "DaeYoung Kim") -}}
+{{- $scratch := newScratch -}}
+{{- $schema := dict
+    "@context" "https://schema.org"
+    "@type" "BlogPosting"
+    "mainEntityOfPage" (dict "@type" "WebPage" "@id" .Permalink)
+    "headline" .Title
+    "datePublished" ($publishDate.Format "2006-01-02")
+    "dateModified" ($lastmod.Format "2006-01-02")
+    "author" (dict "@type" "Person" "name" $authorName)
+    "url" .Permalink
+    "wordCount" .WordCount
+    "timeRequired" (printf "PT%dM" .ReadingTime)
+-}}
+{{- $scratch.Set "schema" $schema -}}
+{{- with .Params.categories }}
+    {{- $scratch.Set "schema" (merge ($scratch.Get "schema") (dict "articleSection" (delimit . ", "))) -}}
+{{- end -}}
+{{- $description := .Params.description | default (.Summary | plainify) -}}
+{{- if $description -}}
+    {{- $scratch.Set "schema" (merge ($scratch.Get "schema") (dict "description" $description)) -}}
+{{- end -}}
+{{- $publisherLogo := "/images/avatar.png" | absURL -}}
+{{- with .Site.Params.publisherLogo -}}
+    {{- $publisherLogo = . | absURL -}}
+{{- end -}}
+{{- $publisher := dict
+    "@type" "Organization"
+    "name" (.Site.Title | default $authorName)
+    "logo" (dict "@type" "ImageObject" "url" $publisherLogo)
+-}}
+{{- $scratch.Set "schema" (merge ($scratch.Get "schema") (dict "publisher" $publisher)) -}}
+{{- $scratch.Set "images" (slice) -}}
+{{- with .Params.images -}}
+    {{- range . -}}
+        {{- $scratch.Set "images" (append ($scratch.Get "images") (absURL .)) -}}
+    {{- end -}}
+{{- end -}}
+{{- if and (eq (len ($scratch.Get "images")) 0) .Params.image -}}
+    {{- $scratch.Set "images" (slice (.Params.image | absURL)) -}}
+{{- end -}}
+{{- if and (eq (len ($scratch.Get "images")) 0) .Params.featuredImage -}}
+    {{- $scratch.Set "images" (slice (.Params.featuredImage | absURL)) -}}
+{{- end -}}
+{{- if gt (len ($scratch.Get "images")) 0 -}}
+    {{- $scratch.Set "schema" (merge ($scratch.Get "schema") (dict "image" ($scratch.Get "images"))) -}}
+{{- end -}}
+<script type="application/ld+json">
+{{ ($scratch.Get "schema") | jsonify }}
+</script>
 <article class="article" itemscope itemtype="https://schema.org/BlogPosting">
     <!-- Article Header -->
     <header class="article-header">
