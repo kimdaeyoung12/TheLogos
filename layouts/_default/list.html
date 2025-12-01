@@ -204,4 +204,35 @@
         </div>
     </div>
 </section>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const sections = document.querySelectorAll('.category-section');
+
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Remove active class from all buttons
+                filterBtns.forEach(b => b.classList.remove('active'));
+                // Add active class to clicked button
+                btn.classList.add('active');
+
+                const category = btn.getAttribute('data-category');
+
+                sections.forEach(section => {
+                    if (category === 'all' || section.getAttribute('data-category') === category) {
+                        section.style.display = 'block';
+                        setTimeout(() => {
+                            section.style.opacity = '1';
+                        }, 10);
+                    } else {
+                        section.style.opacity = '0';
+                        setTimeout(() => {
+                            section.style.display = 'none';
+                        }, 300);
+                    }
+                });
+            });
+        });
+    });
+</script>
 {{ end }}
