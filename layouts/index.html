@@ -1,7 +1,8 @@
 {{ define "main" }}
 <section class="hero-section">
+    <div class="hero-bg-animation"></div>
     <div class="hero-container">
-        <div class="hero-content">
+        <div class="hero-content glass-card">
             <h1 class="hero-title">
                 <span class="title-main">The Logos</span>
                 <span class="title-divider">✦</span>
@@ -14,8 +15,9 @@
             <div class="hero-actions">
                 <a href="/about/" class="button button-primary">
                     <span>소개</span>
-                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                        <path d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"
+                        aria-hidden="true">
+                        <path d="M13 7l5 5m0 0l-5 5m5-5H6" />
                     </svg>
                 </a>
                 <a href="/posts/" class="button button-secondary">
@@ -33,11 +35,11 @@
             <a href="/posts/" class="view-all-link">
                 모든 글 보기
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M6 12l4-4-4-4"/>
+                    <path d="M6 12l4-4-4-4" />
                 </svg>
             </a>
         </header>
-        
+
         <div class="posts-grid">
             {{ range first 6 (where .Site.RegularPages "Type" "posts") }}
             <article class="post-card">
@@ -50,7 +52,7 @@
                             <span class="date-year">{{ .Date.Format "2006" }}</span>
                         </div>
                     </div>
-                    
+
                     <!-- 콘텐츠 영역 -->
                     <div class="post-content-section">
                         <!-- 카테고리 배지 -->
@@ -65,15 +67,15 @@
                             </span>
                             {{ end }}
                         </div>
-                        
+
                         <h3 class="post-title">
                             <a href="{{ .RelPermalink }}">{{ .Title }}</a>
                         </h3>
-                        
+
                         <p class="post-excerpt">
                             {{ .Summary | plainify | truncate 120 }}
                         </p>
-                        
+
                         <footer class="post-footer">
                             {{ with .Params.tags }}
                             <div class="post-tags">
@@ -82,11 +84,12 @@
                                 {{ end }}
                             </div>
                             {{ end }}
-                            
+
                             <a href="{{ .RelPermalink }}" class="read-more-link">
                                 계속 읽기
-                                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M5 10l3-3-3-3"/>
+                                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path d="M5 10l3-3-3-3" />
                                 </svg>
                             </a>
                         </footer>
@@ -99,546 +102,514 @@
 </section>
 
 <style>
-/* CSS Variables for consistent theming */
-:root {
-    /* Light mode colors */
-    --primary-color: #3b82f6;
-    --primary-hover: #2563eb;
-    --secondary-color: #64748b;
-    --accent-color: #0ea5e9;
-    
-    /* Text colors */
-    --text-primary: #1e293b;
-    --text-secondary: #475569;
-    --text-tertiary: #64748b;
-    --text-on-primary: #ffffff;
-    
-    /* Background colors */
-    --bg-primary: #ffffff;
-    --bg-secondary: #f8fafc;
-    --bg-card: #ffffff;
-    --bg-hover: #f1f5f9;
-    
-    /* Border colors */
-    --border-light: #e2e8f0;
-    --border-medium: #cbd5e1;
-    
-    /* Shadows */
-    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
-    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
-    
-    /* Transitions */
-    --transition-fast: 150ms ease;
-    --transition-base: 200ms ease;
-    --transition-slow: 300ms ease;
-}
+    /* CSS Variables for consistent theming */
 
-/* Dark mode variables */
-@media (prefers-color-scheme: dark) {
-    :root {
-        --text-primary: #f1f5f9;
-        --text-secondary: #cbd5e1;
-        --text-tertiary: #94a3b8;
-        --bg-primary: #0f172a;
-        --bg-secondary: #1e293b;
-        --bg-card: #1e293b;
-        --bg-hover: #334155;
-        --border-light: #334155;
-        --border-medium: #475569;
-        --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.2);
-        --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.3);
-        --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.3);
-        --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.4);
+
+    /* Reset and Base Styles */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
     }
-}
 
-/* Reset and Base Styles */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans KR', sans-serif;
-    line-height: 1.6;
-    color: var(--text-primary);
-    background-color: var(--bg-secondary);
-}
-
-/* Container */
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
-}
-
-/* Hero Section */
-.hero-section {
-    min-height: 70vh;
-    display: flex;
-    align-items: center;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    position: relative;
-    overflow: hidden;
-}
-
-.hero-section::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat;
-}
-
-.hero-container {
-    width: 100%;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
-    position: relative;
-    z-index: 1;
-}
-
-.hero-content {
-    max-width: 700px;
-    margin: 0 auto;
-    text-align: center;
-    color: white;
-}
-
-.hero-title {
-    margin-bottom: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 20px;
-}
-
-.title-main {
-    font-size: clamp(3rem, 8vw, 5rem);
-    font-weight: 800;
-    letter-spacing: -0.02em;
-    text-shadow: 2px 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-.title-divider {
-    font-size: 2rem;
-    opacity: 0.7;
-}
-
-.hero-subtitle {
-    font-size: 1.5rem;
-    font-weight: 300;
-    letter-spacing: 0.1em;
-    margin-bottom: 30px;
-    opacity: 0.95;
-}
-
-.hero-description {
-    margin-bottom: 40px;
-    font-size: 1.125rem;
-    line-height: 1.8;
-    opacity: 0.9;
-}
-
-.hero-description p {
-    margin-bottom: 10px;
-}
-
-/* Buttons */
-.hero-actions {
-    display: flex;
-    gap: 16px;
-    justify-content: center;
-    flex-wrap: wrap;
-}
-
-.button {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 14px 28px;
-    border-radius: 12px;
-    font-weight: 600;
-    font-size: 1rem;
-    text-decoration: none;
-    transition: all var(--transition-base);
-    position: relative;
-    overflow: hidden;
-}
-
-.button-primary {
-    background: white;
-    color: #764ba2;
-    box-shadow: 0 4px 14px 0 rgba(0, 0, 0, 0.15);
-}
-
-.button-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.2);
-}
-
-.button-secondary {
-    background: rgba(255, 255, 255, 0.15);
-    color: white;
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    backdrop-filter: blur(10px);
-}
-
-.button-secondary:hover {
-    background: rgba(255, 255, 255, 0.25);
-    transform: translateY(-2px);
-    border-color: rgba(255, 255, 255, 0.5);
-}
-
-/* Recent Posts Section */
-.recent-posts-section {
-    padding: 80px 0;
-    background: var(--bg-secondary);
-}
-
-.section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 50px;
-}
-
-.section-title {
-    font-size: 2.5rem;
-    font-weight: 800;
-    color: var(--text-primary);
-    position: relative;
-}
-
-.section-title::after {
-    content: '';
-    position: absolute;
-    bottom: -10px;
-    left: 0;
-    width: 60px;
-    height: 4px;
-    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-    border-radius: 2px;
-}
-
-.view-all-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    color: var(--primary-color);
-    text-decoration: none;
-    font-weight: 600;
-    transition: all var(--transition-base);
-    padding: 8px 16px;
-    border-radius: 8px;
-    background: transparent;
-}
-
-.view-all-link:hover {
-    gap: 10px;
-    background: var(--bg-hover);
-}
-
-/* Posts Grid */
-.posts-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-    gap: 30px;
-}
-
-/* Post Card - 가로 레이아웃으로 수정 */
-.post-card {
-    background: var(--bg-card);
-    border-radius: 16px;
-    overflow: hidden;
-    transition: all var(--transition-slow);
-    border: 1px solid var(--border-light);
-    box-shadow: var(--shadow-sm);
-    position: relative;
-}
-
-.post-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-    opacity: 0;
-    transition: opacity var(--transition-base);
-}
-
-.post-card:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-lg);
-    border-color: transparent;
-}
-
-.post-card:hover::before {
-    opacity: 1;
-}
-
-.post-card-inner {
-    display: flex;
-    height: 100%;
-}
-
-/* 날짜 섹션 - 왼쪽 영역 */
-.post-date-section {
-    width: 100px;
-    min-width: 100px;
-    background: var(--bg-hover);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px 10px;
-}
-
-.date-box {
-    text-align: center;
-    font-weight: 600;
-}
-
-.date-box span {
-    display: block;
-}
-
-.date-month {
-    font-size: 0.875rem;
-    color: var(--text-tertiary);
-    text-transform: uppercase;
-}
-
-.date-day {
-    font-size: 2rem;
-    line-height: 1.2;
-    color: var(--text-primary);
-    margin: 5px 0;
-}
-
-.date-year {
-    font-size: 0.75rem;
-    color: var(--text-tertiary);
-}
-
-/* 콘텐츠 섹션 - 오른쪽 영역 */
-.post-content-section {
-    flex: 1;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
-}
-
-/* Category Badges */
-.post-categories {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    margin-bottom: 12px;
-}
-
-.category-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    padding: 4px 10px;
-    border-radius: 20px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.category-religion {
-    background: rgba(102, 126, 234, 0.1);
-    color: #667eea;
-    border: 1px solid rgba(102, 126, 234, 0.2);
-}
-
-.category-philosophy {
-    background: rgba(245, 87, 108, 0.1);
-    color: #f5576c;
-    border: 1px solid rgba(245, 87, 108, 0.2);
-}
-
-.category-engineering {
-    background: rgba(79, 172, 254, 0.1);
-    color: #4facfe;
-    border: 1px solid rgba(79, 172, 254, 0.2);
-}
-
-.category-writing {
-    background: rgba(67, 233, 123, 0.1);
-    color: #43e97b;
-    border: 1px solid rgba(67, 233, 123, 0.2);
-}
-
-/* Post Title */
-.post-title {
-    font-size: 1.25rem;
-    font-weight: 700;
-    margin-bottom: 12px;
-    line-height: 1.4;
-}
-
-.post-title a {
-    color: var(--text-primary);
-    text-decoration: none;
-    transition: color var(--transition-base);
-}
-
-.post-title a:hover {
-    color: #667eea;
-}
-
-/* Post Excerpt */
-.post-excerpt {
-    color: var(--text-secondary);
-    line-height: 1.7;
-    margin-bottom: 20px;
-    flex-grow: 1;
-    font-size: 0.95rem;
-}
-
-/* Post Footer */
-.post-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-top: 16px;
-    border-top: 1px solid var(--border-light);
-}
-
-.post-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-}
-
-.tag {
-    font-size: 0.75rem;
-    color: var(--text-tertiary);
-    padding: 2px 8px;
-    background: var(--bg-hover);
-    border-radius: 4px;
-}
-
-.read-more-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    color: #667eea;
-    font-weight: 600;
-    text-decoration: none;
-    font-size: 0.875rem;
-    transition: all var(--transition-base);
-    white-space: nowrap;
-}
-
-.read-more-link:hover {
-    gap: 10px;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    .hero-section {
-        min-height: 60vh;
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans KR', sans-serif;
+        line-height: 1.6;
+        color: var(--text-primary);
+        background-color: var(--bg-secondary);
     }
-    
-    .title-main {
-        font-size: 3rem;
-    }
-    
-    .hero-subtitle {
-        font-size: 1.125rem;
-    }
-    
-    .hero-actions {
-        flex-direction: column;
-        width: 100%;
-        max-width: 300px;
+
+    /* Container */
+    .container {
+        max-width: 1200px;
         margin: 0 auto;
+        padding: 0 20px;
     }
-    
-    .button {
-        width: 100%;
-        justify-content: center;
-    }
-    
-    .section-header {
-        flex-direction: column;
-        gap: 20px;
-        align-items: flex-start;
-    }
-    
-    .section-title {
-        font-size: 2rem;
-    }
-    
-    .posts-grid {
-        grid-template-columns: 1fr;
-        gap: 20px;
-    }
-    
-    /* 모바일에서 카드 레이아웃 세로로 변경 */
-    .post-card-inner {
-        flex-direction: column;
-    }
-    
-    .post-date-section {
-        width: 100%;
-        min-width: auto;
-        padding: 15px;
-    }
-    
-    .date-box {
+
+    /* Hero Section Redesign */
+    .hero-section {
+        min-height: 85vh;
         display: flex;
-        gap: 15px;
         align-items: center;
         justify-content: center;
+        position: relative;
+        overflow: hidden;
+        background: #0f172a;
+        /* Fallback */
     }
-    
-    .date-month,
-    .date-day,
-    .date-year {
-        display: inline-block;
-    }
-    
-    .date-day {
-        font-size: 1.5rem;
-    }
-}
 
-/* Loading Animation */
-@keyframes fadeInUp {
-    from {
+    /* Animated Background */
+    .hero-bg-animation {
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle at center, #4f46e5 0%, #0f172a 50%),
+            radial-gradient(circle at 80% 20%, #7c3aed 0%, transparent 40%),
+            radial-gradient(circle at 20% 80%, #2563eb 0%, transparent 40%);
+        background-size: 100% 100%;
+        animation: bgPulse 15s ease-in-out infinite alternate;
+        opacity: 0.6;
+        z-index: 0;
+    }
+
+    @keyframes bgPulse {
+        0% {
+            transform: scale(1);
+        }
+
+        100% {
+            transform: scale(1.2);
+        }
+    }
+
+    .hero-container {
+        width: 100%;
+        max-width: 1200px;
+        padding: 0 20px;
+        position: relative;
+        z-index: 10;
+        display: flex;
+        justify-content: center;
+    }
+
+    /* Glass Card Effect */
+    .glass-card {
+        animation: spin 10s linear infinite;
+    }
+
+    @keyframes spin {
+        from {
+            transform: rotate(0deg);
+        }
+
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    .hero-subtitle {
+        font-size: 1.25rem;
+        font-weight: 400;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: #94a3b8;
+        margin-bottom: 40px;
+    }
+
+    .hero-description {
+        margin-bottom: 48px;
+        font-size: 1.2rem;
+        line-height: 1.8;
+        color: #cbd5e1;
+    }
+
+    /* Buttons */
+    .hero-actions {
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .button {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 16px 32px;
+        border-radius: 100px;
+        /* Pill shape */
+        font-weight: 600;
+        font-size: 1.1rem;
+        text-decoration: none;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .button-primary {
+        background: white;
+        color: #0f172a;
+        box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+    }
+
+    .button-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
+    }
+
+    .button-secondary {
+        background: rgba(255, 255, 255, 0.05);
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .button-secondary:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.4);
+        transform: translateY(-2px);
+    }
+
+    /* Recent Posts Section */
+    .recent-posts-section {
+        padding: 80px 0;
+        background: var(--bg-secondary);
+    }
+
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 50px;
+    }
+
+    .section-title {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: var(--text-primary);
+        position: relative;
+    }
+
+    .section-title::after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 0;
+        width: 60px;
+        height: 4px;
+        background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+        border-radius: 2px;
+    }
+
+    .view-all-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        color: var(--primary-color);
+        text-decoration: none;
+        font-weight: 600;
+        transition: all var(--transition-base);
+        padding: 8px 16px;
+        border-radius: 8px;
+        background: transparent;
+    }
+
+    .view-all-link:hover {
+        gap: 10px;
+        background: var(--bg-hover);
+    }
+
+    /* Posts Grid */
+    .posts-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 30px;
+    }
+
+    /* Post Card - 가로 레이아웃으로 수정 */
+    .post-card {
+        background: var(--bg-card);
+        border-radius: 16px;
+        overflow: hidden;
+        transition: all var(--transition-slow);
+        border: 1px solid var(--border-light);
+        box-shadow: var(--shadow-sm);
+        position: relative;
+    }
+
+    .post-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
         opacity: 0;
-        transform: translateY(20px);
+        transition: opacity var(--transition-base);
     }
-    to {
+
+    .post-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
+        border-color: transparent;
+    }
+
+    .post-card:hover::before {
         opacity: 1;
-        transform: translateY(0);
     }
-}
 
-.post-card {
-    animation: fadeInUp 0.6s ease-out;
-    animation-fill-mode: both;
-}
+    .post-card-inner {
+        display: flex;
+        height: 100%;
+    }
 
-.post-card:nth-child(1) { animation-delay: 0.1s; }
-.post-card:nth-child(2) { animation-delay: 0.2s; }
-.post-card:nth-child(3) { animation-delay: 0.3s; }
-.post-card:nth-child(4) { animation-delay: 0.4s; }
-.post-card:nth-child(5) { animation-delay: 0.5s; }
-.post-card:nth-child(6) { animation-delay: 0.6s; }
+    /* 날짜 섹션 - 왼쪽 영역 */
+    .post-date-section {
+        width: 100px;
+        min-width: 100px;
+        background: var(--bg-hover);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px 10px;
+    }
+
+    .date-box {
+        text-align: center;
+        font-weight: 600;
+    }
+
+    .date-box span {
+        display: block;
+    }
+
+    .date-month {
+        font-size: 0.875rem;
+        color: var(--text-tertiary);
+        text-transform: uppercase;
+    }
+
+    .date-day {
+        font-size: 2rem;
+        line-height: 1.2;
+        color: var(--text-primary);
+        margin: 5px 0;
+    }
+
+    .date-year {
+        font-size: 0.75rem;
+        color: var(--text-tertiary);
+    }
+
+    /* 콘텐츠 섹션 - 오른쪽 영역 */
+    .post-content-section {
+        flex: 1;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+    }
+
+    /* Category Badges */
+    .post-categories {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-bottom: 12px;
+    }
+
+    .category-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .category-religion {
+        background: rgba(102, 126, 234, 0.1);
+        color: #667eea;
+        border: 1px solid rgba(102, 126, 234, 0.2);
+    }
+
+    .category-philosophy {
+        background: rgba(245, 87, 108, 0.1);
+        color: #f5576c;
+        border: 1px solid rgba(245, 87, 108, 0.2);
+    }
+
+    .category-engineering {
+        background: rgba(79, 172, 254, 0.1);
+        color: #4facfe;
+        border: 1px solid rgba(79, 172, 254, 0.2);
+    }
+
+    .category-writing {
+        background: rgba(67, 233, 123, 0.1);
+        color: #43e97b;
+        border: 1px solid rgba(67, 233, 123, 0.2);
+    }
+
+    /* Post Title */
+    .post-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin-bottom: 12px;
+        line-height: 1.4;
+    }
+
+    .post-title a {
+        color: var(--text-primary);
+        text-decoration: none;
+        transition: color var(--transition-base);
+    }
+
+    .post-title a:hover {
+        color: #667eea;
+    }
+
+    /* Post Excerpt */
+    .post-excerpt {
+        color: var(--text-secondary);
+        line-height: 1.7;
+        margin-bottom: 20px;
+        flex-grow: 1;
+        font-size: 0.95rem;
+    }
+
+    /* Post Footer */
+    .post-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 16px;
+        border-top: 1px solid var(--border-light);
+    }
+
+    .post-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .tag {
+        font-size: 0.75rem;
+        color: var(--text-tertiary);
+        padding: 2px 8px;
+        background: var(--bg-hover);
+        border-radius: 4px;
+    }
+
+    .read-more-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        color: #667eea;
+        font-weight: 600;
+        text-decoration: none;
+        font-size: 0.875rem;
+        transition: all var(--transition-base);
+        white-space: nowrap;
+    }
+
+    .read-more-link:hover {
+        gap: 10px;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .hero-section {
+            min-height: 60vh;
+        }
+
+        .title-main {
+            font-size: 3rem;
+        }
+
+        .hero-subtitle {
+            font-size: 1.125rem;
+        }
+
+        .hero-actions {
+            flex-direction: column;
+            width: 100%;
+            max-width: 300px;
+            margin: 0 auto;
+        }
+
+        .button {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .section-header {
+            flex-direction: column;
+            gap: 20px;
+            align-items: flex-start;
+        }
+
+        .section-title {
+            font-size: 2rem;
+        }
+
+        .posts-grid {
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        /* 모바일에서 카드 레이아웃 세로로 변경 */
+        .post-card-inner {
+            flex-direction: column;
+        }
+
+        .post-date-section {
+            width: 100%;
+            min-width: auto;
+            padding: 15px;
+        }
+
+        .date-box {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .date-month,
+        .date-day,
+        .date-year {
+            display: inline-block;
+        }
+
+        .date-day {
+            font-size: 1.5rem;
+        }
+    }
+
+    /* Loading Animation */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .post-card {
+        animation: fadeInUp 0.6s ease-out;
+        animation-fill-mode: both;
+    }
+
+    .post-card:nth-child(1) {
+        animation-delay: 0.1s;
+    }
+
+    .post-card:nth-child(2) {
+        animation-delay: 0.2s;
+    }
+
+    .post-card:nth-child(3) {
+        animation-delay: 0.3s;
+    }
+
+    .post-card:nth-child(4) {
+        animation-delay: 0.4s;
+    }
+
+    .post-card:nth-child(5) {
+        animation-delay: 0.5s;
+    }
+
+    .post-card:nth-child(6) {
+        animation-delay: 0.6s;
+    }
 </style>
 {{ end }}
