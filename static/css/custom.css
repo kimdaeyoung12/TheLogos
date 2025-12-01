@@ -58,6 +58,11 @@
 /* ========================================
    Global Styles
    ======================================== */
+html {
+    direction: ltr !important;
+    /* Force LTR even for Hebrew titles */
+}
+
 body {
     font-family: var(--font-family-base) !important;
     transition: background-color 0.3s ease, color 0.3s ease;
@@ -66,7 +71,6 @@ body {
 /* Light Mode Defaults */
 body:not(.dark) {
     background-color: var(--light-bg-secondary) !important;
-    /* Slightly distinct from card bg */
     color: var(--light-text-secondary);
 }
 
@@ -136,6 +140,7 @@ body:not(.dark) a:hover {
     position: sticky;
     top: 0;
     z-index: 100;
+    width: 100%;
 }
 
 body:not(.dark) .header {
@@ -148,6 +153,25 @@ body:not(.dark) .header {
     border-bottom: 1px solid var(--dark-border);
 }
 
+/* Nav Layout */
+.nav {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    max-width: 1200px;
+    /* Limit width */
+    margin: 0 auto;
+    padding: 0 1rem;
+    height: 60px;
+    /* Fixed height for consistency */
+}
+
+/* Logo */
+.logo {
+    display: flex;
+    align-items: center;
+}
+
 /* Menu Items */
 #menu {
     list-style: none;
@@ -155,6 +179,10 @@ body:not(.dark) .header {
     margin: 0;
     display: flex;
     gap: 1.5rem;
+    justify-content: center;
+    /* Center menu items */
+    flex: 1;
+    /* Allow menu to take available space */
 }
 
 #menu li {
@@ -183,10 +211,29 @@ body:not(.dark) .header a:hover {
 }
 
 /* Theme Toggle */
+.logo-switches {
+    display: flex;
+    align-items: center;
+}
+
 #theme-toggle {
     padding: 0.5rem;
     border-radius: var(--radius-sm);
     transition: var(--transition-base);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+body:not(.dark) #theme-toggle {
+    color: var(--light-text-primary);
+}
+
+.dark #theme-toggle {
+    color: var(--dark-text-primary);
 }
 
 body:not(.dark) #theme-toggle:hover {
@@ -396,7 +443,7 @@ body:not(.dark) th {
 }
 
 /* ========================================
-   Buttons & Tags
+   Buttons & Tags (Contrast Fixes)
    ======================================== */
 .button,
 .filter-btn {
@@ -426,16 +473,52 @@ body:not(.dark) .filter-btn.active {
 }
 
 .dark .filter-btn {
-    background-color: var(--dark-bg-secondary);
+    background-color: #334155;
+    /* Lighter than card bg for visibility */
     border-color: var(--dark-border);
-    color: var(--dark-text-secondary);
+    color: #f8fafc;
+    /* High contrast text */
 }
 
 .dark .filter-btn:hover,
 .dark .filter-btn.active {
     background-color: var(--dark-accent);
-    color: var(--dark-bg-primary);
+    color: #0f172a;
+    /* Dark text on bright accent */
     border-color: var(--dark-accent);
+}
+
+/* Post Tags */
+.post-tags a {
+    display: inline-block;
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    margin-right: 0.5rem;
+    margin-bottom: 0.5rem;
+    transition: var(--transition-base);
+}
+
+body:not(.dark) .post-tags a {
+    background-color: #f1f5f9;
+    color: var(--light-text-secondary);
+}
+
+body:not(.dark) .post-tags a:hover {
+    background-color: var(--light-accent);
+    color: #ffffff;
+}
+
+.dark .post-tags a {
+    background-color: #334155;
+    /* Lighter slate for visibility */
+    color: #f8fafc;
+    /* White text */
+}
+
+.dark .post-tags a:hover {
+    background-color: var(--dark-accent);
+    color: #0f172a;
 }
 
 /* ========================================
