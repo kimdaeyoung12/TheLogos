@@ -81,346 +81,257 @@
                     safeHTMLAttr ) }} class="menu-link">
                     <span {{- if eq $menu_item_url $page_url }} class="active" {{- end }}>
                         {{ .Pre }}{{ .Name }}{{ .Post }}
-                        <svg class="menu-dropdown-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" {{- /*
-                            theme-toggle is enabled */}} {{- if (not site.Params.disableThemeToggle) }} {{- /* theme is
-                            light */}} {{- if (eq site.Params.defaultTheme "light" ) }} <script>
-                            if (localStorage.getItem("pref-theme") === "dark") {
-                            document.body.classList.add('dark');
+                        <svg class="menu-dropdown-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </span>
+                </a>
+                <ul class="sub-menu">
+                    {{- range .Children }}
+                    <li>
+                        <a href="{{ .URL | absLangURL }}" title="{{ .Title | default .Name }}" class="sub-menu-link">
+                            {{ .Pre }}{{ .Name }}{{ .Post }}
+                        </a>
+                    </li>
+                    {{- end }}
+                </ul>
+            </li>
+            {{- else }}
+            <li>
+                <a href="{{ .URL | absLangURL }}" title="{{ .Title | default .Name }} {{- cond $is_search (" (Alt + /)"
+                    | safeHTMLAttr) ("" | safeHTMLAttr ) }}" {{- cond $is_search (" accesskey=/" | safeHTMLAttr) ("" |
+                    safeHTMLAttr ) }} class="menu-link">
+                    <span {{- if eq $menu_item_url $page_url }} class="active" {{- end }}>
+                        {{ .Pre }}{{ .Name }}{{ .Post }}
+                    </span>
+                </a>
+            </li>
+            {{- end }}
+            {{- end }}
+        </ul>
+        <div class="logo-switches">
+            {{- if (not site.Params.disableThemeToggle) }}
+            <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                </svg>
+                <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="5"></circle>
+                    <line x1="12" y1="1" x2="12" y2="3"></line>
+                    <line x1="12" y1="21" x2="12" y2="23"></line>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                    <line x1="1" y1="12" x2="3" y2="12"></line>
+                    <line x1="21" y1="12" x2="23" y2="12"></line>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                </svg>
+            </button>
+            {{- end }}
+        </div>
+    </nav>
+</header>
+
+<style>
+    /* 로고와 네비게이션 링크 색상 */
+    .logo-link,
+    .menu-link,
+    .sub-menu-link {
+        color: var(--primary) !important;
+        text-decoration: none;
+        transition: color 0.2s ease;
+    }
+
+    .logo-link:hover,
+    .menu-link:hover,
+    .sub-menu-link:hover {
+        color: var(--secondary) !important;
+    }
+
+    /* 활성화된 메뉴 스타일 */
+    .menu-link .active {
+        font-weight: 600;
+        border-bottom: 2px solid var(--primary);
+    }
+
+    /* 드롭다운 메뉴 스타일 */
+    .menu-item-has-children {
+        position: relative;
+    }
+
+    .menu-dropdown-icon {
+        display: inline-block;
+        margin-left: 4px;
+        vertical-align: middle;
+        transition: transform 0.3s ease;
+    }
+
+    .menu-item-has-children:hover .menu-dropdown-icon {
+        transform: rotate(180deg);
+    }
+
+    .sub-menu {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        min-width: 150px;
+        background: var(--theme);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-10px);
+        transition: all 0.3s ease;
+        z-index: 1000;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        margin-top: 10px;
+    }
+
+    .menu-item-has-children:hover .sub-menu {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+
+    .sub-menu li {
+        margin: 0;
+    }
+
+    .sub-menu a {
+        display: block;
+        padding: 10px 16px;
+        color: var(--primary) !important;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        font-size: 14px;
+    }
+
+    .sub-menu a:hover {
+        background: var(--border);
+        color: var(--primary) !important;
+    }
+
+    .sub-menu li:first-child a {
+        border-radius: calc(var(--radius) - 1px) calc(var(--radius) - 1px) 0 0;
+    }
+
+    .sub-menu li:last-child a {
+        border-radius: 0 0 calc(var(--radius) - 1px) calc(var(--radius) - 1px);
+    }
+
+    /* 다크 모드 스타일 */
+    .dark .header {
+        background: var(--theme);
+        border-color: var(--border);
+    }
+
+    .dark .sub-menu {
+        background: var(--entry);
+        border-color: var(--border);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .dark .sub-menu a:hover {
+        background: var(--border);
+    }
+
+    /* 모바일 대응 */
+    @media (max-width: 768px) {
+        .menu-item-has-children {
+            position: static;
+        }
+
+        .sub-menu {
+            position: static;
+            opacity: 1;
+            visibility: visible;
+            transform: none;
+            box-shadow: none;
+            border: none;
+            margin-top: 0;
+            margin-left: 20px;
+            display: none;
+        }
+
+        .menu-item-has-children.active .sub-menu {
+            display: block;
+        }
+
+        .menu-dropdown-icon {
+            float: right;
+        }
+    }
+</style>
+
+<script>
+    // 모바일에서 드롭다운 토글
+    document.addEventListener('DOMContentLoaded', function () {
+        const menuItems = document.querySelectorAll('.menu-item-has-children');
+        const isMobile = window.innerWidth <= 768;
+
+        menuItems.forEach(item => {
+            const link = item.querySelector('a');
+            const subMenu = item.querySelector('.sub-menu');
+
+            if (isMobile) {
+                // 모바일: 클릭으로 토글
+                link.addEventListener('click', function (e) {
+                    if (subMenu) {
+                        e.preventDefault();
+
+                        // 다른 열린 메뉴 닫기
+                        menuItems.forEach(other => {
+                            if (other !== item) {
+                                other.classList.remove('active');
                             }
-                            </script>
-                            {{- /* theme is dark */}}
-                            {{- else if (eq site.Params.defaultTheme "dark") }}
-                            <script>
-                                if (localStorage.getItem("pref-theme") === "light") {
-                                    document.body.classList.remove('dark')
-                                }
-                            </script>
-                            {{- else }}
-                            {{- /* theme is auto */}}
-                            <script>
-                                if (localStorage.getItem("pref-theme") === "dark") {
-                                    document.body.classList.add('dark');
-                                } else if (localStorage.getItem("pref-theme") === "light") {
-                                    document.body.classList.remove('dark')
-                                } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-                                    document.body.classList.add('dark');
-                                }
-                            </script>
-                            {{- end }}
-                            {{- /* theme-toggle is disabled and theme is auto */}}
-                            {{- else if (and (ne site.Params.defaultTheme "light") (ne site.Params.defaultTheme
-                            "dark"))}}
-                            <script>
-                                if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-                                    document.body.classList.add('dark');
-                                }
-                            </script>
-                            {{- end }}
+                        });
 
-                            <header class="header">
-                                <nav class="nav">
-                                    <div class="logo">
-                                        {{- $label_text := (site.Params.label.text | default site.Title) }}
-                                        {{- if site.Title }}
-                                        <a href="{{ "" | absLangURL }}" accesskey="h"
-                                            title="{{ $label_text }} (Alt + H)" class="logo-link">
-                                            {{- if site.Params.label.icon }}
-                                            {{- $img := resources.Get site.Params.label.icon }}
-                                            {{- if $img }}
-                                            {{- $processableFormats := (slice "jpg" "jpeg" "png" "tif" "bmp" "gif") -}}
-                                            {{- if hugo.IsExtended -}}
-                                            {{- $processableFormats = $processableFormats | append "webp" -}}
-                                            {{- end -}}
-                                            {{- $prod := (hugo.IsProduction | or (eq site.Params.env "production")) }}
-                                            {{- if and (in $processableFormats $img.MediaType.SubType) (eq $prod true)}}
-                                            {{- if site.Params.label.iconHeight }}
-                                            {{- $img = $img.Resize (printf "x%d" site.Params.label.iconHeight) }}
-                                            {{ else }}
-                                            {{- $img = $img.Resize "x30" }}
-                                            {{- end }}
-                                            <img src="{{ $img.Permalink }}" alt="" aria-label="logo"
-                                                height="{{- site.Params.label.iconHeight | default " 30" -}}">
-                                            {{- else }}
-                                            <img src="{{- site.Params.label.icon | absURL -}}" alt="" aria-label="logo"
-                                                height="{{- site.Params.label.iconHeight | default " 30" -}}">
-                                            {{- end -}}
-                                            {{- end -}}
-                                            {{- $label_text -}}
-                                        </a>
-                                        {{- end }}
-                                    </div>
-                                    {{- $currentPage := . }}
-                                    <ul id="menu">
-                                        {{- range site.Menus.main }}
-                                        {{- $menu_item_url := (cond (strings.HasSuffix .URL "/") .URL (printf "%s/"
-                                        .URL) ) | absLangURL }}
-                                        {{- $page_url:= $currentPage.Permalink | absLangURL }}
-                                        {{- $is_search := eq (site.GetPage .KeyName).Layout `search` }}
+                        item.classList.toggle('active');
+                    }
+                });
+            } else {
+                // 데스크톱: 호버 효과 유지
+                let timeout;
 
-                                        {{- if .HasChildren }}
-                                        <li class="menu-item-has-children">
-                                            <a href="{{ .URL | absLangURL }}"
-                                                title="{{ .Title | default .Name }} {{- cond $is_search (" (Alt + /)" |
-                                                safeHTMLAttr) ("" | safeHTMLAttr ) }}" {{- cond $is_search ("
-                                                accesskey=/" | safeHTMLAttr) ("" | safeHTMLAttr ) }} class="menu-link">
-                                                <span {{- if eq $menu_item_url $page_url }} class="active" {{- end }}>
-                                                    {{ .Pre }}{{ .Name }}{{ .Post }}
-                                                    <svg class="menu-dropdown-icon" xmlns="http://www.w3.org/2000/svg"
-                                                        width="16" height="16" viewBox="0 0 24 24" fill="none"
-                                                        stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                                        stroke-linejoin="round">
-                                                        <polyline points="6 9 12 15 18 9"></polyline>
-                                                    </svg>
-                                                </span>
-                                            </a>
-                                            <ul class="sub-menu">
-                                                {{- range .Children }}
-                                                <li>
-                                                    <a href="{{ .URL | absLangURL }}"
-                                                        title="{{ .Title | default .Name }}" class="sub-menu-link">
-                                                        {{ .Pre }}{{ .Name }}{{ .Post }}
-                                                    </a>
-                                                </li>
-                                                {{- end }}
-                                            </ul>
-                                        </li>
-                                        {{- else }}
-                                        <li>
-                                            <a href="{{ .URL | absLangURL }}"
-                                                title="{{ .Title | default .Name }} {{- cond $is_search (" (Alt + /)" |
-                                                safeHTMLAttr) ("" | safeHTMLAttr ) }}" {{- cond $is_search ("
-                                                accesskey=/" | safeHTMLAttr) ("" | safeHTMLAttr ) }} class="menu-link">
-                                                <span {{- if eq $menu_item_url $page_url }} class="active" {{- end }}>
-                                                    {{ .Pre }}{{ .Name }}{{ .Post }}
-                                                </span>
-                                            </a>
-                                        </li>
-                                        {{- end }}
-                                        {{- end }}
-                                    </ul>
-                                    <div class="logo-switches">
-                                        {{- if (not site.Params.disableThemeToggle) }}
-                                        <button id="theme-toggle" accesskey="t" title="(Alt + T)">
-                                            <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18"
-                                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                                stroke-linecap="round" stroke-linejoin="round">
-                                                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-                                            </svg>
-                                            <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18"
-                                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                                stroke-linecap="round" stroke-linejoin="round">
-                                                <circle cx="12" cy="12" r="5"></circle>
-                                                <line x1="12" y1="1" x2="12" y2="3"></line>
-                                                <line x1="12" y1="21" x2="12" y2="23"></line>
-                                                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-                                                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-                                                <line x1="1" y1="12" x2="3" y2="12"></line>
-                                                <line x1="21" y1="12" x2="23" y2="12"></line>
-                                                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-                                                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-                                            </svg>
-                                        </button>
-                                        {{- end }}
-                                    </div>
-                                </nav>
-                            </header>
+                item.addEventListener('mouseenter', function () {
+                    clearTimeout(timeout);
+                });
 
-                            <style>
-                                /* 로고와 네비게이션 링크 색상 */
-                                .logo-link,
-                                .menu-link,
-                                .sub-menu-link {
-                                    color: var(--primary) !important;
-                                    text-decoration: none;
-                                    transition: color 0.2s ease;
-                                }
+                item.addEventListener('mouseleave', function () {
+                    timeout = setTimeout(() => {
+                        // 지연된 닫기 (사용자 경험 개선)
+                    }, 100);
+                });
+            }
+        });
 
-                                .logo-link:hover,
-                                .menu-link:hover,
-                                .sub-menu-link:hover {
-                                    color: var(--secondary) !important;
-                                }
+        // 외부 클릭시 메뉴 닫기
+        document.addEventListener('click', function (e) {
+            if (!e.target.closest('.menu-item-has-children')) {
+                menuItems.forEach(item => {
+                    item.classList.remove('active');
+                });
+            }
+        });
 
-                                /* 활성화된 메뉴 스타일 */
-                                .menu-link .active {
-                                    font-weight: 600;
-                                    border-bottom: 2px solid var(--primary);
-                                }
-
-                                /* 드롭다운 메뉴 스타일 */
-                                .menu-item-has-children {
-                                    position: relative;
-                                }
-
-                                .menu-dropdown-icon {
-                                    display: inline-block;
-                                    margin-left: 4px;
-                                    vertical-align: middle;
-                                    transition: transform 0.3s ease;
-                                }
-
-                                .menu-item-has-children:hover .menu-dropdown-icon {
-                                    transform: rotate(180deg);
-                                }
-
-                                .sub-menu {
-                                    position: absolute;
-                                    top: 100%;
-                                    left: 0;
-                                    min-width: 150px;
-                                    background: var(--theme);
-                                    border: 1px solid var(--border);
-                                    border-radius: var(--radius);
-                                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-                                    opacity: 0;
-                                    visibility: hidden;
-                                    transform: translateY(-10px);
-                                    transition: all 0.3s ease;
-                                    z-index: 1000;
-                                    list-style: none;
-                                    padding: 0;
-                                    margin: 0;
-                                    margin-top: 10px;
-                                }
-
-                                .menu-item-has-children:hover .sub-menu {
-                                    opacity: 1;
-                                    visibility: visible;
-                                    transform: translateY(0);
-                                }
-
-                                .sub-menu li {
-                                    margin: 0;
-                                }
-
-                                .sub-menu a {
-                                    display: block;
-                                    padding: 10px 16px;
-                                    color: var(--primary) !important;
-                                    text-decoration: none;
-                                    transition: all 0.2s ease;
-                                    font-size: 14px;
-                                }
-
-                                .sub-menu a:hover {
-                                    background: var(--border);
-                                    color: var(--primary) !important;
-                                }
-
-                                .sub-menu li:first-child a {
-                                    border-radius: calc(var(--radius) - 1px) calc(var(--radius) - 1px) 0 0;
-                                }
-
-                                .sub-menu li:last-child a {
-                                    border-radius: 0 0 calc(var(--radius) - 1px) calc(var(--radius) - 1px);
-                                }
-
-                                /* 다크 모드 스타일 */
-                                .dark .header {
-                                    background: var(--theme);
-                                    border-color: var(--border);
-                                }
-
-                                .dark .sub-menu {
-                                    background: var(--entry);
-                                    border-color: var(--border);
-                                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-                                }
-
-                                .dark .sub-menu a:hover {
-                                    background: var(--border);
-                                }
-
-                                /* 모바일 대응 */
-                                @media (max-width: 768px) {
-                                    .menu-item-has-children {
-                                        position: static;
-                                    }
-
-                                    .sub-menu {
-                                        position: static;
-                                        opacity: 1;
-                                        visibility: visible;
-                                        transform: none;
-                                        box-shadow: none;
-                                        border: none;
-                                        margin-top: 0;
-                                        margin-left: 20px;
-                                        display: none;
-                                    }
-
-                                    .menu-item-has-children.active .sub-menu {
-                                        display: block;
-                                    }
-
-                                    .menu-dropdown-icon {
-                                        float: right;
-                                    }
-                                }
-                            </style>
-
-                            <script>
-                                // 모바일에서 드롭다운 토글
-                                document.addEventListener('DOMContentLoaded', function () {
-                                    const menuItems = document.querySelectorAll('.menu-item-has-children');
-                                    const isMobile = window.innerWidth <= 768;
-
-                                    menuItems.forEach(item => {
-                                        const link = item.querySelector('a');
-                                        const subMenu = item.querySelector('.sub-menu');
-
-                                        if (isMobile) {
-                                            // 모바일: 클릭으로 토글
-                                            link.addEventListener('click', function (e) {
-                                                if (subMenu) {
-                                                    e.preventDefault();
-
-                                                    // 다른 열린 메뉴 닫기
-                                                    menuItems.forEach(other => {
-                                                        if (other !== item) {
-                                                            other.classList.remove('active');
-                                                        }
-                                                    });
-
-                                                    item.classList.toggle('active');
-                                                }
-                                            });
-                                        } else {
-                                            // 데스크톱: 호버 효과 유지
-                                            let timeout;
-
-                                            item.addEventListener('mouseenter', function () {
-                                                clearTimeout(timeout);
-                                            });
-
-                                            item.addEventListener('mouseleave', function () {
-                                                timeout = setTimeout(() => {
-                                                    // 지연된 닫기 (사용자 경험 개선)
-                                                }, 100);
-                                            });
-                                        }
-                                    });
-
-                                    // 외부 클릭시 메뉴 닫기
-                                    document.addEventListener('click', function (e) {
-                                        if (!e.target.closest('.menu-item-has-children')) {
-                                            menuItems.forEach(item => {
-                                                item.classList.remove('active');
-                                            });
-                                        }
-                                    });
-
-                                    // Theme Toggle Logic
-                                    const themeToggle = document.getElementById('theme-toggle');
-                                    if (themeToggle) {
-                                        themeToggle.addEventListener('click', () => {
-                                            document.body.classList.toggle('dark');
-                                            if (document.body.classList.contains('dark')) {
-                                                localStorage.setItem('pref-theme', 'dark');
-                                            } else {
-                                                localStorage.setItem('pref-theme', 'light');
-                                            }
-                                        });
-                                    }
-                                });
-                            </script>
+        // Theme Toggle Logic
+        const themeToggle = document.getElementById('theme-toggle');
+        if (themeToggle) {
+            themeToggle.addEventListener('click', () => {
+                document.body.classList.toggle('dark');
+                if (document.body.classList.contains('dark')) {
+                    localStorage.setItem('pref-theme', 'dark');
+                } else {
+                    localStorage.setItem('pref-theme', 'light');
+                }
+            });
+        }
+    });
+</script>
