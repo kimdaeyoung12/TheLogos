@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="{{ with site.Language }}{{ .Lang }}{{ else }}{{ site.LanguageCode | default "en" }}{{ end }}" dir="auto">
+<html lang="{{ with site.Language }}{{ .Lang }}{{ else }}{{ site.LanguageCode | default " en" }}{{ end }}" dir="auto">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -7,13 +8,13 @@
     <title>{{ $title }}</title>
     {{- $description := .Description -}}
     {{- if not $description }}
-        {{- with .Params.description }}{{ $description = . }}{{ end }}
+    {{- with .Params.description }}{{ $description = . }}{{ end }}
     {{- end -}}
     {{- if not $description }}
-        {{- with site.Params.description }}{{ $description = . }}{{ end }}
+    {{- with site.Params.description }}{{ $description = . }}{{ end }}
     {{- end -}}
     {{- if and (not $description) (eq .Kind "page") }}
-        {{- $description = .Summary }}
+    {{- $description = .Summary }}
     {{- end -}}
     {{- if $description }}
     <meta name="description" content="{{ $description }}">
@@ -24,15 +25,18 @@
     <meta name="robots" content="index, follow">
     {{- end }}
     <link rel="canonical" href="{{ .Permalink }}">
-    <link rel="icon" href="{{ "favicon.ico" | absURL }}">
-    <link rel="icon" type="image/png" sizes="16x16" href="{{ "favicon-16x16.png" | absURL }}">
-    <link rel="icon" type="image/png" sizes="32x32" href="{{ "favicon-32x32.png" | absURL }}">
-    <link rel="apple-touch-icon" href="{{ "apple-touch-icon.png" | absURL }}">
+    <link rel="icon" href="{{ " favicon.ico" | absURL }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ " favicon-16x16.png" | absURL }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ " favicon-32x32.png" | absURL }}">
+    <link rel="apple-touch-icon" href="{{ " apple-touch-icon.png" | absURL }}">
     <meta name="theme-color" content="#2e2e33">
-    <link rel="stylesheet" href="{{ "css/custom.css" | absURL }}">
+    <link rel="stylesheet" as="style" crossorigin
+        href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+    <link rel="stylesheet" href="{{ " css/custom.css" | absURL }}">
     {{ partial "extend_head.html" . }}
     {{ block "head" . }}{{ end }}
 </head>
+
 <body>
     {{ partial "header.html" . }}
     <main id="main-content">
@@ -40,4 +44,5 @@
     </main>
     {{ partial "extend_footer.html" . }}
 </body>
+
 </html>
