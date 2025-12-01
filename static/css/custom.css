@@ -600,6 +600,7 @@ body:not(.dark) ::-webkit-scrollbar-thumb {
 .dark ::-webkit-scrollbar-thumb {
     background-color: #475569;
 }
+
 /* ========================================
    Magazine / Editorial Layout Styles
    ======================================== */
@@ -682,6 +683,8 @@ body:not(.dark) ::-webkit-scrollbar-thumb {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     gap: 30px;
+    position: relative;
+    z-index: 1;
 }
 
 .post-card {
@@ -724,10 +727,21 @@ body:not(.dark) ::-webkit-scrollbar-thumb {
     letter-spacing: 0.5px;
 }
 
-.category-text-religion { color: #667eea; }
-.category-text-philosophy { color: #f5576c; }
-.category-text-engineering { color: #4facfe; }
-.category-text-writing { color: #43e97b; }
+.category-text-religion {
+    color: #667eea;
+}
+
+.category-text-philosophy {
+    color: #f5576c;
+}
+
+.category-text-engineering {
+    color: #4facfe;
+}
+
+.category-text-writing {
+    color: #43e97b;
+}
 
 .post-title {
     font-size: 1.4rem;
@@ -770,6 +784,7 @@ body:not(.dark) ::-webkit-scrollbar-thumb {
     .featured-title {
         font-size: 1.8rem;
     }
+
     .featured-post {
         padding: 24px;
     }
@@ -793,12 +808,29 @@ body:not(.dark) ::-webkit-scrollbar-thumb {
     animation-fill-mode: both;
 }
 
-.post-card:nth-child(1) { animation-delay: 0.1s; }
-.post-card:nth-child(2) { animation-delay: 0.2s; }
-.post-card:nth-child(3) { animation-delay: 0.3s; }
-.post-card:nth-child(4) { animation-delay: 0.4s; }
-.post-card:nth-child(5) { animation-delay: 0.5s; }
-.post-card:nth-child(6) { animation-delay: 0.6s; }
+.post-card:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+.post-card:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.post-card:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+.post-card:nth-child(4) {
+    animation-delay: 0.4s;
+}
+
+.post-card:nth-child(5) {
+    animation-delay: 0.5s;
+}
+
+.post-card:nth-child(6) {
+    animation-delay: 0.6s;
+}
 
 
 /* ========================================
@@ -859,6 +891,9 @@ body:not(.dark) ::-webkit-scrollbar-thumb {
     margin-bottom: 40px;
     padding-bottom: 20px;
     border-bottom: 2px solid var(--border-color);
+    position: relative;
+    z-index: 10;
+    background-color: var(--bg-primary);
 }
 
 .category-title {
@@ -879,4 +914,3 @@ body:not(.dark) ::-webkit-scrollbar-thumb {
     color: var(--text-secondary);
     font-size: 1.1rem;
 }
-
