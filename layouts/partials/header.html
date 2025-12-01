@@ -101,185 +101,62 @@
             {{- else }}
             <li>
                 <a href="{{ .URL | absLangURL }}" title="{{ .Title | default .Name }} {{- cond $is_search (" (Alt + /)"
-                    | safeHTMLAttr) ("" | safeHTMLAttr ) }}" {{- cond $is_search (" accesskey=/" | safeHTMLAttr) ("" |
-                    safeHTMLAttr ) }} class="menu-link">
-                    <span {{- if eq $menu_item_url $page_url }} class="active" {{- end }}>
-                        {{ .Pre }}{{ .Name }}{{ .Post }}
-                    </span>
-                </a>
-                .menu-item-has-children {
-                position: relative;
-                }
+                    menuItems.forEach(item=> {
+                    const link = item.querySelector('a');
+                    const subMenu = item.querySelector('.sub-menu');
 
-                .menu-dropdown-icon {
-                display: inline-block;
-                margin-left: 4px;
-                vertical-align: middle;
-                transition: transform 0.3s ease;
-                }
+                    if (isMobile) {
+                    // 모바일: 클릭으로 토글
+                    link.addEventListener('click', function (e) {
+                    if (subMenu) {
+                    e.preventDefault();
 
-                .menu-item-has-children:hover .menu-dropdown-icon {
-                transform: rotate(180deg);
-                }
-
-                .sub-menu {
-                position: absolute;
-                top: 100%;
-                left: 0;
-                min-width: 150px;
-                background: var(--theme);
-                border: 1px solid var(--border);
-                border-radius: var(--radius);
-                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-                opacity: 0;
-                visibility: hidden;
-                transform: translateY(-10px);
-                transition: all 0.3s ease;
-                z-index: 1000;
-                list-style: none;
-                padding: 0;
-                margin: 0;
-                margin-top: 10px;
-                }
-
-                .menu-item-has-children:hover .sub-menu {
-                opacity: 1;
-                visibility: visible;
-                transform: translateY(0);
-                }
-
-                .sub-menu li {
-                margin: 0;
-                }
-
-                .sub-menu a {
-                display: block;
-                padding: 10px 16px;
-                color: var(--primary) !important;
-                text-decoration: none;
-                transition: all 0.2s ease;
-                font-size: 14px;
-                }
-
-                .sub-menu a:hover {
-                background: var(--border);
-                color: var(--primary) !important;
-                }
-
-                .sub-menu li:first-child a {
-                border-radius: calc(var(--radius) - 1px) calc(var(--radius) - 1px) 0 0;
-                }
-
-                .sub-menu li:last-child a {
-                border-radius: 0 0 calc(var(--radius) - 1px) calc(var(--radius) - 1px);
-                }
-
-                /* 다크 모드 스타일 */
-                .dark .header {
-                background: var(--theme);
-                border-color: var(--border);
-                }
-
-                .dark .sub-menu {
-                background: var(--entry);
-                border-color: var(--border);
-                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-                }
-
-                .dark .sub-menu a:hover {
-                background: var(--border);
-                }
-
-                /* 모바일 대응 */
-                @media (max-width: 768px) {
-                .menu-item-has-children {
-                position: static;
-                }
-
-                .sub-menu {
-                position: static;
-                opacity: 1;
-                visibility: visible;
-                transform: none;
-                box-shadow: none;
-                border: none;
-                margin-top: 0;
-                margin-left: 20px;
-                display: none;
-                }
-
-                .menu-item-has-children.active .sub-menu {
-                display: block;
-                }
-
-                .menu-dropdown-icon {
-                float: right;
-                }
-                }
-                </style>
-
-                <script>
-                    // 모바일에서 드롭다운 토글
-                    document.addEventListener('DOMContentLoaded', function () {
-                        const menuItems = document.querySelectorAll('.menu-item-has-children');
-                        const isMobile = window.innerWidth <= 768;
-
-                        menuItems.forEach(item => {
-                            const link = item.querySelector('a');
-                            const subMenu = item.querySelector('.sub-menu');
-
-                            if (isMobile) {
-                                // 모바일: 클릭으로 토글
-                                link.addEventListener('click', function (e) {
-                                    if (subMenu) {
-                                        e.preventDefault();
-
-                                        // 다른 열린 메뉴 닫기
-                                        menuItems.forEach(other => {
-                                            if (other !== item) {
-                                                other.classList.remove('active');
-                                            }
-                                        });
-
-                                        item.classList.toggle('active');
-                                    }
-                                });
-                            } else {
-                                // 데스크톱: 호버 효과 유지
-                                let timeout;
-
-                                item.addEventListener('mouseenter', function () {
-                                    clearTimeout(timeout);
-                                });
-
-                                item.addEventListener('mouseleave', function () {
-                                    timeout = setTimeout(() => {
-                                        // 지연된 닫기 (사용자 경험 개선)
-                                    }, 100);
-                                });
-                            }
-                        });
-
-                        // 외부 클릭시 메뉴 닫기
-                        document.addEventListener('click', function (e) {
-                            if (!e.target.closest('.menu-item-has-children')) {
-                                menuItems.forEach(item => {
-                                    item.classList.remove('active');
-                                });
-                            }
-                        });
-
-                        // Theme Toggle Logic
-                        const themeToggle = document.getElementById('theme-toggle');
-                        if (themeToggle) {
-                            themeToggle.addEventListener('click', () => {
-                                document.body.classList.toggle('dark');
-                                if (document.body.classList.contains('dark')) {
-                                    localStorage.setItem('pref-theme', 'dark');
-                                } else {
-                                    localStorage.setItem('pref-theme', 'light');
-                                }
-                            });
-                        }
+                    // 다른 열린 메뉴 닫기
+                    menuItems.forEach(other => {
+                    if (other !== item) {
+                    other.classList.remove('active');
+                    }
                     });
-                </script>
+
+                    item.classList.toggle('active');
+                    }
+                    });
+                    } else {
+                    // 데스크톱: 호버 효과 유지
+                    let timeout;
+
+                    item.addEventListener('mouseenter', function () {
+                    clearTimeout(timeout);
+                    });
+
+                    item.addEventListener('mouseleave', function () {
+                    timeout = setTimeout(() => {
+                    // 지연된 닫기 (사용자 경험 개선)
+                    }, 100);
+                    });
+                    }
+                    });
+
+                    // 외부 클릭시 메뉴 닫기
+                    document.addEventListener('click', function (e) {
+                    if (!e.target.closest('.menu-item-has-children')) {
+                    menuItems.forEach(item => {
+                    item.classList.remove('active');
+                    });
+                    }
+                    });
+
+                    // Theme Toggle Logic
+                    const themeToggle = document.getElementById('theme-toggle');
+                    if (themeToggle) {
+                    themeToggle.addEventListener('click', () => {
+                    document.body.classList.toggle('dark');
+                    if (document.body.classList.contains('dark')) {
+                    localStorage.setItem('pref-theme', 'dark');
+                    } else {
+                    localStorage.setItem('pref-theme', 'light');
+                    }
+                    });
+                    }
+                    });
+                    </script>
