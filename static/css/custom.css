@@ -252,6 +252,24 @@ body:not(.dark) #theme-toggle:hover {
     background-color: var(--dark-border);
 }
 
+/* Toggle Icons */
+#moon {
+    display: none;
+}
+
+#sun {
+    display: block;
+}
+
+.dark #moon {
+    display: block;
+}
+
+.dark #sun {
+    display: none;
+}
+
+
 /* ========================================
    Main Content & Cards
    ======================================== */
