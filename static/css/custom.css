@@ -800,3 +800,83 @@ body:not(.dark) ::-webkit-scrollbar-thumb {
 .post-card:nth-child(5) { animation-delay: 0.5s; }
 .post-card:nth-child(6) { animation-delay: 0.6s; }
 
+
+/* ========================================
+   Category Filter & Section Styles
+   ======================================== */
+
+/* Category Filters */
+.category-filters {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 30px;
+}
+
+.filter-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: var(--bg-secondary);
+    border: 2px solid var(--border-color);
+    border-radius: 25px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: var(--text-primary);
+}
+
+.filter-btn .icon {
+    font-size: 1.2rem;
+}
+
+.filter-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.filter-btn.active {
+    background: #3b82f6;
+    color: white;
+    border-color: #3b82f6;
+}
+
+/* Category Sections */
+.category-section {
+    margin-bottom: 80px;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+.category-section.hidden {
+    display: none;
+}
+
+.category-header {
+    margin-bottom: 40px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.category-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--text-primary);
+}
+
+.category-icon {
+    font-size: 2.5rem;
+}
+
+.category-description {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+}
+
