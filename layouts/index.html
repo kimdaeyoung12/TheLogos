@@ -40,59 +40,58 @@
             </a>
         </header>
 
+        <!-- Featured Post (Latest 1) -->
+        {{ range first 1 (where .Site.RegularPages "Type" "posts") }}
+        <article class="featured-post">
+            <div class="featured-content">
+                <div class="post-meta-top">
+                    {{ range first 1 .Params.categories }}
+                    <span class="category-badge category-{{ . }}">{{ . }}</span>
+                    {{ end }}
+                    <span class="post-date">{{ .Date.Format "Jan 2, 2006" }}</span>
+                </div>
+
+                <h3 class="featured-title">
+                    <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+                </h3>
+
+                <p class="featured-excerpt">
+                    {{ .Summary | plainify | truncate 200 }}
+                </p>
+
+                <a href="{{ .RelPermalink }}" class="read-more-btn">
+                    Read Article
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M6 12l4-4-4-4" />
+                    </svg>
+                </a>
+            </div>
+        </article>
+        {{ end }}
+
+        <!-- Recent Posts Grid (Next 5) -->
         <div class="posts-grid">
-            {{ range first 6 (where .Site.RegularPages "Type" "posts") }}
+            {{ range after 1 (first 6 (where .Site.RegularPages "Type" "posts")) }}
             <article class="post-card">
-                <div class="post-card-inner">
-                    <!-- 날짜 영역 -->
-                    <div class="post-date-section">
-                        <div class="date-box">
-                            <span class="date-month">{{ .Date.Format "1월" }}</span>
-                            <span class="date-day">{{ .Date.Format "2" }}</span>
-                            <span class="date-year">{{ .Date.Format "2006" }}</span>
-                        </div>
+                <div class="post-card-content">
+                    <div class="post-meta-top">
+                        {{ range first 1 .Params.categories }}
+                        <span class="category-text category-text-{{ . }}">{{ . }}</span>
+                        {{ end }}
+                        <span class="meta-dot">·</span>
+                        <span class="post-date-text">{{ .Date.Format "Jan 2" }}</span>
                     </div>
 
-                    <!-- 콘텐츠 영역 -->
-                    <div class="post-content-section">
-                        <!-- 카테고리 배지 -->
-                        <div class="post-categories">
-                            {{ range .Params.categories }}
-                            <span class="category-badge category-{{ . }}">
-                                {{ if eq . "religion" }}🕊️ 종교
-                                {{ else if eq . "philosophy" }}🤔 철학
-                                {{ else if eq . "engineering" }}⚙️ 공학
-                                {{ else if eq . "writing" }}✍️ 글쓰기
-                                {{ else }}{{ . }}{{ end }}
-                            </span>
-                            {{ end }}
-                        </div>
+                    <h4 class="post-title">
+                        <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+                    </h4>
 
-                        <h3 class="post-title">
-                            <a href="{{ .RelPermalink }}">{{ .Title }}</a>
-                        </h3>
+                    <p class="post-excerpt">
+                        {{ .Summary | plainify }}
+                    </p>
 
-                        <p class="post-excerpt">
-                            {{ .Summary | plainify | truncate 120 }}
-                        </p>
-
-                        <footer class="post-footer">
-                            {{ with .Params.tags }}
-                            <div class="post-tags">
-                                {{ range first 3 . }}
-                                <span class="tag">#{{ . }}</span>
-                                {{ end }}
-                            </div>
-                            {{ end }}
-
-                            <a href="{{ .RelPermalink }}" class="read-more-link">
-                                계속 읽기
-                                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor"
-                                    stroke-width="2">
-                                    <path d="M5 10l3-3-3-3" />
-                                </svg>
-                            </a>
-                        </footer>
+                    <div class="post-footer-simple">
+                        <a href="{{ .RelPermalink }}" class="read-more-simple">Read</a>
                     </div>
                 </div>
             </article>
@@ -121,6 +120,139 @@
 
     /* Container */
     .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+
+    /* Hero Section Redesign */
+    .hero-section {
+        min-height: 85vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+        background: #0f172a;
+        /* Fallback */
+    }
+
+    .hero-bg-animation {
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle at center, #4f46e5 0%, #0f172a 50%),
+            radial-gradient(circle at 80% 20%, #7c3aed 0%, transparent 40%),
+            radial-gradient(circle at 20% 80%, #2563eb 0%, transparent 40%);
+        background-size: 100% 100%;
+        animation: bgPulse 15s ease-in-out infinite alternate;
+        opacity: 0.6;
+        z-index: 0;
+    }
+
+    @keyframes bgPulse {
+        0% {
+            transform: scale(1);
+        }
+
+        100% {
+            transform: scale(1.2);
+        }
+    }
+
+    .hero-container {
+        width: 100%;
+        max-width: 1200px;
+        padding: 0 20px;
+        position: relative;
+        z-index: 10;
+        display: flex;
+        justify-content: center;
+    }
+
+    /* Glass Card Effect */
+    .glass-card {
+        background: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 24px;
+        padding: 60px 40px;
+        max-width: 800px;
+        width: 100%;
+        text-align: center !important;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        animation: fadeInUp 0.8s ease-out;
+    }
+
+    .hero-content {
+        color: white;
+    }
+
+    .hero-title {
+        margin-bottom: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 20px;
+    }
+
+    .title-main {
+        font-size: clamp(3.5rem, 8vw, 6rem);
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        background: linear-gradient(to right, #ffffff, #e2e8f0);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+    }
+
+    .title-divider {
+        font-size: 2.5rem;
+        color: #818cf8;
+        animation: spin 10s linear infinite;
+    }
+
+    @keyframes spin {
+        from {
+            transform: rotate(0deg);
+        }
+
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    .hero-subtitle {
+        font-size: 1.25rem;
+        font-weight: 400;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: #94a3b8;
+        margin-bottom: 40px;
+    }
+
+    .hero-description {
+        margin-bottom: 48px;
+        font-size: 1.2rem;
+        line-height: 1.8;
+        color: #cbd5e1;
+    }
+
+    /* Buttons */
+    .hero-actions {
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .button {
+        display: inline-flex;
+        align-items: center;
         gap: 10px;
         padding: 16px 32px;
         border-radius: 100px;
@@ -203,145 +335,144 @@
         background: var(--bg-hover);
     }
 
-    /* Posts Grid */
-    .posts-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-        gap: 30px;
-    }
-
-    /* Post Card - 가로 레이아웃으로 수정 */
-    .post-card {
+    /* Featured Post */
+    .featured-post {
         background: var(--bg-card);
-        border-radius: 16px;
-        overflow: hidden;
-        transition: all var(--transition-slow);
+        border-radius: 24px;
+        padding: 40px;
+        margin-bottom: 60px;
         border: 1px solid var(--border-light);
-        box-shadow: var(--shadow-sm);
+        box-shadow: var(--shadow-md);
         position: relative;
+        overflow: hidden;
+        transition: transform 0.3s ease;
     }
 
-    .post-card::before {
+    .featured-post:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-xl);
+    }
+
+    .featured-post::before {
         content: '';
         position: absolute;
         top: 0;
         left: 0;
-        right: 0;
-        height: 3px;
+        width: 100%;
+        height: 4px;
         background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-        opacity: 0;
-        transition: opacity var(--transition-base);
+    }
+
+    .featured-title {
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin: 20px 0;
+        line-height: 1.2;
+    }
+
+    .featured-title a {
+        color: var(--text-primary);
+        text-decoration: none;
+        background: linear-gradient(to right, var(--text-primary), var(--text-primary));
+        background-size: 0% 2px;
+        background-position: 0 100%;
+        background-repeat: no-repeat;
+        transition: background-size 0.3s;
+    }
+
+    .featured-title a:hover {
+        background-size: 100% 2px;
+    }
+
+    .featured-excerpt {
+        font-size: 1.1rem;
+        color: var(--text-secondary);
+        margin-bottom: 30px;
+        max-width: 800px;
+    }
+
+    .read-more-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 24px;
+        background: var(--text-primary);
+        color: var(--bg-primary);
+        border-radius: 100px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: opacity 0.2s;
+    }
+
+    .read-more-btn:hover {
+        opacity: 0.9;
+    }
+
+    /* Grid Posts */
+    .posts-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 30px;
+    }
+
+    .post-card {
+        background: var(--bg-card);
+        border-radius: 16px;
+        padding: 30px;
+        border: 1px solid var(--border-light);
+        transition: all 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
     }
 
     .post-card:hover {
         transform: translateY(-4px);
         box-shadow: var(--shadow-lg);
-        border-color: transparent;
+        border-color: var(--primary-color);
     }
 
-    .post-card:hover::before {
-        opacity: 1;
-    }
-
-    .post-card-inner {
-        display: flex;
-        height: 100%;
-    }
-
-    /* 날짜 섹션 - 왼쪽 영역 */
-    .post-date-section {
-        width: 100px;
-        min-width: 100px;
-        background: var(--bg-hover);
+    .post-meta-top {
         display: flex;
         align-items: center;
-        justify-content: center;
-        padding: 20px 10px;
+        gap: 10px;
+        margin-bottom: 16px;
+        font-size: 0.85rem;
     }
 
-    .date-box {
-        text-align: center;
-        font-weight: 600;
-    }
-
-    .date-box span {
-        display: block;
-    }
-
-    .date-month {
-        font-size: 0.875rem;
-        color: var(--text-tertiary);
-        text-transform: uppercase;
-    }
-
-    .date-day {
-        font-size: 2rem;
-        line-height: 1.2;
-        color: var(--text-primary);
-        margin: 5px 0;
-    }
-
-    .date-year {
-        font-size: 0.75rem;
+    .meta-dot {
         color: var(--text-tertiary);
     }
 
-    /* 콘텐츠 섹션 - 오른쪽 영역 */
-    .post-content-section {
-        flex: 1;
-        padding: 20px;
-        display: flex;
-        flex-direction: column;
-        min-width: 0;
+    .post-date-text {
+        color: var(--text-tertiary);
+        font-weight: 500;
     }
 
-    /* Category Badges */
-    .post-categories {
-        display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
-        margin-bottom: 12px;
-    }
-
-    .category-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
-        padding: 4px 10px;
-        border-radius: 20px;
-        font-size: 0.75rem;
-        font-weight: 600;
+    .category-text {
+        font-weight: 700;
         text-transform: uppercase;
         letter-spacing: 0.5px;
     }
 
-    .category-religion {
-        background: rgba(102, 126, 234, 0.1);
+    .category-text-religion {
         color: #667eea;
-        border: 1px solid rgba(102, 126, 234, 0.2);
     }
 
-    .category-philosophy {
-        background: rgba(245, 87, 108, 0.1);
+    .category-text-philosophy {
         color: #f5576c;
-        border: 1px solid rgba(245, 87, 108, 0.2);
     }
 
-    .category-engineering {
-        background: rgba(79, 172, 254, 0.1);
+    .category-text-engineering {
         color: #4facfe;
-        border: 1px solid rgba(79, 172, 254, 0.2);
     }
 
-    .category-writing {
-        background: rgba(67, 233, 123, 0.1);
+    .category-text-writing {
         color: #43e97b;
-        border: 1px solid rgba(67, 233, 123, 0.2);
     }
 
-    /* Post Title */
     .post-title {
-        font-size: 1.25rem;
+        font-size: 1.4rem;
         font-weight: 700;
         margin-bottom: 12px;
         line-height: 1.4;
@@ -350,128 +481,40 @@
     .post-title a {
         color: var(--text-primary);
         text-decoration: none;
-        transition: color var(--transition-base);
     }
 
-    .post-title a:hover {
-        color: #667eea;
-    }
-
-    /* Post Excerpt */
     .post-excerpt {
         color: var(--text-secondary);
-        line-height: 1.7;
-        margin-bottom: 20px;
-        flex-grow: 1;
         font-size: 0.95rem;
+        line-height: 1.6;
+        margin-bottom: 20px;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        flex-grow: 1;
     }
 
-    /* Post Footer */
-    .post-footer {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding-top: 16px;
+    .post-footer-simple {
+        margin-top: auto;
+        padding-top: 20px;
         border-top: 1px solid var(--border-light);
     }
 
-    .post-tags {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 6px;
-    }
-
-    .tag {
-        font-size: 0.75rem;
-        color: var(--text-tertiary);
-        padding: 2px 8px;
-        background: var(--bg-hover);
-        border-radius: 4px;
-    }
-
-    .read-more-link {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        color: #667eea;
+    .read-more-simple {
+        font-size: 0.9rem;
         font-weight: 600;
+        color: var(--primary-color);
         text-decoration: none;
-        font-size: 0.875rem;
-        transition: all var(--transition-base);
-        white-space: nowrap;
     }
 
-    .read-more-link:hover {
-        gap: 10px;
-    }
-
-    /* Responsive Design */
     @media (max-width: 768px) {
-        .hero-section {
-            min-height: 60vh;
+        .featured-title {
+            font-size: 1.8rem;
         }
 
-        .title-main {
-            font-size: 3rem;
-        }
-
-        .hero-subtitle {
-            font-size: 1.125rem;
-        }
-
-        .hero-actions {
-            flex-direction: column;
-            width: 100%;
-            max-width: 300px;
-            margin: 0 auto;
-        }
-
-        .button {
-            width: 100%;
-            justify-content: center;
-        }
-
-        .section-header {
-            flex-direction: column;
-            gap: 20px;
-            align-items: flex-start;
-        }
-
-        .section-title {
-            font-size: 2rem;
-        }
-
-        .posts-grid {
-            grid-template-columns: 1fr;
-            gap: 20px;
-        }
-
-        /* 모바일에서 카드 레이아웃 세로로 변경 */
-        .post-card-inner {
-            flex-direction: column;
-        }
-
-        .post-date-section {
-            width: 100%;
-            min-width: auto;
-            padding: 15px;
-        }
-
-        .date-box {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .date-month,
-        .date-day,
-        .date-year {
-            display: inline-block;
-        }
-
-        .date-day {
-            font-size: 1.5rem;
+        .featured-post {
+            padding: 24px;
         }
     }
 
