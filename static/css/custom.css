@@ -80,12 +80,34 @@ body {
 body:not(.dark) {
     background-color: var(--light-bg-secondary) !important;
     color: var(--light-text-secondary);
+
+    /* Semantic Variable Mappings */
+    --bg-primary: var(--light-bg-primary);
+    --bg-secondary: var(--light-bg-secondary);
+    --text-primary: var(--light-text-primary);
+    --text-secondary: var(--light-text-secondary);
+    --text-tertiary: var(--light-text-tertiary);
+    --bg-card: var(--light-card-bg);
+    --border-color: var(--light-border);
+    --border-light: var(--light-border);
+    --primary-color: var(--light-accent);
 }
 
 /* Dark Mode Defaults */
 .dark {
     background-color: var(--dark-bg-primary) !important;
     color: var(--dark-text-secondary);
+
+    /* Semantic Variable Mappings */
+    --bg-primary: var(--dark-bg-primary);
+    --bg-secondary: var(--dark-bg-secondary);
+    --text-primary: var(--dark-text-primary);
+    --text-secondary: var(--dark-text-secondary);
+    --text-tertiary: var(--dark-text-tertiary);
+    --bg-card: var(--dark-card-bg);
+    --border-color: var(--dark-border);
+    --border-light: var(--dark-border);
+    --primary-color: var(--dark-accent);
 }
 
 /* Typography */
@@ -344,6 +366,7 @@ body:not(.dark) .post-card:hover {
     margin-bottom: 1rem;
     display: -webkit-box;
     -webkit-line-clamp: 3;
+    line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-align: left !important;
@@ -768,6 +791,7 @@ body:not(.dark) ::-webkit-scrollbar-thumb {
     margin-bottom: 20px;
     display: -webkit-box;
     -webkit-line-clamp: 3;
+    line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
     flex-grow: 1;

@@ -5,7 +5,7 @@
             <h1 class="page-title">Posts</h1>
             <p class="page-description">종교, 철학, 공학, 글쓰기에 대한 생각과 통찰을 나눕니다</p>
 
-            <!-- 카테고리 필터 버튼 -->
+            <!-- Unified Filter Buttons -->
             <div class="category-filters">
                 <button class="filter-btn active" data-category="all">
                     <span class="icon">📚</span>
@@ -30,205 +30,74 @@
             </div>
         </header>
 
-        <!-- 카테고리별 섹션 -->
-        <div class="posts-by-category">
-            <!-- 종교 섹션 -->
-            <section class="category-section" data-category="religion">
-                <div class="category-header">
-                    <h2 class="category-title">
-                        <span class="category-icon">🕊️</span>
-                        종교 (Religion)
-                    </h2>
-                    <p class="category-description">신앙과 신학, 종교적 사유에 관한 글들</p>
+        <!-- Unified Posts Grid -->
+        <div class="posts-grid">
+            {{ $posts := where .Site.RegularPages "Section" "posts" }}
+            {{ range $posts.ByDate.Reverse }}
+
+            {{/* Determine Category Metadata */}}
+            {{ $category := index .Params.categories 0 | default "other" | lower }}
+            {{ $categoryData := index .Site.Data.categories $category }}
+            {{ $catName := $categoryData.name | default "기타" }}
+            {{ $catIcon := $categoryData.icon | default "📝" }}
+
+            <article class="post-card" data-category="{{ $category }}">
+                <div class="post-card-content">
+                    <div class="post-meta-top">
+                        <!-- Category Badge -->
+                        <span class="category-badge"
+                            style="background-color: var(--color-{{ $category }}); color: white; padding: 4px 10px; border-radius: 12px; font-size: 0.8rem; font-weight: 600;">
+                            {{ $catIcon }} {{ $catName }}
+                        </span>
+                        <span class="meta-dot">·</span>
+                        <span class="post-date-text">{{ .Date.Format "Jan 2, 2006" }}</span>
+                    </div>
+
+                    <h4 class="post-title">
+                        <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+                    </h4>
+
+                    <p class="post-excerpt">
+                        {{ .Summary | plainify | truncate 140 }}
+                    </p>
+
+                    <div class="post-footer-simple">
+                        <a href="{{ .RelPermalink }}" class="read-more-simple">Read</a>
+                    </div>
                 </div>
-
-                <div class="posts-grid">
-                    {{ $religionPosts := where .Site.RegularPages "Params.categories" "intersect" (slice "religion") }}
-                    {{ if $religionPosts }}
-                    {{ range $religionPosts }}
-                    <article class="post-card" data-category="religion">
-                        <div class="post-card-content">
-                            <div class="post-meta-top">
-                                <span class="category-text category-text-religion">종교</span>
-                                <span class="meta-dot">·</span>
-                                <span class="post-date-text">{{ .Date.Format "Jan 2" }}</span>
-                            </div>
-
-                            <h4 class="post-title">
-                                <a href="{{ .RelPermalink }}">{{ .Title }}</a>
-                            </h4>
-
-                            <p class="post-excerpt">
-                                {{ .Summary | plainify }}
-                            </p>
-
-                            <div class="post-footer-simple">
-                                <a href="{{ .RelPermalink }}" class="read-more-simple">Read</a>
-                            </div>
-                        </div>
-                    </article>
-                    {{ end }}
-                    {{ else }}
-                    <p class="no-posts">아직 종교 카테고리의 글이 없습니다.</p>
-                    {{ end }}
-                </div>
-            </section>
-
-            <!-- 철학 섹션 -->
-            <section class="category-section" data-category="philosophy">
-                <div class="category-header">
-                    <h2 class="category-title">
-                        <span class="category-icon">🤔</span>
-                        철학 (Philosophy)
-                    </h2>
-                    <p class="category-description">인간과 세계, 존재와 인식에 대한 철학적 탐구</p>
-                </div>
-
-                <div class="posts-grid">
-                    {{ $philosophyPosts := where .Site.RegularPages "Params.categories" "intersect" (slice "philosophy")
-                    }}
-                    {{ if $philosophyPosts }}
-                    {{ range $philosophyPosts }}
-                    <article class="post-card" data-category="philosophy">
-                        <div class="post-card-content">
-                            <div class="post-meta-top">
-                                <span class="category-text category-text-philosophy">철학</span>
-                                <span class="meta-dot">·</span>
-                                <span class="post-date-text">{{ .Date.Format "Jan 2" }}</span>
-                            </div>
-
-                            <h4 class="post-title">
-                                <a href="{{ .RelPermalink }}">{{ .Title }}</a>
-                            </h4>
-
-                            <p class="post-excerpt">
-                                {{ .Summary | plainify }}
-                            </p>
-
-                            <div class="post-footer-simple">
-                                <a href="{{ .RelPermalink }}" class="read-more-simple">Read</a>
-                            </div>
-                        </div>
-                    </article>
-                    {{ end }}
-                    {{ else }}
-                    <p class="no-posts">아직 철학 카테고리의 글이 없습니다.</p>
-                    {{ end }}
-                </div>
-            </section>
-
-            <!-- 공학 섹션 -->
-            <section class="category-section" data-category="engineering">
-                <div class="category-header">
-                    <h2 class="category-title">
-                        <span class="category-icon">⚙️</span>
-                        공학 (Engineering)
-                    </h2>
-                    <p class="category-description">기술과 공학, 미래 사회에 대한 통찰</p>
-                </div>
-
-                <div class="posts-grid">
-                    {{ $engineeringPosts := where .Site.RegularPages "Params.categories" "intersect" (slice
-                    "engineering") }}
-                    {{ if $engineeringPosts }}
-                    {{ range $engineeringPosts }}
-                    <article class="post-card" data-category="engineering">
-                        <div class="post-card-content">
-                            <div class="post-meta-top">
-                                <span class="category-text category-text-engineering">공학</span>
-                                <span class="meta-dot">·</span>
-                                <span class="post-date-text">{{ .Date.Format "Jan 2" }}</span>
-                            </div>
-
-                            <h4 class="post-title">
-                                <a href="{{ .RelPermalink }}">{{ .Title }}</a>
-                            </h4>
-
-                            <p class="post-excerpt">
-                                {{ .Summary | plainify }}
-                            </p>
-
-                            <div class="post-footer-simple">
-                                <a href="{{ .RelPermalink }}" class="read-more-simple">Read</a>
-                            </div>
-                        </div>
-                    </article>
-                    {{ end }}
-                    {{ else }}
-                    <p class="no-posts">아직 공학 카테고리의 글이 없습니다.</p>
-                    {{ end }}
-                </div>
-            </section>
-
-            <!-- 글쓰기 섹션 -->
-            <section class="category-section" data-category="writing">
-                <div class="category-header">
-                    <h2 class="category-title">
-                        <span class="category-icon">✍️</span>
-                        글쓰기 (Writing)
-                    </h2>
-                    <p class="category-description">개인적인 생각과 글을 모았습니다</p>
-                </div>
-
-                <div class="posts-grid">
-                    {{ $writingPosts := where .Site.RegularPages "Params.categories" "intersect" (slice "writing") }}
-                    {{ if $writingPosts }}
-                    {{ range $writingPosts }}
-                    <article class="post-card" data-category="writing">
-                        <div class="post-card-content">
-                            <div class="post-meta-top">
-                                <span class="category-text category-text-writing">글쓰기</span>
-                                <span class="meta-dot">·</span>
-                                <span class="post-date-text">{{ .Date.Format "Jan 2" }}</span>
-                            </div>
-
-                            <h4 class="post-title">
-                                <a href="{{ .RelPermalink }}">{{ .Title }}</a>
-                            </h4>
-
-                            <p class="post-excerpt">
-                                {{ .Summary | plainify }}
-                            </p>
-
-                            <div class="post-footer-simple">
-                                <a href="{{ .RelPermalink }}" class="read-more-simple">Read</a>
-                            </div>
-                        </div>
-                    </article>
-                    {{ end }}
-                    {{ else }}
-                    <p class="no-posts">아직 글쓰기 카테고리의 글이 없습니다.</p>
-                    {{ end }}
-                </div>
-            </section>
+            </article>
+            {{ end }}
         </div>
+
+        {{ if not $posts }}
+        <p class="no-posts" style="text-align: center; margin-top: 40px; color: var(--text-secondary);">아직 작성된 글이 없습니다.
+        </p>
+        {{ end }}
     </div>
 </section>
+
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const filterBtns = document.querySelectorAll('.filter-btn');
-        const sections = document.querySelectorAll('.category-section');
+        const cards = document.querySelectorAll('.post-card');
 
         filterBtns.forEach(btn => {
             btn.addEventListener('click', () => {
-                // Remove active class from all buttons
+                // Active State Toggle
                 filterBtns.forEach(b => b.classList.remove('active'));
-                // Add active class to clicked button
                 btn.classList.add('active');
 
-                const category = btn.getAttribute('data-category');
+                const filter = btn.getAttribute('data-category');
 
-                sections.forEach(section => {
-                    if (category === 'all' || section.getAttribute('data-category') === category) {
-                        section.style.display = 'block';
-                        setTimeout(() => {
-                            section.style.opacity = '1';
-                        }, 10);
+                cards.forEach(card => {
+                    const cardCategory = card.getAttribute('data-category');
+
+                    if (filter === 'all' || cardCategory === filter) {
+                        card.style.display = 'flex';
+                        setTimeout(() => card.style.opacity = '1', 50);
                     } else {
-                        section.style.opacity = '0';
-                        setTimeout(() => {
-                            section.style.display = 'none';
-                        }, 300);
+                        card.style.opacity = '0';
+                        setTimeout(() => card.style.display = 'none', 300);
                     }
                 });
             });
