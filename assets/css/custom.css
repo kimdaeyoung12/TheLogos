@@ -869,6 +869,8 @@ body:not(.dark) ::-webkit-scrollbar-thumb {
 
 .page-header {
     margin-bottom: 60px;
+    padding-bottom: 1px;
+    /* Prevent margin collapse with children */
     position: relative;
     z-index: 10;
 }

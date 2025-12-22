@@ -1,7 +1,7 @@
 {{ define "main" }}
 <section class="posts-list-section">
     <div class="container">
-        <header class="page-header" style="margin-bottom: 40px;">
+        <header class="page-header">
             <h1 class="page-title">Posts</h1>
             <p class="page-description">종교, 철학, 공학, 글쓰기에 대한 생각과 통찰을 나눕니다</p>
 
@@ -32,7 +32,7 @@
     </header>
 
     <!-- Unified Posts Grid -->
-    <div class="posts-grid" style="margin-top: 40px;">
+    <div class="posts-grid">
         {{ $posts := where .Site.RegularPages "Section" "posts" }}
         {{ range $posts.ByDate.Reverse }}
 
