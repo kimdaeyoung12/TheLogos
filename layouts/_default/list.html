@@ -36,17 +36,26 @@
             {{ range $posts.ByDate.Reverse }}
 
             {{/* Determine Category Metadata */}}
-            {{ $category := index .Params.categories 0 | default "other" | lower }}
+            {{ $category := "other" }}
+            {{ if .Params.categories }}
+            {{ $category = index .Params.categories 0 | lower }}
+            {{ end }}
+
             {{ $categoryData := index .Site.Data.categories $category }}
+            {{ if not $categoryData }}
+            {{ $categoryData = index .Site.Data.categories "other" }}
+            {{ end }}
+
             {{ $catName := $categoryData.name | default "기타" }}
             {{ $catIcon := $categoryData.icon | default "📝" }}
+            {{ $catColor := $categoryData.color | default "#9ca3af" }}
 
             <article class="post-card" data-category="{{ $category }}">
                 <div class="post-card-content">
                     <div class="post-meta-top">
                         <!-- Category Badge -->
                         <span class="category-badge"
-                            style="background-color: var(--color-{{ $category }}); color: white; padding: 4px 10px; border-radius: 12px; font-size: 0.8rem; font-weight: 600;">
+                            style="background-color: {{ $catColor }}; color: #ffffff; padding: 4px 10px; border-radius: 12px; font-size: 0.8rem; font-weight: 700; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">
                             {{ $catIcon }} {{ $catName }}
                         </span>
                         <span class="meta-dot">·</span>
