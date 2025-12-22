@@ -1,7 +1,7 @@
 {{ define "main" }}
 <section class="posts-list-section">
     <div class="container">
-        <header class="page-header">
+        <header class="page-header" style="margin-bottom: 40px;">
             <h1 class="page-title">Posts</h1>
             <p class="page-description">종교, 철학, 공학, 글쓰기에 대한 생각과 통찰을 나눕니다</p>
 
@@ -28,60 +28,61 @@
                     <span>글쓰기</span>
                 </button>
             </div>
-        </header>
+    </div>
+    </header>
 
-        <!-- Unified Posts Grid -->
-        <div class="posts-grid">
-            {{ $posts := where .Site.RegularPages "Section" "posts" }}
-            {{ range $posts.ByDate.Reverse }}
+    <!-- Unified Posts Grid -->
+    <div class="posts-grid" style="margin-top: 40px;">
+        {{ $posts := where .Site.RegularPages "Section" "posts" }}
+        {{ range $posts.ByDate.Reverse }}
 
-            {{/* Determine Category Metadata */}}
-            {{ $category := "other" }}
-            {{ if .Params.categories }}
-            {{ $category = index .Params.categories 0 | lower }}
-            {{ end }}
-
-            {{ $categoryData := index .Site.Data.categories $category }}
-            {{ if not $categoryData }}
-            {{ $categoryData = index .Site.Data.categories "other" }}
-            {{ end }}
-
-            {{ $catName := $categoryData.name | default "기타" }}
-            {{ $catIcon := $categoryData.icon | default "📝" }}
-            {{ $catColor := $categoryData.color | default "#9ca3af" }}
-
-            <article class="post-card" data-category="{{ $category }}">
-                <div class="post-card-content">
-                    <div class="post-meta-top">
-                        <!-- Category Badge -->
-                        <span class="category-badge"
-                            style="background-color: {{ $catColor }}; color: #ffffff; padding: 4px 10px; border-radius: 12px; font-size: 0.8rem; font-weight: 700; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">
-                            {{ $catIcon }} {{ $catName }}
-                        </span>
-                        <span class="meta-dot">·</span>
-                        <span class="post-date-text">{{ .Date.Format "Jan 2, 2006" }}</span>
-                    </div>
-
-                    <h4 class="post-title">
-                        <a href="{{ .RelPermalink }}">{{ .Title }}</a>
-                    </h4>
-
-                    <p class="post-excerpt">
-                        {{ .Summary | plainify | truncate 140 }}
-                    </p>
-
-                    <div class="post-footer-simple">
-                        <a href="{{ .RelPermalink }}" class="read-more-simple">Read</a>
-                    </div>
-                </div>
-            </article>
-            {{ end }}
-        </div>
-
-        {{ if not $posts }}
-        <p class="no-posts" style="text-align: center; margin-top: 40px; color: var(--text-secondary);">아직 작성된 글이 없습니다.
-        </p>
+        {{/* Determine Category Metadata */}}
+        {{ $category := "other" }}
+        {{ if .Params.categories }}
+        {{ $category = index .Params.categories 0 | lower }}
         {{ end }}
+
+        {{ $categoryData := index .Site.Data.categories $category }}
+        {{ if not $categoryData }}
+        {{ $categoryData = index .Site.Data.categories "other" }}
+        {{ end }}
+
+        {{ $catName := $categoryData.name | default "기타" }}
+        {{ $catIcon := $categoryData.icon | default "📝" }}
+        {{ $catColor := $categoryData.color | default "#9ca3af" }}
+
+        <article class="post-card" data-category="{{ $category }}">
+            <div class="post-card-content">
+                <div class="post-meta-top">
+                    <!-- Category Badge -->
+                    <span class="category-badge"
+                        style="background-color: {{ $catColor }}; color: #ffffff; padding: 4px 10px; border-radius: 12px; font-size: 0.8rem; font-weight: 700; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">
+                        {{ $catIcon }} {{ $catName }}
+                    </span>
+                    <span class="meta-dot">·</span>
+                    <span class="post-date-text">{{ .Date.Format "Jan 2, 2006" }}</span>
+                </div>
+
+                <h4 class="post-title">
+                    <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+                </h4>
+
+                <p class="post-excerpt">
+                    {{ .Summary | plainify | truncate 140 }}
+                </p>
+
+                <div class="post-footer-simple">
+                    <a href="{{ .RelPermalink }}" class="read-more-simple">Read</a>
+                </div>
+            </div>
+        </article>
+        {{ end }}
+    </div>
+
+    {{ if not $posts }}
+    <p class="no-posts" style="text-align: center; margin-top: 40px; color: var(--text-secondary);">아직 작성된 글이 없습니다.
+    </p>
+    {{ end }}
     </div>
 </section>
 
