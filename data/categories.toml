@@ -1,0 +1,23 @@
+[[categories]]
+id = "religion"
+name = "Religion"
+color = "#667eea"
+icon = "🕊️"
+
+[[categories]]
+id = "philosophy"
+name = "Philosophy"
+color = "#f5576c"
+icon = "🤔"
+
+[[categories]]
+id = "engineering"
+name = "Engineering"
+color = "#4facfe"
+icon = "⚙️"
+
+[[categories]]
+id = "writing"
+name = "Writing"
+color = "#43e97b"
+icon = "✍️"
