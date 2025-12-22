@@ -867,6 +867,12 @@ body:not(.dark) ::-webkit-scrollbar-thumb {
    Category Filter & Section Styles
    ======================================== */
 
+.page-header {
+    margin-bottom: 60px;
+    position: relative;
+    z-index: 10;
+}
+
 /* Category Filters */
 .category-filters {
     display: flex;
