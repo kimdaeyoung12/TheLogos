@@ -7,6 +7,12 @@ tags = ["카오스", "신", "펫테일", "안티프레질"]
 mentions = ["Nassim Nicholas Taleb", "Antifragile", "Black Swan", "Fat Tail Distribution", "Large Language Model"]
 +++
 
+<div class="ai-summary-box">
+
+**핵심 메시지**: LLM은 팻테일 분포의 극단값(블랙스완)을 정확히 예측할 수 없다. AI 중심의 과최적화는 위험 노출을 증가시킨다. 따라서 안티프래질 메커니즘을 먼저 구축해야 한다.
+
+</div>
+
 ## LLM은 카오스를 제거할 수 없다  
 LLM은 아무리 정밀해도 팻테일 분포의 극단값(꼬리)을 정확히 예측하지 못하며, 이는 환각이나 치명적 오류로 나타날 수 있다.  
 이러한 극단적 사건은 통계적 예측보다 실제로 더 큰 영향을 미치며, 시스템이 복잡하게 연결될수록 그 파괴력은 비선형적으로 급증한다.  

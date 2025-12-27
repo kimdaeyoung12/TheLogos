@@ -9,6 +9,12 @@ mentions = ["Speed of Light", "Growth Mindset", "Ephesians"]
 
 {{< instagram CbC3AqDpLKo >}}
 
+<div class="ai-summary-box">
+
+**핵심 메시지**: 한계는 감옥이 아닌 성장의 도구다. 새도 하늘을 벗어날 수 없듯 모든 물질엔 한계가 있다. 그러나 한계를 깨는 과정이 곧 성장이며, 나만이 아닌 '우리'라는 조직의 성장으로 이어질 때 그 영향은 영속한다.
+
+</div>
+
 날고싶다.
 
 누구의 눈치도 보지 않고.
