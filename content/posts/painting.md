@@ -4,6 +4,7 @@ date = 2021-12-24T00:00:00+09:00
 draft = false
 categories = ["writing"]
 tags = ["글쓰기", "예술", "일상"]
+mentions = ["Art", "Frame", "Freedom", "Daily Routine"]
 +++
 
 {{< instagram CX3hLhqPhKx >}}

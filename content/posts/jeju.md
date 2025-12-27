@@ -4,6 +4,7 @@ date = 2024-08-19T00:00:00+09:00
 draft = false
 categories = ["writing"]
 tags = ["제주도", "마하나임" , "임원"]
+mentions = ["Jeju Island", "Mahanaim", "Community", "Seasons"]
 +++
 {{< instagram C-2pY9-vh8o >}}
 

@@ -4,6 +4,7 @@ date = 2021-11-14T00:00:00+09:00
 draft = false
 categories = ["writing"]
 tags = ["글쓰기", "사진", "빛"]
+mentions = ["Photography", "Aperture", "Light", "Perception"]
 +++
 
 {{< instagram CWQl7N6PSyW >}}

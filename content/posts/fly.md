@@ -4,6 +4,7 @@ date = 2022-03-13T00:00:00+09:00
 draft = false
 categories = ["writing"]
 tags = ["글쓰기", "새", "한계"]
+mentions = ["Speed of Light", "Growth Mindset", "Ephesians"]
 +++
 
 {{< instagram CbC3AqDpLKo >}}

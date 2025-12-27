@@ -4,7 +4,8 @@ date = 2020-09-19T00:00:00+09:00
 draft = false
 categories = ["writing"]
 tags = ["글쓰기", "별", ""]
-+++2
+mentions = ["North Star", "Navigation", "Direction", "Inner Compass"]
++++
 
 {{< instagram CFUgCLVgUws >}}
 

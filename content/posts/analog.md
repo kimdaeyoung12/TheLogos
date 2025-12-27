@@ -4,6 +4,7 @@ date = 2022-12-06T00:00:00+09:00
 draft = false
 categories = ["writing"]
 tags = ["글쓰기", "아날로그", "시작"]
+mentions = ["Analog", "Digital", "Continuity", "Beginning and End"]
 +++
 {{< instagram Cl1EoNSLpPJ >}}
 
