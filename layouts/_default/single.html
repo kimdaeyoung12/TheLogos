@@ -86,6 +86,26 @@
 <article class="article" itemscope itemtype="https://schema.org/BlogPosting">
     <!-- Article Header -->
     <header class="article-header">
+        <!-- Task 3: Breadcrumb Navigation -->
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+            <ol class="breadcrumb-list">
+                <li class="breadcrumb-item">
+                    <a href="{{ " /" | absURL }}">홈</a>
+                </li>
+                {{- with .CurrentSection -}}
+                {{- if ne .Title $.Site.Title -}}
+                <li class="breadcrumb-item">
+                    <span class="breadcrumb-separator">›</span>
+                    <a href="{{ .Permalink }}">{{ .Title }}</a>
+                </li>
+                {{- end -}}
+                {{- end -}}
+                <li class="breadcrumb-item current">
+                    <span class="breadcrumb-separator">›</span>
+                    <span>{{ .Title }}</span>
+                </li>
+            </ol>
+        </nav>
         <div class="header-container">
             <!-- Category Logic -->
             {{ $category := "other" }}
@@ -130,12 +150,45 @@
         </div>
     </header>
 
-    <!-- Main Content -->
+    <!-- Main Content with TOC Sidebar -->
     <div class="article-container">
         <div class="article-content" itemprop="articleBody">
             {{ .Content }}
         </div>
+
+        <!-- Task 1: Sticky TOC Sidebar -->
+        {{- if .TableOfContents -}}
+        <aside class="toc-container">
+            <div class="toc-wrapper">
+                <h3 class="toc-title">목차</h3>
+                <nav class="toc-nav">
+                    {{ .TableOfContents }}
+                </nav>
+            </div>
+        </aside>
+        {{- end -}}
     </div>
+
+    <!-- Task 5: Related Posts Section -->
+    {{- $related := .Site.RegularPages.Related . | first 3 -}}
+    {{- with $related -}}
+    <section class="related-posts">
+        <h3 class="related-posts-title">이 카테고리의 다른 글</h3>
+        <div class="related-posts-grid">
+            {{- range . -}}
+            <a href="{{ .RelPermalink }}" class="related-post-card">
+                <span class="related-post-date">{{ .Date.Format "2006.01.02" }}</span>
+                <h4 class="related-post-title">{{ .Title }}</h4>
+                {{- with .Description -}}
+                <p class="related-post-excerpt">{{ . | truncate 80 }}</p>
+                {{- else -}}
+                <p class="related-post-excerpt">{{ .Summary | plainify | truncate 80 }}</p>
+                {{- end -}}
+            </a>
+            {{- end -}}
+        </div>
+    </section>
+    {{- end -}}
 
     <!-- Article Footer -->
     <footer class="article-footer">

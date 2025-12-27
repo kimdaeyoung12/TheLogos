@@ -34,3 +34,21 @@ theme        = "PaperMod"
 # Output full content in RSS
 [params.rss]
   full = true
+
+# Related content configuration for Related Posts feature
+[related]
+  includeNewer = true
+  threshold = 80
+  toLower = true
+
+  [[related.indices]]
+    name = "categories"
+    weight = 100
+
+  [[related.indices]]
+    name = "tags"
+    weight = 80
+
+  [[related.indices]]
+    name = "date"
+    weight = 10

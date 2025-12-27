@@ -952,3 +952,50 @@ body:not(.dark) ::-webkit-scrollbar-thumb {
     color: var(--text-secondary);
     font-size: 1.1rem;
 }
+
+/* ========================================
+   Task 2: AI Summary Box
+   ======================================== */
+.ai-summary-box {
+    position: relative;
+    margin: 32px 0;
+    padding: 28px 24px 24px;
+    background: var(--bg-secondary);
+    border: 2px solid var(--primary-color);
+    border-radius: 12px;
+    font-size: 16px;
+    line-height: 1.7;
+}
+
+.ai-summary-box::before {
+    content: "🤖 AI Summary";
+    position: absolute;
+    top: -12px;
+    left: 20px;
+    padding: 4px 12px;
+    background: var(--primary-color);
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 700;
+    border-radius: 6px;
+    letter-spacing: 0.5px;
+}
+
+.ai-summary-box p:last-child {
+    margin-bottom: 0;
+}
+
+.ai-summary-box ul,
+.ai-summary-box ol {
+    margin: 12px 0;
+    padding-left: 24px;
+}
+
+.ai-summary-box li {
+    margin-bottom: 6px;
+}
+
+/* Dark mode adjustment */
+.dark .ai-summary-box {
+    background: rgba(30, 41, 59, 0.8);
+}
