@@ -25,3 +25,12 @@ theme        = "PaperMod"
 [taxonomies]
   category = "categories"
   tag = "tags"
+
+# RSS Feed Configuration for AI crawlers
+[services]
+  [services.rss]
+    limit = -1
+
+# Output full content in RSS
+[params.rss]
+  full = true

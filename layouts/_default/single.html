@@ -48,8 +48,40 @@
 {{- if gt (len ($scratch.Get "images")) 0 -}}
 {{- $scratch.Set "schema" (merge ($scratch.Get "schema") (dict "image" ($scratch.Get "images"))) -}}
 {{- end -}}
+{{- /* Add keywords from tags */ -}}
+{{- with .Params.tags -}}
+{{- $scratch.Set "schema" (merge ($scratch.Get "schema") (dict "keywords" (delimit . ", "))) -}}
+{{- end -}}
+{{- /* Add mentions for referenced entities - extensible via front matter */ -}}
+{{- with .Params.mentions -}}
+{{- $mentionsList := slice -}}
+{{- range . -}}
+{{- $mention := dict "@type" "Thing" "name" . -}}
+{{- $mentionsList = $mentionsList | append $mention -}}
+{{- end -}}
+{{- $scratch.Set "schema" (merge ($scratch.Get "schema") (dict "mentions" $mentionsList)) -}}
+{{- end -}}
 <script type="application/ld+json">
 {{ ($scratch.Get "schema") | jsonify }}
+</script>
+{{- /* BreadcrumbList Schema for site hierarchy */ -}}
+{{- $breadcrumbItems := slice -}}
+{{- $breadcrumbItems = $breadcrumbItems | append (dict "@type" "ListItem" "position" 1 "name" "Home" "item"
+(.Site.BaseURL | default "https://thelogos.dev/")) -}}
+{{- with .CurrentSection -}}
+{{- if ne .Title .Site.Title -}}
+{{- $breadcrumbItems = $breadcrumbItems | append (dict "@type" "ListItem" "position" 2 "name" .Title "item" .Permalink)
+-}}
+{{- end -}}
+{{- end -}}
+{{- $breadcrumbItems = $breadcrumbItems | append (dict "@type" "ListItem" "position" (add (len $breadcrumbItems) 1)
+"name" .Title "item" .Permalink) -}}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": {{ $breadcrumbItems | jsonify }}
+}
 </script>
 <article class="article" itemscope itemtype="https://schema.org/BlogPosting">
     <!-- Article Header -->

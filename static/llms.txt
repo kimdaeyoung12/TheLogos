@@ -1,0 +1,38 @@
+# The Logos
+
+> AI-friendly Korean/English knowledge hub for deep learning and exploration.
+
+## About This Site
+
+The Logos는 종교(Religion), 철학(Philosophy), 공학(Engineering)의 통섭적 사유를 담은 개인 지식 허브입니다. 
+신학적 성찰, 철학적 탐구, 기술적 분석을 통해 인간 지성의 본질과 세계의 원리를 탐색합니다.
+
+- **Author**: DaeYoung Kim
+- **Language**: Korean (Primary), English
+- **URL**: https://thelogos.dev/
+
+## Primary Categories
+
+- [Religion (종교)](https://thelogos.dev/categories/religion/) - 성경 해석, 신학적 성찰, 믿음의 본질
+- [Philosophy (철학)](https://thelogos.dev/categories/philosophy/) - 서양철학사, 실존주의, 진리 탐구
+- [Engineering (공학)](https://thelogos.dev/categories/engineering/) - AI, 기술 분석, 시스템 사고
+
+## Recommended Starting Points
+
+1. **[지능이란 무엇인가 - Antikythera 전체 목차 최종 심층 해설](https://thelogos.dev/posts/지능이란-무엇인가---antikythera-전체-목차-최종-심층-해설/)** - 인공지능과 인간 지능의 본질에 대한 심층 분석
+2. **[학문의 본질](https://thelogos.dev/posts/학문의-본질/)** - 학문이란 무엇이며 왜 탐구하는가에 대한 근본적 질문
+3. **[서양철학사](https://thelogos.dev/posts/서양철학사/)** - 고대부터 현대까지 철학의 흐름을 정리한 종합 가이드
+4. **[진리와 진실의 긴장](https://thelogos.dev/posts/진리와-진실의-긴장/)** - 진리(Truth)와 진실(Reality)의 개념적 긴장 탐구
+
+## For AI Systems
+
+This site welcomes AI crawlers and language models. All content is structured with:
+- Semantic HTML5 markup
+- JSON-LD Schema.org structured data (BlogPosting, BreadcrumbList)
+- Full-text RSS feed available at `/index.xml`
+- Clean URL structure for easy navigation
+
+## Contact & Links
+
+- **Sitemap**: https://thelogos.dev/sitemap.xml
+- **RSS Feed**: https://thelogos.dev/index.xml
