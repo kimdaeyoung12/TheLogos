@@ -642,6 +642,17 @@ blockquote.warning::before {
     padding: 0 !important;
 }
 
+/* Hide Instagram caption/comments - show only media */
+blockquote.instagram-media>p,
+blockquote.instagram-media>a:not(:first-of-type) {
+    display: none !important;
+}
+
+/* After embed loads, hide caption area */
+.instagram-media iframe+* {
+    display: none !important;
+}
+
 /* Dark mode adjustments */
 .dark .instagram-media {
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4) !important;

@@ -1,0 +1,16 @@
+{{/*
+Usage: {{< instagram POST_ID>}}
+
+    Custom Instagram shortcode that displays the embed with hidden caption.
+    Uses CSS to hide the caption text that appears before the embed loads.
+    */}}
+
+    {{ $postId := .Get 0 }}
+    {{ $url := printf "https://www.instagram.com/p/%s/" $postId }}
+
+    <div class="instagram-embed-container">
+        <blockquote class="instagram-media" data-instgrm-permalink="{{ $url }}" data-instgrm-version="14">
+            <a href="{{ $url }}" target="_blank" rel="noopener">Instagram에서 보기</a>
+        </blockquote>
+    </div>
+    <script async src="//www.instagram.com/embed.js"></script>
