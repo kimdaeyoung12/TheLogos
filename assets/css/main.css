@@ -4,8 +4,10 @@
    Design Tokens & Variables
    ======================================== */
 :root {
-    /* Font Family */
+    /* Font Family - UI & Headings */
     --font-family-base: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+    /* Font Family - Body Text (Philosophical/Scholarly) */
+    --font-family-body: 'Noto Serif KR', Georgia, 'Times New Roman', serif;
 
     /* Light Mode Palette (Slate) */
     --light-bg-primary: #ffffff;
