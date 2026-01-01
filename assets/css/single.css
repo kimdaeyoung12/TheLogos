@@ -620,3 +620,41 @@ blockquote.warning::before {
         padding: 16px;
     }
 }
+
+/* ========================================
+   Instagram Embed Styling
+   ======================================== */
+.article-content .instagram-media,
+.instagram-media {
+    margin: 32px auto !important;
+    max-width: 450px !important;
+    min-width: 280px !important;
+    border-radius: 16px !important;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12) !important;
+    border: 1px solid var(--border-color) !important;
+    overflow: hidden;
+}
+
+/* Container wrapper for centering */
+.article-content blockquote.instagram-media {
+    background: transparent !important;
+    border-left: none !important;
+    padding: 0 !important;
+}
+
+/* Dark mode adjustments */
+.dark .instagram-media {
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4) !important;
+    border-color: var(--dark-border) !important;
+}
+
+/* Responsive sizing */
+@media (max-width: 520px) {
+
+    .article-content .instagram-media,
+    .instagram-media {
+        max-width: 100% !important;
+        margin: 24px 0 !important;
+        border-radius: 12px !important;
+    }
+}
