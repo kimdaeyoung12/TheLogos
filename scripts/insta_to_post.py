@@ -210,7 +210,16 @@ def process_instagram_link(url: str, api_key: str) -> bool:
     print(f"   Shortcode: {shortcode}")
     
     # 2. Instagram에서 캡션과 날짜 가져오기
-    L = instaloader.Instaloader()
+    # 최소한의 요청만 하도록 설정
+    L = instaloader.Instaloader(
+        download_pictures=False,
+        download_videos=False,
+        download_video_thumbnails=False,
+        download_geotags=False,
+        download_comments=False,
+        save_metadata=False,
+        compress_json=False,
+    )
     try:
         post = instaloader.Post.from_shortcode(L.context, shortcode)
         caption = post.caption or ""
