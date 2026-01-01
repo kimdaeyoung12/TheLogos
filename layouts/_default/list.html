@@ -8,7 +8,13 @@
             <!-- Search Box -->
             <div class="search-container">
                 <input type="text" id="search-input" class="search-input" placeholder="🔍 게시물 검색..." autocomplete="off">
-                <span class="search-clear" id="search-clear" style="display:none;">✕</span>
+                <button class="search-clear" id="search-clear" style="display:none;" aria-label="검색어 지우기">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
+                        stroke-linecap="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
             </div>
 
             <!-- Unified Filter Buttons -->
