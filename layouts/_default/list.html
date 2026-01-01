@@ -28,68 +28,70 @@
                     <span>글쓰기</span>
                 </button>
             </div>
-    </div>
-    </header>
+        </header>
 
-    <!-- Unified Posts Grid -->
-    <div class="posts-grid">
-        {{ $posts := where .Site.RegularPages "Section" "posts" }}
-        {{ range $posts.ByDate.Reverse }}
+        <!-- Timeline Layout -->
+        <div class="timeline">
+            {{ $posts := where .Site.RegularPages "Section" "posts" }}
+            {{ $groupedPosts := $posts.ByDate.Reverse.GroupByDate "2006" }}
 
-        {{/* Determine Category Metadata */}}
-        {{ $category := "other" }}
-        {{ if .Params.categories }}
-        {{ $category = index .Params.categories 0 | lower }}
-        {{ end }}
+            {{ range $groupedPosts }}
+            <div class="timeline-year" data-year="{{ .Key }}">
+                <h2 class="timeline-year-label">{{ .Key }}</h2>
 
-        {{ $categoryData := index .Site.Data.categories $category }}
-        {{ if not $categoryData }}
-        {{ $categoryData = index .Site.Data.categories "other" }}
-        {{ end }}
+                <div class="timeline-items">
+                    {{ range .Pages }}
 
-        {{ $catName := $categoryData.name | default "기타" }}
-        {{ $catIcon := $categoryData.icon | default "📝" }}
-        {{ $catColor := $categoryData.color | default "#9ca3af" }}
+                    {{/* Determine Category Metadata */}}
+                    {{ $category := "other" }}
+                    {{ if .Params.categories }}
+                    {{ $category = index .Params.categories 0 | lower }}
+                    {{ end }}
 
-        <article class="post-card" data-category="{{ $category }}">
-            <div class="post-card-content">
-                <div class="post-meta-top">
-                    <!-- Category Badge -->
-                    <span class="category-badge"
-                        style="background-color: {{ $catColor }}; color: #ffffff; padding: 4px 10px; border-radius: 12px; font-size: 0.8rem; font-weight: 700; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">
-                        {{ $catIcon }} {{ $catName }}
-                    </span>
-                    <span class="meta-dot">·</span>
-                    <span class="post-date-text">{{ .Date.Format "Jan 2, 2006" }}</span>
-                </div>
+                    {{ $categoryData := index .Site.Data.categories $category }}
+                    {{ if not $categoryData }}
+                    {{ $categoryData = index .Site.Data.categories "other" }}
+                    {{ end }}
 
-                <h4 class="post-title">
-                    <a href="{{ .RelPermalink }}">{{ .Title }}</a>
-                </h4>
+                    {{ $catName := $categoryData.name | default "기타" }}
+                    {{ $catIcon := $categoryData.icon | default "📝" }}
+                    {{ $catColor := $categoryData.color | default "#9ca3af" }}
 
-                <p class="post-excerpt">
-                    {{ .Summary | plainify | truncate 140 }}
-                </p>
-
-                <div class="post-footer-simple">
-                    <a href="{{ .RelPermalink }}" class="read-more-simple">Read</a>
+                    <article class="timeline-item" data-category="{{ $category }}">
+                        <div class="timeline-marker" style="background-color: {{ $catColor }};"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-meta">
+                                <span class="timeline-date">{{ .Date.Format "Jan 2" }}</span>
+                                <span class="timeline-category" style="color: {{ $catColor }};">
+                                    {{ $catIcon }} {{ $catName }}
+                                </span>
+                            </div>
+                            <h3 class="timeline-title">
+                                <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+                            </h3>
+                            <p class="timeline-excerpt">
+                                {{ .Summary | plainify | truncate 120 }}
+                            </p>
+                        </div>
+                    </article>
+                    {{ end }}
                 </div>
             </div>
-        </article>
-        {{ end }}
-    </div>
+            {{ end }}
+        </div>
 
-    {{ if not $posts }}
-    <p class="no-posts" style="text-align: center; margin-top: 40px; color: var(--text-secondary);">아직 작성된 글이 없습니다.
-    </p>
-    {{ end }}
+        {{ if not $posts }}
+        <p class="no-posts" style="text-align: center; margin-top: 40px; color: var(--text-secondary);">아직 작성된 글이 없습니다.
+        </p>
+        {{ end }}
     </div>
 </section>
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const filterBtns = document.querySelectorAll('.filter-btn');
-        const cards = document.querySelectorAll('.post-card');
+        const items = document.querySelectorAll('.timeline-item');
+        const yearSections = document.querySelectorAll('.timeline-year');
 
         filterBtns.forEach(btn => {
             btn.addEventListener('click', () => {
@@ -99,17 +101,28 @@
 
                 const filter = btn.getAttribute('data-category');
 
-                cards.forEach(card => {
-                    const cardCategory = card.getAttribute('data-category');
+                items.forEach(item => {
+                    const itemCategory = item.getAttribute('data-category');
 
-                    if (filter === 'all' || cardCategory === filter) {
-                        card.style.display = 'flex';
-                        setTimeout(() => card.style.opacity = '1', 50);
+                    if (filter === 'all' || itemCategory === filter) {
+                        item.style.display = 'flex';
+                        setTimeout(() => item.style.opacity = '1', 50);
                     } else {
-                        card.style.opacity = '0';
-                        setTimeout(() => card.style.display = 'none', 300);
+                        item.style.opacity = '0';
+                        setTimeout(() => item.style.display = 'none', 300);
                     }
                 });
+
+                // Hide year sections with no visible items
+                setTimeout(() => {
+                    yearSections.forEach(section => {
+                        const visibleItems = section.querySelectorAll('.timeline-item[style*="display: flex"], .timeline-item:not([style*="display"])');
+                        const hasVisible = Array.from(visibleItems).some(item =>
+                            !item.style.display || item.style.display === 'flex'
+                        );
+                        section.style.display = hasVisible ? 'block' : 'none';
+                    });
+                }, 350);
             });
         });
     });
