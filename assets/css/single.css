@@ -4,7 +4,7 @@
 * {
     line-height: 1.6;
     color: var(--text-primary);
-    background: var(--bg-primary);
+    /* Removed background: var(--bg-primary) - was causing disconnect */
 }
 
 /* Article */
@@ -121,9 +121,20 @@
 .article-content blockquote {
     margin: 32px 0;
     padding: 20px 24px;
-    background: var(--bg-secondary);
+    background: transparent;
     border-left: 4px solid var(--primary-color);
     border-radius: 0 8px 8px 0;
+    position: relative;
+}
+
+/* Subtle inner glow for blockquote */
+.article-content blockquote::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), transparent 70%);
+    border-radius: 0 8px 8px 0;
+    pointer-events: none;
 }
 
 .article-content pre {
@@ -166,7 +177,7 @@
     margin: 0 auto;
     padding-top: 40px;
     border-top: 1px solid var(--border-color);
-    background: #1e293b;
+    background: transparent;
 }
 
 .section-title {
@@ -202,12 +213,16 @@
     color: white;
 }
 
-/* Share Section */
 .share-section {
     margin-bottom: 40px;
     padding: 32px;
-    background: var(--bg-secondary);
+    background: rgba(99, 102, 241, 0.03);
+    border: 1px solid var(--border-color);
     border-radius: 12px;
+}
+
+.dark .share-section {
+    background: rgba(99, 102, 241, 0.06);
 }
 
 .share-buttons {
@@ -250,10 +265,15 @@
 
 .nav-item {
     padding: 20px;
-    background: var(--bg-secondary);
+    background: rgba(99, 102, 241, 0.03);
+    border: 1px solid var(--border-color);
     border-radius: 8px;
     text-decoration: none;
-    transition: transform 0.2s;
+    transition: all 0.2s;
+}
+
+.dark .nav-item {
+    background: rgba(99, 102, 241, 0.06);
 }
 
 .nav-item:hover {
@@ -388,9 +408,15 @@
         max-height: calc(100vh - 140px);
         overflow-y: auto;
         padding: 20px;
-        background: var(--bg-secondary);
+        background: rgba(248, 250, 252, 0.6);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
         border-radius: 12px;
         border: 1px solid var(--border-color);
+    }
+
+    .dark .toc-wrapper {
+        background: rgba(30, 41, 59, 0.6);
     }
 
     .toc-title {
