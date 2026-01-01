@@ -925,30 +925,27 @@ body:not(.dark) ::-webkit-scrollbar-thumb {
     right: 16px;
     top: 50%;
     transform: translateY(-50%);
-    width: 22px;
-    height: 22px;
-    padding: 0;
+    padding: 4px;
     margin: 0;
     border: none;
-    border-radius: 50%;
-    background: var(--text-tertiary);
-    color: white;
+    border-radius: 4px;
+    background: transparent;
+    color: var(--text-tertiary);
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background 0.2s;
-    line-height: 1;
+    transition: color 0.2s;
 }
 
 .search-clear svg {
     display: block;
-    width: 10px;
-    height: 10px;
+    width: 14px;
+    height: 14px;
 }
 
 .search-clear:hover {
-    background: var(--primary-color);
+    color: var(--primary-color);
 }
 
 /* Dark mode search */
