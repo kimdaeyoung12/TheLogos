@@ -954,31 +954,53 @@ body:not(.dark) ::-webkit-scrollbar-thumb {
 }
 
 /* ========================================
-   Task 2: AI Summary Box
+   Task 2: AI Summary Box (Enhanced UI)
    ======================================== */
 .ai-summary-box {
     position: relative;
     margin: 32px 0;
-    padding: 28px 24px 24px;
+    padding: 0;
     background: var(--bg-secondary);
     border: 2px solid var(--primary-color);
     border-radius: 12px;
     font-size: 16px;
     line-height: 1.7;
+    overflow: hidden;
 }
 
+/* Header bar with label */
 .ai-summary-box::before {
     content: "🤖 AI Summary";
-    position: absolute;
-    top: -12px;
-    left: 20px;
-    padding: 4px 12px;
-    background: var(--primary-color);
+    display: block;
+    padding: 12px 20px;
+    background: linear-gradient(135deg, var(--primary-color), #8b5cf6);
     color: #ffffff;
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 700;
-    border-radius: 6px;
     letter-spacing: 0.5px;
+    border-bottom: 2px solid var(--primary-color);
+}
+
+/* Content area */
+.ai-summary-box p,
+.ai-summary-box strong {
+    display: block;
+    padding: 20px;
+    margin: 0;
+    background: transparent;
+}
+
+/* Hide the "핵심 메시지:" label since it's redundant with header */
+.ai-summary-box strong {
+    display: none;
+}
+
+/* Style the actual message content */
+.ai-summary-box p {
+    padding: 20px 24px;
+    color: var(--text-primary);
+    font-size: 15px;
+    line-height: 1.8;
 }
 
 .ai-summary-box p:last-child {
@@ -987,15 +1009,28 @@ body:not(.dark) ::-webkit-scrollbar-thumb {
 
 .ai-summary-box ul,
 .ai-summary-box ol {
-    margin: 12px 0;
-    padding-left: 24px;
+    margin: 0;
+    padding: 0 24px 20px 44px;
 }
 
 .ai-summary-box li {
-    margin-bottom: 6px;
+    margin-bottom: 8px;
+    color: var(--text-primary);
+}
+
+/* Key message highlight styling */
+.ai-summary-box p strong:first-child {
+    display: inline;
+    color: var(--primary-color);
+    font-weight: 700;
 }
 
 /* Dark mode adjustment */
 .dark .ai-summary-box {
-    background: rgba(30, 41, 59, 0.8);
+    background: rgba(30, 41, 59, 0.9);
+    border-color: var(--primary-color);
+}
+
+.dark .ai-summary-box::before {
+    background: linear-gradient(135deg, var(--primary-color), #7c3aed);
 }

@@ -11,7 +11,7 @@ mentions = ["North Star", "Navigation", "Direction", "Inner Compass"]
 
 <div class="ai-summary-box">
 
-**핵심 메시지**: 옛사람들이 별을 보고 길을 찾았듯, 내 속에 변치 않는 별을 따라 걸으면 굽은 길도, 의심의 순간도 결국 목적지로 인도한다.
+옛사람들이 별을 보고 길을 찾았듯, 내 속에 변치 않는 별을 따라 걸으면 굽은 길도, 의심의 순간도 결국 목적지로 인도한다.
 
 </div>
 

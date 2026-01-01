@@ -9,7 +9,7 @@ mentions = ["Nassim Nicholas Taleb", "Antifragile", "Black Swan", "Fat Tail Dist
 
 <div class="ai-summary-box">
 
-**핵심 메시지**: LLM은 팻테일 분포의 극단값(블랙스완)을 정확히 예측할 수 없다. AI 중심의 과최적화는 위험 노출을 증가시킨다. 따라서 안티프래질 메커니즘을 먼저 구축해야 한다.
+LLM은 팻테일 분포의 극단값(블랙스완)을 정확히 예측할 수 없다. AI 중심의 과최적화는 위험 노출을 증가시킨다. 따라서 안티프래질 메커니즘을 먼저 구축해야 한다.
 
 </div>
 
