@@ -5,6 +5,12 @@
             <h1 class="page-title">Posts</h1>
             <p class="page-description">종교, 철학, 공학, 글쓰기에 대한 생각과 통찰을 나눕니다</p>
 
+            <!-- Search Box -->
+            <div class="search-container">
+                <input type="text" id="search-input" class="search-input" placeholder="🔍 게시물 검색..." autocomplete="off">
+                <span class="search-clear" id="search-clear" style="display:none;">✕</span>
+            </div>
+
             <!-- Unified Filter Buttons -->
             <div class="category-filters">
                 <button class="filter-btn active" data-category="all">
@@ -92,39 +98,64 @@
         const filterBtns = document.querySelectorAll('.filter-btn');
         const items = document.querySelectorAll('.timeline-item');
         const yearSections = document.querySelectorAll('.timeline-year');
+        const searchInput = document.getElementById('search-input');
+        const searchClear = document.getElementById('search-clear');
 
+        let currentFilter = 'all';
+
+        // Filter by category
         filterBtns.forEach(btn => {
             btn.addEventListener('click', () => {
-                // Active State Toggle
                 filterBtns.forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
-
-                const filter = btn.getAttribute('data-category');
-
-                items.forEach(item => {
-                    const itemCategory = item.getAttribute('data-category');
-
-                    if (filter === 'all' || itemCategory === filter) {
-                        item.style.display = 'flex';
-                        setTimeout(() => item.style.opacity = '1', 50);
-                    } else {
-                        item.style.opacity = '0';
-                        setTimeout(() => item.style.display = 'none', 300);
-                    }
-                });
-
-                // Hide year sections with no visible items
-                setTimeout(() => {
-                    yearSections.forEach(section => {
-                        const visibleItems = section.querySelectorAll('.timeline-item[style*="display: flex"], .timeline-item:not([style*="display"])');
-                        const hasVisible = Array.from(visibleItems).some(item =>
-                            !item.style.display || item.style.display === 'flex'
-                        );
-                        section.style.display = hasVisible ? 'block' : 'none';
-                    });
-                }, 350);
+                currentFilter = btn.getAttribute('data-category');
+                applyFilters();
             });
         });
+
+        // Search functionality
+        searchInput.addEventListener('input', (e) => {
+            const query = e.target.value.trim();
+            searchClear.style.display = query ? 'block' : 'none';
+            applyFilters();
+        });
+
+        searchClear.addEventListener('click', () => {
+            searchInput.value = '';
+            searchClear.style.display = 'none';
+            applyFilters();
+        });
+
+        function applyFilters() {
+            const query = searchInput.value.toLowerCase().trim();
+
+            items.forEach(item => {
+                const itemCategory = item.getAttribute('data-category');
+                const title = item.querySelector('.timeline-title')?.textContent.toLowerCase() || '';
+                const excerpt = item.querySelector('.timeline-excerpt')?.textContent.toLowerCase() || '';
+
+                const matchesCategory = currentFilter === 'all' || itemCategory === currentFilter;
+                const matchesSearch = !query || title.includes(query) || excerpt.includes(query);
+
+                if (matchesCategory && matchesSearch) {
+                    item.style.display = 'flex';
+                    setTimeout(() => item.style.opacity = '1', 50);
+                } else {
+                    item.style.opacity = '0';
+                    setTimeout(() => item.style.display = 'none', 300);
+                }
+            });
+
+            // Hide year sections with no visible items
+            setTimeout(() => {
+                yearSections.forEach(section => {
+                    const visibleItems = Array.from(section.querySelectorAll('.timeline-item')).filter(
+                        item => item.style.display !== 'none'
+                    );
+                    section.style.display = visibleItems.length > 0 ? 'block' : 'none';
+                });
+            }, 350);
+        }
     });
 </script>
 {{ end }}

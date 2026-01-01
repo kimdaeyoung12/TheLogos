@@ -892,6 +892,67 @@ body:not(.dark) ::-webkit-scrollbar-thumb {
     z-index: 10;
 }
 
+/* Search Box */
+.search-container {
+    position: relative;
+    max-width: 400px;
+    margin: 24px auto;
+}
+
+.search-input {
+    width: 100%;
+    padding: 14px 48px 14px 20px;
+    font-size: 1rem;
+    border: 2px solid var(--border-color);
+    border-radius: 30px;
+    background: var(--bg-card);
+    color: var(--text-primary);
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+.search-input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+}
+
+.search-input::placeholder {
+    color: var(--text-tertiary);
+}
+
+.search-clear {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--text-tertiary);
+    color: var(--bg-primary);
+    font-size: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+
+.search-clear:hover {
+    background: var(--primary-color);
+}
+
+/* Dark mode search */
+.dark .search-input {
+    background: var(--dark-card-bg);
+    border-color: var(--dark-border);
+}
+
+.dark .search-input:focus {
+    border-color: var(--dark-accent);
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2);
+}
+
 /* Category Filters */
 .category-filters {
     display: flex;
