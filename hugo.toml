@@ -4,6 +4,10 @@ defaultContentLanguage = "ko"
 title        = "The Logos"
 theme        = "PaperMod"
 
+# Enable raw HTML in markdown files (required for AI Summary Box)
+[markup.goldmark.renderer]
+  unsafe = true
+
 [params]
   description = "AI-friendly Korean/English knowledge hub designed for fast crawling while remaining welcoming to human visitors."
 
