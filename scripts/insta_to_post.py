@@ -144,7 +144,6 @@ def create_hugo_post(
     title: str,
     shortcode: str,
     post_date: datetime,
-    category: str,
     tags: list,
     mentions: list,
     summary: str,
@@ -160,11 +159,12 @@ def create_hugo_post(
     # 연속 줄바꿈 정리
     clean_caption = re.sub(r'\n{3,}', '\n\n', clean_caption)
     
+    # Instagram 게시물은 항상 writing 카테고리
     content = f'''+++
 title = "{title}"
 date = {post_date.strftime("%Y-%m-%dT%H:%M:%S+09:00")}
 draft = false
-categories = ["{category}"]
+categories = ["writing"]
 tags = [{tags_str}]
 mentions = [{mentions_str}]
 +++
@@ -231,7 +231,6 @@ def process_instagram_link(url: str, api_key: str) -> bool:
         title=title,
         shortcode=shortcode,
         post_date=post_date,
-        category=ai_result['category'],
         tags=ai_result['tags'],
         mentions=ai_result['mentions'],
         summary=ai_result['summary'],
