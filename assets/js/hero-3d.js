@@ -150,9 +150,16 @@ class ConstellationEffect {
         });
 
         // Mouse Parallax
-        this.scene.rotation.y += 0.0005;
+        const time = Date.now() * 0.0005; // Time factor for idle movement
+
+        this.scene.rotation.y += 0.0005; // Constant base rotation
         this.scene.rotation.x += (this.targetY - this.scene.rotation.x) * 0.05;
         this.scene.rotation.y += (this.targetX - this.scene.rotation.y) * 0.05;
+
+        // Add subtle wave calculation to particles for "breathing" effect
+        this.particles.forEach((p, i) => {
+            p.y += Math.sin(time + p.x * 0.05) * 0.02;
+        });
 
         this.drawParticles();
         this.addLines();
