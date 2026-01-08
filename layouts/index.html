@@ -1,5 +1,6 @@
 {{ define "main" }}
 <section class="hero-section">
+    <div id="canvas-container"></div>
     <div class="hero-bg-animation"></div>
     <div class="hero-container">
         <div class="hero-content glass-card">
@@ -104,4 +105,8 @@
 {{- /* Include Home CSS */ -}}
 {{- $home_css := resources.Get "css/home.css" | minify | fingerprint -}}
 <link rel="stylesheet" href="{{ $home_css.Permalink }}" integrity="{{ $home_css.Data.Integrity }}">
+
+{{- /* Load 3D Hero Script */ -}}
+{{- $hero_js := resources.Get "js/hero-3d.js" | fingerprint -}}
+<script type="module" src="{{ $hero_js.Permalink }}" integrity="{{ $hero_js.Data.Integrity }}"></script>
 {{ end }}
