@@ -140,9 +140,18 @@ body {
     font-size: 1.25rem;
     font-weight: 400;
     letter-spacing: 0.2em;
-    text-transform: uppercase;
     color: #94a3b8;
     margin-bottom: 40px;
+}
+
+.ancient-text {
+    font-family: 'Times New Roman', 'Noto Serif', serif;
+    font-style: italic;
+    text-transform: none;
+    /* Keep accents correct */
+    letter-spacing: normal;
+    font-size: 1.1em;
+    /* Slight visual compensation */
 }
 
 .hero-description {
