@@ -114,18 +114,65 @@ class ConstellationEffect {
         }
 
         const vertices = [];
+        const sizes = [];
+        const exclusionRadiusSq = 35 * 35;
+
         this.particles.forEach(p => {
-            vertices.push(p.x, p.y, p.z);
+            // Calculate size based on distance from center (Exclusion Logic)
+            const distSq = p.x * p.x + p.y * p.y * 2.5; // Stronger vertical exclusion (elliptical)
+            let size = 0.5; // Base size
+
+            if (distSq < exclusionRadiusSq) {
+                // Fade size to 0
+                size = Math.max(0, (distSq / exclusionRadiusSq) * 0.5);
+            }
+
+            // Only add if visible
+            if (size > 0.05) {
+                vertices.push(p.x, p.y, p.z);
+                sizes.push(size);
+            }
         });
 
         const geometry = new THREE.BufferGeometry();
         geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
-        this.pointsMesh = new THREE.Points(geometry, new THREE.PointsMaterial({
-            color: 0xffffff,
-            size: 0.4,
-            transparent: true,
-            opacity: 0.8
-        }));
+        geometry.setAttribute('size', new THREE.Float32BufferAttribute(sizes, 1));
+
+        // Use shader material for variable point sizes if PointsMaterial size attenuation isn't enough?
+        // PointsMaterial supports size per vertex ONLY if we use a ShaderMaterial or modify it.
+        // Simpler: Just map size to the PointsMaterial? No, PointsMaterial has one global size.
+        // We must use a separate Points loop or ShaderMaterial.
+        // Wait, standard PointsMaterial DOES NOT support attribute 'size'.
+
+        // Efficient Fix: Just SPLIT into two meshes? No.
+        // Correct Fix: Use ShaderMaterial for per-particle sizing or just simple alpha fading logic via filtering.
+        // Let's stick to filtering. If it's in the center, DON'T DRAW IT.
+        // But we want a smooth fade. Smooth fade needs size or alpha.
+        // Let's use a custom easy shader.
+
+        const shaderMaterial = new THREE.ShaderMaterial({
+            uniforms: {
+                color: { value: new THREE.Color(0xa5b4fc) }
+            },
+            vertexShader: `
+                attribute float size;
+                void main() {
+                    vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
+                    gl_PointSize = size * ( 300.0 / -mvPosition.z );
+                    gl_Position = projectionMatrix * mvPosition;
+                }
+            `,
+            fragmentShader: `
+                uniform vec3 color;
+                void main() {
+                    if ( length( gl_PointCoord - vec2( 0.5, 0.5 ) ) > 0.475 ) discard; // Circle shape
+                    gl_FragColor = vec4( color, 0.8 ); // 0.8 Opacity
+                }
+            `,
+            transparent: true
+        });
+
+        this.pointsMesh = new THREE.Points(geometry, shaderMaterial);
         this.scene.add(this.pointsMesh);
     }
 

@@ -109,4 +109,8 @@
 {{- /* Load 3D Hero Script */ -}}
 {{- $hero_js := resources.Get "js/hero-3d.js" | fingerprint -}}
 <script type="module" src="{{ $hero_js.Permalink }}" integrity="{{ $hero_js.Data.Integrity }}"></script>
+
+{{- /* Load 3D Tilt Script */ -}}
+{{- $tilt_js := resources.Get "js/tilt-3d.js" | fingerprint -}}
+<script src="{{ $tilt_js.Permalink }}" integrity="{{ $tilt_js.Data.Integrity }}"></script>
 {{ end }}
