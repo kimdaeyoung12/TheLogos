@@ -1,7 +1,7 @@
 ---
 title: "절충주의"
 date: 2026-01-10T23:50:00+09:00
-categories: ["Philosophy"]
+categories: ["philosophy"]
 tags: ["복잡계", "절충주의", "사고모델", "나심탈레브", "블랙스완", "방법론"]
 description: "현대 사회의 복잡계적 특성과 이를 해결하기 위한 지적인 절충주의(Intelligent Eclecticism) 방법론의 유의미함을 탐구합니다."
 layout: "single"

@@ -1,7 +1,7 @@
 ---
 title: "5가지 사고모델(책 '슈퍼씽킹' 中)"
 date: 2026-01-10T23:47:00+09:00
-categories: ["Engineering"]
+categories: ["engineering"]
 tags: ["사고방식", "슈퍼씽킹", "멘탈모델", "생산성", "의사결정"]
 description: "남들이 하는 대로 따라 하는 '유추' 대신, 문제를 가장 기초적인 사실까지 쪼갠 뒤 다시 쌓아 올리는 물리적 사고방식 등 5가지 핵심 사고 모델을 소개합니다."
 layout: "single"
