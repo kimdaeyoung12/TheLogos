@@ -2,20 +2,21 @@
 <div id="three-canvas-container"></div>
 
 <article class="about-article">
-    <header class="about-header">
-        <h1 class="about-title">{{ .Title }}</h1>
-        <p class="about-subtitle">{{ .Params.description }}</p>
-    </header>
+    <div class="glass-panel">
+        <header class="about-header" data-scroll>
+            <h1 class="about-title">{{ .Title }}</h1>
+            <p class="about-subtitle">{{ .Params.description }}</p>
+        </header>
 
-    <div class="about-content" id="scroll-content">
-        {{ .Content }}
+        <div class="about-content">
+            {{ .Content }}
+        </div>
     </div>
 </article>
 
 <!-- Three.js from CDN -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<!-- Custom 3D Logic -->
+<!-- Scripts -->
 <script src="/js/about-3d.js"></script>
-<!-- Custom CSS -->
 <link rel="stylesheet" href="/css/about-3d.css">
 {{ end }}
