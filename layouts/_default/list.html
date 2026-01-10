@@ -20,18 +20,29 @@
             <!-- Unified Filter Buttons -->
             <div class="category-filters">
                 <button class="filter-btn active" data-category="all">
+                    <span class="icon">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                        </svg>
+                    </span>
                     <span>전체</span>
                 </button>
                 <button class="filter-btn" data-category="religion">
+                    <span class="icon">{{ (index .Site.Data.categories "religion").icon | safeHTML }}</span>
                     <span>종교</span>
                 </button>
                 <button class="filter-btn" data-category="philosophy">
+                    <span class="icon">{{ (index .Site.Data.categories "philosophy").icon | safeHTML }}</span>
                     <span>철학</span>
                 </button>
                 <button class="filter-btn" data-category="engineering">
+                    <span class="icon">{{ (index .Site.Data.categories "engineering").icon | safeHTML }}</span>
                     <span>공학</span>
                 </button>
                 <button class="filter-btn" data-category="writing">
+                    <span class="icon">{{ (index .Site.Data.categories "writing").icon | safeHTML }}</span>
                     <span>글쓰기</span>
                 </button>
             </div>
@@ -61,6 +72,7 @@
                     {{ end }}
 
                     {{ $catName := $categoryData.name | default "기타" }}
+                    {{ $catIcon := $categoryData.icon | default (index .Site.Data.categories "other").icon }}
                     {{ $catColor := $categoryData.color | default "#9ca3af" }}
 
                     <article class="timeline-item" data-category="{{ $category }}">
@@ -68,8 +80,9 @@
                         <div class="timeline-content">
                             <div class="timeline-meta">
                                 <span class="timeline-date">{{ .Date.Format "Jan 2" }}</span>
-                                <span class="timeline-category" style="color: {{ $catColor }};">
-                                    {{ $catName }}
+                                <span class="timeline-category"
+                                    style="color: {{ $catColor }}; display: flex; align-items: center; gap: 4px;">
+                                    {{ $catIcon | safeHTML }} {{ $catName }}
                                 </span>
                             </div>
                             <h3 class="timeline-title">
