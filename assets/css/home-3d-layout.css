@@ -46,14 +46,13 @@
 .monolith-plate {
     position: absolute;
     inset: 0;
-    /* Lighter, brighter background with subtle gradient */
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
-    backdrop-filter: blur(8px);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    /* Sharper border */
+    /* Cosmic Dark Background - Matching Hero */
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 4px;
     box-shadow:
-        0 10px 30px -10px rgba(0, 0, 0, 0.3),
+        0 10px 30px -10px rgba(0, 0, 0, 0.5),
         0 0 0 1px rgba(255, 255, 255, 0.05) inset;
     display: flex;
     flex-direction: column;
@@ -65,7 +64,7 @@
     overflow: hidden;
 }
 
-/* Lighting Sheen effect - Brighter */
+/* Lighting Sheen effect */
 .monolith-plate::before {
     content: '';
     position: absolute;
@@ -74,9 +73,8 @@
     width: 200%;
     height: 200%;
     background: radial-gradient(circle at 50% 50%,
-            rgba(255, 255, 255, 0.15) 0%,
-            /* Stronger light */
-            transparent 60%);
+            rgba(255, 255, 255, 0.08) 0%,
+            transparent 50%);
     opacity: 0;
     transition: opacity 0.5s ease;
     pointer-events: none;
@@ -87,13 +85,13 @@
     opacity: 1;
 }
 
-/* Accent Tint Background */
+/* Accent Tint Background - Subtle */
 .monolith-plate::after {
     content: '';
     position: absolute;
     inset: 0;
     background: var(--accent-color-dim);
-    opacity: 0.1;
+    opacity: 0.05;
     /* Very subtle colorful tint */
     z-index: -1;
 }
@@ -105,8 +103,7 @@
     margin-bottom: 20px;
     color: var(--accent-color);
     transform: translateZ(30px);
-    filter: drop-shadow(0 0 15px var(--accent-color-dim));
-    /* Glow instead of shadow */
+    filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.3));
 }
 
 .icon-layer svg {
@@ -121,17 +118,17 @@
     font-weight: 800;
     margin: 0;
     letter-spacing: -0.02em;
-    color: #f8fafc;
-    /* Brighter text */
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    /* White text for dark bg */
+    background: linear-gradient(to bottom right, #fff, #94a3b8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
     transform: translateZ(20px);
 }
 
 .subtitle-layer {
     margin-top: 8px;
     font-size: 0.9rem;
-    color: #cbd5e1;
-    /* Lighter subtitle */
+    color: #94a3b8;
     font-weight: 500;
     letter-spacing: 0.1em;
     text-transform: uppercase;
@@ -143,8 +140,7 @@
     position: absolute;
     inset: -15px;
     background: linear-gradient(45deg, var(--accent-color-dim), transparent);
-    opacity: 0.15;
-    /* Slightly more visible */
+    opacity: 0.1;
     transform: translateZ(-30px) scale(0.9);
     filter: blur(15px);
     border-radius: 20px;
@@ -161,9 +157,9 @@
     perspective: 1000px;
 }
 
+/* Post Card Styles */
 .post-card-3d {
-    background: rgba(30, 41, 59, 0.3);
-    /* Lighter card bg */
+    background: rgba(30, 41, 59, 0.4);
     border: 1px solid rgba(255, 255, 255, 0.05);
     border-radius: 6px;
     padding: 20px;
@@ -178,10 +174,9 @@
 }
 
 .post-card-3d:hover {
-    background: rgba(30, 41, 59, 0.5);
+    background: rgba(30, 41, 59, 0.6);
     border-color: var(--accent-color);
     transform: translateY(-3px) translateZ(5px);
-    /* Reduced movement */
     box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.2);
 }
 
@@ -215,6 +210,35 @@
     -webkit-box-orient: vertical;
     overflow: hidden;
     flex: 1;
+}
+
+/* View More Card Special Styles */
+.view-more-card {
+    background: rgba(30, 41, 59, 0.2);
+    border: 1px dashed rgba(255, 255, 255, 0.1);
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.view-more-card:hover {
+    background: rgba(30, 41, 59, 0.4);
+    border-color: var(--accent-color);
+    border-style: solid;
+}
+
+.view-more-text {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #94a3b8;
+    transition: color 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.view-more-card:hover .view-more-text {
+    color: var(--accent-color);
 }
 
 /* Mobile Responsive */
