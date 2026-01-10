@@ -5,3 +5,7 @@
 scripts/.env
 *.env
 !*.env.example
+
+# Hugo
+/bin/
+.hugo_build.lock
