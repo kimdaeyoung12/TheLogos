@@ -150,12 +150,14 @@
         });
 
         function applyFilters() {
-            const query = searchInput.value.toLowerCase().trim();
+            // Normalize query to NFC to ensure consistent Korean character representation
+            const query = searchInput.value.trim().toLowerCase().normalize('NFC');
 
             items.forEach(item => {
                 const itemCategory = item.getAttribute('data-category');
-                const title = item.querySelector('.timeline-title')?.textContent.toLowerCase() || '';
-                const excerpt = item.querySelector('.timeline-excerpt')?.textContent.toLowerCase() || '';
+                // Normalize content to NFC as well
+                const title = (item.querySelector('.timeline-title')?.textContent || '').toLowerCase().normalize('NFC');
+                const excerpt = (item.querySelector('.timeline-excerpt')?.textContent || '').toLowerCase().normalize('NFC');
 
                 const matchesCategory = currentFilter === 'all' || itemCategory === currentFilter;
                 const matchesSearch = !query || title.includes(query) || excerpt.includes(query);
