@@ -1,6 +1,6 @@
-/* About Page 3D Styles */
+/* About Page 3D Styles - Refined "Sophisticated" Theme */
 
-/* Fix the canvas to the background */
+/* Background canvas fixed */
 #three-canvas-container {
     position: fixed;
     top: 0;
@@ -8,92 +8,154 @@
     width: 100%;
     height: 100vh;
     z-index: -1;
-    background: linear-gradient(to bottom, #0f172a, #000000);
-    /* Fallback/Base */
+    /* Deep, rich dark blue/slate gradient instead of pure black */
+    background: radial-gradient(circle at 50% 50%, #1e293b 0%, #0f172a 100%);
     overflow: hidden;
 }
 
-/* Base article styling to ensure text is visible over 3D */
+/* Main Container */
 .about-article {
     position: relative;
     z-index: 10;
-    /* Above canvas */
-    color: #f8fafc;
-    font-family: 'Inter', sans-serif;
-    max-width: 800px;
+    color: #f1f5f9;
+    /* Soft white */
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    /* Use a narrower, centered column for better reading flow */
+    max-width: 720px;
     margin: 0 auto;
-    padding: 10vh 20px 20vh;
-    /* Extra padding at bottom for scrolling past content */
+    padding: 15vh 24px;
     line-height: 1.8;
 }
 
-/* Header */
+/* Glassmorphic Reading Container */
+/* This ensures text is always readable regardless of what's behind it */
+.about-content {
+    position: relative;
+}
+
+/* We'll wrap paragraphs in a subtle backdrop mainly for the middle sections if needed, 
+   but let's try a global subtle bloom first. */
+
+/* Typography & Hierarchy */
 .about-header {
     text-align: center;
-    margin-bottom: 15vh;
-    /* Initial gap */
+    margin-bottom: 120px;
     opacity: 0;
-    /* Animated in by JS or CSS */
     animation: fadeIn 1.5s ease-out forwards;
 }
 
 .about-title {
-    font-size: 4rem;
-    font-weight: 800;
-    margin-bottom: 1rem;
-    background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);
+    font-size: 3.5rem;
+    font-weight: 200;
+    /* Lighter, more elegant weight */
+    letter-spacing: -0.02em;
+    margin-bottom: 1.5rem;
+    color: #ffffff;
+    /* Subtle gold/warm accent gradient for the title */
+    background: linear-gradient(135deg, #ffffff 0%, #e2e8f0 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    text-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
 }
 
 .about-subtitle {
-    font-size: 1.25rem;
-    color: #cbd5e1;
-    font-weight: 300;
+    font-size: 1.1rem;
+    color: #94a3b8;
+    font-weight: 400;
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
 }
 
-/* Content Sections */
+/* Content Typography */
 .about-content h1,
-.about-content h2,
-.about-content h3 {
-    margin-top: 15vh;
-    /* Spacing for scroll rhythm */
-    margin-bottom: 2rem;
-    color: #fff;
-}
-
-.about-content p,
-.about-content ul,
-.about-content blockquote {
+.about-content h2 {
+    font-weight: 600;
+    color: #ffffff;
+    margin-top: 4rem;
     margin-bottom: 1.5rem;
-    font-size: 1.125rem;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
-    /* Readability shadow */
+    letter-spacing: -0.01em;
+    text-align: center;
+    /* keep headings centered for symmetry */
 }
 
-/* Blockquote styling */
+/* Paragraphs - Justified center or left? 
+   "Sophisticated" often implies left-aligned text for readability in a centered column.
+   But user said "text is centered", let's make it easy to read. */
+.about-content p {
+    margin-bottom: 2rem;
+    font-size: 1.05rem;
+    color: #cbd5e1;
+    text-align: left;
+    /* Better for reading blocks of text */
+    /* Add a subtle backing to text blocks for contrast */
+    padding: 1rem;
+    border-radius: 8px;
+    transition: background 0.3s ease;
+}
+
+.about-content p:hover {
+    background: rgba(255, 255, 255, 0.03);
+    /* Subtle highlight interaction */
+}
+
+.about-content strong {
+    color: #fff;
+    font-weight: 600;
+}
+
+.about-content ul {
+    list-style: none;
+    padding: 0;
+    margin: 2rem 0;
+    text-align: center;
+}
+
+.about-content li {
+    margin-bottom: 1rem;
+    color: #94a3b8;
+}
+
+/* Blockquotes - Feature elements */
 .about-content blockquote {
-    border-left: 4px solid #6366f1;
-    padding-left: 1.5rem;
+    text-align: center;
+    font-size: 1.4rem;
+    font-weight: 300;
     font-style: italic;
-    color: #e2e8f0;
-    background: rgba(255, 255, 255, 0.05);
-    padding: 2rem;
-    border-radius: 0 8px 8px 0;
-    backdrop-filter: blur(5px);
+    color: #ffffff;
+    padding: 3rem 1rem;
+    margin: 4rem 0;
+    border: none;
+    /* Remove side border */
+    position: relative;
+    /* Add decorative quotes */
 }
 
-/* Glassmorphism cards for sections (optional, checking readability first) */
-.about-section-card {
-    background: rgba(15, 23, 42, 0.6);
-    backdrop-filter: blur(10px);
-    padding: 2rem;
-    border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    margin-bottom: 5rem;
-    transition: transform 0.3s ease, opacity 0.3s ease;
+.about-content blockquote::before {
+    content: "“";
+    display: block;
+    font-size: 3rem;
+    color: rgba(255, 255, 255, 0.1);
+    margin-bottom: -20px;
 }
+
+/* Contact/Categories section styling */
+.about-content h3 {
+    text-align: center;
+    font-size: 1.2rem;
+    color: #e2e8f0;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-top: 3rem;
+}
+
+/* Horizontal Rule */
+.about-content hr {
+    border: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    margin: 4rem 0;
+}
+
 
 /* Animations */
 @keyframes fadeIn {
@@ -106,16 +168,4 @@
         opacity: 1;
         transform: translateY(0);
     }
-}
-
-/* Scroll Trigger class (added by JS) */
-.visible {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-.hidden {
-    opacity: 0;
-    transform: translateY(30px);
-    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
 }

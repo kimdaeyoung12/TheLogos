@@ -1,202 +1,189 @@
 /* 
- * 3D Scroll Animation for The Logos About Page
- * Uses Three.js to render a dynamic scene representing:
- * 1. Tide/Ocean (Introduction)
- * 2. Entropy/Chaos (Particles)
- * 3. Logos/Order (Geometry)
- * 4. Growth/Rings (Torus/Spiral)
+ * Refined 3D Scroll Animation
+ * Theme: Sophisticated, Abstract, Glassy
  */
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Check if Three.js is loaded
-    if (typeof THREE === 'undefined') {
-        console.error('Three.js not loaded');
-        return;
-    }
+    if (typeof THREE === 'undefined') return;
 
     const container = document.getElementById('three-canvas-container');
     if (!container) return;
 
-    // --- Scene Setup ---
+    // --- Scene ---
     const scene = new THREE.Scene();
-    // Add subtle fog for depth
-    scene.fog = new THREE.FogExp2(0x050510, 0.0025);
+    scene.fog = new THREE.FogExp2(0x1e293b, 0.002); // Darker blue fog
 
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.z = 30;
+    const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.z = 25;
 
     const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.outputEncoding = THREE.sRGBEncoding;
     container.appendChild(renderer.domElement);
 
-    // --- Lighting ---
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+    // --- Lights ---
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
     scene.add(ambientLight);
 
-    const pointLight = new THREE.PointLight(0x6366f1, 2, 100); // Indigo glow
-    pointLight.position.set(10, 10, 10);
-    scene.add(pointLight);
+    const dirLight = new THREE.DirectionalLight(0xffffff, 1.5);
+    dirLight.position.set(10, 20, 20);
+    scene.add(dirLight);
 
-    const blueLight = new THREE.PointLight(0x4facfe, 2, 100); // Blue glow
-    blueLight.position.set(-10, -10, 10);
-    scene.add(blueLight);
+    const blueSpot = new THREE.PointLight(0x60a5fa, 2, 50);
+    blueSpot.position.set(-10, 5, 10);
+    scene.add(blueSpot);
+
+    // --- Materials (Refined/Glassy) ---
+    // Glass/Crystal Material
+    const glassMaterial = new THREE.MeshPhysicalMaterial({
+        color: 0xffffff,
+        metalness: 0.1,
+        roughness: 0.05,
+        transmission: 0.9, // Glass effect
+        transparent: true,
+        thickness: 0.5,
+    });
+
+    // Abstract Matte Material
+    const matteMaterial = new THREE.MeshStandardMaterial({
+        color: 0xe2e8f0, // Slate 200
+        roughness: 0.4,
+        metalness: 0.6,
+    });
 
     // --- Objects ---
 
-    // 1. The Ocean/Tide (Wireframe Plane)
-    // Represents the "Tide" mentioned in the intro
-    const planeGeometry = new THREE.PlaneGeometry(100, 100, 40, 40);
-    const planeMaterial = new THREE.MeshBasicMaterial({
-        color: 0x667eea,
-        wireframe: true,
+    // 1. The Tide (Smooth wave mesh instead of wireframe)
+    // Using a Point cloud for a more abstract "stardust" wave
+    const tideGeometry = new THREE.PlaneGeometry(120, 120, 60, 60);
+    const tideMaterial = new THREE.PointsMaterial({
+        color: 0x94a3b8,
+        size: 0.15,
         transparent: true,
-        opacity: 0.3
+        opacity: 0.6
     });
-    const tidePlane = new THREE.Mesh(planeGeometry, planeMaterial);
-    tidePlane.rotation.x = -Math.PI / 2;
-    tidePlane.position.y = -10;
-    scene.add(tidePlane);
-
-    // 2. Entropy (Particles)
-    // Chaos field that surrounds the camera
-    const particlesGeometry = new THREE.BufferGeometry();
-    const particlesCount = 2000;
-    const posArray = new Float32Array(particlesCount * 3);
-
-    for (let i = 0; i < particlesCount * 3; i++) {
-        posArray[i] = (Math.random() - 0.5) * 80; // Spread wide
-    }
-
-    particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-    const particlesMaterial = new THREE.PointsMaterial({
-        size: 0.05,
-        color: 0xffffff,
-        transparent: true,
-        opacity: 0.8,
-    });
-    const entropyField = new THREE.Points(particlesGeometry, particlesMaterial);
-    scene.add(entropyField);
+    const tideMesh = new THREE.Points(tideGeometry, tideMaterial);
+    tideMesh.rotation.x = -Math.PI / 2.5;
+    tideMesh.position.y = -15;
+    tideMesh.position.z = -10;
+    scene.add(tideMesh);
 
 
-    // 3. The Logos (Geometry)
-    // Icosahedron representing Order/Truth
-    const logosGeometry = new THREE.IcosahedronGeometry(4, 1);
-    const logosMaterial = new THREE.MeshPhongMaterial({
-        color: 0xffffff,
-        emissive: 0x111111,
-        specular: 0x666666,
-        shininess: 10,
-        flatShading: true,
-        wireframe: false,
-        transparent: true,
-        opacity: 0.9
-    });
-    const logosMesh = new THREE.Mesh(logosGeometry, logosMaterial);
-    logosMesh.position.set(0, 0, -20); // Start far away
+    // 2. The Logos (Glass Polyhedron)
+    // A complex but smooth shape (Dodecahedron)
+    const logosGeometry = new THREE.DodecahedronGeometry(5, 0); // Faceted
+    const logosMesh = new THREE.Mesh(logosGeometry, glassMaterial);
+    logosMesh.position.set(12, 0, -10); // Offset to right, not center, so it doesn't block text
     scene.add(logosMesh);
 
-    // Wireframe overlay for Logos
-    const logosWireParams = new THREE.IcosahedronGeometry(4.1, 1);
-    const logosWireMat = new THREE.MeshBasicMaterial({ color: 0x6366f1, wireframe: true, transparent: true, opacity: 0.5 });
-    const logosWire = new THREE.Mesh(logosWireParams, logosWireMat);
-    logosMesh.add(logosWire); // Child of logosMesh
+    // Inner core for visibility
+    const coreGeometry = new THREE.IcosahedronGeometry(2, 0);
+    const coreMat = new THREE.MeshStandardMaterial({
+        color: 0x60a5fa,
+        emissive: 0x1d4ed8,
+        emissiveIntensity: 0.5,
+        wireframe: true
+    });
+    const coreMesh = new THREE.Mesh(coreGeometry, coreMat);
+    logosMesh.add(coreMesh);
 
 
-    // 4. Growth/Rings (Torus)
-    // Representing Tree rings / Life
-    const ringsGroup = new THREE.Group();
-    const ringCount = 5;
-    for (let i = 0; i < ringCount; i++) {
-        const torusGeo = new THREE.TorusGeometry(3 + i * 1.5, 0.05, 16, 100);
-        const torusMat = new THREE.MeshBasicMaterial({ color: 0xf5576c, transparent: true, opacity: 0.3 + (i * 0.1) });
-        const ring = new THREE.Mesh(torusGeo, torusMat);
-        ring.rotation.x = Math.PI / 2;
-        ring.rotation.y = Math.random() * Math.PI;
-        ringsGroup.add(ring);
+    // 3. Entropy (Subtle Dust)
+    const particlesGeo = new THREE.BufferGeometry();
+    const pCount = 800;
+    const pPos = new Float32Array(pCount * 3);
+    for (let i = 0; i < pCount * 3; i++) {
+        pPos[i] = (Math.random() - 0.5) * 100;
     }
-    ringsGroup.position.set(0, -20, -10); // Start hidden below
-    scene.add(ringsGroup);
+    particlesGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
+    const dustMat = new THREE.PointsMaterial({
+        color: 0xffffff,
+        size: 0.1,
+        transparent: true,
+        opacity: 0.4
+    });
+    const dustSystem = new THREE.Points(particlesGeo, dustMat);
+    scene.add(dustSystem);
 
 
-    // --- Post-Processing / Animation State ---
+    // 4. Time/Growth (Golden Spiral)
+    // Abstract curve
+    const spiralPoints = [];
+    for (let i = 0; i < 100; i++) {
+        const t = i * 0.5;
+        const x = t * Math.cos(t) * 0.2;
+        const y = t * Math.sin(t) * 0.2;
+        const z = -i * 0.5;
+        spiralPoints.push(new THREE.Vector3(x, y, z));
+    }
+    const spiralGeo = new THREE.BufferGeometry().setFromPoints(spiralPoints);
+    const spiralMat = new THREE.LineBasicMaterial({ color: 0xfcd34d, transparent: true, opacity: 0.5 });
+    const spiralMesh = new THREE.Line(spiralGeo, spiralMat);
+    spiralMesh.position.set(-10, -10, -10);
+    spiralMesh.rotation.x = Math.PI / 2;
+    scene.add(spiralMesh);
 
+
+    // --- Animation State ---
     let scrollY = 0;
-    let limit = Math.max(document.body.scrollHeight, document.body.offsetHeight,
-        document.documentElement.clientHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight);
 
-    // Resize Handler
+    window.addEventListener('scroll', () => { scrollY = window.scrollY; });
     window.addEventListener('resize', () => {
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
-
-        // Recalculate limit
-        limit = Math.max(document.body.scrollHeight, document.body.offsetHeight,
-            document.documentElement.clientHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight);
-    });
-
-    // Scroll Handler
-    window.addEventListener('scroll', () => {
-        scrollY = window.scrollY;
     });
 
     const clock = new THREE.Clock();
 
-    // --- Animation Loop ---
     function animate() {
         requestAnimationFrame(animate);
-
         const time = clock.getElapsedTime();
-        const scrollPercent = scrollY / (document.documentElement.scrollHeight - window.innerHeight);
+        const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+        const scrollPercent = scrollY / (maxScroll || 1);
 
-        // 1. Tide Animation
-        // Waves movement
-        const positions = tidePlane.geometry.attributes.position;
-        // Simple vertex wave (if segment count allows) - PlaneGeometry(100, 100, 40, 40) has enough verts
-        // We'll skip complex vertex shader for simplicity and just rotate/move
-        tidePlane.position.z = -10 + scrollPercent * 20; // Move closer then pass
-        tidePlane.rotation.z = time * 0.05;
-
-        // 2. Entropy Field
-        // Particles rotate slowly, speed up with scroll
-        entropyField.rotation.y = time * 0.05 + scrollPercent * 2;
-        entropyField.rotation.x = scrollPercent * 1;
-
-        // 3. Logos (The Order)
-        // Comes into view in the middle section
-        // Map scroll 0.3 - 0.7 to visibility/position
-        if (scrollPercent > 0.15) {
-            // Move from -20 z to 0 z (closer)
-            // And y position from 0 to slightly up
-            const targetZ = -20 + (scrollPercent - 0.15) * 40;
-            logosMesh.position.z = THREE.MathUtils.lerp(logosMesh.position.z, targetZ, 0.1);
-            logosMesh.rotation.x = time * 0.2;
-            logosMesh.rotation.y = time * 0.3;
-        } else {
-            logosMesh.position.z = -50; // Hide
+        // 1. Tide: Gentle waving
+        const positions = tideGeometry.attributes.position.array;
+        for (let i = 0; i < positions.length; i += 3) {
+            // Very simple wave effect on z-axis of the plane
+            // x is pos[i], y is pos[i+1]
+            const x = positions[i];
+            const y = positions[i + 1];
+            // Initial Z is 0 (plane geometry)
+            // We want to perturb it based on time and position
+            // We can't easily modify buffer geometry per frame performantly without marking needsUpdate
+            // So let's just rotate the whole mesh
         }
+        // Rotate/sway tide
+        tideMesh.rotation.z = Math.sin(time * 0.1) * 0.1;
+        tideMesh.position.y = -15 + scrollPercent * 10; // Rises slightly
 
-        // 4. Growth Rings
-        // Appear at the end (bottom of scroll)
-        if (scrollPercent > 0.6) {
-            // Rise from below
-            const targetY = -20 + (scrollPercent - 0.6) * 60;
-            ringsGroup.position.y = THREE.MathUtils.lerp(ringsGroup.position.y, targetY, 0.1);
-            ringsGroup.rotation.z = time * 0.1;
+        // 2. Logos (Glass shape)
+        // Moves from right to left as you scroll
+        // Target position: Start (12, 0, -10), End (12, 10, -30) or Cross over?
+        // Let's keep it on the side to be "sophisticated" and not block text
+        const targetLogosY = -5 + scrollPercent * 20;
+        logosMesh.position.y = THREE.MathUtils.lerp(logosMesh.position.y, targetLogosY, 0.05);
 
-            // Subtle pulse
-            const scale = 1 + Math.sin(time) * 0.05;
-            ringsGroup.scale.set(scale, scale, scale);
+        // Gentle rotation
+        logosMesh.rotation.x = time * 0.2;
+        logosMesh.rotation.y = time * 0.1 + scrollPercent * Math.PI;
+
+        // 3. Dust
+        dustSystem.rotation.y = time * 0.05;
+
+        // 4. Spiral (Growth)
+        // Comes up at the end
+        if (scrollPercent > 0.7) {
+            spiralMesh.position.y = THREE.MathUtils.lerp(spiralMesh.position.y, 0, 0.05);
+            spiralMesh.rotation.z = time * 0.2;
         } else {
-            ringsGroup.position.y = -50;
+            spiralMesh.position.y = -50;
         }
-
-        // Camera gentle float
-        camera.position.y = Math.sin(time * 0.5) * 0.5;
 
         renderer.render(scene, camera);
     }
-
     animate();
 });
