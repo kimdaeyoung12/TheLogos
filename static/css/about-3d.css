@@ -1,0 +1,121 @@
+/* About Page 3D Styles */
+
+/* Fix the canvas to the background */
+#three-canvas-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    z-index: -1;
+    background: linear-gradient(to bottom, #0f172a, #000000);
+    /* Fallback/Base */
+    overflow: hidden;
+}
+
+/* Base article styling to ensure text is visible over 3D */
+.about-article {
+    position: relative;
+    z-index: 10;
+    /* Above canvas */
+    color: #f8fafc;
+    font-family: 'Inter', sans-serif;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 10vh 20px 20vh;
+    /* Extra padding at bottom for scrolling past content */
+    line-height: 1.8;
+}
+
+/* Header */
+.about-header {
+    text-align: center;
+    margin-bottom: 15vh;
+    /* Initial gap */
+    opacity: 0;
+    /* Animated in by JS or CSS */
+    animation: fadeIn 1.5s ease-out forwards;
+}
+
+.about-title {
+    font-size: 4rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+.about-subtitle {
+    font-size: 1.25rem;
+    color: #cbd5e1;
+    font-weight: 300;
+}
+
+/* Content Sections */
+.about-content h1,
+.about-content h2,
+.about-content h3 {
+    margin-top: 15vh;
+    /* Spacing for scroll rhythm */
+    margin-bottom: 2rem;
+    color: #fff;
+}
+
+.about-content p,
+.about-content ul,
+.about-content blockquote {
+    margin-bottom: 1.5rem;
+    font-size: 1.125rem;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+    /* Readability shadow */
+}
+
+/* Blockquote styling */
+.about-content blockquote {
+    border-left: 4px solid #6366f1;
+    padding-left: 1.5rem;
+    font-style: italic;
+    color: #e2e8f0;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 2rem;
+    border-radius: 0 8px 8px 0;
+    backdrop-filter: blur(5px);
+}
+
+/* Glassmorphism cards for sections (optional, checking readability first) */
+.about-section-card {
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(10px);
+    padding: 2rem;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 5rem;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Scroll Trigger class (added by JS) */
+.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.hidden {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}

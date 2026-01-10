@@ -2,6 +2,7 @@
 title: "About"
 date: 2025-01-01T00:00:00+09:00
 draft: false
+layout: "about"
 description: "The Logos 블로그 소개 - 종교, 철학, 공학의 교차점에서 삶의 원리를 탐구합니다"
 ---
 
