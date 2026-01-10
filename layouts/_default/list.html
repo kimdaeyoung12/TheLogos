@@ -114,30 +114,52 @@
             color: 0xfff1f2, roughness: 0.9, emissive: 0x332222, emissiveIntensity: 0.1
         });
 
-        // Positioning: WIDE positions to avoid overlapping text center
+        // Initial Positions (Desktop Defaults)
         // Religion (Top Extreme Right)
         const religionPlanet = new THREE.Mesh(new THREE.IcosahedronGeometry(7, 0), matteGold);
-        religionPlanet.position.set(60, 25, -40);
         group.add(religionPlanet);
         planets['religion'] = { mesh: religionPlanet, camPos: { x: 40, y: 15, z: -10 } };
 
         // Philosophy (Top Extreme Left)
         const philoPlanet = new THREE.Mesh(new THREE.OctahedronGeometry(6, 0), matteBlue);
-        philoPlanet.position.set(-60, 20, -40);
         group.add(philoPlanet);
         planets['philosophy'] = { mesh: philoPlanet, camPos: { x: -40, y: 10, z: -15 } };
 
-        // Engineering (Mid Extreme Left - Moved UP from bottom)
+        // Engineering (Mid Extreme Left)
         const engPlanet = new THREE.Mesh(new THREE.IcosahedronGeometry(8, 0), matteSilver);
-        engPlanet.position.set(-70, -5, -50);
         group.add(engPlanet);
         planets['engineering'] = { mesh: engPlanet, camPos: { x: -45, y: -5, z: -20 } };
 
-        // Writing (Mid Extreme Right - Moved UP from bottom)
+        // Writing (Mid Extreme Right)
         const writePlanet = new THREE.Mesh(new THREE.SphereGeometry(5, 32, 32), softPearl);
-        writePlanet.position.set(70, -5, -30);
         group.add(writePlanet);
         planets['writing'] = { mesh: writePlanet, camPos: { x: 45, y: -5, z: -10 } };
+
+        // Responsive Layout Logic
+        function updatePlanetLayout() {
+            const isMobile = window.innerWidth < 768;
+
+            if (isMobile) {
+                // Mobile: Closer, Smaller, Vertically Stacked
+                // Scale Down
+                Object.values(planets).forEach(p => p.mesh.scale.set(0.6, 0.6, 0.6));
+
+                // Reposition for Portrait FOV
+                planets['religion'].mesh.position.set(18, 25, -50);
+                planets['philosophy'].mesh.position.set(-18, 15, -50);
+                planets['engineering'].mesh.position.set(-15, -30, -60);
+                planets['writing'].mesh.position.set(15, -30, -60);
+            } else {
+                // Desktop: Wide & Cinematic
+                Object.values(planets).forEach(p => p.mesh.scale.set(1, 1, 1));
+
+                planets['religion'].mesh.position.set(60, 25, -40);
+                planets['philosophy'].mesh.position.set(-60, 20, -40);
+                planets['engineering'].mesh.position.set(-70, -5, -50);
+                planets['writing'].mesh.position.set(70, -5, -30);
+            }
+        }
+        updatePlanetLayout(); // Initial Call
 
         // Soft Star Field (Fewer, smaller, subtle)
         const starGeo = new THREE.BufferGeometry();
@@ -199,11 +221,12 @@
         let resizeTimer;
         const onResize = () => {
             clearTimeout(resizeTimer);
+            updatePlanetLayout(); // Update positions on resize
             resizeTimer = setTimeout(() => {
                 camera.aspect = window.innerWidth / window.innerHeight;
                 camera.updateProjectionMatrix();
                 renderer.setSize(window.innerWidth, window.innerHeight);
-            }, 150);
+            }, 100);
         };
         window.addEventListener('resize', onResize);
 
