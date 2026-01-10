@@ -109,87 +109,125 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const filterBtns = document.querySelectorAll('.filter-btn');
-        const items = document.querySelectorAll('.timeline-item');
-        const yearSections = document.querySelectorAll('.timeline-year');
         const searchInput = document.getElementById('search-input');
         const searchClear = document.getElementById('search-clear');
+        const items = Array.from(document.querySelectorAll('.timeline-item'));
+        const yearSections = document.querySelectorAll('.timeline-year');
+
+        // Cache item data for performance (text search)
+        // Normalize text to NFC for correct Korean searching
+        const itemsData = items.map(item => ({
+            element: item,
+            category: item.getAttribute('data-category'),
+            text: (
+                (item.querySelector('.timeline-title')?.textContent || '') + ' ' +
+                (item.querySelector('.timeline-excerpt')?.textContent || '')
+            ).toLowerCase().normalize('NFC')
+        }));
 
         let currentFilter = 'all';
+        let currentQuery = '';
 
-        // Filter by category
-        filterBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                filterBtns.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                currentFilter = btn.getAttribute('data-category');
+        // --- Core Filter Logic ---
+        function runFilter() {
+            let visibleCount = 0;
 
-                // Update URL without reloading (optional, good for sharing)
-                const newUrl = new URL(window.location);
-                if (currentFilter === 'all') {
-                    newUrl.searchParams.delete('category');
+            itemsData.forEach(data => {
+                const matchesCategory = currentFilter === 'all' || data.category === currentFilter;
+                const matchesSearch = !currentQuery || data.text.includes(currentQuery);
+
+                const shouldShow = matchesCategory && matchesSearch;
+
+                if (shouldShow) {
+                    data.element.style.display = 'flex';
+                    // Small delay for fade-in effect
+                    setTimeout(() => data.element.style.opacity = '1', 50);
+                    visibleCount++;
                 } else {
-                    newUrl.searchParams.set('category', currentFilter);
-                }
-                window.history.pushState({}, '', newUrl);
-
-                applyFilters();
-            });
-        });
-
-        // Search functionality
-        searchInput.addEventListener('input', (e) => {
-            const query = e.target.value.trim();
-            searchClear.style.display = query ? 'block' : 'none';
-            applyFilters();
-        });
-
-        searchClear.addEventListener('click', () => {
-            searchInput.value = '';
-            searchClear.style.display = 'none';
-            applyFilters();
-        });
-
-        function applyFilters() {
-            // Normalize query to NFC to ensure consistent Korean character representation
-            const query = searchInput.value.trim().toLowerCase().normalize('NFC');
-
-            items.forEach(item => {
-                const itemCategory = item.getAttribute('data-category');
-                // Normalize content to NFC as well
-                const title = (item.querySelector('.timeline-title')?.textContent || '').toLowerCase().normalize('NFC');
-                const excerpt = (item.querySelector('.timeline-excerpt')?.textContent || '').toLowerCase().normalize('NFC');
-
-                const matchesCategory = currentFilter === 'all' || itemCategory === currentFilter;
-                const matchesSearch = !query || title.includes(query) || excerpt.includes(query);
-
-                if (matchesCategory && matchesSearch) {
-                    item.style.display = 'flex';
-                    setTimeout(() => item.style.opacity = '1', 50);
-                } else {
-                    item.style.opacity = '0';
-                    setTimeout(() => item.style.display = 'none', 300);
+                    data.element.style.opacity = '0';
+                    setTimeout(() => data.element.style.display = 'none', 300);
                 }
             });
 
-            // Hide year sections with no visible items
+            // Hide empty year sections
             setTimeout(() => {
                 yearSections.forEach(section => {
-                    const visibleItems = Array.from(section.querySelectorAll('.timeline-item')).filter(
-                        item => item.style.display !== 'none'
-                    );
-                    section.style.display = visibleItems.length > 0 ? 'block' : 'none';
+                    const hasVisibleChildren = Array.from(section.querySelectorAll('.timeline-item'))
+                        .some(el => el.style.display !== 'none');
+                    section.style.display = hasVisibleChildren ? 'block' : 'none';
                 });
             }, 350);
         }
 
-        // Initialize from URL Param
+        // --- Category Handling ---
+        function setCategory(category, updateUrl = false) {
+            currentFilter = category;
+
+            // Update UI buttons
+            filterBtns.forEach(btn => {
+                if (btn.getAttribute('data-category') === category) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+
+            // Update URL
+            if (updateUrl) {
+                const newUrl = new URL(window.location);
+                if (category === 'all') {
+                    newUrl.searchParams.delete('category');
+                } else {
+                    newUrl.searchParams.set('category', category);
+                }
+                window.history.pushState({}, '', newUrl);
+            }
+
+            runFilter();
+        }
+
+        // Event Listeners for Categories
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const cat = btn.getAttribute('data-category');
+                setCategory(cat, true);
+            });
+        });
+
+        // --- Search Handling (Debounced) ---
+        function debounce(func, wait) {
+            let timeout;
+            return function (...args) {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(this, args), wait);
+            };
+        }
+
+        const handleSearch = debounce((e) => {
+            currentQuery = e.target.value.trim().toLowerCase().normalize('NFC');
+            searchClear.style.display = currentQuery ? 'block' : 'none';
+            runFilter();
+        }, 300); // 300ms delay for performance
+
+        searchInput.addEventListener('input', handleSearch);
+
+        searchClear.addEventListener('click', () => {
+            searchInput.value = '';
+            currentQuery = '';
+            searchClear.style.display = 'none';
+            runFilter();
+        });
+
+        // --- Initialization ---
+        // 1. Check URL for category
         const urlParams = new URLSearchParams(window.location.search);
         const initialCategory = urlParams.get('category');
+
         if (initialCategory) {
-            const targetBtn = document.querySelector(`.filter-btn[data-category="${initialCategory}"]`);
-            if (targetBtn) {
-                // Simulate click to activate filter and styles
-                targetBtn.click();
+            // Verify if category exists in our buttons to avoid invalid states
+            const exists = document.querySelector(`.filter-btn[data-category="${initialCategory}"]`);
+            if (exists) {
+                setCategory(initialCategory, false); // Don't push state on initial load
             }
         }
     });
