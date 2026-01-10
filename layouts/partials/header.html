@@ -21,7 +21,8 @@
         document.body.classList.add('dark');
     } else if (localStorage.getItem("pref-theme") === "light") {
         document.body.classList.remove('dark')
-    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    } else {
+        // Default to Dark Mode
         document.body.classList.add('dark');
     }
 </script>

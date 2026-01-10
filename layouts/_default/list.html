@@ -2,10 +2,222 @@
 <!-- 3D Background Container -->
 <div id="three-canvas-container"></div>
 
-<!-- Three.js Dependencies -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="{{ " js/posts-3d.js" | absURL }}"></script>
-<link rel="stylesheet" href="{{ " css/posts-3d.css" | absURL }}">
+<!-- Inline CSS for 3D Container -->
+<style>
+    #three-canvas-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        z-index: -1;
+        /* LIGHT MODE: 'Morning Romance' - Soft Pastel Sunrise */
+        background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+        overflow: hidden;
+    }
+
+    body.dark #three-canvas-container {
+        /* DARK MODE: 'Midnight Romance' - Deep Velvet Purple/Navy */
+        background: radial-gradient(circle at 50% 50%, #232526 0%, #0f0c29 100%);
+    }
+
+    .timeline-item {
+        background: rgba(30, 41, 59, 0.85);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border-radius: 16px;
+    }
+
+    .timeline-item:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+    }
+
+    .page-title {
+        color: #f8fafc !important;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .page-description {
+        color: #94a3b8 !important;
+    }
+
+    .filter-btn {
+        background: rgba(30, 41, 59, 0.8) !important;
+        border-color: rgba(255, 255, 255, 0.1) !important;
+        color: #e2e8f0 !important;
+    }
+
+    .filter-btn.active {
+        background: rgba(99, 102, 241, 0.8) !important;
+    }
+</style>
+
+<!-- Three.js Inline Module - OPTIMIZED FOR SPEED -->
+<script type="module">
+    import * as THREE from 'https://cdn.skypack.dev/three@0.132.2';
+
+    // --- Zombie Killer ---
+    if (window.posts3DReqId) {
+        cancelAnimationFrame(window.posts3DReqId);
+    }
+    if (window.posts3DCleanup) {
+        window.posts3DCleanup();
+    }
+
+    const container = document.getElementById('three-canvas-container');
+
+    if (container) {
+        // Scene
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 500);
+        camera.position.set(0, 0, 70);
+
+        // Renderer - Performance Optimized
+        const renderer = new THREE.WebGLRenderer({
+            alpha: true,
+            antialias: false,  // Disable for performance
+            powerPreference: "high-performance"
+        });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5)); // Lower DPR limit
+        container.appendChild(renderer.domElement);
+
+        // Cinematic/Romance Lighting & Atmosphere
+        scene.add(new THREE.AmbientLight(0xffffff, 0.6)); // Soft general light
+        const mainLight = new THREE.DirectionalLight(0xffd1b3, 1.5); // Warm sunset key light
+        mainLight.position.set(20, 20, 50);
+        scene.add(mainLight);
+
+        // Soft Fog for Depth (Cinematic Feel)
+        scene.fog = new THREE.FogExp2(0x111116, 0.008);
+
+        // Planet Group
+        const group = new THREE.Group();
+        scene.add(group);
+        const planets = {};
+
+        // Cinematic Materials (Matte, Satin, Soft Glow - Not Metallic)
+        const matteGold = new THREE.MeshStandardMaterial({
+            color: 0xffac41, roughness: 0.7, metalness: 0.1, emissive: 0x553311, emissiveIntensity: 0.2
+        });
+        const matteBlue = new THREE.MeshStandardMaterial({
+            color: 0x3e5eb3, roughness: 0.8, metalness: 0.0, emissive: 0x112244, emissiveIntensity: 0.3
+        });
+        const matteSilver = new THREE.MeshStandardMaterial({
+            color: 0xcbd5e1, roughness: 0.5, metalness: 0.3
+        });
+        const softPearl = new THREE.MeshStandardMaterial({
+            color: 0xfff1f2, roughness: 0.9, emissive: 0x332222, emissiveIntensity: 0.1
+        });
+
+        // Positioning: WIDE positions to avoid overlapping text center
+        // Religion (Top Extreme Right)
+        const religionPlanet = new THREE.Mesh(new THREE.IcosahedronGeometry(7, 0), matteGold);
+        religionPlanet.position.set(60, 25, -40);
+        group.add(religionPlanet);
+        planets['religion'] = { mesh: religionPlanet, camPos: { x: 40, y: 15, z: -10 } };
+
+        // Philosophy (Top Extreme Left)
+        const philoPlanet = new THREE.Mesh(new THREE.OctahedronGeometry(6, 0), matteBlue);
+        philoPlanet.position.set(-60, 20, -40);
+        group.add(philoPlanet);
+        planets['philosophy'] = { mesh: philoPlanet, camPos: { x: -40, y: 10, z: -15 } };
+
+        // Engineering (Mid Extreme Left - Moved UP from bottom)
+        const engPlanet = new THREE.Mesh(new THREE.IcosahedronGeometry(8, 0), matteSilver);
+        engPlanet.position.set(-70, -5, -50);
+        group.add(engPlanet);
+        planets['engineering'] = { mesh: engPlanet, camPos: { x: -45, y: -5, z: -20 } };
+
+        // Writing (Mid Extreme Right - Moved UP from bottom)
+        const writePlanet = new THREE.Mesh(new THREE.SphereGeometry(5, 32, 32), softPearl);
+        writePlanet.position.set(70, -5, -30);
+        group.add(writePlanet);
+        planets['writing'] = { mesh: writePlanet, camPos: { x: 45, y: -5, z: -10 } };
+
+        // Soft Star Field (Fewer, smaller, subtle)
+        const starGeo = new THREE.BufferGeometry();
+        const starPos = new Float32Array(1000 * 3);
+        const starSizes = new Float32Array(1000);
+        for (let i = 0; i < 1000; i++) {
+            starPos[i * 3] = (Math.random() - 0.5) * 400;
+            starPos[i * 3 + 1] = (Math.random() - 0.5) * 400;
+            starPos[i * 3 + 2] = (Math.random() - 0.5) * 200 - 80; // Further back
+            starSizes[i] = Math.random() * 0.5;
+        }
+        starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
+        const starMat = new THREE.PointsMaterial({ size: 0.3, color: 0xffffff, transparent: true, opacity: 0.6 });
+        const stars = new THREE.Points(starGeo, starMat);
+        scene.add(stars);
+
+        // Camera Targets
+        let targetCameraPos = new THREE.Vector3(0, 0, 70);
+        let targetLookAt = new THREE.Vector3(0, 0, 0);
+
+        // Event Listener
+        if (window.postsNavListener) {
+            window.removeEventListener('category-changed', window.postsNavListener);
+        }
+        window.postsNavListener = (e) => {
+            const cat = e.detail.category;
+            if (cat === 'all' || !planets[cat]) {
+                targetCameraPos.set(0, 0, 70);
+                targetLookAt.set(0, 0, 0);
+            } else {
+                const p = planets[cat];
+                targetCameraPos.set(p.camPos.x, p.camPos.y, p.camPos.z);
+                targetLookAt.copy(p.mesh.position);
+            }
+        };
+        window.addEventListener('category-changed', window.postsNavListener);
+
+        // Animation Loop - FAST lerp (0.15 per frame = instant feel)
+        function animate() {
+            // Simple rotation
+            religionPlanet.rotation.y += 0.005;
+            philoPlanet.rotation.y -= 0.004;
+            engPlanet.rotation.x += 0.003;
+            writePlanet.rotation.y += 0.004;
+
+            // SMOOTH Camera Movement (0.05 = elegant)
+            camera.position.lerp(targetCameraPos, 0.05);
+            camera.lookAt(targetLookAt);
+
+            // Slow star rotation
+            stars.rotation.z += 0.0002;
+
+            renderer.render(scene, camera);
+            window.posts3DReqId = requestAnimationFrame(animate);
+        }
+        animate();
+
+        // Debounced Resize
+        let resizeTimer;
+        const onResize = () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            }, 150);
+        };
+        window.addEventListener('resize', onResize);
+
+        // Cleanup Function
+        window.posts3DCleanup = () => {
+            window.removeEventListener('resize', onResize);
+            if (window.postsNavListener) {
+                window.removeEventListener('category-changed', window.postsNavListener);
+            }
+            renderer.dispose();
+            renderer.forceContextLoss();
+        };
+    }
+</script>
 
 <section class="posts-list-section">
     <div class="container">
@@ -59,32 +271,32 @@
         <!-- Timeline Layout -->
         <div class="timeline">
             {{ $posts := where .Site.RegularPages "Section" "posts" }}
-            {{ $groupedPosts := $posts.ByDate.Reverse.GroupByDate "2006" }}
+            {{ $posts = $posts.ByDate.Reverse }}
+            {{ $grouped := $posts.GroupByDate "2006" }}
 
-            {{ range $groupedPosts }}
-            <div class="timeline-year" data-year="{{ .Key }}">
-                <h2 class="timeline-year-label">{{ .Key }}</h2>
+            {{ range $grouped }}
+            <div class="timeline-year">
+                <h2 class="year-label">{{ .Key }}</h2>
 
                 <div class="timeline-items">
                     {{ range .Pages }}
-
-                    {{/* Determine Category Metadata */}}
-                    {{ $category := "other" }}
+                    {{ $category := "uncategorized" }}
                     {{ if .Params.categories }}
                     {{ $category = index .Params.categories 0 | lower }}
                     {{ end }}
 
-                    {{ $categoryData := index .Site.Data.categories $category }}
-                    {{ if not $categoryData }}
-                    {{ $categoryData = index .Site.Data.categories "other" }}
+                    {{ $catData := index $.Site.Data.categories $category }}
+                    {{ $catColor := "#666" }}
+                    {{ $catIcon := "" }}
+                    {{ $catName := $category }}
+                    {{ if $catData }}
+                    {{ $catColor = $catData.color }}
+                    {{ $catIcon = $catData.icon }}
+                    {{ $catName = $catData.name }}
                     {{ end }}
 
-                    {{ $catName := $categoryData.name | default "기타" }}
-                    {{ $catIcon := $categoryData.icon | default (index .Site.Data.categories "other").icon }}
-                    {{ $catColor := $categoryData.color | default "#9ca3af" }}
-
                     <article class="timeline-item" data-category="{{ $category }}">
-                        <div class="timeline-marker" style="background-color: {{ $catColor }};"></div>
+                        <div class="timeline-marker" style="background: {{ $catColor }};"></div>
                         <div class="timeline-content">
                             <div class="timeline-meta">
                                 <span class="timeline-date">{{ .Date.Format "Jan 2" }}</span>
@@ -122,8 +334,6 @@
         const items = Array.from(document.querySelectorAll('.timeline-item'));
         const yearSections = document.querySelectorAll('.timeline-year');
 
-        // Cache item data for performance (text search)
-        // Normalize text to NFC for correct Korean searching
         const itemsData = items.map(item => ({
             element: item,
             category: item.getAttribute('data-category'),
@@ -136,51 +346,34 @@
         let currentFilter = 'all';
         let currentQuery = '';
 
-        // --- Core Filter Logic ---
         function runFilter() {
-            let visibleCount = 0;
-
             itemsData.forEach(data => {
                 const matchesCategory = currentFilter === 'all' || data.category === currentFilter;
                 const matchesSearch = !currentQuery || data.text.includes(currentQuery);
-
                 const shouldShow = matchesCategory && matchesSearch;
 
                 if (shouldShow) {
                     data.element.style.display = 'flex';
-                    // Small delay for fade-in effect
-                    setTimeout(() => data.element.style.opacity = '1', 50);
-                    visibleCount++;
+                    data.element.style.opacity = '1';
                 } else {
-                    data.element.style.opacity = '0';
-                    setTimeout(() => data.element.style.display = 'none', 300);
+                    data.element.style.display = 'none';
                 }
             });
 
-            // Hide empty year sections
-            setTimeout(() => {
-                yearSections.forEach(section => {
-                    const hasVisibleChildren = Array.from(section.querySelectorAll('.timeline-item'))
-                        .some(el => el.style.display !== 'none');
-                    section.style.display = hasVisibleChildren ? 'block' : 'none';
-                });
-            }, 350);
+            yearSections.forEach(section => {
+                const hasVisible = Array.from(section.querySelectorAll('.timeline-item'))
+                    .some(el => el.style.display !== 'none');
+                section.style.display = hasVisible ? 'block' : 'none';
+            });
         }
 
-        // --- Category Handling ---
         function setCategory(category, updateUrl = false) {
             currentFilter = category;
 
-            // Update UI buttons
             filterBtns.forEach(btn => {
-                if (btn.getAttribute('data-category') === category) {
-                    btn.classList.add('active');
-                } else {
-                    btn.classList.remove('active');
-                }
+                btn.classList.toggle('active', btn.getAttribute('data-category') === category);
             });
 
-            // Update URL
             if (updateUrl) {
                 const newUrl = new URL(window.location);
                 if (category === 'all') {
@@ -191,25 +384,19 @@
                 window.history.pushState({}, '', newUrl);
             }
 
-            // Dispatch Event for 3D Scene
-            const event = new CustomEvent('category-changed', { detail: { category: category } });
-            window.dispatchEvent(event);
-
+            // Dispatch for 3D
+            window.dispatchEvent(new CustomEvent('category-changed', { detail: { category } }));
             runFilter();
         }
 
-        // Event Listeners for Categories
         filterBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                const cat = btn.getAttribute('data-category');
-                setCategory(cat, true);
-            });
+            btn.addEventListener('click', () => setCategory(btn.getAttribute('data-category'), true));
         });
 
-        // --- Search Handling (Debounced) ---
+        // Search
         function debounce(func, wait) {
             let timeout;
-            return function (...args) {
+            return (...args) => {
                 clearTimeout(timeout);
                 timeout = setTimeout(() => func.apply(this, args), wait);
             };
@@ -219,7 +406,7 @@
             currentQuery = e.target.value.trim().toLowerCase().normalize('NFC');
             searchClear.style.display = currentQuery ? 'block' : 'none';
             runFilter();
-        }, 300); // 300ms delay for performance
+        }, 200);
 
         searchInput.addEventListener('input', handleSearch);
 
@@ -230,17 +417,11 @@
             runFilter();
         });
 
-        // --- Initialization ---
-        // 1. Check URL for category
+        // URL Init
         const urlParams = new URLSearchParams(window.location.search);
         const initialCategory = urlParams.get('category');
-
-        if (initialCategory) {
-            // Verify if category exists in our buttons to avoid invalid states
-            const exists = document.querySelector(`.filter-btn[data-category="${initialCategory}"]`);
-            if (exists) {
-                setCategory(initialCategory, false); // Don't push state on initial load
-            }
+        if (initialCategory && document.querySelector(`.filter-btn[data-category="${initialCategory}"]`)) {
+            setCategory(initialCategory, false);
         }
     });
 </script>
