@@ -1,4 +1,12 @@
 {{ define "main" }}
+<!-- 3D Background Container -->
+<div id="three-canvas-container"></div>
+
+<!-- Three.js Dependencies -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="{{ " js/posts-3d.js" | absURL }}"></script>
+<link rel="stylesheet" href="{{ " css/posts-3d.css" | absURL }}">
+
 <section class="posts-list-section">
     <div class="container">
         <header class="page-header">
@@ -182,6 +190,10 @@
                 }
                 window.history.pushState({}, '', newUrl);
             }
+
+            // Dispatch Event for 3D Scene
+            const event = new CustomEvent('category-changed', { detail: { category: category } });
+            window.dispatchEvent(event);
 
             runFilter();
         }
