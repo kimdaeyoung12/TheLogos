@@ -54,6 +54,47 @@
     .filter-btn.active {
         background: rgba(99, 102, 241, 0.8) !important;
     }
+
+    /* Responsive Search Bar */
+    .search-container {
+        width: 100%;
+        max-width: 600px;
+        /* PC Limit */
+        margin: 0 auto 20px auto;
+    }
+
+    .search-input {
+        width: 100%;
+        box-sizing: border-box;
+        /* Prevent padding overflow */
+    }
+
+    /* LIGHT MODE SPECIFIC STYLES */
+    body:not(.dark) .timeline-item {
+        background: rgba(255, 255, 255, 0.75);
+        /* White Glass */
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+
+    body:not(.dark) .timeline-title a {
+        color: #1e293b !important;
+        /* Dark Text */
+    }
+
+    body:not(.dark) .timeline-excerpt {
+        color: #475569 !important;
+        /* Dark Grey Text */
+    }
+
+    body:not(.dark) .page-title {
+        color: #1e293b !important;
+        text-shadow: none;
+    }
+
+    body:not(.dark) .page-description {
+        color: #475569 !important;
+    }
 </style>
 
 <!-- Three.js Inline Module - OPTIMIZED FOR SPEED -->
@@ -163,18 +204,35 @@
 
         // Soft Star Field (Fewer, smaller, subtle)
         const starGeo = new THREE.BufferGeometry();
-        const starPos = new Float32Array(1000 * 3);
-        const starSizes = new Float32Array(1000);
-        for (let i = 0; i < 1000; i++) {
+        const starPos = new Float32Array(1500 * 3); /* Increased count for cosmic feel */
+        for (let i = 0; i < 1500; i++) {
             starPos[i * 3] = (Math.random() - 0.5) * 400;
             starPos[i * 3 + 1] = (Math.random() - 0.5) * 400;
-            starPos[i * 3 + 2] = (Math.random() - 0.5) * 200 - 80; // Further back
-            starSizes[i] = Math.random() * 0.5;
+            starPos[i * 3 + 2] = (Math.random() - 0.5) * 200 - 80;
         }
         starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
-        const starMat = new THREE.PointsMaterial({ size: 0.3, color: 0xffffff, transparent: true, opacity: 0.6 });
+        const starMat = new THREE.PointsMaterial({ size: 0.4, color: 0xffffff, transparent: true, opacity: 0.8 });
         const stars = new THREE.Points(starGeo, starMat);
         scene.add(stars);
+
+        // Theme Awareness for Stars (Dark Stars in Light Mode)
+        function updateStarColor() {
+            const isDark = document.body.classList.contains('dark');
+            if (isDark) {
+                stars.material.color.setHex(0xffffff); // White stars in dark space
+                stars.material.opacity = 0.6;
+            } else {
+                stars.material.color.setHex(0x445566); // Dark Navy stars in light sky
+                stars.material.opacity = 0.5;
+            }
+        }
+
+        // Initial Check
+        updateStarColor();
+
+        // Observe Theme Class Changes
+        const observer = new MutationObserver(updateStarColor);
+        observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
 
         // Camera Targets
         let targetCameraPos = new THREE.Vector3(0, 0, 70);
