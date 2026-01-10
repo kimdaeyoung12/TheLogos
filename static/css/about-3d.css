@@ -30,15 +30,14 @@
 .glass-panel {
     width: 100%;
     max-width: 800px;
-    background: rgba(15, 23, 42, 0.45);
-    /* Dark semi-transparent */
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    /* Subtle border */
+    /* Much darker, higher opacity background to ensure text pops against any 3D bg */
+    background: rgba(10, 10, 15, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 24px;
     padding: 60px 50px;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 4px 60px rgba(0, 0, 0, 0.6);
 
     /* Panel Logic - It flows with page, but content inside animates */
 }
@@ -48,16 +47,20 @@
     margin-bottom: 60px;
     text-align: left;
     /* Left align header too? Or keep center? User said "text align left generally". Let's go Left for consistency. */
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    /* Brighter border */
     padding-bottom: 40px;
 }
 
 .about-title {
     font-size: 3.5rem;
     font-weight: 700;
-    color: #fff;
+    color: #ffffff;
+    /* Pure white */
     margin-bottom: 0.5rem;
     letter-spacing: -0.03em;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    /* Shadow for lift */
 }
 
 .about-subtitle {
@@ -84,7 +87,8 @@
 .about-content p {
     font-size: 1.1rem;
     line-height: 1.8;
-    color: #cbd5e1;
+    color: #f1f5f9;
+    /* Much brighter white-gray */
     margin-bottom: 1.5rem;
 }
 
