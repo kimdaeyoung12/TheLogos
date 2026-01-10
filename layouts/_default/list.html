@@ -122,6 +122,16 @@
                 filterBtns.forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
                 currentFilter = btn.getAttribute('data-category');
+
+                // Update URL without reloading (optional, good for sharing)
+                const newUrl = new URL(window.location);
+                if (currentFilter === 'all') {
+                    newUrl.searchParams.delete('category');
+                } else {
+                    newUrl.searchParams.set('category', currentFilter);
+                }
+                window.history.pushState({}, '', newUrl);
+
                 applyFilters();
             });
         });
@@ -168,6 +178,17 @@
                     section.style.display = visibleItems.length > 0 ? 'block' : 'none';
                 });
             }, 350);
+        }
+
+        // Initialize from URL Param
+        const urlParams = new URLSearchParams(window.location.search);
+        const initialCategory = urlParams.get('category');
+        if (initialCategory) {
+            const targetBtn = document.querySelector(`.filter-btn[data-category="${initialCategory}"]`);
+            if (targetBtn) {
+                // Simulate click to activate filter and styles
+                targetBtn.click();
+            }
         }
     });
 </script>
