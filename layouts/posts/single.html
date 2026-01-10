@@ -1,0 +1,464 @@
+{{ define "main" }}
+{{- /* CORE VARIABLES (Moved to Top) */ -}}
+{{- $publishDate := .PublishDate | default .Date -}}
+{{- $lastmod := .Lastmod | default $publishDate -}}
+{{- $authorName := .Params.author | default (.Site.Params.author | default "DaeYoung Kim") -}}
+{{- $description := .Params.description | default (.Summary | plainify) -}}
+
+{{- /* CATEGORY DETECTION (Unified) */ -}}
+{{- $category := "other" -}}
+{{- if .Params.categories -}}
+{{- $category = index .Params.categories 0 | lower -}}
+{{- end -}}
+
+{{- /* CATEGORY MAPPING (Korean -> English Keys) */ -}}
+{{- if eq $category "공학" -}} {{- $category = "engineering" -}} {{- end -}}
+{{- if eq $category "철학" -}} {{- $category = "philosophy" -}} {{- end -}}
+{{- if eq $category "종교" -}} {{- $category = "religion" -}} {{- end -}}
+{{- if eq $category "글쓰기" -}} {{- $category = "writing" -}} {{- end -}}
+
+<!-- 3D Background Container -->
+<div id="three-canvas-container"></div>
+
+<!-- Inline CSS for 3D Container & Theme Adaptation -->
+<style>
+    #three-canvas-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        z-index: -1;
+        /* Default Light Mode Background */
+        background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+        overflow: hidden;
+        pointer-events: none;
+        /* Let clicks pass through */
+    }
+
+    body.dark #three-canvas-container {
+        /* Dark Mode Background */
+        background: radial-gradient(circle at 50% 50%, #232526 0%, #0f0c29 100%);
+    }
+
+    /* Article Styling Overrides for Transparency/Glass */
+    .article-header {
+        position: relative;
+        z-index: 10;
+    }
+
+    .article-container {
+        position: relative;
+        z-index: 10;
+    }
+</style>
+
+<!-- Three.js Inline Module - Guardian Planet Logic -->
+<script type="module">
+    import * as THREE from 'https://cdn.skypack.dev/three@0.132.2';
+
+    // Cleanup previous contexts if any
+    if (window.postDetailReqId) cancelAnimationFrame(window.postDetailReqId);
+    if (window.postDetailCleanup) window.postDetailCleanup();
+
+    const container = document.getElementById('three-canvas-container');
+
+    if (container) {
+        // --- DATA ---
+        const currentCategory = "{{ $category }}";
+
+        // --- SCENE SETUP ---
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 500);
+        camera.position.set(0, 0, 60);
+
+        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, powerPreference: "high-performance" });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+        container.appendChild(renderer.domElement);
+
+        // --- LIGHTING & ATMOSPHERE ---
+        scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+        const mainLight = new THREE.DirectionalLight(0xffd1b3, 1.5);
+        mainLight.position.set(20, 20, 50);
+        scene.add(mainLight);
+        scene.fog = new THREE.FogExp2(0x111116, 0.008); // Initial Fog (Dark)
+
+        // Light Mode Fog Update
+        function updateAtmosphere() {
+            const isDark = document.body.classList.contains('dark');
+            if (isDark) {
+                scene.fog.color.setHex(0x111116);
+            } else {
+                scene.fog.color.setHex(0xebedee); // Light Fog
+            }
+        }
+
+        // --- PLANET CREATION ---
+        const group = new THREE.Group();
+        scene.add(group);
+
+        let planetMesh = null;
+
+        // Materials (Matching List Page)
+        const matteGold = new THREE.MeshStandardMaterial({ color: 0xffac41, roughness: 0.7, metalness: 0.1, emissive: 0x553311, emissiveIntensity: 0.2 });
+        const matteBlue = new THREE.MeshStandardMaterial({ color: 0x3e5eb3, roughness: 0.8, metalness: 0.0, emissive: 0x112244, emissiveIntensity: 0.3 });
+        const matteSilver = new THREE.MeshStandardMaterial({ color: 0xcbd5e1, roughness: 0.5, metalness: 0.3 });
+        const softPearl = new THREE.MeshStandardMaterial({ color: 0xfff1f2, roughness: 0.9, emissive: 0x332222, emissiveIntensity: 0.1 });
+        const defaultMat = new THREE.MeshStandardMaterial({ color: 0x888888, roughness: 0.8 });
+
+        // Select Planet based on Category (Symbolic Shapes)
+        if (currentCategory === 'religion') {
+            // Trinity/Fire -> Tetrahedron
+            planetMesh = new THREE.Mesh(new THREE.TetrahedronGeometry(14, 0), matteGold);
+            planetMesh.scale.set(1, 1, 1);
+        } else if (currentCategory === 'philosophy') {
+            // Universe/Aether -> Dodecahedron
+            planetMesh = new THREE.Mesh(new THREE.DodecahedronGeometry(11, 0), matteBlue);
+        } else if (currentCategory === 'engineering') {
+            // Structure/Diamond -> Octahedron
+            planetMesh = new THREE.Mesh(new THREE.OctahedronGeometry(12, 0), matteSilver);
+            // Engineering wireframe overlay
+            const wireGeo = new THREE.OctahedronGeometry(12.2, 0);
+            const wireMat = new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true, transparent: true, opacity: 0.3 });
+            planetMesh.add(new THREE.Mesh(wireGeo, wireMat));
+        } else if (currentCategory === 'writing') {
+            // Flow/Pearl -> Sphere
+            planetMesh = new THREE.Mesh(new THREE.SphereGeometry(10, 32, 32), softPearl);
+        } else {
+            // Default/Other -> Icosahedron
+            planetMesh = new THREE.Mesh(new THREE.IcosahedronGeometry(10, 0), defaultMat);
+        }
+
+        if (planetMesh) {
+            group.add(planetMesh);
+        }
+
+        // --- STARS ---
+        const starGeo = new THREE.BufferGeometry();
+        const starPos = new Float32Array(800 * 3);
+        for (let i = 0; i < 800; i++) {
+            starPos[i * 3] = (Math.random() - 0.5) * 300;
+            starPos[i * 3 + 1] = (Math.random() - 0.5) * 300;
+            starPos[i * 3 + 2] = (Math.random() - 0.5) * 100 - 50;
+        }
+        starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
+        const starMat = new THREE.PointsMaterial({ size: 0.4, color: 0xffffff, transparent: true, opacity: 0.7 });
+        const stars = new THREE.Points(starGeo, starMat);
+        scene.add(stars);
+
+        // --- DYNAMIC LAYOUT & THEME ---
+        function updateLayoutAndTheme() {
+            const isMobile = window.innerWidth < 768;
+            const isDark = document.body.classList.contains('dark');
+
+            // 1. Theme Logic
+            if (isDark) {
+                stars.material.color.setHex(0xffffff);
+                stars.material.opacity = 0.6;
+                scene.fog.color.setHex(0x111116);
+            } else {
+                stars.material.color.setHex(0x334455); // Dark Stars
+                stars.material.opacity = 0.5;
+                scene.fog.color.setHex(0xebedee);
+            }
+
+            // 2. Planet Position Logic
+            if (planetMesh) {
+                if (isMobile) {
+                    // Mobile: Top Center/Right, smaller, further back
+                    planetMesh.position.set(15, 25, -40);
+                    planetMesh.scale.set(0.8, 0.8, 0.8);
+                } else {
+                    // Desktop: Top Right, prominent "Guardian"
+                    planetMesh.position.set(45, 10, -30);
+                    planetMesh.scale.set(1, 1, 1);
+                }
+            }
+        }
+
+        // --- ANIMATION LOOP ---
+        function animate() {
+            if (planetMesh) {
+                planetMesh.rotation.y += 0.002;
+                planetMesh.rotation.x += 0.001;
+            }
+            stars.rotation.z += 0.0001;
+
+            renderer.render(scene, camera);
+            window.postDetailReqId = requestAnimationFrame(animate);
+        }
+
+        // --- EVENTS ---
+        updateLayoutAndTheme(); // Initial
+        animate();
+
+        // Observers
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            updateLayoutAndTheme();
+        });
+
+        const observer = new MutationObserver(updateLayoutAndTheme);
+        observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+
+        // Cleanup
+        window.postDetailCleanup = () => {
+            if (window.postDetailReqId) cancelAnimationFrame(window.postDetailReqId);
+            observer.disconnect();
+            renderer.dispose();
+        };
+    }
+</script>
+
+{{- /* SCHEMA & SEO */ -}}
+{{- $scratch := newScratch -}}
+{{- $schema := dict
+"@context" "https://schema.org"
+"@type" "BlogPosting"
+"mainEntityOfPage" (dict "@type" "WebPage" "@id" .Permalink)
+"headline" .Title
+"datePublished" ($publishDate.Format "2006-01-02")
+"dateModified" ($lastmod.Format "2006-01-02")
+"author" (dict "@type" "Person" "name" $authorName)
+"url" .Permalink
+"wordCount" .WordCount
+"timeRequired" (printf "PT%dM" .ReadingTime)
+-}}
+{{- $scratch.Set "schema" $schema -}}
+{{- with .Params.categories }}
+{{- $scratch.Set "schema" (merge ($scratch.Get "schema") (dict "articleSection" (delimit . ", "))) -}}
+{{- end -}}
+{{- if $description -}}
+{{- $scratch.Set "schema" (merge ($scratch.Get "schema") (dict "description" $description)) -}}
+{{- end -}}
+{{- $publisherLogo := "/images/avatar.png" | absURL -}}
+{{- with .Site.Params.publisherLogo -}}
+{{- $publisherLogo = . | absURL -}}
+{{- end -}}
+{{- $publisher := dict
+"@type" "Organization"
+"name" (.Site.Title | default $authorName)
+"logo" (dict "@type" "ImageObject" "url" $publisherLogo)
+-}}
+{{- $scratch.Set "schema" (merge ($scratch.Get "schema") (dict "publisher" $publisher)) -}}
+{{- $scratch.Set "images" (slice) -}}
+{{- with .Params.images -}}
+{{- range . -}}
+{{- $scratch.Set "images" (append ($scratch.Get "images") (absURL .)) -}}
+{{- end -}}
+{{- end -}}
+{{- if and (eq (len ($scratch.Get "images")) 0) .Params.image -}}
+{{- $scratch.Set "images" (slice (.Params.image | absURL)) -}}
+{{- end -}}
+{{- if and (eq (len ($scratch.Get "images")) 0) .Params.featuredImage -}}
+{{- $scratch.Set "images" (slice (.Params.featuredImage | absURL)) -}}
+{{- end -}}
+{{- if gt (len ($scratch.Get "images")) 0 -}}
+{{- $scratch.Set "schema" (merge ($scratch.Get "schema") (dict "image" ($scratch.Get "images"))) -}}
+{{- end -}}
+{{- with .Params.tags -}}
+{{- $scratch.Set "schema" (merge ($scratch.Get "schema") (dict "keywords" (delimit . ", "))) -}}
+{{- end -}}
+{{- with .Params.mentions -}}
+{{- $mentionsList := slice -}}
+{{- range . -}}
+{{- $mention := dict "@type" "Thing" "name" . -}}
+{{- $mentionsList = $mentionsList | append $mention -}}
+{{- end -}}
+{{- $scratch.Set "schema" (merge ($scratch.Get "schema") (dict "mentions" $mentionsList)) -}}
+{{- end -}}
+<script type="application/ld+json">
+{{ ($scratch.Get "schema") | jsonify }}
+</script>
+{{- /* BreadcrumbList Schema for site hierarchy */ -}}
+{{- $breadcrumbItems := slice -}}
+{{- $breadcrumbItems = $breadcrumbItems | append (dict "@type" "ListItem" "position" 1 "name" "Home" "item"
+(.Site.BaseURL | default "https://thelogos.dev/")) -}}
+{{- with .CurrentSection -}}
+{{- if ne .Title .Site.Title -}}
+{{- $breadcrumbItems = $breadcrumbItems | append (dict "@type" "ListItem" "position" 2 "name" .Title "item" .Permalink)
+-}}
+{{- end -}}
+{{- end -}}
+{{- $breadcrumbItems = $breadcrumbItems | append (dict "@type" "ListItem" "position" (add (len $breadcrumbItems) 1)
+"name" .Title "item" .Permalink) -}}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": {{ $breadcrumbItems | jsonify }}
+}
+</script>
+<article class="article" itemscope itemtype="https://schema.org/BlogPosting">
+    <!-- Article Header -->
+    <header class="article-header">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+            <ol class="breadcrumb-list">
+                <li class="breadcrumb-item">
+                    <a href="{{ " /" | absURL }}">홈</a>
+                </li>
+                {{- with .CurrentSection -}}
+                {{- if ne .Title $.Site.Title -}}
+                <li class="breadcrumb-item">
+                    <span class="breadcrumb-separator">›</span>
+                    <a href="{{ .Permalink }}">{{ .Title }}</a>
+                </li>
+                {{- end -}}
+                {{- end -}}
+                <li class="breadcrumb-item current">
+                    <span class="breadcrumb-separator">›</span>
+                    <span>{{ .Title }}</span>
+                </li>
+            </ol>
+        </nav>
+        <div class="header-container">
+            <!-- Category Logic - REUSING VARIABLE -->
+            {{ $categoryData := index .Site.Data.categories $category }}
+            {{ if not $categoryData }}
+            {{ $categoryData = index .Site.Data.categories "other" }}
+            {{ end }}
+
+            {{ $catName := $categoryData.name | default "기타" }}
+            {{ $catColor := $categoryData.color | default "#9ca3af" }}
+
+            <div class="article-category">
+                <span class="category-badge"
+                    style="background-color: {{ $catColor }}; color: #ffffff; padding: 6px 14px; border-radius: 6px; display: inline-block; font-weight: 700; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">
+                    {{ $catName }}
+                </span>
+            </div>
+
+            <!-- Title -->
+            <h1 class="article-title" itemprop="headline">{{ .Title }}</h1>
+
+            <!-- Meta Info -->
+            <div class="article-meta">
+                <div class="author-info">
+                    <img src="/images/avatar.png" alt="Author" class="author-avatar"
+                        onerror="this.style.display='none'">
+                    <span class="author-name">{{ .Site.Params.author | default "DaeYoung Kim" }}</span>
+                </div>
+                <div class="meta-divider">·</div>
+                <time datetime="{{ .Date.Format " 2006-01-02" }}">{{ .Date.Format "2006년 1월 2일" }}</time>
+                <div class="meta-divider">·</div>
+                <span class="reading-time">{{ .ReadingTime }}분 읽기</span>
+                <div class="meta-divider">·</div>
+                <span class="word-count">{{ .WordCount }}자</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content with TOC Sidebar -->
+    <div class="article-container">
+        <div class="article-content" itemprop="articleBody">
+            {{ .Content }}
+        </div>
+
+        <!-- Task 1: Sticky TOC Sidebar -->
+        {{- if .TableOfContents -}}
+        <aside class="toc-container">
+            <div class="toc-wrapper">
+                <h3 class="toc-title">목차</h3>
+                <nav class="toc-nav">
+                    {{ .TableOfContents }}
+                </nav>
+            </div>
+        </aside>
+        {{- end -}}
+    </div>
+
+    <!-- Task 5: Related Posts Section -->
+    {{- $related := .Site.RegularPages.Related . | first 3 -}}
+    {{- with $related -}}
+    <section class="related-posts">
+        <h3 class="related-posts-title">이 카테고리의 다른 글</h3>
+        <div class="related-posts-grid">
+            {{- range . -}}
+            <a href="{{ .RelPermalink }}" class="related-post-card">
+                <span class="related-post-date">{{ .Date.Format "2006.01.02" }}</span>
+                <h4 class="related-post-title">{{ .Title }}</h4>
+                {{- with .Description -}}
+                <p class="related-post-excerpt">{{ . | truncate 80 }}</p>
+                {{- else -}}
+                <p class="related-post-excerpt">{{ .Summary | plainify | truncate 80 }}</p>
+                {{- end -}}
+            </a>
+            {{- end -}}
+        </div>
+    </section>
+    {{- end -}}
+
+    <!-- Article Footer -->
+    <footer class="article-footer">
+        <!-- Tags -->
+        {{ with .Params.tags }}
+        <div class="article-tags">
+            <h3 class="section-title">태그</h3>
+            <div class="tag-list">
+                {{ range . }}
+                <a href="{{ " tags/" | absURL }}{{ . | urlize }}" class="tag-item">#{{ . }}</a>
+                {{ end }}
+            </div>
+        </div>
+        {{ end }}
+
+        <!-- Share Section -->
+        <div class="share-section">
+            <h3 class="section-title">공유하기</h3>
+            <div class="share-buttons">
+                <!-- Share Buttons (Preserved) -->
+                <button class="share-btn" data-share="twitter" title="Twitter로 공유">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                            d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z" />
+                    </svg>
+                    <span>Twitter</span>
+                </button>
+                <button class="share-btn" data-share="facebook" title="Facebook으로 공유">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                            d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                    </svg>
+                    <span>Facebook</span>
+                </button>
+                <button class="share-btn" data-share="link" title="링크 복사">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                        <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                    </svg>
+                    <span>링크 복사</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Post Navigation -->
+        {{ if or .NextInSection .PrevInSection }}
+        <nav class="post-nav">
+            {{ with .PrevInSection }}
+            <a href="{{ .RelPermalink }}" class="nav-item prev">
+                <span class="nav-label">이전 글</span>
+                <span class="nav-title">{{ .Title }}</span>
+            </a>
+            {{ end }}
+
+            {{ with .NextInSection }}
+            <a href="{{ .RelPermalink }}" class="nav-item next">
+                <span class="nav-label">다음 글</span>
+                <span class="nav-title">{{ .Title }}</span>
+            </a>
+            {{ end }}
+        </nav>
+        {{ end }}
+    </footer>
+</article>
+
+{{- /* Include Single Post CSS/JS */ -}}
+{{- $single_css := resources.Get "css/single.css" | minify | fingerprint -}}
+<link rel="stylesheet" href="{{ $single_css.Permalink }}" integrity="{{ $single_css.Data.Integrity }}">
+
+{{- $single_js := resources.Get "js/single.js" | minify | fingerprint -}}
+<script src="{{ $single_js.Permalink }}" integrity="{{ $single_js.Data.Integrity }}"></script>
+{{ end }}

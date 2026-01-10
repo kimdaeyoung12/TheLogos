@@ -39,37 +39,40 @@ document.addEventListener('DOMContentLoaded', () => {
     const group = new THREE.Group();
     scene.add(group);
 
-    // 1. Religion (Radiant Sun/Gold)
+    // 1. Religion (Trinity/Fire - Tetrahedron 'Triangle')
     // Position: Top Right
-    const religionGeo = new THREE.IcosahedronGeometry(7, 4); // High detail sphere
+    const religionGeo = new THREE.TetrahedronGeometry(9, 0); // Triangle Pyramid
     const religionMat = new THREE.MeshStandardMaterial({
         color: 0xf59e0b, // Amber
         emissive: 0xd97706,
         emissiveIntensity: 0.8,
-        wireframe: false
+        wireframe: false,
+        flatShading: true
     });
     const religionPlanet = new THREE.Mesh(religionGeo, religionMat);
     religionPlanet.position.set(20, 15, -10);
     group.add(religionPlanet);
-    planets['religion'] = { mesh: religionPlanet, camPos: { x: 20, y: 15, z: 15 } };
+    planets['religion'] = { mesh: religionPlanet, camPos: { x: 20, y: 15, z: 25 } };
 
-    // 2. Philosophy (Deep Water/Earth)
+    // 2. Philosophy (Universe/Aether - Dodecahedron '12 Faces')
     // Position: Bottom Left
-    const philoGeo = new THREE.IcosahedronGeometry(8, 2);
+    const philoGeo = new THREE.DodecahedronGeometry(8, 0); // Pentagon Faces
     const philoMat = new THREE.MeshStandardMaterial({
         color: 0x3b82f6, // Blue
-        roughness: 0.1,
+        roughness: 0.4,
         metalness: 0.3,
-        flatShading: true // Low poly look for structure
+        emissive: 0x1e3a8a,
+        emissiveIntensity: 0.2,
+        flatShading: false
     });
     const philoPlanet = new THREE.Mesh(philoGeo, philoMat);
     philoPlanet.position.set(-25, -10, -5);
     group.add(philoPlanet);
     planets['philosophy'] = { mesh: philoPlanet, camPos: { x: -25, y: -10, z: 20 } };
 
-    // 3. Engineering (Metallic/Structure)
+    // 3. Engineering (Structure/Diamond - Octahedron '8 Faces')
     // Position: Top Left
-    const engGeo = new THREE.DodecahedronGeometry(6); // Geometric
+    const engGeo = new THREE.OctahedronGeometry(8, 0); // Diamond Shape
     const engMat = new THREE.MeshStandardMaterial({
         color: 0x94a3b8, // Slate
         roughness: 0.2,
@@ -77,15 +80,15 @@ document.addEventListener('DOMContentLoaded', () => {
         wireframe: true
     });
     // Add inner solid for visibility
-    const engInnerGeo = new THREE.DodecahedronGeometry(5.8);
-    const engInnerMat = new THREE.MeshBasicMaterial({ color: 0x0f172a }); // Dark core
+    const engInnerGeo = new THREE.OctahedronGeometry(7.5);
+    const engInnerMat = new THREE.MeshBasicMaterial({ color: 0x0f172a, wireframe: false }); // Dark core
     const engCore = new THREE.Mesh(engInnerGeo, engInnerMat);
 
     const engPlanet = new THREE.Mesh(engGeo, engMat);
     engPlanet.add(engCore);
     engPlanet.position.set(-15, 20, -15);
     group.add(engPlanet);
-    planets['engineering'] = { mesh: engPlanet, camPos: { x: -15, y: 20, z: 10 } };
+    planets['engineering'] = { mesh: engPlanet, camPos: { x: -15, y: 20, z: 20 } };
 
     // 4. Writing (Paper/Textured)
     // Position: Bottom Right

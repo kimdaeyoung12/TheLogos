@@ -2,7 +2,7 @@
 title = "LLM은 카오스를 제거할 수 없다"
 date = 2025-10-12T00:00:00+09:00
 draft = false
-categories = ["religion","philosophy", "artificial_intelligence"]
+categories = ["philosophy"]
 tags = ["카오스", "신", "펫테일", "안티프레질"]
 mentions = ["Nassim Nicholas Taleb", "Antifragile", "Black Swan", "Fat Tail Distribution", "Large Language Model"]
 +++

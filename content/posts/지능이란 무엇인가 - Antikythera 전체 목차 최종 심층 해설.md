@@ -2,7 +2,7 @@
 title = "Antikythera 'What is Intelligence' 전체 목차 심층 요약(summary)"
 date = 2025-10-08T00:00:00+09:00
 draft = false
-categories = ["philosophy", "artificial_intelligence"]
+categories = ["Engineering"]
 tags = ["Antikythera", "What_is_Intelligence", "AI_philosophy", "Cognitive_Science"]
 mentions = ["Alan Turing", "Karl Friston", "Free Energy Principle", "Integrated Information Theory", "Transformer", "Reinforcement Learning", "Consciousness"]
 +++
