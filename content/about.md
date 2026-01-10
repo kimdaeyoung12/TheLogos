@@ -33,17 +33,17 @@ description: "The Logos 블로그 소개 - 종교, 철학, 공학의 교차점�
 
 ## 주요 주제
 
-### ️ 종교 (Religion)
+### <span class="icon" style="color: #667eea; vertical-align: middle; display: inline-flex; margin-right: 4px;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"></path><path d="M7 8h10"></path></svg></span> 종교 (Religion)
 - 신학과 현대 사회의 대화
 - 창조 세계에 대한 탐구
 - 진리와 진실 사이의 긴장
 
-### 철학 (Philosophy) 
+### <span class="icon" style="color: #f5576c; vertical-align: middle; display: inline-flex; margin-right: 4px;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-1 1.5-2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"></path><path d="M9 18h6"></path><path d="M10 22h4"></path></svg></span> 철학 (Philosophy) 
 - 서양 철학사의 주요 흐름
 - 실존주의에서 메타모더니즘까지
 - 일상에서의 철학적 사유
 
-### ️ 공학 (Engineering)
+### <span class="icon" style="color: #4facfe; vertical-align: middle; display: inline-flex; margin-right: 4px;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect><rect x="9" y="9" width="6" height="6"></rect><line x1="9" y1="1" x2="9" y2="4"></line><line x1="15" y1="1" x2="15" y2="4"></line><line x1="9" y1="20" x2="9" y2="23"></line><line x1="15" y1="20" x2="15" y2="23"></line><line x1="20" y1="9" x2="23" y2="9"></line><line x1="20" y1="15" x2="23" y2="15"></line><line x1="1" y1="9" x2="4" y2="9"></line><line x1="1" y1="15" x2="4" y2="15"></line></svg></span> 공학 (Engineering)
 - AI의 한계와 안티프래질 메커니즘
 - 기술 윤리와 책임
 - 복잡계와 카오스에 대한 이해
