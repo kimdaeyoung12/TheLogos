@@ -1,7 +1,9 @@
 /* 3D Monolith Section Styles */
 .category-section {
-    padding: 100px 0;
-    min-height: 80vh;
+    padding: 60px 0;
+    /* Reduced padding */
+    min-height: auto;
+    /* Remove rigid min-height */
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -19,9 +21,9 @@
     padding: 0 20px;
     display: flex;
     align-items: center;
-    gap: 60px;
+    gap: 40px;
+    /* Reduced gap */
     perspective: 1000px;
-    /* Essential for 3D */
 }
 
 /* Alternate layout for variety */
@@ -31,39 +33,39 @@
 
 /* The Monolith Header */
 .category-header-3d {
-    flex: 0 0 350px;
-    height: 500px;
+    flex: 0 0 260px;
+    /* Reduced width */
+    height: 380px;
+    /* Reduced height */
     position: relative;
     transform-style: preserve-3d;
     transition: transform 0.1s ease-out;
-    /* Smooth follow */
     cursor: default;
 }
 
 .monolith-plate {
     position: absolute;
     inset: 0;
-    background: rgba(15, 23, 42, 0.6);
-    /* Slightly transparent dark */
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    /* Lighter, brighter background with subtle gradient */
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    /* Sharper border */
     border-radius: 4px;
-    /* Sharp architectural corners */
     box-shadow:
-        0 20px 50px -12px rgba(0, 0, 0, 0.5),
+        0 10px 30px -10px rgba(0, 0, 0, 0.3),
         0 0 0 1px rgba(255, 255, 255, 0.05) inset;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     text-align: center;
-    padding: 40px;
+    padding: 30px;
     transform: translateZ(20px);
-    /* Push forward */
     overflow: hidden;
 }
 
-/* Lighting Sheen effect */
+/* Lighting Sheen effect - Brighter */
 .monolith-plate::before {
     content: '';
     position: absolute;
@@ -72,8 +74,9 @@
     width: 200%;
     height: 200%;
     background: radial-gradient(circle at 50% 50%,
-            rgba(255, 255, 255, 0.08) 0%,
-            transparent 50%);
+            rgba(255, 255, 255, 0.15) 0%,
+            /* Stronger light */
+            transparent 60%);
     opacity: 0;
     transition: opacity 0.5s ease;
     pointer-events: none;
@@ -84,37 +87,51 @@
     opacity: 1;
 }
 
+/* Accent Tint Background */
+.monolith-plate::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--accent-color-dim);
+    opacity: 0.1;
+    /* Very subtle colorful tint */
+    z-index: -1;
+}
+
+
 /* Parallax Elements */
 .icon-layer {
     font-size: 0;
-    /* Reset for SVG */
-    margin-bottom: 30px;
+    margin-bottom: 20px;
     color: var(--accent-color);
     transform: translateZ(30px);
-    /* Floats above plate */
-    filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.3));
+    filter: drop-shadow(0 0 15px var(--accent-color-dim));
+    /* Glow instead of shadow */
 }
 
 .icon-layer svg {
-    width: 80px;
-    height: 80px;
+    width: 64px;
+    /* Slightly smaller icon */
+    height: 64px;
 }
 
 .title-layer {
-    font-size: 2.5rem;
+    font-size: 2rem;
+    /* Reduced font size */
     font-weight: 800;
     margin: 0;
     letter-spacing: -0.02em;
-    background: linear-gradient(to bottom right, #fff, #94a3b8);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: #f8fafc;
+    /* Brighter text */
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     transform: translateZ(20px);
 }
 
 .subtitle-layer {
-    margin-top: 10px;
-    font-size: 1rem;
-    color: #94a3b8;
+    margin-top: 8px;
+    font-size: 0.9rem;
+    color: #cbd5e1;
+    /* Lighter subtitle */
     font-weight: 500;
     letter-spacing: 0.1em;
     text-transform: uppercase;
@@ -124,11 +141,12 @@
 /* Background Depth Layer */
 .depth-layer-back {
     position: absolute;
-    inset: -20px;
+    inset: -15px;
     background: linear-gradient(45deg, var(--accent-color-dim), transparent);
-    opacity: 0.1;
-    transform: translateZ(-40px) scale(0.9);
-    filter: blur(20px);
+    opacity: 0.15;
+    /* Slightly more visible */
+    transform: translateZ(-30px) scale(0.9);
+    filter: blur(15px);
     border-radius: 20px;
 }
 
@@ -136,16 +154,20 @@
 .category-posts-grid {
     flex: 1;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    /* More compact columns */
+    gap: 16px;
+    /* Reduced gap */
     perspective: 1000px;
 }
 
 .post-card-3d {
-    background: rgba(30, 41, 59, 0.4);
+    background: rgba(30, 41, 59, 0.3);
+    /* Lighter card bg */
     border: 1px solid rgba(255, 255, 255, 0.05);
-    border-radius: 8px;
-    padding: 24px;
+    border-radius: 6px;
+    padding: 20px;
+    /* Reduced padding */
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     transform-style: preserve-3d;
     position: relative;
@@ -156,24 +178,26 @@
 }
 
 .post-card-3d:hover {
-    background: rgba(30, 41, 59, 0.6);
+    background: rgba(30, 41, 59, 0.5);
     border-color: var(--accent-color);
-    transform: translateY(-5px) translateZ(10px);
-    box-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.3);
+    transform: translateY(-3px) translateZ(5px);
+    /* Reduced movement */
+    box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.2);
 }
 
 .post-card-date {
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     color: #94a3b8;
-    margin-bottom: 12px;
+    margin-bottom: 8px;
     display: block;
 }
 
 .post-card-title {
-    font-size: 1.25rem;
+    font-size: 1.1rem;
+    /* Smaller title */
     font-weight: 700;
     color: #e2e8f0;
-    margin: 0 0 12px 0;
+    margin: 0 0 8px 0;
     line-height: 1.4;
     transition: color 0.2s;
 }
@@ -183,9 +207,9 @@
 }
 
 .post-card-excerpt {
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     color: #cbd5e1;
-    line-height: 1.6;
+    line-height: 1.5;
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
@@ -197,18 +221,28 @@
 @media (max-width: 968px) {
     .category-container {
         flex-direction: column !important;
-        gap: 40px;
+        gap: 30px;
         padding: 0 16px;
     }
 
     .category-header-3d {
-        flex: 0 0 300px;
+        flex: 0 0 200px;
+        /* Very compact on mobile */
         width: 100%;
-        height: 300px;
+        height: 200px;
     }
 
     .monolith-plate {
-        padding: 30px;
+        padding: 20px;
+    }
+
+    .icon-layer svg {
+        width: 48px;
+        height: 48px;
+    }
+
+    .title-layer {
+        font-size: 1.5rem;
     }
 
     .category-posts-grid {
