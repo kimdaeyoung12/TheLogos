@@ -1,4 +1,39 @@
-/* About Page 3D Styles - Refined "Glass & Flow" Theme */
+/* About Page 3D Styles - Theme Adaptive */
+
+:root {
+    /* Light Mode Variables (Default) */
+    --glass-bg: rgba(255, 255, 255, 0.85);
+    /* Bright frosted glass */
+    --glass-border: rgba(0, 0, 0, 0.1);
+    --glass-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    --text-main: #1e293b;
+    /* Slate 800 */
+    --text-muted: #475569;
+    /* Slate 600 */
+    --heading-color: #0f172a;
+    /* Slate 900 */
+    --heading-shadow: none;
+    --blockquote-bg: rgba(0, 0, 0, 0.03);
+    --blockquote-text: #334155;
+    --hr-color: rgba(0, 0, 0, 0.1);
+}
+
+body.dark {
+    /* Dark Mode Variables (Override) */
+    --glass-bg: rgba(10, 10, 15, 0.85);
+    /* Dark frosted glass */
+    --glass-border: rgba(255, 255, 255, 0.15);
+    --glass-shadow: 0 4px 60px rgba(0, 0, 0, 0.6);
+    --text-main: #f1f5f9;
+    /* Slate 100 */
+    --text-muted: #cbd5e1;
+    /* Slate 300 */
+    --heading-color: #ffffff;
+    --heading-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    --blockquote-bg: rgba(255, 255, 255, 0.03);
+    --blockquote-text: #e2e8f0;
+    --hr-color: rgba(255, 255, 255, 0.2);
+}
 
 /* Background canvas fixed */
 #three-canvas-container {
@@ -8,6 +43,8 @@
     width: 100%;
     height: 100vh;
     z-index: -1;
+    /* Deep space gradient is consistent for both modes to keep "Universe" feel, 
+       but panel will adapt on top of it. */
     background: radial-gradient(circle at 50% 50%, #1e293b 0%, #0f172a 100%);
     overflow: hidden;
 }
@@ -23,56 +60,50 @@
     align-items: flex-start;
     padding: 100px 20px;
     font-family: 'Inter', system-ui, sans-serif;
-    color: #e2e8f0;
+    color: var(--text-main);
+    transition: color 0.3s ease;
 }
 
 /* Glass Panel Container */
 .glass-panel {
     width: 100%;
     max-width: 800px;
-    /* Much darker, higher opacity background to ensure text pops against any 3D bg */
-    background: rgba(10, 10, 15, 0.85);
+    background: var(--glass-bg);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    border: 1px solid var(--glass-border);
     border-radius: 24px;
     padding: 60px 50px;
-    box-shadow: 0 4px 60px rgba(0, 0, 0, 0.6);
-
-    /* Panel Logic - It flows with page, but content inside animates */
+    box-shadow: var(--glass-shadow);
+    transition: background 0.3s ease, border 0.3s ease, box-shadow 0.3s ease;
 }
 
 /* Typography & Layout */
 .about-header {
     margin-bottom: 60px;
     text-align: left;
-    /* Left align header too? Or keep center? User said "text align left generally". Let's go Left for consistency. */
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-    /* Brighter border */
+    border-bottom: 1px solid var(--hr-color);
     padding-bottom: 40px;
 }
 
 .about-title {
     font-size: 3.5rem;
     font-weight: 700;
-    color: #ffffff;
-    /* Pure white */
+    color: var(--heading-color);
     margin-bottom: 0.5rem;
     letter-spacing: -0.03em;
-    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
-    /* Shadow for lift */
+    text-shadow: var(--heading-shadow);
 }
 
 .about-subtitle {
     font-size: 1.25rem;
-    color: #94a3b8;
+    color: var(--text-muted);
     font-weight: 300;
 }
 
 /* Content Blocks */
 .about-content {
     text-align: left;
-    /* User Requirement: Left Align */
 }
 
 .about-content h1,
@@ -80,15 +111,14 @@
 .about-content h3 {
     margin-top: 4rem;
     margin-bottom: 1.5rem;
-    color: #f8fafc;
+    color: var(--heading-color);
     font-weight: 600;
 }
 
 .about-content p {
     font-size: 1.1rem;
     line-height: 1.8;
-    color: #f1f5f9;
-    /* Much brighter white-gray */
+    color: var(--text-main);
     margin-bottom: 1.5rem;
 }
 
@@ -99,29 +129,27 @@
 
 .about-content li {
     margin-bottom: 0.8rem;
-    color: #cbd5e1;
+    color: var(--text-main);
     list-style-type: square;
 }
 
 .about-content blockquote {
     border-left: 4px solid #60a5fa;
     padding: 1.5rem 2rem;
-    background: rgba(255, 255, 255, 0.03);
+    background: var(--blockquote-bg);
     margin: 3rem 0;
     font-style: italic;
-    color: #e2e8f0;
+    color: var(--blockquote-text);
     border-radius: 0 8px 8px 0;
 }
 
 .about-content hr {
     border: 0;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: 1px solid var(--hr-color);
     margin: 4rem 0;
 }
 
 /* Scroll Animations */
-/* We will target immediate children of .about-content and .about-header */
-
 .scroll-reveal {
     opacity: 0;
     transform: translateY(30px);
@@ -133,7 +161,6 @@
     transform: translateY(0);
 }
 
-/* Slide Right Variation for Headings? */
 h2.scroll-reveal {
     transform: translateX(-30px);
 }
@@ -142,12 +169,10 @@ h2.scroll-reveal.visible {
     transform: translateX(0);
 }
 
-/* Slide Up for Paragraphs */
 p.scroll-reveal {
     transform: translateY(30px);
 }
 
-/* Blockquotes specific slide */
 blockquote.scroll-reveal {
     transform: translateX(20px);
 }
@@ -157,7 +182,6 @@ blockquote.scroll-reveal.visible {
 }
 
 
-/* Responsive */
 @media (max-width: 768px) {
     .glass-panel {
         padding: 40px 24px;
