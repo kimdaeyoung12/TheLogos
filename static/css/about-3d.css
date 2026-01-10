@@ -62,12 +62,18 @@ body.dark {
     font-family: 'Inter', system-ui, sans-serif;
     color: var(--text-main);
     transition: color 0.3s ease;
+    box-sizing: border-box;
+    /* Fix width calc */
 }
 
 /* Glass Panel Container */
 .glass-panel {
     width: 100%;
     max-width: 800px;
+    margin: 0 auto;
+    /* Force Center */
+    box-sizing: border-box;
+    /* Fix padding issue */
     background: var(--glass-bg);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
