@@ -179,21 +179,42 @@ p.scroll-reveal {
     transform: translateY(30px);
 }
 
-blockquote.scroll-reveal {
-    transform: translateX(20px);
-}
-
 blockquote.scroll-reveal.visible {
     transform: translateX(0);
 }
 
 
 @media (max-width: 768px) {
+
+    /* Mobile: Wide Glass Slate */
+    .about-article {
+        padding: 80px 12px;
+        /* Less outer padding */
+    }
+
     .glass-panel {
         padding: 40px 24px;
+        /* Optimized inner spacing */
+        width: 100%;
+        max-width: 100%;
+        border-radius: 20px;
+        /* Slightly softer corners */
+        backdrop-filter: blur(25px);
+        /* Stronger blur for legibility */
+        -webkit-backdrop-filter: blur(25px);
     }
 
     .about-title {
-        font-size: 2.5rem;
+        font-size: 2.2rem;
+        word-break: keep-all;
+        /* Prevent awkward breaks in Korean */
+    }
+
+    .about-content p {
+        font-size: 1.05rem;
+        /* readable size */
+        text-align: justify;
+        /* Clean blocks */
+        text-justify: inter-word;
     }
 }
