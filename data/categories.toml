@@ -1,24 +1,19 @@
 [religion]
 name = "Religion"
 color = "#667eea"
-icon = "🕊️"
 
 [philosophy]
 name = "Philosophy"
 color = "#f5576c"
-icon = "🤔"
 
 [engineering]
 name = "Engineering"
 color = "#4facfe"
-icon = "⚙️"
 
 [writing]
 name = "Writing"
 color = "#43e97b"
-icon = "✍️"
 
 [other]
 name = "Other"
 color = "#9ca3af"
-icon = "📝"

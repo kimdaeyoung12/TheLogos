@@ -20,23 +20,18 @@
             <!-- Unified Filter Buttons -->
             <div class="category-filters">
                 <button class="filter-btn active" data-category="all">
-                    <span class="icon">📚</span>
                     <span>전체</span>
                 </button>
                 <button class="filter-btn" data-category="religion">
-                    <span class="icon">🕊️</span>
                     <span>종교</span>
                 </button>
                 <button class="filter-btn" data-category="philosophy">
-                    <span class="icon">🤔</span>
                     <span>철학</span>
                 </button>
                 <button class="filter-btn" data-category="engineering">
-                    <span class="icon">⚙️</span>
                     <span>공학</span>
                 </button>
                 <button class="filter-btn" data-category="writing">
-                    <span class="icon">✍️</span>
                     <span>글쓰기</span>
                 </button>
             </div>
@@ -66,7 +61,6 @@
                     {{ end }}
 
                     {{ $catName := $categoryData.name | default "기타" }}
-                    {{ $catIcon := $categoryData.icon | default "📝" }}
                     {{ $catColor := $categoryData.color | default "#9ca3af" }}
 
                     <article class="timeline-item" data-category="{{ $category }}">
@@ -75,7 +69,7 @@
                             <div class="timeline-meta">
                                 <span class="timeline-date">{{ .Date.Format "Jan 2" }}</span>
                                 <span class="timeline-category" style="color: {{ $catColor }};">
-                                    {{ $catIcon }} {{ $catName }}
+                                    {{ $catName }}
                                 </span>
                             </div>
                             <h3 class="timeline-title">
