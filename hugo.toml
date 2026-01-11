@@ -11,6 +11,9 @@ theme        = "PaperMod"
 [params]
   description = "AI-friendly Korean/English knowledge hub designed for fast crawling while remaining welcoming to human visitors."
 
+  [params.analytics.google]
+    MeasurementId = "G-SST2KJKDK4"
+
 [menu]
   [[menu.main]]
     name = "홈"
