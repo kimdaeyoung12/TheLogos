@@ -8,7 +8,9 @@ mentions = ["Vilfredo Pareto", "Herbert William Heinrich", "Albert Mehrabian", "
 +++
 
 <div class="ai-summary-box">
+
 세상을 관통하는 보편적인 법칙들은 복잡한 현상을 단순화하여 이해하고 예측하는 데 도움을 줍니다. 파레토 법칙, 하인리히 법칙, 메라비언 법칙 등 엔지니어링과 삶, 비즈니스에 유효하게 적용되는 중요한 법칙들을 중요도와 빈도 순으로 정리했습니다.
+
 </div>
 
 ## 세상을 관통하는 유용한 법칙들
