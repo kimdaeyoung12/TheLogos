@@ -8,11 +8,20 @@ theme        = "PaperMod"
 [markup.goldmark.renderer]
   unsafe = true
 
+[params]
   description = "AI-friendly Korean/English knowledge hub designed for fast crawling while remaining welcoming to human visitors."
-  
+
+  # Output full content in RSS
+  [params.rss]
+    full = true
+
 [services]
   [services.googleAnalytics]
     ID = "G-SST2KJKDK4"
+  
+  # RSS Feed Configuration for AI crawlers
+  [services.rss]
+    limit = -1
 
 [menu]
   [[menu.main]]
@@ -29,18 +38,10 @@ theme        = "PaperMod"
     name = "About"
     url = "/about/"
     weight = 3
+
 [taxonomies]
   category = "categories"
   tag = "tags"
-
-# RSS Feed Configuration for AI crawlers
-[services]
-  [services.rss]
-    limit = -1
-
-# Output full content in RSS
-[params.rss]
-  full = true
 
 # Related content configuration for Related Posts feature
 [related]
