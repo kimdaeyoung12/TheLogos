@@ -16,13 +16,7 @@ The system architecture explicitly balances two distinct consumption patterns:
 | **AI Crawlers** | Full-content RSS feeds, structured data, machine-readable metadata | `[services.rss] limit = -1`, JSON-LD schemas, comprehensive meta tags |
 | **Human Readers** | Interactive UI, progressive enhancement, dark/light themes | Three.js graphics, CSS custom properties, localStorage persistence |
 
-This dual-audience approach is embedded throughout the codebase, from configuration ([hugo.toml L33-L40](https://github.com/kimdaeyoung12/TheLogos/blob/ef1c6577/hugo.toml#L33-L40)
-
-) to template design ([layouts/partials/extend_head.html L1-L50](https://github.com/kimdaeyoung12/TheLogos/blob/ef1c6577/layouts/partials/extend_head.html#L1-L50)
-
-) to deployment strategy ([.github/workflows/hugo.yml L1-L50](https://github.com/kimdaeyoung12/TheLogos/blob/ef1c6577/.github/workflows/hugo.yml#L1-L50)
-
-).
+This dual-audience approach is embedded throughout the codebase, from configuration ([hugo.toml L33-L40](https://github.com/kimdaeyoung12/TheLogos/blob/ef1c6577/hugo.toml#L33-L40)) to template design ([layouts/partials/extend_head.html L1-L50](https://github.com/kimdaeyoung12/TheLogos/blob/ef1c6577/layouts/partials/extend_head.html#L1-L50)) to deployment strategy ([.github/workflows/hugo.yml L1-L50](https://github.com/kimdaeyoung12/TheLogos/blob/ef1c6577/.github/workflows/hugo.yml#L1-L50)).
 
 ### Documentation StructureLink copied!
 
