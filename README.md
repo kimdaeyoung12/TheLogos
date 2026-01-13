@@ -612,33 +612,3 @@ The codebase demonstrates a modern static site approach where content is king, p
 Refresh this wiki
 
 Last indexed: 9 January 2026 ([ef1c65](https://github.com/kimdaeyoung12/TheLogos/commit/ef1c6577))
-
-### On this page
-
-* [Overview](#1-overview)
-* [Purpose and Scope](#1-purpose-and-scope)
-* [Dual-Audience Design Philosophy](#1-dual-audience-design-philosophy)
-* [Documentation Structure](#1-documentation-structure)
-* [What is The Logos](#1-what-is-the-logos)
-* [Core Philosophy](#1-core-philosophy)
-* [Primary Topics](#1-primary-topics)
-* [System Architecture Overview](#1-system-architecture-overview)
-* [System Architecture Diagram](#1-system-architecture-diagram)
-* [Key Features](#1-key-features)
-* [AI-Optimized Content Delivery Architecture](#1-ai-optimized-content-delivery-architecture)
-* [Dual Content Creation Workflow](#1-dual-content-creation-workflow)
-* [Theme System](#1-theme-system)
-* [Related Content Discovery](#1-related-content-discovery)
-* [Technology Stack and File Structure](#1-technology-stack-and-file-structure)
-* [Technology Stack and Dependencies](#1-technology-stack-and-dependencies)
-* [Directory Structure](#1-directory-structure)
-* [Content Types and Organization](#1-content-types-and-organization)
-* [Content Hierarchy](#1-content-hierarchy)
-* [Taxonomy System](#1-taxonomy-system)
-* [Build and Deployment Pipeline](#1-build-and-deployment-pipeline)
-* [CI/CD Workflow](#1-cicd-workflow)
-* [Build Configuration](#1-build-configuration)
-* [Navigation Structure and Menu System](#1-navigation-structure-and-menu-system)
-* [Summary](#1-summary)
-
-Ask Devin about TheLogos
