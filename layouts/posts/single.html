@@ -461,4 +461,7 @@
 
 {{- $single_js := resources.Get "js/single.js" | minify | fingerprint -}}
 <script src="{{ $single_js.Permalink }}" integrity="{{ $single_js.Data.Integrity }}"></script>
+
+{{- /* Include Music Player */ -}}
+{{ partial "music-player.html" . }}
 {{ end }}
