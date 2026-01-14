@@ -10,26 +10,43 @@ document.addEventListener('DOMContentLoaded', () => {
     const volumeSlider = document.getElementById('volume-slider');
 
     let isPlaying = false;
-    let isDragging = false; // Prevent update while seeking
+    let isDragging = false;
 
-    // --- 1. Autoplay Logic ---
-    // Try to autoplay at low volume
-    audio.volume = 0.2; // Default starting volume (User requested low)
-    if (volumeSlider) volumeSlider.value = 0.2;
+    // --- 1. Autoplay Logic (Resilient) ---
+    // Try to autoplay at user requested low volume
+    // Policy: Modern browsers block "Audible" autoplay.
+    // Strategy: Try audible -> catch -> try muted (not requested but fallback) -> or just show UI
+
+    // Set initial volume
+    const initialVol = 0.2;
+    audio.volume = initialVol;
+    if (volumeSlider) {
+        volumeSlider.value = initialVol;
+        updateSliderGradient(volumeSlider, initialVol * 100);
+    }
 
     const startAutoplay = async () => {
         try {
             await audio.play();
+            // Success
             isPlaying = true;
             updateUIState(true);
+            console.log("Autoplay success");
         } catch (error) {
-            // Autoplay blocked - standard behavior
-            console.log("Autoplay blocked by browser policy. Interaction required.");
+            // Blocked
+            console.warn("Autoplay blocked:", error);
+            // We do NOT swap to muted autoplay because user wants music.
+            // Just revert to paused state. User must click.
             isPlaying = false;
             updateUIState(false);
+
+            // Optional: Show a tooltip "Click to play"?
         }
     };
-    startAutoplay();
+
+    // Attempt autoplay slightly after load to ensure DOM ready
+    setTimeout(startAutoplay, 500);
+
 
     // --- 2. Play/Pause Toggle ---
     btn.addEventListener('click', async () => {
@@ -61,26 +78,20 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- 3. Seek Bar Logic ---
-    // Update slider as song plays
     audio.addEventListener('timeupdate', () => {
         if (!isDragging) {
             const progress = (audio.currentTime / audio.duration) * 100;
             seekSlider.value = progress || 0;
-
-            // Visual feedback on track fill (Webkit trick if needed, but standard range is fine for now)
-            seekSlider.style.background = `linear-gradient(to right, rgba(255,255,255,0.8) ${progress}%, rgba(255,255,255,0.2) ${progress}%)`;
+            updateSliderGradient(seekSlider, progress);
         }
     });
 
-    // Seek input
     seekSlider.addEventListener('input', (e) => {
         isDragging = true;
-        const seekTime = (audio.duration / 100) * e.target.value;
-        audio.currentTime = seekTime;
-
-        // Immediate visual update
         const progress = e.target.value;
-        seekSlider.style.background = `linear-gradient(to right, rgba(255,255,255,0.8) ${progress}%, rgba(255,255,255,0.2) ${progress}%)`;
+        const seekTime = (audio.duration / 100) * progress;
+        audio.currentTime = seekTime;
+        updateSliderGradient(seekSlider, progress);
     });
 
     seekSlider.addEventListener('change', () => {
@@ -90,18 +101,18 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- 4. Volume Logic ---
     if (volumeSlider) {
         volumeSlider.addEventListener('input', (e) => {
-            audio.volume = e.target.value;
-            // Optional: Change icon if muted?
+            const val = e.target.value;
+            audio.volume = val;
+            updateSliderGradient(e.target, val * 100);
         });
+    }
 
-        // Initialize gradient for volume too
-        const volVal = volumeSlider.value * 100; // 0.2 -> 20
-        volumeSlider.style.background = `linear-gradient(to right, rgba(255,255,255,0.8) ${volVal}%, rgba(255,255,255,0.2) ${volVal}%)`;
-
-        volumeSlider.addEventListener('input', (e) => {
-            const val = e.target.value * 100;
-            e.target.style.background = `linear-gradient(to right, rgba(255,255,255,0.8) ${val}%, rgba(255,255,255,0.2) ${val}%)`;
-        });
+    // Utility: Gradient update for slider fill
+    function updateSliderGradient(element, percent) {
+        if (!element) return;
+        // Safety for NaN
+        if (isNaN(percent)) percent = 0;
+        element.style.background = `linear-gradient(to right, rgba(255,255,255,0.8) ${percent}%, rgba(255,255,255,0.2) ${percent}%)`;
     }
 
     // Handle Ended
