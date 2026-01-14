@@ -3,6 +3,10 @@
 <!-- Define document language explicitly for accessibility -->
 <meta http-equiv="content-language" content="ko">
 
+<!-- Content Security Policy -->
+<meta http-equiv="Content-Security-Policy"
+    content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://plausible.io https://busuanzi.ibruce.info https://cdn.jsdelivr.net https://www.instagram.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.instagram.com https://*.cdninstagram.com; frame-src https://*.instagram.com; connect-src 'self' https://www.google-analytics.com https://plausible.io https://busuanzi.ibruce.info;">
+
 <!-- Preload custom stylesheets to improve performance -->
 <link rel="preload" href="/css/custom.css" as="style">
 <link rel="stylesheet" href="/css/custom.css">

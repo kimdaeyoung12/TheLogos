@@ -8,11 +8,9 @@ mentions = ["Jeju Island", "Mahanaim", "Community", "Seasons"]
 +++
 {{< instagram C-2pY9-vh8o >}}
 
-<div class="ai-summary-box">
-
+{{< ai_summary >}}
 힘든 행군 같던 지난 여름이 오늘의 가벼움을 선물했다. 무거움이 남기고 간 선물이 바로 이 여유다. '우리'가 더 커져가길.
-
-</div>
+{{< /ai_summary >}}
 
 갈바를 알지 못하고 걷기 시작한 우리의 사계절은 한바퀴 돌아
 초록을 거머쥔 한 섬의 여름으로 우리를 이끌었다.

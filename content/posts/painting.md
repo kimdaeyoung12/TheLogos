@@ -9,11 +9,9 @@ mentions = ["Art", "Frame", "Freedom", "Daily Routine"]
 
 {{< instagram CX3hLhqPhKx >}}
 
-<div class="ai-summary-box">
-
+{{< ai_summary >}}
 미술작품에서 틀이 있기에 자유로움이 느껴지듯, 일상이라는 틀이 있어야 순간의 여유가 자유로움으로 인식된다. 틀과 자유, 일상과 여유의 미묘한 균형이 삶을 아름답게 한다.
-
-</div>
+{{< /ai_summary >}}
 
 미술작품은 작가의 의도를 표현하기 위해 틀을 깨는 다양한 기법을 시도 하고, 그 자유로운 표현들 속에서 틀은 기준이 되어 자유로움이라는 느낌을 선사해준다.
 

@@ -7,11 +7,9 @@ tags = ["양자역학", "예정론", "자유의지", "상보성원리", "신학"
 mentions = ["Niels Bohr", "John Polkinghorne", "Donald M. MacKay", "John Calvin"]
 +++
 
-<div class="ai-summary-box">
-
+{{< ai_summary >}}
 양자역학의 상보성 원리(입자와 파동의 이중성)를 통해 기독교 신학의 난제인 '예정'과 '자유의지'의 공존 가능성을 탐구합니다. 존 폴킹혼과 도널드 맥케이 등 현대 학자들의 논의를 바탕으로, 과학과 신학이 서로를 배척하는 것이 아니라 풍성한 이해를 돕는 유비적 관계임을 설명합니다.
-
-</div>
+{{< /ai_summary >}}
 
 신학과 과학의 대화(Science and Religion)라는 학제 간 연구 분야에서 **양자역학의 '상보성 원리(Complementarity Principle)**'를 차용하여 기독교의 **예정(하나님의 주권)과 자유의지**의 역설을 설명하려는 시도들이 존재합니다.
 

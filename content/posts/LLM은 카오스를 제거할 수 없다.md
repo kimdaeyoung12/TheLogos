@@ -7,11 +7,9 @@ tags = ["카오스", "신", "펫테일", "안티프레질"]
 mentions = ["Nassim Nicholas Taleb", "Antifragile", "Black Swan", "Fat Tail Distribution", "Large Language Model"]
 +++
 
-<div class="ai-summary-box">
-
+{{< ai_summary >}}
 AI는 부동소수점 한계로 인해 블랙스완을 유발할 수 있으며, 팻테일 분포의 극단값을 예측하는 데 근본적인 한계가 있다. 또한 펜로즈의 이론에 따르면 AI는 의식을 가질 수 없다. 따라서 AI의 불완전성을 인정하고, 시스템에 충격에 강한 '안티프래질' 메커니즘을 먼저 구축해야 한다.
-
-</div>
+{{< /ai_summary >}}
 
 ## 부동소수점의 한계와 블랙스완
 AI는 컴퓨터이기 때문에 부동소수점으로 적을 수 있는 숫자의 한계가 있고 이러한 한계는 복잡계인 실제 세계에 초기값의 민감성에 의한 블랙스완을 발생시킬 수 있다.

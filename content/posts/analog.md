@@ -8,11 +8,9 @@ mentions = ["Analog", "Digital", "Continuity", "Beginning and End"]
 +++
 {{< instagram Cl1EoNSLpPJ >}}
 
-<div class="ai-summary-box">
-
+{{< ai_summary >}}
 아날로그 세계에서 끝과 시작은 연속선 위에 있어 명확하지 않다. 끝이 아니라고 하면 아닐 수 있고, 시작도 마찬가지다. 모든 변화는 결국 우리의 마음먹기에 달려 있다.
-
-</div>
+{{< /ai_summary >}}
 
 아날로그에서 끝과 시작은 이어져있다.  
 연속된 수치이기 때문이다.  

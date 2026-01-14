@@ -9,11 +9,9 @@ mentions = ["North Star", "Navigation", "Direction", "Inner Compass"]
 
 {{< instagram CFUgCLVgUws >}}
 
-<div class="ai-summary-box">
-
+{{< ai_summary >}}
 옛사람들이 별을 보고 길을 찾았듯, 내 속에 변치 않는 별을 따라 걸으면 굽은 길도, 의심의 순간도 결국 목적지로 인도한다.
-
-</div>
+{{< /ai_summary >}}
 
 옛날 사람들은 별을 보고 길을 찾았다고 한다.
 별이 방향을 알려주기 때문이다.

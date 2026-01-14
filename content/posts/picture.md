@@ -9,11 +9,9 @@ mentions = ["Photography", "Aperture", "Light", "Perception"]
 
 {{< instagram CWQl7N6PSyW >}}
 
-<div class="ai-summary-box">
-
+{{< ai_summary >}}
 사진은 빛이 많을 때도, 조리개를 열어도 피사체를 담는다. 마찬가지로 환경을 기다리지 말고 내 감정의 조리개를 열면, 반복되는 일상도 다채롭고 아름다워진다.
-
-</div>
+{{< /ai_summary >}}
 
 일상은 생각보다 다채로운 감정을 선사한다.
 

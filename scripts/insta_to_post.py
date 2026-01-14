@@ -170,11 +170,9 @@ mentions = [{mentions_str}]
 +++
 {{{{< instagram {shortcode} >}}}}
 
-<div class="ai-summary-box">
-
+{{{{< ai_summary >}}}}
 {summary}
-
-</div>
+{{{{< /ai_summary >}}}}
 
 {clean_caption}
 '''

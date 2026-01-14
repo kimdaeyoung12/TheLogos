@@ -7,11 +7,9 @@ description: "남들이 하는 대로 따라 하는 '유추' 대신, 문제를 �
 layout: "single"
 ---
 
-<div class="ai-summary-box">
-
+{{< ai_summary >}}
 문제를 본질부터 다시 생각하는 '제1원칙 사고', 실패를 피하는 '역발상', 의사결정 속도를 높이는 '가역적 결정' 등 일론 머스크, 제프 베조스와 같은 슈퍼 러너들이 사용하는 5가지 핵심 사고 모델(Mental Models)을 통해 더 나은 의사결정과 생산성을 달성하는 방법을 소개합니다.
-
-</div>
+{{< /ai_summary >}}
 
 ## 1. 제1원칙 사고 (First Principles Thinking)
 

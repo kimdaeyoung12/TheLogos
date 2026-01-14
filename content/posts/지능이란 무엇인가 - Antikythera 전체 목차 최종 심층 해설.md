@@ -7,11 +7,9 @@ tags = ["Antikythera", "What_is_Intelligence", "AI_philosophy", "Cognitive_Scien
 mentions = ["Alan Turing", "Karl Friston", "Free Energy Principle", "Integrated Information Theory", "Transformer", "Reinforcement Learning", "Consciousness"]
 +++
 
-<div class="ai-summary-box">
-
+{{< ai_summary >}}
 Antikythera 프로젝트는 '지능'을 인간 중심에서 벗어나, 생명·물질·기계·우주 전반의 정보 처리와 자기 조직화 현상으로 확장한다. 생명의 기원, 정보와 열역학, 예측적 인지, 자유 에너지 원리, 의식 이론(IIT), 언어 모델, 그리고 AI의 미래까지 — 지능의 물리학을 탐구하는 종합 로드맵.
-
-</div>
+{{< /ai_summary >}}
 
 # 지능이란 무엇인가? (What is Intelligence?)
 
