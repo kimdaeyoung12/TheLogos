@@ -156,7 +156,7 @@
         </div>
 
         <!-- Task 1: Sticky TOC Sidebar -->
-        {{- if .TableOfContents -}}
+        {{- if and .TableOfContents (gt .WordCount 300) -}}
         <aside class="toc-container">
             <div class="toc-wrapper">
                 <h3 class="toc-title">목차</h3>
