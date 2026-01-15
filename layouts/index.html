@@ -207,8 +207,8 @@
 {{- $layout_css := resources.Get "css/home-3d-layout.css" | minify | fingerprint -}}
 <link rel="stylesheet" href="{{ $layout_css.Permalink }}" integrity="{{ $layout_css.Data.Integrity }}">
 
-{{- /* Load 3D Hero Script */ -}}
-{{- $hero_js := resources.Get "js/hero-3d.js" | fingerprint -}}
+{{- /* Load 3D Hero Script (Black Swan Attractor) */ -}}
+{{- $hero_js := resources.Get "js/black-swan-attractor.js" | fingerprint -}}
 <script type="module" src="{{ $hero_js.Permalink }}" integrity="{{ $hero_js.Data.Integrity }}"></script>
 
 {{- /* Load 3D Tilt Script */ -}}
