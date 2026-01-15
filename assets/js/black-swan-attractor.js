@@ -39,10 +39,10 @@ class BlackSwanAttractor {
         this.sigma = 10;
         this.rho = 28;
         this.beta = 8 / 3;
-        this.dt = 0.006; // Slower time step for smoother motion
+        this.dt = 0.003; // Even slower for less dizziness
 
         // Particle System
-        this.particleCount = 2500; // Slightly reduced count for cleaner look
+        this.particleCount = 2200;
         this.particlesData = [];
         this.colors = [];
 
@@ -97,10 +97,10 @@ class BlackSwanAttractor {
         geometry.setAttribute('color', new THREE.Float32BufferAttribute(this.colors, 3));
 
         const material = new THREE.PointsMaterial({
-            size: 0.3, // Smaller particles for elegance
+            size: 0.25,
             vertexColors: true,
             transparent: true,
-            opacity: 0.5, // Reduced opacity for subtlety
+            opacity: 0.35, // More transparent
             blending: THREE.AdditiveBlending,
             sizeAttenuation: true
         });
@@ -175,14 +175,14 @@ class BlackSwanAttractor {
         this.updateParticles();
 
         // Very slow, majestic rotation
-        this.targetRotationX = this.mouseY * 0.0002; // Reduced sensitivity
-        this.targetRotationY = this.mouseX * 0.0002;
+        this.targetRotationX = this.mouseY * 0.0001; // Reduced sensitivity
+        this.targetRotationY = this.mouseX * 0.0001;
 
-        this.scene.rotation.x += (this.targetRotationX - this.scene.rotation.x) * 0.02;
-        this.scene.rotation.y += (this.targetRotationY - this.scene.rotation.y) * 0.02;
+        this.scene.rotation.x += (this.targetRotationX - this.scene.rotation.x) * 0.01;
+        this.scene.rotation.y += (this.targetRotationY - this.scene.rotation.y) * 0.01;
 
         // Automatic slow pan
-        this.scene.rotation.z += 0.0005;
+        this.scene.rotation.z += 0.0002;
 
         this.renderer.render(this.scene, this.camera);
     }
