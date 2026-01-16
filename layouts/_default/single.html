@@ -156,16 +156,17 @@
         </div>
 
         <!-- Task 1: Sticky TOC Sidebar -->
-        {{- if and .TableOfContents (in .TableOfContents "<li>") (gt .WordCount 300) -}}
-            <aside class="toc-container">
-                <div class="toc-wrapper">
-                    <h3 class="toc-title">목차</h3>
-                    <nav class="toc-nav">
-                        {{ .TableOfContents }}
-                    </nav>
-                </div>
-            </aside>
-            {{- end -}}
+        {{- if and .TableOfContents (ne .TableOfContents "<nav id=\"TableOfContents\"></nav>") (not (in .TableOfContents
+        "SHORTCODE")) (ge (len .TableOfContents) 60) -}}
+        <aside class="toc-container">
+            <div class="toc-wrapper">
+                <h3 class="toc-title">목차</h3>
+                <nav class="toc-nav">
+                    {{ .TableOfContents }}
+                </nav>
+            </div>
+        </aside>
+        {{- end -}}
     </div>
 
     <!-- Task 5: Related Posts Section -->
