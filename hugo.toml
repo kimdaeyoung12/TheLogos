@@ -5,6 +5,9 @@ title        = "The Logos"
 theme        = "PaperMod"
 hasCJKLanguage = true
 
+[outputs]
+  home = ["HTML", "RSS", "JSON"]
+
 # Enable raw HTML in markdown files (required for AI Summary Box)
 [markup.goldmark.renderer]
   unsafe = false
