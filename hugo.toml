@@ -9,6 +9,12 @@ hasCJKLanguage = true
 [markup.goldmark.renderer]
   unsafe = false
 
+# Table of Contents configuration
+[markup.tableOfContents]
+  endLevel = 3
+  ordered = false
+  startLevel = 2
+
 [params]
   description = "AI-friendly Korean/English knowledge hub designed for fast crawling while remaining welcoming to human visitors."
 
