@@ -108,9 +108,9 @@ document.addEventListener('DOMContentLoaded', function () {
                         panelLinkText.textContent = 'Explore Category';
                         console.log('Category URL:', catUrl);
                     } else if (node.group === 'tag') {
-                        // Tags use the tag taxonomy URL
+                        // Use posts page with tag filter
                         const tagSlug = node.id.replace('tag-', '');
-                        const tagUrl = '/tags/' + tagSlug + '/';
+                        const tagUrl = '/posts/?tag=' + tagSlug;
                         panelLink.href = tagUrl;
                         panelLinkText.textContent = 'Browse Tag';
                         console.log('Tag URL:', tagUrl);

@@ -379,8 +379,12 @@
                     {{ $catIcon = $catData.icon }}
                     {{ $catName = $catData.name }}
                     {{ end }}
+                    {{ $tags := slice }}
+                    {{ range .Params.tags }}
+                    {{ $tags = $tags | append (. | urlize) }}
+                    {{ end }}
 
-                    <article class="timeline-item" data-category="{{ $category }}">
+                    <article class="timeline-item" data-category="{{ $category }}" data-tags="{{ delimit $tags " ," }}">
                         <div class="timeline-marker" style="background: {{ $catColor }};"></div>
                         <div class="timeline-content">
                             <div class="timeline-meta">
@@ -422,6 +426,7 @@
         const itemsData = items.map(item => ({
             element: item,
             category: item.getAttribute('data-category'),
+            tags: (item.getAttribute('data-tags') || '').split(',').filter(t => t),
             text: (
                 (item.querySelector('.timeline-title')?.textContent || '') + ' ' +
                 (item.querySelector('.timeline-excerpt')?.textContent || '')
@@ -430,12 +435,14 @@
 
         let currentFilter = 'all';
         let currentQuery = '';
+        let currentTag = '';
 
         function runFilter() {
             itemsData.forEach(data => {
                 const matchesCategory = currentFilter === 'all' || data.category === currentFilter;
                 const matchesSearch = !currentQuery || data.text.includes(currentQuery);
-                const shouldShow = matchesCategory && matchesSearch;
+                const matchesTag = !currentTag || data.tags.includes(currentTag);
+                const shouldShow = matchesCategory && matchesSearch && matchesTag;
 
                 if (shouldShow) {
                     data.element.style.display = 'flex';
@@ -502,11 +509,35 @@
             runFilter();
         });
 
-        // URL Init
+        // URL Init - Support both category and tag parameters
         const urlParams = new URLSearchParams(window.location.search);
         const initialCategory = urlParams.get('category');
+        const initialTag = urlParams.get('tag');
+
         if (initialCategory && document.querySelector(`.filter-btn[data-category="${initialCategory}"]`)) {
             setCategory(initialCategory, false);
+        }
+
+        // Handle tag filter from URL
+        if (initialTag) {
+            currentTag = initialTag;
+            // Show tag indicator
+            const tagIndicator = document.createElement('div');
+            tagIndicator.className = 'tag-filter-indicator';
+            tagIndicator.innerHTML = `<span>Tag: #${decodeURIComponent(initialTag)}</span><button id="clear-tag">×</button>`;
+            tagIndicator.style.cssText = 'display:flex;align-items:center;gap:8px;background:rgba(71,85,105,0.8);color:#e2e8f0;padding:8px 16px;border-radius:8px;margin:0 auto 16px;width:fit-content;';
+            document.querySelector('.page-header').appendChild(tagIndicator);
+
+            document.getElementById('clear-tag').addEventListener('click', () => {
+                currentTag = '';
+                tagIndicator.remove();
+                const newUrl = new URL(window.location);
+                newUrl.searchParams.delete('tag');
+                window.history.pushState({}, '', newUrl);
+                runFilter();
+            });
+
+            runFilter();
         }
     });
 </script>
