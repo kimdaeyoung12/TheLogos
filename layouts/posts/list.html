@@ -312,7 +312,8 @@
 
             <!-- Search Box -->
             <div class="search-container">
-                <input type="text" id="search-input" class="search-input" placeholder="🔍 게시물 검색..." autocomplete="off">
+                <input type="text" id="search-input" class="search-input" placeholder="🔍 검색... (#태그명으로 태그 검색)"
+                    autocomplete="off">
                 <button class="search-clear" id="search-clear" style="display:none;" aria-label="검색어 지우기">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
                         stroke-linecap="round">
@@ -426,22 +427,38 @@
         const itemsData = items.map(item => ({
             element: item,
             category: item.getAttribute('data-category'),
-            tags: (item.getAttribute('data-tags') || '').split(',').filter(t => t),
+            // Decode URL-encoded tags for proper matching
+            tags: (item.getAttribute('data-tags') || '').split(',').filter(t => t).map(t => decodeURIComponent(t)),
             text: (
                 (item.querySelector('.timeline-title')?.textContent || '') + ' ' +
                 (item.querySelector('.timeline-excerpt')?.textContent || '')
             ).toLowerCase().normalize('NFC')
         }));
 
+        // Collect all unique tags for UI
+        const allTags = new Set();
+        itemsData.forEach(d => d.tags.forEach(t => allTags.add(t)));
+
         let currentFilter = 'all';
         let currentQuery = '';
-        let currentTag = '';
 
         function runFilter() {
             itemsData.forEach(data => {
                 const matchesCategory = currentFilter === 'all' || data.category === currentFilter;
-                const matchesSearch = !currentQuery || data.text.includes(currentQuery);
-                const matchesTag = !currentTag || data.tags.includes(currentTag);
+
+                // Check if search starts with # for tag search
+                let matchesSearch = true;
+                let matchesTag = true;
+
+                if (currentQuery.startsWith('#')) {
+                    // Tag search mode
+                    const tagQuery = currentQuery.substring(1); // Remove #
+                    matchesTag = tagQuery === '' || data.tags.some(t => t.includes(tagQuery));
+                } else {
+                    // Normal text search
+                    matchesSearch = !currentQuery || data.text.includes(currentQuery);
+                }
+
                 const shouldShow = matchesCategory && matchesSearch && matchesTag;
 
                 if (shouldShow) {
@@ -518,25 +535,12 @@
             setCategory(initialCategory, false);
         }
 
-        // Handle tag filter from URL
+        // Handle tag filter from URL - put it in search box with # prefix
         if (initialTag) {
-            currentTag = initialTag;
-            // Show tag indicator
-            const tagIndicator = document.createElement('div');
-            tagIndicator.className = 'tag-filter-indicator';
-            tagIndicator.innerHTML = `<span>Tag: #${decodeURIComponent(initialTag)}</span><button id="clear-tag">×</button>`;
-            tagIndicator.style.cssText = 'display:flex;align-items:center;gap:8px;background:rgba(71,85,105,0.8);color:#e2e8f0;padding:8px 16px;border-radius:8px;margin:0 auto 16px;width:fit-content;';
-            document.querySelector('.page-header').appendChild(tagIndicator);
-
-            document.getElementById('clear-tag').addEventListener('click', () => {
-                currentTag = '';
-                tagIndicator.remove();
-                const newUrl = new URL(window.location);
-                newUrl.searchParams.delete('tag');
-                window.history.pushState({}, '', newUrl);
-                runFilter();
-            });
-
+            const decodedTag = decodeURIComponent(initialTag);
+            searchInput.value = '#' + decodedTag;
+            currentQuery = '#' + decodedTag;
+            searchClear.style.display = 'block';
             runFilter();
         }
     });
