@@ -30,9 +30,17 @@ document.addEventListener('DOMContentLoaded', function () {
             .nodeLabel('name')
             // Node styling
             .nodeColor(node => {
-                if (node.group === 'post') return '#a5f3fc'; // Cyan/Light Blue for posts
-                if (node.group === 'category') return '#fbbf24'; // Amber/Gold for categories
-                if (node.group === 'tag') return '#94a3b8'; // Slate/Gray for tags
+                if (node.group === 'category') {
+                    // Planetary Colors
+                    const name = node.name.toLowerCase();
+                    if (name.includes('religion') || name.includes('종교')) return '#f59e0b'; // Amber
+                    if (name.includes('philosophy') || name.includes('철학')) return '#818cf8'; // Indigo
+                    if (name.includes('engineering') || name.includes('공학') || name.includes('dev')) return '#ef4444'; // Red
+                    if (name.includes('writing') || name.includes('글') || name.includes('essay')) return '#10b981'; // Emerald
+                    return '#fbbf24'; // Default Planet Gold
+                }
+                if (node.group === 'post') return '#e2e8f0'; // White/Star-like
+                if (node.group === 'tag') return '#475569'; // Dim Gray Stardust
                 return '#ffffff';
             })
             .nodeVal(node => {
@@ -42,6 +50,14 @@ document.addEventListener('DOMContentLoaded', function () {
             })
             .nodeResolution(16) // Higher polygon count for spheres
             .nodeOpacity(0.9)
+
+            // Physics for Planetary System
+            .d3Force('link', d3.forceLink().distance(link => {
+                // Longer distance from planets to posts
+                if (link.source.group === 'category' || link.target.group === 'category') return 100;
+                return 30;
+            }))
+            .d3Force('charge', d3.forceManyBody().strength(-120)) // Stronger repulsion
 
             // Link styling
             .linkWidth(0.5)

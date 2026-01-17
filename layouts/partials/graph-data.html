@@ -1,21 +1,21 @@
 {{- $nodes := slice -}}
 {{- $links := slice -}}
 
-{{- /* Add Post Nodes */ -}}
+{{- /* Add Post Nodes (Satellites) */ -}}
 {{- range .Site.RegularPages -}}
-{{- $nodes = $nodes | append (dict "id" .RelPermalink "name" .Title "group" "post" "val" 20) -}}
+{{- $nodes = $nodes | append (dict "id" .RelPermalink "name" .Title "group" "post" "val" 10) -}}
 {{- end -}}
 
-{{- /* Add Tag Nodes */ -}}
+{{- /* Add Tag Nodes (Stardust) */ -}}
 {{- range $name, $taxonomy := .Site.Taxonomies.tags -}}
 {{- $nodes = $nodes | append (dict "id" (printf "tag-%s" ($name | urlize)) "name" ($name | humanize) "group" "tag" "val"
-5) -}}
+2) -}}
 {{- end -}}
 
-{{- /* Add Category Nodes */ -}}
+{{- /* Add Category Nodes (Planets) */ -}}
 {{- range $name, $taxonomy := .Site.Taxonomies.categories -}}
 {{- $nodes = $nodes | append (dict "id" (printf "cat-%s" ($name | urlize)) "name" ($name | humanize) "group" "category"
-"val" 30) -}}
+"val" 60) -}}
 {{- end -}}
 
 {{- /* Add Links */ -}}
