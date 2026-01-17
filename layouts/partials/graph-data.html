@@ -1,21 +1,26 @@
 {{- $nodes := slice -}}
 {{- $links := slice -}}
 
-{{- /* Add Post Nodes (Satellites) */ -}}
+{{- /* Add Post Nodes (Satellites) with summary and date */ -}}
 {{- range .Site.RegularPages -}}
-{{- $nodes = $nodes | append (dict "id" .RelPermalink "name" .Title "group" "post" "val" 10) -}}
+{{- $summary := .Summary | plainify | truncate 120 -}}
+{{- $date := .Date.Format "2006-01-02" -}}
+{{- $nodes = $nodes | append (dict "id" .RelPermalink "name" .Title "group" "post" "val" 10 "summary" $summary "date"
+$date) -}}
 {{- end -}}
 
 {{- /* Add Tag Nodes (Stardust) */ -}}
 {{- range $name, $taxonomy := .Site.Taxonomies.tags -}}
+{{- if $name -}}{{- /* Skip empty tags */ -}}
 {{- $nodes = $nodes | append (dict "id" (printf "tag-%s" ($name | urlize)) "name" ($name | humanize) "group" "tag" "val"
 2) -}}
 {{- end -}}
+{{- end -}}
 
-{{- /* Add Category Nodes (Planets) */ -}}
+{{- /* Add Category Nodes (Planets) - Smaller size for visibility */ -}}
 {{- range $name, $taxonomy := .Site.Taxonomies.categories -}}
 {{- $nodes = $nodes | append (dict "id" (printf "cat-%s" ($name | urlize)) "name" ($name | humanize) "group" "category"
-"val" 60) -}}
+"val" 20) -}}
 {{- end -}}
 
 {{- /* Add Links */ -}}
@@ -24,8 +29,10 @@
 
 {{- /* Link to Tags */ -}}
 {{- range .Params.tags -}}
+{{- if . -}}{{- /* Skip empty tags */ -}}
 {{- $tagID := printf "tag-%s" (. | urlize) -}}
 {{- $links = $links | append (dict "source" $postID "target" $tagID) -}}
+{{- end -}}
 {{- end -}}
 
 {{- /* Link to Categories */ -}}

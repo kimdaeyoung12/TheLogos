@@ -10,9 +10,167 @@
         <p style="font-family: var(--font-body, sans-serif); color: #94a3b8; font-size: 1rem; margin-top: 0.5rem;">{{
             .Description }}</p>
     </div>
+    <!-- Reset View Button -->
+    <button id="reset-view" class="reset-view-btn">🏠 전체보기</button>
+
+    <!-- Side Panel for Node Details -->
+    <div id="node-panel" class="node-panel">
+        <button id="panel-close" class="panel-close">&times;</button>
+        <div class="panel-content">
+            <span id="panel-type" class="panel-type"></span>
+            <h2 id="panel-title" class="panel-title"></h2>
+            <p id="panel-date" class="panel-date"></p>
+            <p id="panel-summary" class="panel-summary"></p>
+            <a id="panel-link" class="panel-link" href="#">
+                <span id="panel-link-text">Go to Page</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+            </a>
+        </div>
+    </div>
 </section>
 
+<style>
+    .node-panel {
+        position: absolute;
+        top: 0;
+        right: -320px;
+        width: 300px;
+        height: 100%;
+        background: rgba(15, 23, 42, 0.95);
+        backdrop-filter: blur(10px);
+        border-left: 1px solid rgba(148, 163, 184, 0.2);
+        padding: 24px;
+        z-index: 100;
+        transition: right 0.3s ease;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .node-panel.open {
+        right: 0;
+    }
+
+    .panel-close {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        background: none;
+        border: none;
+        color: #94a3b8;
+        font-size: 28px;
+        cursor: pointer;
+        line-height: 1;
+        padding: 0;
+        transition: color 0.2s;
+    }
+
+    .panel-close:hover {
+        color: #e2e8f0;
+    }
+
+    .panel-content {
+        margin-top: 48px;
+    }
+
+    .panel-type {
+        display: inline-block;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        padding: 4px 10px;
+        border-radius: 4px;
+        margin-bottom: 12px;
+    }
+
+    .panel-type.post {
+        background: rgba(226, 232, 240, 0.2);
+        color: #e2e8f0;
+    }
+
+    .panel-type.category {
+        background: rgba(16, 185, 129, 0.2);
+        color: #10b981;
+    }
+
+    .panel-type.tag {
+        background: rgba(71, 85, 105, 0.3);
+        color: #94a3b8;
+    }
+
+    .panel-title {
+        font-family: var(--font-heading, sans-serif);
+        color: #e2e8f0;
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin: 0 0 24px 0;
+        line-height: 1.3;
+    }
+
+    .panel-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 20px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: 500;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .panel-link:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    /* Reset View Button */
+    .reset-view-btn {
+        position: absolute;
+        bottom: 24px;
+        left: 24px;
+        padding: 10px 18px;
+        background: rgba(30, 41, 59, 0.9);
+        border: 1px solid rgba(148, 163, 184, 0.3);
+        color: #e2e8f0;
+        font-size: 0.9rem;
+        font-weight: 500;
+        border-radius: 8px;
+        cursor: pointer;
+        z-index: 50;
+        transition: all 0.2s;
+        backdrop-filter: blur(8px);
+    }
+
+    .reset-view-btn:hover {
+        background: rgba(51, 65, 85, 0.95);
+        border-color: rgba(148, 163, 184, 0.5);
+        transform: translateY(-2px);
+    }
+
+    /* Panel Date & Summary */
+    .panel-date {
+        font-size: 0.85rem;
+        color: #94a3b8;
+        margin: 0 0 12px 0;
+    }
+
+    .panel-summary {
+        font-size: 0.95rem;
+        color: #cbd5e1;
+        line-height: 1.6;
+        margin: 0 0 24px 0;
+        display: -webkit-box;
+        -webkit-line-clamp: 4;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+</style>
+
 <!-- Knowledge Graph Scripts -->
+<script src="https://unpkg.com/d3"></script>
 <script src="https://unpkg.com/3d-force-graph"></script>
 
 <!-- Embed Graph Data -->
@@ -22,5 +180,5 @@
 </script>
 
 {{- $graph_js := resources.Get "js/knowledge-graph.js" | fingerprint -}}
-<script src="{{ $graph_js.Permalink }}" integrity="{{ $graph_js.Data.Integrity }}"></script>
+<script src="{{ $graph_js.RelPermalink }}" integrity="{{ $graph_js.Data.Integrity }}"></script>
 {{ end }}

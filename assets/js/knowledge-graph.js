@@ -22,7 +22,10 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
 
-        const Graph = ForceGraph3D()
+        console.log('Initializing graph with', data.nodes.length, 'nodes and', data.links.length, 'links');
+
+        // Expose globally for debugging
+        window.Graph = ForceGraph3D()
             (container)
             .width(width)
             .height(height)
@@ -51,54 +54,94 @@ document.addEventListener('DOMContentLoaded', function () {
             .nodeResolution(16) // Higher polygon count for spheres
             .nodeOpacity(0.9)
 
-            // Physics for Planetary System
-            .d3Force('link', d3.forceLink().distance(link => {
-                // Longer distance from planets to posts
-                if (link.source.group === 'category' || link.target.group === 'category') return 100;
-                return 30;
-            }))
-            .d3Force('charge', d3.forceManyBody().strength(-120)) // Stronger repulsion
-
-            // Link styling
+            // Link styling (using valid API)
             .linkWidth(0.5)
             .linkOpacity(0.3)
-            .linkColor(() => '#ffffff') // White links
+            .linkColor('#475569')
 
             // Background
             .backgroundColor('rgba(0,0,0,0)') // Transparent
 
-            // Interaction
+            // Interaction - Show side panel on click
             .onNodeClick(node => {
-                if (node.group === 'post') {
-                    // Navigate to post
-                    window.location.href = node.id;
-                } else {
-                    // Focus camera on node
-                    const distance = 40;
-                    const distRatio = 1 + distance / Math.hypot(node.x, node.y, node.z);
+                // Zoom camera to node
+                const distance = 60;
+                const distRatio = 1 + distance / Math.hypot(node.x, node.y, node.z);
+                window.Graph.cameraPosition(
+                    { x: node.x * distRatio, y: node.y * distRatio, z: node.z * distRatio },
+                    node,
+                    1000  // Faster zoom
+                );
 
-                    Graph.cameraPosition(
-                        { x: node.x * distRatio, y: node.y * distRatio, z: node.z * distRatio }, // new position
-                        node, // lookAt ({ x, y, z })
-                        3000  // ms transition duration
-                    );
+                // Populate and show panel
+                const panel = document.getElementById('node-panel');
+                const panelType = document.getElementById('panel-type');
+                const panelTitle = document.getElementById('panel-title');
+                const panelDate = document.getElementById('panel-date');
+                const panelSummary = document.getElementById('panel-summary');
+                const panelLink = document.getElementById('panel-link');
+                const panelLinkText = document.getElementById('panel-link-text');
+
+                panelTitle.textContent = node.name;
+                panelType.textContent = node.group;
+                panelType.className = 'panel-type ' + node.group;
+
+                // Show date/summary for posts only
+                if (node.group === 'post') {
+                    panelDate.textContent = node.date || '';
+                    panelSummary.textContent = node.summary || '';
+                    panelDate.style.display = 'block';
+                    panelSummary.style.display = 'block';
+                    panelLink.href = node.id;
+                    panelLinkText.textContent = 'Read Article →';
+                } else {
+                    panelDate.style.display = 'none';
+                    panelSummary.style.display = 'none';
+                    if (node.group === 'category') {
+                        const catSlug = node.id.replace('cat-', '');
+                        panelLink.href = '/categories/' + catSlug + '/';
+                        panelLinkText.textContent = 'Explore Category →';
+                    } else if (node.group === 'tag') {
+                        const tagSlug = node.id.replace('tag-', '');
+                        panelLink.href = '/tags/' + tagSlug + '/';
+                        panelLinkText.textContent = 'Browse Tag →';
+                    }
                 }
+
+                panel.classList.add('open');
             })
             // Zoom to fit when engine stops
-            .onEngineStop(() => Graph.zoomToFit(400));
+            .onEngineStop(() => window.Graph.zoomToFit(400));
 
-        // Auto-rotate
-        // Graph.controls().autoRotate = true;
-        // Graph.controls().autoRotateSpeed = 0.5;
+        // Speed up scroll zoom
+        const controls = window.Graph.controls();
+        controls.zoomSpeed = 2.5;  // Default is 1.0, increase for faster zoom
 
-        // Initial Camera setup
-        Graph.cameraPosition({ z: 200 });
+        // Panel close handlers
+        document.getElementById('panel-close').addEventListener('click', () => {
+            document.getElementById('node-panel').classList.remove('open');
+        });
+
+        // Reset View Button Handler
+        document.getElementById('reset-view').addEventListener('click', () => {
+            window.Graph.zoomToFit(600);
+            document.getElementById('node-panel').classList.remove('open');
+        });
+
+        // Initial Camera setup - start far back
+        window.Graph.cameraPosition({ z: 500 });
+
+        // Force zoomToFit after a delay (backup if onEngineStop doesn't fire)
+        setTimeout(() => {
+            window.Graph.zoomToFit(400);
+            console.log('zoomToFit triggered');
+        }, 3000);
 
         // Handle Window Resize
         window.addEventListener('resize', () => {
-            if (Graph) {
-                Graph.width(container.clientWidth);
-                Graph.height(container.clientHeight);
+            if (window.Graph) {
+                window.Graph.width(container.clientWidth);
+                window.Graph.height(container.clientHeight);
             }
         });
 
