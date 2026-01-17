@@ -166,6 +166,59 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
 
+        // Search Functionality - Highlight matching nodes
+        const searchInput = document.getElementById('network-search');
+        const searchClear = document.getElementById('network-search-clear');
+        let searchQuery = '';
+
+        function updateNodeHighlight() {
+            if (!searchQuery) {
+                // Reset all nodes to original size
+                window.Graph.nodeVal(node => node.val);
+            } else {
+                // Enlarge matching nodes, shrink non-matching
+                window.Graph.nodeVal(node => {
+                    const nodeName = node.name.toLowerCase();
+                    const isMatch = nodeName.includes(searchQuery);
+
+                    if (isMatch) {
+                        // Matched - make 3x larger
+                        return node.val * 3;
+                    } else {
+                        // Not matched - make very small
+                        return node.val * 0.2;
+                    }
+                });
+
+                // Zoom to first matching node
+                const data = window.Graph.graphData();
+                const matchingNode = data.nodes.find(n => n.name.toLowerCase().includes(searchQuery));
+                if (matchingNode && matchingNode.x !== undefined) {
+                    const distance = 150;
+                    const distRatio = 1 + distance / Math.hypot(matchingNode.x, matchingNode.y, matchingNode.z);
+                    window.Graph.cameraPosition(
+                        { x: matchingNode.x * distRatio, y: matchingNode.y * distRatio, z: matchingNode.z * distRatio },
+                        matchingNode,
+                        800
+                    );
+                }
+            }
+        }
+
+        searchInput.addEventListener('input', (e) => {
+            searchQuery = e.target.value.trim().toLowerCase();
+            searchClear.style.display = searchQuery ? 'block' : 'none';
+            updateNodeHighlight();
+        });
+
+        searchClear.addEventListener('click', () => {
+            searchInput.value = '';
+            searchQuery = '';
+            searchClear.style.display = 'none';
+            updateNodeHighlight();
+            window.Graph.zoomToFit(600);
+        });
+
 
 
     } catch (err) {

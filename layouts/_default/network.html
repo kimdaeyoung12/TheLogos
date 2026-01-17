@@ -10,6 +10,12 @@
         <p style="font-family: var(--font-body, sans-serif); color: #94a3b8; font-size: 1rem; margin-top: 0.5rem;">{{
             .Description }}</p>
     </div>
+    <!-- Search Box -->
+    <div class="network-search-container">
+        <input type="text" id="network-search" class="network-search-input" placeholder="🔍 노드 검색..."
+            autocomplete="off">
+        <button id="network-search-clear" class="network-search-clear" style="display:none;">×</button>
+    </div>
     <!-- Reset View Button -->
     <button id="reset-view" class="reset-view-btn">◎ 전체보기</button>
 
@@ -32,6 +38,55 @@
 </section>
 
 <style>
+    /* Network Search Box */
+    .network-search-container {
+        position: absolute;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 20;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .network-search-input {
+        width: 280px;
+        padding: 10px 16px;
+        border-radius: 24px;
+        border: 1px solid rgba(148, 163, 184, 0.3);
+        background: rgba(15, 23, 42, 0.9);
+        color: #e2e8f0;
+        font-size: 0.95rem;
+        backdrop-filter: blur(12px);
+        transition: all 0.2s ease;
+    }
+
+    .network-search-input:focus {
+        outline: none;
+        border-color: rgba(99, 102, 241, 0.6);
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+    }
+
+    .network-search-input::placeholder {
+        color: #64748b;
+    }
+
+    .network-search-clear {
+        position: absolute;
+        right: 12px;
+        background: none;
+        border: none;
+        color: #94a3b8;
+        font-size: 1.2rem;
+        cursor: pointer;
+        padding: 4px;
+    }
+
+    .network-search-clear:hover {
+        color: #e2e8f0;
+    }
+
     /* Floating Card Panel */
     .node-panel {
         position: absolute;
