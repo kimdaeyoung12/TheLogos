@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     // Planetary Colors
                     const name = node.name.toLowerCase();
                     if (name.includes('religion') || name.includes('종교')) return '#f59e0b'; // Amber
-                    if (name.includes('philosophy') || name.includes('철학')) return '#818cf8'; // Indigo
+                    if (name.includes('philosophy') || name.includes('철학')) return '#c084fc'; // Bright Purple
                     if (name.includes('engineering') || name.includes('공학') || name.includes('dev')) return '#ef4444'; // Red
                     if (name.includes('writing') || name.includes('글') || name.includes('essay')) return '#10b981'; // Emerald
                     return '#fbbf24'; // Default Planet Gold
@@ -73,12 +73,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     // Navigate to post
                     window.location.href = node.id;
                 } else {
-                    // For tags/categories, maybe zoom/focus? 
-                    // Or navigate to listing page if ID matches url pattern
-                    // IDs are like "cat-religion", "tag-ai"
-                    // I'd need to reconstruct the URL. 
-                    // For now, focus on posts.
-
                     // Focus camera on node
                     const distance = 40;
                     const distRatio = 1 + distance / Math.hypot(node.x, node.y, node.z);
@@ -89,7 +83,9 @@ document.addEventListener('DOMContentLoaded', function () {
                         3000  // ms transition duration
                     );
                 }
-            });
+            })
+            // Zoom to fit when engine stops
+            .onEngineStop(() => Graph.zoomToFit(400));
 
         // Auto-rotate
         // Graph.controls().autoRotate = true;
@@ -105,6 +101,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 Graph.height(container.clientHeight);
             }
         });
+
+
 
     } catch (err) {
         console.error("Failed to render graph:", err);
