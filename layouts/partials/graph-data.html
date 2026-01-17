@@ -3,10 +3,13 @@
 
 {{- /* Add Post Nodes (Satellites) with summary and date */ -}}
 {{- range .Site.RegularPages -}}
-{{- $summary := .Summary | plainify | truncate 120 -}}
+{{- $rawSummary := .Summary | plainify -}}
+{{- /* Remove HTML entities, special chars, and 'Instagram에서 보기' */ -}}
+{{- $cleanSummary := $rawSummary | replaceRE `&[a-zA-Z]+;` "" | replaceRE `&#\d+;` "" | replaceRE `[*\[\]#"']` "" |
+replaceRE `(?i)instagram에서 보기` "" | truncate 120 -}}
 {{- $date := .Date.Format "2006-01-02" -}}
-{{- $nodes = $nodes | append (dict "id" .RelPermalink "name" .Title "group" "post" "val" 10 "summary" $summary "date"
-$date) -}}
+{{- $nodes = $nodes | append (dict "id" .RelPermalink "name" .Title "group" "post" "val" 5 "summary" $cleanSummary
+"date" $date) -}}
 {{- end -}}
 
 {{- /* Add Tag Nodes (Stardust) */ -}}

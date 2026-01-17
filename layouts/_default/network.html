@@ -11,7 +11,7 @@
             .Description }}</p>
     </div>
     <!-- Reset View Button -->
-    <button id="reset-view" class="reset-view-btn">🏠 전체보기</button>
+    <button id="reset-view" class="reset-view-btn">◎ 전체보기</button>
 
     <!-- Side Panel for Node Details -->
     <div id="node-panel" class="node-panel">
@@ -32,24 +32,31 @@
 </section>
 
 <style>
+    /* Floating Card Panel */
     .node-panel {
         position: absolute;
-        top: 0;
-        right: -320px;
-        width: 300px;
-        height: 100%;
+        top: 50%;
+        right: 24px;
+        transform: translateY(-50%) scale(0.9);
+        width: 320px;
+        max-height: 80vh;
         background: rgba(15, 23, 42, 0.95);
-        backdrop-filter: blur(10px);
-        border-left: 1px solid rgba(148, 163, 184, 0.2);
+        backdrop-filter: blur(16px);
+        border: 1px solid rgba(148, 163, 184, 0.2);
+        border-radius: 16px;
         padding: 24px;
         z-index: 100;
-        transition: right 0.3s ease;
-        display: flex;
-        flex-direction: column;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.25s ease;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        overflow-y: auto;
     }
 
     .node-panel.open {
-        right: 0;
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(-50%) scale(1);
     }
 
     .panel-close {
@@ -166,6 +173,32 @@
         -webkit-line-clamp: 4;
         -webkit-box-orient: vertical;
         overflow: hidden;
+    }
+
+    /* Light Mode Overrides */
+    body:not(.dark) .node-panel {
+        background: rgba(255, 255, 255, 0.95);
+        border-color: rgba(0, 0, 0, 0.1);
+    }
+
+    body:not(.dark) .panel-title {
+        color: #1e293b;
+    }
+
+    body:not(.dark) .panel-date {
+        color: #64748b;
+    }
+
+    body:not(.dark) .panel-summary {
+        color: #475569;
+    }
+
+    body:not(.dark) .panel-close {
+        color: #64748b;
+    }
+
+    body:not(.dark) .panel-close:hover {
+        color: #1e293b;
     }
 </style>
 

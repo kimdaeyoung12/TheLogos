@@ -62,16 +62,19 @@ document.addEventListener('DOMContentLoaded', function () {
             // Background
             .backgroundColor('rgba(0,0,0,0)') // Transparent
 
-            // Interaction - Show side panel on click
+            // Interaction - Show floating panel on click
             .onNodeClick(node => {
-                // Zoom camera to node
-                const distance = 60;
-                const distRatio = 1 + distance / Math.hypot(node.x, node.y, node.z);
-                window.Graph.cameraPosition(
-                    { x: node.x * distRatio, y: node.y * distRatio, z: node.z * distRatio },
-                    node,
-                    1000  // Faster zoom
-                );
+                // Category/Tag click: zoom to center on this node
+                if (node.group === 'category' || node.group === 'tag') {
+                    // Calculate camera position to center on this node
+                    const distance = 120;  // Distance from node
+                    const distRatio = 1 + distance / Math.hypot(node.x, node.y, node.z);
+                    window.Graph.cameraPosition(
+                        { x: node.x * distRatio, y: node.y * distRatio, z: node.z * distRatio },
+                        node,  // lookAt the clicked node
+                        1000   // animation duration
+                    );
+                }
 
                 // Populate and show panel
                 const panel = document.getElementById('node-panel');
@@ -93,25 +96,43 @@ document.addEventListener('DOMContentLoaded', function () {
                     panelDate.style.display = 'block';
                     panelSummary.style.display = 'block';
                     panelLink.href = node.id;
-                    panelLinkText.textContent = 'Read Article →';
+                    panelLinkText.textContent = 'Read Article';
                 } else {
                     panelDate.style.display = 'none';
                     panelSummary.style.display = 'none';
                     if (node.group === 'category') {
+                        // Use posts page with category filter
                         const catSlug = node.id.replace('cat-', '');
-                        panelLink.href = '/categories/' + catSlug + '/';
-                        panelLinkText.textContent = 'Explore Category →';
+                        const catUrl = '/posts/?category=' + catSlug;
+                        panelLink.href = catUrl;
+                        panelLinkText.textContent = 'Explore Category';
+                        console.log('Category URL:', catUrl);
                     } else if (node.group === 'tag') {
+                        // Tags use the tag taxonomy URL
                         const tagSlug = node.id.replace('tag-', '');
-                        panelLink.href = '/tags/' + tagSlug + '/';
-                        panelLinkText.textContent = 'Browse Tag →';
+                        const tagUrl = '/tags/' + tagSlug + '/';
+                        panelLink.href = tagUrl;
+                        panelLinkText.textContent = 'Browse Tag';
+                        console.log('Tag URL:', tagUrl);
                     }
                 }
 
                 panel.classList.add('open');
-            })
-            // Zoom to fit when engine stops
-            .onEngineStop(() => window.Graph.zoomToFit(400));
+            });
+        // Note: Removed onEngineStop zoomToFit to prevent camera auto-reset
+
+        // Increase spacing between nodes for better clickability
+        window.Graph.d3Force('charge').strength(-60);  // Stronger repulsion = more spacing
+        window.Graph.d3Force('link').distance(40);     // Longer links = more spacing
+
+        // Fix: Add explicit click handler for panel link (navigation)
+        document.getElementById('panel-link').addEventListener('click', function (e) {
+            const href = this.getAttribute('href');
+            if (href && href !== '#') {
+                console.log('Navigating to:', href);
+                window.location.href = href;
+            }
+        });
 
         // Speed up scroll zoom
         const controls = window.Graph.controls();

@@ -156,22 +156,26 @@
         });
 
         // Initial Positions (Desktop Defaults)
-        // Religion (Top Extreme Right)
-        const religionPlanet = new THREE.Mesh(new THREE.IcosahedronGeometry(7, 0), matteGold);
+        // Religion (Top Extreme Right) - Trinity/Fire -> Tetrahedron (matches single.html)
+        const religionPlanet = new THREE.Mesh(new THREE.TetrahedronGeometry(7, 0), matteGold);
         group.add(religionPlanet);
         planets['religion'] = { mesh: religionPlanet, camPos: { x: 40, y: 15, z: -10 } };
 
-        // Philosophy (Top Extreme Left)
-        const philoPlanet = new THREE.Mesh(new THREE.OctahedronGeometry(6, 0), matteBlue);
+        // Philosophy (Top Extreme Left) - Universe/Aether -> Dodecahedron (matches single.html)
+        const philoPlanet = new THREE.Mesh(new THREE.DodecahedronGeometry(6, 0), matteBlue);
         group.add(philoPlanet);
         planets['philosophy'] = { mesh: philoPlanet, camPos: { x: -40, y: 10, z: -15 } };
 
-        // Engineering (Mid Extreme Left)
-        const engPlanet = new THREE.Mesh(new THREE.IcosahedronGeometry(8, 0), matteSilver);
+        // Engineering (Mid Extreme Left) - Structure/Diamond -> Octahedron (matches single.html)
+        const engPlanet = new THREE.Mesh(new THREE.OctahedronGeometry(8, 0), matteSilver);
+        // Engineering wireframe overlay (matches single.html)
+        const wireGeo = new THREE.OctahedronGeometry(8.2, 0);
+        const wireMat = new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true, transparent: true, opacity: 0.3 });
+        engPlanet.add(new THREE.Mesh(wireGeo, wireMat));
         group.add(engPlanet);
         planets['engineering'] = { mesh: engPlanet, camPos: { x: -45, y: -5, z: -20 } };
 
-        // Writing (Mid Extreme Right)
+        // Writing (Mid Extreme Right) - Flow/Pearl -> Sphere (same in both)
         const writePlanet = new THREE.Mesh(new THREE.SphereGeometry(5, 32, 32), softPearl);
         group.add(writePlanet);
         planets['writing'] = { mesh: writePlanet, camPos: { x: 45, y: -5, z: -10 } };
