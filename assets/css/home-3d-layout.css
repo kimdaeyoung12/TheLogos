@@ -273,3 +273,58 @@
         width: 100%;
     }
 }
+
+/* Small phones */
+@media (max-width: 480px) {
+    .category-section {
+        padding: 40px 0;
+    }
+
+    .category-container {
+        padding: 0 12px;
+        gap: 20px;
+    }
+
+    .category-header-3d {
+        height: 150px;
+    }
+
+    .monolith-plate {
+        padding: 16px;
+    }
+
+    .icon-layer svg {
+        width: 36px;
+        height: 36px;
+    }
+
+    .title-layer {
+        font-size: 1.25rem;
+    }
+
+    .subtitle-layer {
+        font-size: 0.75rem;
+    }
+
+    .category-posts-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .post-card-3d {
+        padding: 16px;
+    }
+
+    .post-card-title {
+        font-size: 1rem;
+    }
+
+    .post-card-excerpt {
+        font-size: 0.85rem;
+        -webkit-line-clamp: 2;
+    }
+
+    .view-more-text {
+        font-size: 0.9rem;
+    }
+}

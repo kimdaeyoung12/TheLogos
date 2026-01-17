@@ -8,8 +8,11 @@
     content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://plausible.io https://busuanzi.ibruce.info https://cdn.jsdelivr.net https://www.instagram.com https://cdn.skypack.dev https://cdnjs.cloudflare.com https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; img-src 'self' data: https://*.instagram.com https://*.cdninstagram.com https://i.ytimg.com; frame-src https://*.instagram.com https://www.youtube.com https://www.youtube-nocookie.com; connect-src 'self' https://www.google-analytics.com https://plausible.io https://busuanzi.ibruce.info https://cdn.skypack.dev https://cdnjs.cloudflare.com https://unpkg.com;">
 
 <!-- Preload custom stylesheets to improve performance -->
+<!-- Load Tailwind first, then custom.css to override with original brand styles -->
+<link rel="stylesheet" href="/css/tailwind.css">
 <link rel="preload" href="/css/custom.css" as="style">
 <link rel="stylesheet" href="/css/custom.css">
+
 
 <!-- Google Analytics 4 -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-SST2KJKDK4"></script>
