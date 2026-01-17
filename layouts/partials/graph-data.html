@@ -1,0 +1,38 @@
+{{- $nodes := slice -}}
+{{- $links := slice -}}
+
+{{- /* Add Post Nodes */ -}}
+{{- range .Site.RegularPages -}}
+{{- $nodes = $nodes | append (dict "id" .RelPermalink "name" .Title "group" "post" "val" 20) -}}
+{{- end -}}
+
+{{- /* Add Tag Nodes */ -}}
+{{- range $name, $taxonomy := .Site.Taxonomies.tags -}}
+{{- $nodes = $nodes | append (dict "id" (printf "tag-%s" ($name | urlize)) "name" ($name | humanize) "group" "tag" "val"
+5) -}}
+{{- end -}}
+
+{{- /* Add Category Nodes */ -}}
+{{- range $name, $taxonomy := .Site.Taxonomies.categories -}}
+{{- $nodes = $nodes | append (dict "id" (printf "cat-%s" ($name | urlize)) "name" ($name | humanize) "group" "category"
+"val" 30) -}}
+{{- end -}}
+
+{{- /* Add Links */ -}}
+{{- range .Site.RegularPages -}}
+{{- $postID := .RelPermalink -}}
+
+{{- /* Link to Tags */ -}}
+{{- range .Params.tags -}}
+{{- $tagID := printf "tag-%s" (. | urlize) -}}
+{{- $links = $links | append (dict "source" $postID "target" $tagID) -}}
+{{- end -}}
+
+{{- /* Link to Categories */ -}}
+{{- range .Params.categories -}}
+{{- $catID := printf "cat-%s" (. | urlize) -}}
+{{- $links = $links | append (dict "source" $postID "target" $catID) -}}
+{{- end -}}
+{{- end -}}
+
+{{- return (dict "nodes" $nodes "links" $links) -}}
