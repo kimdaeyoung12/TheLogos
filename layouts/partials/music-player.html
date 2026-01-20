@@ -1,17 +1,47 @@
-{{ if or .Params.audio .IsHome }}
-<div id="music-player-bar" class="music-player-bar glass-bar" {{ if .IsHome }} data-playlist='[
-        {{- range $index, $element := where .Site.RegularPages "Params.audio" "!=" nil -}}
-            {{- if $index }},{{ end -}}
-            {
-                "title": "{{ .Title }}",
-                "audio": "{{ .Params.audio }}",
-                "link": "{{ .RelPermalink }}"
-            }
-        {{- end -}}
-    ]' {{ else }} data-audio-src="{{ .Params.audio | relURL }}" data-title="{{ .Title }}"
-    data-link="{{ .RelPermalink }}" {{ end }}>
+{{/* Logic to build the playlist dynamically */}}
+{{ $playlist := slice }}
 
-    <!-- Album Art / Icon (Optional, using visualizer or simple icon) -->
+{{/* 1. Get all audio files from static/audio */}}
+{{ $audioDir := "static/audio" }}
+{{ if (fileExists $audioDir) }}
+{{ $files := readDir $audioDir }}
+{{ range $files }}
+{{ if (strings.HasSuffix .Name ".mp3") }}
+{{ $filename := .Name }}
+{{ $path := printf "audio/%s" $filename }}
+{{ $title := $filename | replaceRE "\\.mp3$" "" }}
+{{ $link := "" }}
+
+{{/* Check if any post uses this audio to get better title/link */}}
+{{ range where $.Site.RegularPages "Params.audio" "!=" nil }}
+{{ if eq .Params.audio $path }}
+{{ $title = .Title }}
+{{ $link = .RelPermalink }}
+{{ end }}
+{{ end }}
+
+{{ $playlist = $playlist | append (dict "title" $title "audio" $path "link" $link) }}
+{{ end }}
+{{ end }}
+{{ end }}
+
+{{/* 2. Add posts that have unique audio not in static/audio */}}
+{{ range where .Site.RegularPages "Params.audio" "!=" nil }}
+{{ $currentAudio := .Params.audio }}
+{{ $found := false }}
+{{ range $playlist }}
+{{ if eq .audio $currentAudio }}{{ $found = true }}{{ end }}
+{{ end }}
+{{ if not $found }}
+{{ $playlist = $playlist | append (dict "title" .Title "audio" .Params.audio "link" .RelPermalink) }}
+{{ end }}
+{{ end }}
+
+{{/* Render the Player Div - Always Visible */}}
+<div id="music-player-bar" class="music-player-bar glass-bar" data-playlist='{{ $playlist | jsonify }}' {{ if
+    .Params.audio }}data-initial-audio="{{ .Params.audio }}" {{ end }}>
+
+    <!-- Album Art / Icon -->
     <div class="player-icon">
         <div class="playing-indicator">
             <span class="bar"></span>
@@ -59,8 +89,7 @@
                 value="0.2" aria-label="Volume">
         </div>
 
-        <!-- Playlist Toggle -->
-        {{ if .IsHome }}
+        <!-- Playlist Toggle - Always available -->
         <button id="playlist-toggle" class="bar-control-btn list-btn" aria-label="Playlist">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <line x1="8" y1="6" x2="21" y2="6"></line>
@@ -71,10 +100,9 @@
                 <line x1="3" y1="18" x2="3.01" y2="18"></line>
             </svg>
         </button>
-        {{ end }}
     </div>
 
-    <!-- Playlist Popup (Absolute position relative to bar) -->
+    <!-- Playlist Popup -->
     <div id="playlist-container" class="bar-playlist-popup hidden">
         <div class="playlist-header">
             <span>Playlist</span>
@@ -96,4 +124,3 @@
 
 {{ $music_js := resources.Get "js/music-player.js" | fingerprint }}
 <script src="{{ $music_js.Permalink }}" integrity="{{ $music_js.Data.Integrity }}"></script>
-{{ end }}
