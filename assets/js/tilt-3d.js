@@ -60,9 +60,23 @@ class TiltEffect {
     }
 }
 
-// Initialize on load
-document.addEventListener('DOMContentLoaded', () => {
+// Expose globally for soft navigation re-initialization
+window.TiltEffect = TiltEffect;
+
+// Initialize function
+function initTiltEffects() {
     // Apply to Featured Post and Post Cards
     const cards = document.querySelectorAll('.featured-post, .post-card');
-    cards.forEach(card => new TiltEffect(card));
-});
+    cards.forEach(card => {
+        if (!card._tiltInitialized) {
+            new TiltEffect(card);
+            card._tiltInitialized = true;
+        }
+    });
+}
+
+// Initialize on load
+document.addEventListener('DOMContentLoaded', initTiltEffects);
+
+// Re-initialize on soft navigation
+window.addEventListener('pageReady', initTiltEffects);

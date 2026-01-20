@@ -48,6 +48,9 @@
         {{ block "main" . }}{{ end }}
     </main>
     {{ partial "music-player.html" . }}
+    {{/* Soft Navigation for persistent audio playback */}}
+    {{ $soft_nav := resources.Get "js/soft-navigation.js" | fingerprint }}
+    <script src="{{ $soft_nav.Permalink }}" integrity="{{ $soft_nav.Data.Integrity }}"></script>
     {{ partial "extend_footer.html" . }}
 </body>
 

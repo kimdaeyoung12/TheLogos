@@ -1,45 +1,16 @@
-{{/* Logic to build the playlist dynamically */}}
+{{/* Logic to build the playlist from posts with audio frontmatter */}}
 {{ $playlist := slice }}
 
-{{/* 1. Get all audio files from static/audio */}}
-{{ $audioDir := "static/audio" }}
-{{ if (fileExists $audioDir) }}
-{{ $files := readDir $audioDir }}
-{{ range $files }}
-{{ if (strings.HasSuffix .Name ".mp3") }}
-{{ $filename := .Name }}
-{{ $path := printf "audio/%s" $filename }}
-{{ $title := $filename | replaceRE "\\.mp3$" "" }}
-{{ $link := "" }}
-
-{{/* Check if any post uses this audio to get better title/link */}}
-{{ range where $.Site.RegularPages "Params.audio" "!=" nil }}
-{{ if eq .Params.audio $path }}
-{{ $title = .Title }}
-{{ $link = .RelPermalink }}
-{{ end }}
-{{ end }}
-
-{{ $playlist = $playlist | append (dict "title" $title "audio" $path "link" $link) }}
-{{ end }}
-{{ end }}
-{{ end }}
-
-{{/* 2. Add posts that have unique audio not in static/audio */}}
 {{ range where .Site.RegularPages "Params.audio" "!=" nil }}
-{{ $currentAudio := .Params.audio }}
-{{ $found := false }}
-{{ range $playlist }}
-{{ if eq .audio $currentAudio }}{{ $found = true }}{{ end }}
-{{ end }}
-{{ if not $found }}
-{{ $playlist = $playlist | append (dict "title" .Title "audio" .Params.audio "link" .RelPermalink) }}
-{{ end }}
+{{ $audioPath := .Params.audio }}
+{{/* Extract song title from audio path (remove /audio/ prefix and .mp3 suffix) */}}
+{{ $songTitle := $audioPath | replaceRE "^/?(audio/)?" "" | replaceRE "\\.mp3$" "" }}
+{{ $playlist = $playlist | append (dict "title" $songTitle "audio" $audioPath "link" .RelPermalink) }}
 {{ end }}
 
 {{/* Render the Player Div - Always Visible */}}
-<div id="music-player-bar" class="music-player-bar glass-bar" data-playlist='{{ $playlist | jsonify }}' {{ if
-    .Params.audio }}data-initial-audio="{{ .Params.audio }}" {{ end }}>
+<div id="music-player" class="music-player-bar glass-bar" data-playlist='{{ $playlist | jsonify }}' {{ if .Params.audio
+    }}data-initial-audio="{{ .Params.audio }}" {{ end }}>
 
     <!-- Album Art / Icon -->
     <div class="player-icon">

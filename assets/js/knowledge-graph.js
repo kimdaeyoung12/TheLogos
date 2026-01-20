@@ -1,6 +1,15 @@
-document.addEventListener('DOMContentLoaded', function () {
+// Ensure Graph depends on ForceGraph3D script loading first, but we handle that check inside init.
+
+// Initialize function
+function initKnowledgeGraph() {
     const container = document.getElementById('knowledge-graph-container');
     if (!container) return;
+
+    // Avoid double init if already initialized on this specific container element
+    if (container._graphInitialized) {
+        console.log('Graph already initialized for this container');
+        return;
+    }
 
     // Get width/height from container
     const width = container.clientWidth;
@@ -23,6 +32,13 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         console.log('Initializing graph with', data.nodes.length, 'nodes and', data.links.length, 'links');
+
+        // Check if ForceGraph3D is loaded
+        if (typeof ForceGraph3D === 'undefined') {
+            console.warn('ForceGraph3D library not loaded yet, retrying shortly...');
+            setTimeout(initKnowledgeGraph, 100);
+            return;
+        }
 
         // Expose globally for debugging
         window.Graph = ForceGraph3D()
@@ -126,28 +142,37 @@ document.addEventListener('DOMContentLoaded', function () {
         window.Graph.d3Force('link').distance(40);     // Longer links = more spacing
 
         // Fix: Add explicit click handler for panel link (navigation)
-        document.getElementById('panel-link').addEventListener('click', function (e) {
-            const href = this.getAttribute('href');
-            if (href && href !== '#') {
-                console.log('Navigating to:', href);
-                window.location.href = href;
-            }
-        });
+        const panelLinkEl = document.getElementById('panel-link');
+        if (panelLinkEl) {
+            panelLinkEl.addEventListener('click', function (e) {
+                const href = this.getAttribute('href');
+                if (href && href !== '#') {
+                    console.log('Navigating to:', href);
+                    window.location.href = href;
+                }
+            });
+        }
 
         // Speed up scroll zoom
         const controls = window.Graph.controls();
         controls.zoomSpeed = 2.5;  // Default is 1.0, increase for faster zoom
 
         // Panel close handlers
-        document.getElementById('panel-close').addEventListener('click', () => {
-            document.getElementById('node-panel').classList.remove('open');
-        });
+        const panelCloseCtx = document.getElementById('panel-close');
+        if (panelCloseCtx) {
+            panelCloseCtx.addEventListener('click', () => {
+                document.getElementById('node-panel').classList.remove('open');
+            });
+        }
 
         // Reset View Button Handler
-        document.getElementById('reset-view').addEventListener('click', () => {
-            window.Graph.zoomToFit(600);
-            document.getElementById('node-panel').classList.remove('open');
-        });
+        const resetViewCtx = document.getElementById('reset-view');
+        if (resetViewCtx) {
+            resetViewCtx.addEventListener('click', () => {
+                window.Graph.zoomToFit(600);
+                document.getElementById('node-panel').classList.remove('open');
+            });
+        }
 
         // Initial Camera setup - start far back
         window.Graph.cameraPosition({ z: 500 });
@@ -159,12 +184,15 @@ document.addEventListener('DOMContentLoaded', function () {
         }, 3000);
 
         // Handle Window Resize
-        window.addEventListener('resize', () => {
-            if (window.Graph) {
+        const resizeHandler = () => {
+            if (window.Graph && container) {
                 window.Graph.width(container.clientWidth);
                 window.Graph.height(container.clientHeight);
             }
-        });
+        };
+        window.addEventListener('resize', resizeHandler);
+        // Store handler for potential cleanup if we implemented it
+        container._resizeHandler = resizeHandler;
 
         // Search Functionality - Highlight matching nodes
         const searchInput = document.getElementById('network-search');
@@ -205,23 +233,39 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
 
-        searchInput.addEventListener('input', (e) => {
-            searchQuery = e.target.value.trim().toLowerCase();
-            searchClear.style.display = searchQuery ? 'block' : 'none';
-            updateNodeHighlight();
-        });
+        if (searchInput) {
+            searchInput.addEventListener('input', (e) => {
+                searchQuery = e.target.value.trim().toLowerCase();
+                searchClear.style.display = searchQuery ? 'block' : 'none';
+                updateNodeHighlight();
+            });
+        }
 
-        searchClear.addEventListener('click', () => {
-            searchInput.value = '';
-            searchQuery = '';
-            searchClear.style.display = 'none';
-            updateNodeHighlight();
-            window.Graph.zoomToFit(600);
-        });
+        if (searchClear) {
+            searchClear.addEventListener('click', () => {
+                searchInput.value = '';
+                searchQuery = '';
+                searchClear.style.display = 'none';
+                updateNodeHighlight();
+                window.Graph.zoomToFit(600);
+            });
+        }
 
-
+        // Mark as initialized
+        container._graphInitialized = true;
 
     } catch (err) {
         console.error("Failed to render graph:", err);
     }
-});
+}
+
+// 1. Try to init immediately (for soft navigation where DOM is ready)
+initKnowledgeGraph();
+
+// 2. Init on DOMContentLoaded (for hard refresh)
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initKnowledgeGraph);
+}
+
+// 3. Re-initialize on future soft navigations
+window.addEventListener('pageReady', initKnowledgeGraph);

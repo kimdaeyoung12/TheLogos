@@ -236,7 +236,29 @@ class ConstellationEffect {
     }
 }
 
-// Initialize when DOM is ready
-document.addEventListener('DOMContentLoaded', () => {
-    new ConstellationEffect('#canvas-container');
-});
+// Expose globally for soft navigation re-initialization
+window.ConstellationEffect = ConstellationEffect;
+
+// Initialize function
+function initConstellationEffect() {
+    const container = document.querySelector('#canvas-container');
+    // Only init if container exists and not already initialized
+    // Note: We check .children.length to see if canvas was already appended
+    if (container && (!container._constellationInitialized || container.children.length === 0)) {
+        // Cleanup old instance if it exists (globally tracked?)
+        // simplified: just new instance
+        new ConstellationEffect('#canvas-container');
+        container._constellationInitialized = true;
+    }
+}
+
+// 1. Try to init immediately (for soft navigation where DOM is ready)
+initConstellationEffect();
+
+// 2. Init on DOMContentLoaded (for hard refresh)
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initConstellationEffect);
+}
+
+// 3. Re-initialize on future soft navigations
+window.addEventListener('pageReady', initConstellationEffect);
