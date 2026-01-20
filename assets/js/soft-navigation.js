@@ -81,15 +81,21 @@
                 return;
             }
 
+            // Cleanup old page-specific CSS that was Soft-Loaded
+            const oldSoftLinks = document.head.querySelectorAll('link[data-soft-css="true"]');
+            oldSoftLinks.forEach(link => link.remove());
+
             // Load any page-specific CSS that we don't already have
             cssLinks.forEach(link => {
                 const href = link.getAttribute('href');
-                // Check if this CSS is already loaded
-                if (!document.querySelector(`link[href="${href}"]`)) {
+                // Check if this CSS is already loaded in HEAD (ignore body links as they will be wiped)
+                // We typically want to hoist it to HEAD and mark it as soft-loaded
+                if (!document.head.querySelector(`link[href="${href}"]`)) {
                     const newLink = document.createElement('link');
                     newLink.rel = 'stylesheet';
                     newLink.href = href;
                     if (link.integrity) newLink.integrity = link.integrity;
+                    newLink.setAttribute('data-soft-css', 'true'); // Mark for future cleanup
                     document.head.appendChild(newLink);
                 }
             });
