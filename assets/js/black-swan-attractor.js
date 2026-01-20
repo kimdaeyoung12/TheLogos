@@ -169,8 +169,24 @@ class BlackSwanAttractor {
         this.pointsMesh.geometry.attributes.position.needsUpdate = true;
     }
 
+    destroy() {
+        if (this.reqId) {
+            cancelAnimationFrame(this.reqId);
+        }
+        window.removeEventListener('resize', this.onWindowResize);
+        document.removeEventListener('mousemove', this.onDocumentMouseMove);
+
+        if (this.renderer) {
+            this.renderer.dispose();
+            this.renderer.forceContextLoss();
+            if (this.container && this.renderer.domElement.parentNode === this.container) {
+                this.container.removeChild(this.renderer.domElement);
+            }
+        }
+    }
+
     animate = () => {
-        requestAnimationFrame(this.animate);
+        this.reqId = requestAnimationFrame(this.animate);
 
         this.updateParticles();
 
@@ -188,8 +204,12 @@ class BlackSwanAttractor {
     }
 
     addEventListeners() {
-        window.addEventListener('resize', this.onWindowResize.bind(this));
-        document.addEventListener('mousemove', this.onDocumentMouseMove.bind(this));
+        // Bind methods to preserve 'this'
+        this.onWindowResize = this.onWindowResize.bind(this);
+        this.onDocumentMouseMove = this.onDocumentMouseMove.bind(this);
+
+        window.addEventListener('resize', this.onWindowResize);
+        document.addEventListener('mousemove', this.onDocumentMouseMove);
     }
 
     onWindowResize() {
@@ -214,10 +234,38 @@ window.BlackSwanAttractor = BlackSwanAttractor;
 
 // Initialize function
 function initBlackSwanAttractor() {
+    // --- Zombie Killer (Universal Peace Treaty) ---
+    // Kill About3D
+    if (window.about3DCleanup) {
+        window.about3DCleanup();
+    }
+    if (window.about3DReqId) {
+        cancelAnimationFrame(window.about3DReqId);
+    }
+
+    // Kill Posts3D
+    if (window.posts3DCleanup) {
+        window.posts3DCleanup();
+    }
+    if (window.posts3DReqId) {
+        cancelAnimationFrame(window.posts3DReqId);
+    }
+
+    // Kill Previous Home3D
+    if (window.home3DInstance) {
+        window.home3DInstance.destroy();
+        window.home3DInstance = null;
+    }
+
+
     const container = document.getElementById('canvas-container');
-    // Only init if container exists and not already initialized with a canvas
-    if (container && container.querySelectorAll('canvas').length === 0) {
-        new BlackSwanAttractor('#canvas-container');
+    // Only init if container exists
+    if (container) {
+        // Ensure clean slate in container even if instance was lost
+        if (container.querySelectorAll('canvas').length > 0) {
+            container.innerHTML = '';
+        }
+        window.home3DInstance = new BlackSwanAttractor('#canvas-container');
     }
 }
 

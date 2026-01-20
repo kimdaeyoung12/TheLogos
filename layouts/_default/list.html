@@ -35,6 +35,20 @@
         window.posts3DCleanup();
     }
 
+    // Kill About3D instance (Mutual Exclusion)
+    if (window.about3DCleanup) {
+        window.about3DCleanup();
+    }
+    if (window.about3DReqId) {
+        cancelAnimationFrame(window.about3DReqId);
+    }
+
+    // Kill Home3D instance
+    if (window.home3DInstance) {
+        window.home3DInstance.destroy();
+        window.home3DInstance = null;
+    }
+
     const container = document.getElementById('three-canvas-container');
 
     if (container) {
@@ -350,113 +364,135 @@
 </section>
 
 <!-- Filter & Search Script (Updated for new DOM structure) -->
+<!-- Filter & Search Script (Updated for new DOM structure & Soft Navigation) -->
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const filterBtns = document.querySelectorAll('.filter-btn');
-        const searchInput = document.getElementById('search-input');
-        const searchClear = document.getElementById('search-clear');
-        const items = Array.from(document.querySelectorAll('.timeline-item'));
+    (function () {
+        function initPostsLogic() {
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            const searchInput = document.getElementById('search-input');
+            const searchClear = document.getElementById('search-clear');
+            const items = Array.from(document.querySelectorAll('.timeline-item'));
 
-        // Cache data for performance
-        const itemsData = items.map(item => {
-            const titleEl = item.querySelector('h2');
-            const excerptEl = item.querySelector('p');
-            return {
-                element: item,
-                category: item.getAttribute('data-category'),
-                text: (
-                    (titleEl?.textContent || '') + ' ' +
-                    (excerptEl?.textContent || '')
-                ).toLowerCase().normalize('NFC')
-            };
-        });
+            // If elements aren't found, we might have run too early or on wrong page
+            if (filterBtns.length === 0 && !searchInput) return;
 
-        let currentFilter = 'all';
-        let currentQuery = '';
-
-        function runFilter() {
-            itemsData.forEach(data => {
-                const matchesCategory = currentFilter === 'all' || data.category === currentFilter;
-                const matchesSearch = !currentQuery || data.text.includes(currentQuery);
-                const shouldShow = matchesCategory && matchesSearch;
-
-                if (shouldShow) {
-                    data.element.classList.remove('hidden');
-                    // Add fade-in animation class if needed, or just standard display
-                } else {
-                    data.element.classList.add('hidden');
-                }
+            // Cache data for performance
+            const itemsData = items.map(item => {
+                const titleEl = item.querySelector('h2');
+                const excerptEl = item.querySelector('p');
+                return {
+                    element: item,
+                    category: item.getAttribute('data-category'),
+                    text: (
+                        (titleEl?.textContent || '') + ' ' +
+                        (excerptEl?.textContent || '')
+                    ).toLowerCase().normalize('NFC')
+                };
             });
-        }
 
-        function setCategory(category, updateUrl = false) {
-            currentFilter = category;
+            let currentFilter = 'all';
+            let currentQuery = '';
 
-            // Visual Active State (Tailwind classes)
+            function runFilter() {
+                itemsData.forEach(data => {
+                    const matchesCategory = currentFilter === 'all' || data.category === currentFilter;
+                    const matchesSearch = !currentQuery || data.text.includes(currentQuery);
+                    const shouldShow = matchesCategory && matchesSearch;
+
+                    if (shouldShow) {
+                        data.element.classList.remove('hidden');
+                    } else {
+                        data.element.classList.add('hidden');
+                    }
+                });
+            }
+
+            function setCategory(category, updateUrl = false) {
+                currentFilter = category;
+
+                // Visual Active State (Tailwind classes)
+                filterBtns.forEach(btn => {
+                    const isActive = btn.getAttribute('data-category') === category;
+                    if (isActive) {
+                        btn.classList.add('active', 'ring-2', 'ring-indigo-500', 'border-transparent');
+                        btn.classList.remove('border-slate-200', 'dark:border-slate-700');
+                    } else {
+                        btn.classList.remove('active', 'ring-2', 'ring-indigo-500', 'border-transparent');
+                        btn.classList.add('border-slate-200', 'dark:border-slate-700');
+                    }
+                });
+
+                if (updateUrl) {
+                    const newUrl = new URL(window.location);
+                    if (category === 'all') {
+                        newUrl.searchParams.delete('category');
+                    } else {
+                        newUrl.searchParams.set('category', category);
+                    }
+                    window.history.pushState({}, '', newUrl);
+                }
+
+                // Dispatch for 3D
+                window.dispatchEvent(new CustomEvent('category-changed', { detail: { category } }));
+                runFilter();
+            }
+
             filterBtns.forEach(btn => {
-                const isActive = btn.getAttribute('data-category') === category;
-                if (isActive) {
-                    btn.classList.add('active', 'ring-2', 'ring-indigo-500', 'border-transparent');
-                    btn.classList.remove('border-slate-200', 'dark:border-slate-700');
-                } else {
-                    btn.classList.remove('active', 'ring-2', 'ring-indigo-500', 'border-transparent');
-                    btn.classList.add('border-slate-200', 'dark:border-slate-700');
-                }
+                // Remove old listeners to be safe (though this is a fresh closure)
+                const newBtn = btn.cloneNode(true);
+                btn.parentNode.replaceChild(newBtn, btn);
+                newBtn.addEventListener('click', () => setCategory(newBtn.getAttribute('data-category'), true));
             });
+            // Re-select after replacement
+            const newFilterBtns = document.querySelectorAll('.filter-btn');
 
-            if (updateUrl) {
-                const newUrl = new URL(window.location);
-                if (category === 'all') {
-                    newUrl.searchParams.delete('category');
+
+            // Search Debounce
+            function debounce(func, wait) {
+                let timeout;
+                return (...args) => {
+                    clearTimeout(timeout);
+                    timeout = setTimeout(() => func.apply(this, args), wait);
+                };
+            }
+
+            const handleSearch = debounce((e) => {
+                currentQuery = e.target.value.trim().toLowerCase().normalize('NFC');
+                if (currentQuery) {
+                    searchClear.classList.remove('hidden');
                 } else {
-                    newUrl.searchParams.set('category', category);
+                    searchClear.classList.add('hidden');
                 }
-                window.history.pushState({}, '', newUrl);
+                runFilter();
+            }, 200);
+
+            if (searchInput) {
+                searchInput.addEventListener('input', handleSearch);
             }
 
-            // Dispatch for 3D
-            window.dispatchEvent(new CustomEvent('category-changed', { detail: { category } }));
-            runFilter();
-        }
-
-        filterBtns.forEach(btn => {
-            btn.addEventListener('click', () => setCategory(btn.getAttribute('data-category'), true));
-        });
-
-        // Search Debounce
-        function debounce(func, wait) {
-            let timeout;
-            return (...args) => {
-                clearTimeout(timeout);
-                timeout = setTimeout(() => func.apply(this, args), wait);
-            };
-        }
-
-        const handleSearch = debounce((e) => {
-            currentQuery = e.target.value.trim().toLowerCase().normalize('NFC');
-            if (currentQuery) {
-                searchClear.classList.remove('hidden');
-            } else {
-                searchClear.classList.add('hidden');
+            if (searchClear) {
+                searchClear.addEventListener('click', () => {
+                    if (searchInput) searchInput.value = '';
+                    currentQuery = '';
+                    searchClear.classList.add('hidden');
+                    runFilter();
+                });
             }
-            runFilter();
-        }, 200);
 
-        searchInput.addEventListener('input', handleSearch);
-
-        searchClear.addEventListener('click', () => {
-            searchInput.value = '';
-            currentQuery = '';
-            searchClear.classList.add('hidden');
-            runFilter();
-        });
-
-        // URL Init
-        const urlParams = new URLSearchParams(window.location.search);
-        const initialCategory = urlParams.get('category');
-        if (initialCategory && document.querySelector(`.filter-btn[data-category="${initialCategory}"]`)) {
-            setCategory(initialCategory, false);
+            // URL Init
+            const urlParams = new URLSearchParams(window.location.search);
+            const initialCategory = urlParams.get('category');
+            if (initialCategory && document.querySelector(`.filter-btn[data-category="${initialCategory}"]`)) {
+                setCategory(initialCategory, false);
+            }
         }
-    });
+
+        // Run immediately as this script is injected when DOM is ready
+        initPostsLogic();
+
+        // Also listen for re-init (though this script might be wiped and re-added by soft-nav)
+        // window.addEventListener('pageReady', initPostsLogic); 
+
+    })();
 </script>
 {{ end }}
