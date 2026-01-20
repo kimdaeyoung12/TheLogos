@@ -3,9 +3,8 @@
  * Theme: "Flashy Universe" - High density stars, nebulas, dynamic movement
  */
 
-document.addEventListener('DOMContentLoaded', () => {
-
-    // 1. Text Animation Logic
+// 1. Text Animation Logic
+function initTextAnimation() {
     const observerOptions = { root: null, rootMargin: '0px', threshold: 0.1 };
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
@@ -22,12 +21,23 @@ document.addEventListener('DOMContentLoaded', () => {
         block.style.transitionDelay = `${(index % 5) * 0.05}s`; // Faster stagger
         observer.observe(block);
     });
+}
 
-    // 2. Three.js Universe Scene
-    if (typeof THREE === 'undefined') return;
+// 2. Three.js Universe Scene
+function initAbout3D() {
+    initTextAnimation();
+
+    if (typeof THREE === 'undefined') {
+        console.warn('Three.js not loaded yet, retrying in 100ms...');
+        setTimeout(initAbout3D, 100);
+        return;
+    }
 
     const container = document.getElementById('three-canvas-container');
     if (!container) return;
+
+    // Avoid double init
+    if (container.querySelectorAll('canvas').length > 0) return;
 
     const scene = new THREE.Scene();
     scene.fog = new THREE.FogExp2(0x020205, 0.001); // Very deep space black
@@ -179,4 +189,15 @@ document.addEventListener('DOMContentLoaded', () => {
         renderer.render(scene, camera);
     }
     animate();
-});
+}
+
+// 1. Try to init immediately (for soft navigation where DOM is ready)
+initAbout3D();
+
+// 2. Init on DOMContentLoaded (for hard refresh)
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAbout3D);
+}
+
+// 3. Re-initialize on future soft navigations
+window.addEventListener('pageReady', initAbout3D);

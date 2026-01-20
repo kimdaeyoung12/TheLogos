@@ -209,9 +209,25 @@ class BlackSwanAttractor {
     }
 }
 
-// Initialize
-document.addEventListener('DOMContentLoaded', () => {
-    if (document.getElementById('canvas-container')) {
+// Expose globally for soft navigation re-initialization
+window.BlackSwanAttractor = BlackSwanAttractor;
+
+// Initialize function
+function initBlackSwanAttractor() {
+    const container = document.getElementById('canvas-container');
+    // Only init if container exists and not already initialized with a canvas
+    if (container && container.querySelectorAll('canvas').length === 0) {
         new BlackSwanAttractor('#canvas-container');
     }
-});
+}
+
+// 1. Try to init immediately (for soft navigation where DOM is ready)
+initBlackSwanAttractor();
+
+// 2. Init on DOMContentLoaded (for hard refresh)
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initBlackSwanAttractor);
+}
+
+// 3. Re-initialize on future soft navigations
+window.addEventListener('pageReady', initBlackSwanAttractor);
