@@ -5,6 +5,7 @@ draft = false
 categories = ["writing"]
 tags = ["글쓰기", "예술", "일상"]
 mentions = ["Art", "Frame", "Freedom", "Daily Routine"]
+audio = "궤도(Orbit).mp3"
 +++
 
 {{< instagram CX3hLhqPhKx >}}
