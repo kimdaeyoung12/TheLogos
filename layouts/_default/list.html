@@ -18,201 +18,252 @@
     body.dark #three-canvas-container {
         background: radial-gradient(circle at 50% 50%, #232526 0%, #0f0c29 100%);
     }
+
+    /* Make body transparent so 3D canvas is visible behind content */
+    body:has(#three-canvas-container) {
+        background: transparent !important;
+    }
 </style>
 
 <!-- Three.js Logic (Preserved exactly as is to ensure 3D still works) -->
 <script type="module">
     import * as THREE from 'https://cdn.skypack.dev/three@0.132.2';
-    // ... (Minimizing script duplication for this file view, but in reality we keep the original script block)
-    // For this rewrite, I will assume the script is included via valid partial or just kept in the final file.
-    // I will include the full script in the actual file write to avoid breaking functionality.
 
-    // --- Zombie Killer ---
-    if (window.posts3DReqId) {
-        cancelAnimationFrame(window.posts3DReqId);
-    }
-    if (window.posts3DCleanup) {
-        window.posts3DCleanup();
-    }
+    console.log('[Posts3D] Script loaded');
 
-    // Kill About3D instance (Mutual Exclusion)
-    if (window.about3DCleanup) {
-        window.about3DCleanup();
-    }
-    if (window.about3DReqId) {
-        cancelAnimationFrame(window.about3DReqId);
-    }
+    // --- Guard: Prevent re-initialization if already running ---
+    const existingContainer = document.getElementById('three-canvas-container');
+    if (existingContainer && existingContainer.querySelector('canvas') && window.posts3DReqId) {
+        console.log('[Posts3D] Already initialized, skipping re-init');
+        // Don't proceed - we're already running
+    } else {
+        // --- Zombie Killer (only run if we need to initialize) ---
+        if (window.posts3DReqId) {
+            cancelAnimationFrame(window.posts3DReqId);
+        }
+        if (window.posts3DCleanup) {
+            window.posts3DCleanup();
+        }
 
-    // Kill Home3D instance
-    if (window.home3DInstance) {
-        window.home3DInstance.destroy();
-        window.home3DInstance = null;
-    }
+        // Kill About3D instance (Mutual Exclusion) - Enhanced cleanup
+        if (window.about3DReqId) {
+            cancelAnimationFrame(window.about3DReqId);
+            window.about3DReqId = null;
+        }
+        if (window.about3DCleanup) {
+            window.about3DCleanup();
+            window.about3DCleanup = null;
+        }
+        if (window.about3DRenderer) {
+            window.about3DRenderer.dispose();
+            window.about3DRenderer = null;
+        }
 
-    const container = document.getElementById('three-canvas-container');
+        // Kill Home3D instance
+        if (window.home3DInstance) {
+            window.home3DInstance.destroy();
+            window.home3DInstance = null;
+        }
 
-    if (container) {
-        // Scene
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 500);
-        camera.position.set(0, 0, 70);
+        // Clear any existing canvases in our container
+        const existingContainer = document.getElementById('three-canvas-container');
+        if (existingContainer) {
+            const existingCanvases = existingContainer.querySelectorAll('canvas');
+            existingCanvases.forEach(canvas => canvas.remove());
+        }
 
-        // Renderer - Performance Optimized
-        const renderer = new THREE.WebGLRenderer({
-            alpha: true,
-            antialias: false,  // Disable for performance
-            powerPreference: "high-performance"
-        });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5)); // Lower DPR limit
-        container.appendChild(renderer.domElement);
+        function initPosts3D() {
+            console.log('[Posts3D] initPosts3D called');
+            const container = document.getElementById('three-canvas-container');
+            console.log('[Posts3D] Container:', container);
 
-        // Cinematic/Romance Lighting & Atmosphere
-        scene.add(new THREE.AmbientLight(0xffffff, 0.6)); // Soft general light
-        const mainLight = new THREE.DirectionalLight(0xffd1b3, 1.5); // Warm sunset key light
-        mainLight.position.set(20, 20, 50);
-        scene.add(mainLight);
-
-        // Soft Fog for Depth (Cinematic Feel)
-        scene.fog = new THREE.FogExp2(0x111116, 0.008);
-
-        // Planet Group
-        const group = new THREE.Group();
-        scene.add(group);
-        const planets = {};
-
-        // Cinematic Materials
-        const matteGold = new THREE.MeshStandardMaterial({
-            color: 0xffac41, roughness: 0.7, metalness: 0.1, emissive: 0x553311, emissiveIntensity: 0.2
-        });
-        const matteBlue = new THREE.MeshStandardMaterial({
-            color: 0x3e5eb3, roughness: 0.8, metalness: 0.0, emissive: 0x112244, emissiveIntensity: 0.3
-        });
-        const matteSilver = new THREE.MeshStandardMaterial({
-            color: 0xcbd5e1, roughness: 0.5, metalness: 0.3
-        });
-        const softPearl = new THREE.MeshStandardMaterial({
-            color: 0xfff1f2, roughness: 0.9, emissive: 0x332222, emissiveIntensity: 0.1
-        });
-
-        // Initial Positions
-        const religionPlanet = new THREE.Mesh(new THREE.IcosahedronGeometry(7, 0), matteGold);
-        group.add(religionPlanet);
-        planets['religion'] = { mesh: religionPlanet, camPos: { x: 40, y: 15, z: -10 } };
-
-        const philoPlanet = new THREE.Mesh(new THREE.OctahedronGeometry(6, 0), matteBlue);
-        group.add(philoPlanet);
-        planets['philosophy'] = { mesh: philoPlanet, camPos: { x: -40, y: 10, z: -15 } };
-
-        const engPlanet = new THREE.Mesh(new THREE.IcosahedronGeometry(8, 0), matteSilver);
-        group.add(engPlanet);
-        planets['engineering'] = { mesh: engPlanet, camPos: { x: -45, y: -5, z: -20 } };
-
-        const writePlanet = new THREE.Mesh(new THREE.SphereGeometry(5, 32, 32), softPearl);
-        group.add(writePlanet);
-        planets['writing'] = { mesh: writePlanet, camPos: { x: 45, y: -5, z: -10 } };
-
-        function updatePlanetLayout() {
-            const isMobile = window.innerWidth < 768;
-            if (isMobile) {
-                // Mobile: Small decorative planets at screen corners
-                // Much smaller so they fit, positioned as corner accents
-                Object.values(planets).forEach(p => p.mesh.scale.set(0.35, 0.35, 0.35));
-
-                // Spread out to corners, closer to camera (Z=35-45)
-                planets['religion'].mesh.position.set(25, 30, 35);      // Top Right
-                planets['philosophy'].mesh.position.set(-25, 25, 40);   // Top Left
-                planets['engineering'].mesh.position.set(-22, -20, 38); // Bottom Left
-                planets['writing'].mesh.position.set(22, -25, 42);      // Bottom Right
-            } else {
-                Object.values(planets).forEach(p => p.mesh.scale.set(1, 1, 1));
-                planets['religion'].mesh.position.set(60, 25, -40);
-                planets['philosophy'].mesh.position.set(-60, 20, -40);
-                planets['engineering'].mesh.position.set(-70, -5, -50);
-                planets['writing'].mesh.position.set(70, -5, -30);
+            if (container) {
+                container.innerHTML = ''; // Force clear any existing canvases
             }
-        }
-        updatePlanetLayout();
 
-        const starGeo = new THREE.BufferGeometry();
-        const starPos = new Float32Array(1500 * 3);
-        for (let i = 0; i < 1500; i++) {
-            starPos[i * 3] = (Math.random() - 0.5) * 400;
-            starPos[i * 3 + 1] = (Math.random() - 0.5) * 400;
-            starPos[i * 3 + 2] = (Math.random() - 0.5) * 200 - 80;
-        }
-        starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
-        const starMat = new THREE.PointsMaterial({ size: 0.4, color: 0xffffff, transparent: true, opacity: 0.8 });
-        const stars = new THREE.Points(starGeo, starMat);
-        scene.add(stars);
-
-        function updateStarColor() {
-            const isDark = document.body.classList.contains('dark');
-            if (isDark) {
-                stars.material.color.setHex(0xffffff);
-                stars.material.opacity = 0.6;
-            } else {
-                stars.material.color.setHex(0x445566);
-                stars.material.opacity = 0.5;
+            if (!container) {
+                console.warn('[Posts3D] Container not found, retrying in 100ms...');
+                setTimeout(initPosts3D, 100);
+                return;
             }
-        }
-        updateStarColor();
-        const observer = new MutationObserver(updateStarColor);
-        observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
 
-        let targetCameraPos = new THREE.Vector3(0, 0, 70);
-        let targetLookAt = new THREE.Vector3(0, 0, 0);
-
-        if (window.postsNavListener) {
-            window.removeEventListener('category-changed', window.postsNavListener);
-        }
-        window.postsNavListener = (e) => {
-            const cat = e.detail.category;
-            if (cat === 'all' || !planets[cat]) {
-                targetCameraPos.set(0, 0, 70);
-                targetLookAt.set(0, 0, 0);
-            } else {
-                const p = planets[cat];
-                targetCameraPos.set(p.camPos.x, p.camPos.y, p.camPos.z);
-                targetLookAt.copy(p.mesh.position);
+            // Avoid double init
+            if (container.querySelectorAll('canvas').length > 0) {
+                console.log('[Posts3D] Canvas already exists, skipping init');
+                return;
             }
-        };
-        window.addEventListener('category-changed', window.postsNavListener);
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 500);
+            camera.position.set(0, 0, 50);  // Closer camera for better planet visibility
 
-        function animate() {
-            religionPlanet.rotation.y += 0.005;
-            philoPlanet.rotation.y -= 0.004;
-            engPlanet.rotation.x += 0.003;
-            writePlanet.rotation.y += 0.004;
-            camera.position.lerp(targetCameraPos, 0.05);
-            camera.lookAt(targetLookAt);
-            stars.rotation.z += 0.0002;
-            renderer.render(scene, camera);
-            window.posts3DReqId = requestAnimationFrame(animate);
-        }
-        animate();
+            // Renderer - Performance Optimized
+            const renderer = new THREE.WebGLRenderer({
+                alpha: true,
+                antialias: false,  // Disable for performance
+                powerPreference: "high-performance"
+            });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5)); // Lower DPR limit
+            container.appendChild(renderer.domElement);
 
-        let resizeTimer;
-        const onResize = () => {
-            clearTimeout(resizeTimer);
+            // Cinematic/Romance Lighting & Atmosphere
+            scene.add(new THREE.AmbientLight(0xffffff, 0.6)); // Soft general light
+            const mainLight = new THREE.DirectionalLight(0xffd1b3, 1.5); // Warm sunset key light
+            mainLight.position.set(20, 20, 50);
+            scene.add(mainLight);
+
+            // Soft Fog for Depth (Cinematic Feel)
+            scene.fog = new THREE.FogExp2(0x111116, 0.008);
+
+            // Planet Group
+            const group = new THREE.Group();
+            scene.add(group);
+            const planets = {};
+
+            // Cinematic Materials - Refined elegant palette
+            const matteGold = new THREE.MeshStandardMaterial({
+                color: 0xd4a574, roughness: 0.6, metalness: 0.2, emissive: 0xc49355, emissiveIntensity: 0.5
+            });
+            const matteBlue = new THREE.MeshStandardMaterial({
+                color: 0x5c7a9e, roughness: 0.7, metalness: 0.1, emissive: 0x4a6380, emissiveIntensity: 0.5
+            });
+            const matteSilver = new THREE.MeshStandardMaterial({
+                color: 0xa8b5c4, roughness: 0.4, metalness: 0.4, emissive: 0x7a8a99, emissiveIntensity: 0.4
+            });
+            const softPearl = new THREE.MeshStandardMaterial({
+                color: 0xe8dcd0, roughness: 0.8, emissive: 0xc9b8a8, emissiveIntensity: 0.3
+            });
+
+            // Initial Positions (will be set by updatePlanetLayout)
+            const religionPlanet = new THREE.Mesh(new THREE.IcosahedronGeometry(7, 0), matteGold);
+            group.add(religionPlanet);
+            planets['religion'] = { mesh: religionPlanet, camPos: { x: 20, y: 10, z: 30 } };
+
+            const philoPlanet = new THREE.Mesh(new THREE.OctahedronGeometry(6, 0), matteBlue);
+            group.add(philoPlanet);
+            planets['philosophy'] = { mesh: philoPlanet, camPos: { x: -20, y: 8, z: 28 } };
+
+            const engPlanet = new THREE.Mesh(new THREE.IcosahedronGeometry(8, 0), matteSilver);
+            group.add(engPlanet);
+            planets['engineering'] = { mesh: engPlanet, camPos: { x: -22, y: -5, z: 25 } };
+
+            const writePlanet = new THREE.Mesh(new THREE.SphereGeometry(5, 32, 32), softPearl);
+            group.add(writePlanet);
+            planets['writing'] = { mesh: writePlanet, camPos: { x: 22, y: -6, z: 35 } };
+
+            function updatePlanetLayout() {
+                const isMobile = window.innerWidth < 768;
+
+                if (isMobile) {
+                    // Mobile: 2x2 grid with fixed small coordinates
+                    Object.values(planets).forEach(p => p.mesh.scale.set(0.5, 0.5, 0.5));
+
+                    // Positions relative to camera at z=50, these are in front of camera
+                    // Top row (y positive = up)
+                    planets['philosophy'].mesh.position.set(-8, 8, 10);
+                    planets['religion'].mesh.position.set(8, 8, 12);
+                    // Bottom row
+                    planets['engineering'].mesh.position.set(-8, -3, 12);
+                    planets['writing'].mesh.position.set(8, -3, 10);
+                } else {
+                    // Desktop: horizontal line arrangement
+                    Object.values(planets).forEach(p => p.mesh.scale.set(0.8, 0.8, 0.8));
+
+                    // All at same Y level, spread horizontally
+                    const y = 8;
+                    planets['philosophy'].mesh.position.set(-30, y, 8);
+                    planets['engineering'].mesh.position.set(-10, y, 10);
+                    planets['religion'].mesh.position.set(10, y, 8);
+                    planets['writing'].mesh.position.set(30, y, 10);
+                }
+            }
             updatePlanetLayout();
-            resizeTimer = setTimeout(() => {
-                camera.aspect = window.innerWidth / window.innerHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(window.innerWidth, window.innerHeight);
-            }, 100);
-        };
-        window.addEventListener('resize', onResize);
 
-        window.posts3DCleanup = () => {
-            window.removeEventListener('resize', onResize);
+            const starGeo = new THREE.BufferGeometry();
+            const starPos = new Float32Array(1500 * 3);
+            for (let i = 0; i < 1500; i++) {
+                starPos[i * 3] = (Math.random() - 0.5) * 400;
+                starPos[i * 3 + 1] = (Math.random() - 0.5) * 400;
+                starPos[i * 3 + 2] = (Math.random() - 0.5) * 200 - 80;
+            }
+            starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
+            const starMat = new THREE.PointsMaterial({ size: 0.4, color: 0xffffff, transparent: true, opacity: 0.8 });
+            const stars = new THREE.Points(starGeo, starMat);
+            scene.add(stars);
+
+            function updateStarColor() {
+                const isDark = document.body.classList.contains('dark');
+                if (isDark) {
+                    stars.material.color.setHex(0xffffff);
+                    stars.material.opacity = 0.6;
+                } else {
+                    stars.material.color.setHex(0x445566);
+                    stars.material.opacity = 0.5;
+                }
+            }
+            updateStarColor();
+            const observer = new MutationObserver(updateStarColor);
+            observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+
+            let targetCameraPos = new THREE.Vector3(0, 0, 70);
+            let targetLookAt = new THREE.Vector3(0, 0, 0);
+
             if (window.postsNavListener) {
                 window.removeEventListener('category-changed', window.postsNavListener);
             }
-            renderer.dispose();
-            renderer.forceContextLoss();
-        };
-    }
+            window.postsNavListener = (e) => {
+                const cat = e.detail.category;
+                if (cat === 'all' || !planets[cat]) {
+                    targetCameraPos.set(0, 0, 70);
+                    targetLookAt.set(0, 0, 0);
+                } else {
+                    const p = planets[cat];
+                    targetCameraPos.set(p.camPos.x, p.camPos.y, p.camPos.z);
+                    targetLookAt.copy(p.mesh.position);
+                }
+            };
+            window.addEventListener('category-changed', window.postsNavListener);
+
+            function animate() {
+                religionPlanet.rotation.y += 0.005;
+                philoPlanet.rotation.y -= 0.004;
+                engPlanet.rotation.x += 0.003;
+                writePlanet.rotation.y += 0.004;
+                camera.position.lerp(targetCameraPos, 0.05);
+                camera.lookAt(targetLookAt);
+                stars.rotation.z += 0.0002;
+                renderer.render(scene, camera);
+                window.posts3DReqId = requestAnimationFrame(animate);
+            }
+            animate();
+
+            let resizeTimer;
+            const onResize = () => {
+                clearTimeout(resizeTimer);
+                updatePlanetLayout();
+                resizeTimer = setTimeout(() => {
+                    camera.aspect = window.innerWidth / window.innerHeight;
+                    camera.updateProjectionMatrix();
+                    renderer.setSize(window.innerWidth, window.innerHeight);
+                }, 100);
+            };
+            window.addEventListener('resize', onResize);
+
+            window.posts3DCleanup = () => {
+                window.removeEventListener('resize', onResize);
+                if (window.postsNavListener) {
+                    window.removeEventListener('category-changed', window.postsNavListener);
+                }
+                renderer.dispose();
+                renderer.forceContextLoss();
+            };
+
+            console.log('[Posts3D] Initialization complete');
+        }
+
+        // Start initialization
+        initPosts3D();
+    } // Close else block
 </script>
 
 <section class="relative z-10 min-h-screen py-10 px-4">
@@ -239,7 +290,7 @@
                 </div>
                 <!-- INCREASED CONTRAST: dark:bg-slate-800 -> dark:bg-slate-900/80, dark:placeholder-slate-400 -> dark:placeholder-slate-300 -->
                 <input type="text" id="search-input"
-                    class="block w-full pl-11 pr-10 py-3 bg-white dark:bg-slate-900 backdrop-blur-md border border-slate-200 dark:border-slate-500 rounded-full text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all shadow-lg hover:shadow-xl"
+                    class="block w-full pl-11 pr-10 py-3 bg-white dark:bg-slate-700/90 backdrop-blur-md border border-slate-200 dark:border-slate-400 rounded-full text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all shadow-lg hover:shadow-xl caret-white"
                     placeholder="검색어를 입력하세요..." autocomplete="off">
                 <button id="search-clear"
                     class="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer hidden">
@@ -410,15 +461,16 @@
             function setCategory(category, updateUrl = false) {
                 currentFilter = category;
 
-                // Visual Active State (Tailwind classes)
-                filterBtns.forEach(btn => {
+                // Visual Active State - use newFilterBtns (the cloned ones)
+                const allBtns = document.querySelectorAll('.filter-btn');
+                allBtns.forEach(btn => {
                     const isActive = btn.getAttribute('data-category') === category;
                     if (isActive) {
                         btn.classList.add('active', 'ring-2', 'ring-indigo-500', 'border-transparent');
-                        btn.classList.remove('border-slate-200', 'dark:border-slate-700');
+                        btn.classList.remove('border-slate-200', 'dark:border-slate-700', 'border-slate-300', 'dark:border-slate-600');
                     } else {
                         btn.classList.remove('active', 'ring-2', 'ring-indigo-500', 'border-transparent');
-                        btn.classList.add('border-slate-200', 'dark:border-slate-700');
+                        btn.classList.add('border-slate-300', 'dark:border-slate-600');
                     }
                 });
 

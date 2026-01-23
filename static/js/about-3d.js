@@ -4,8 +4,15 @@
  */
 
 (function () {
+    // --- Guard: Prevent re-initialization if already running ---
+    const existingContainer = document.getElementById('three-canvas-container');
+    if (existingContainer && existingContainer.querySelector('canvas') && window.about3DReqId) {
+        console.log('[About3D] Already initialized, skipping re-init');
+        return; // Exit early - don't kill ourselves
+    }
+
     // --- Lifecycle Management (Zombie Killer) ---
-    // Kill any existing About3D instance
+    // Kill any existing About3D instance (only if we're re-initializing)
     if (window.about3DReqId) {
         cancelAnimationFrame(window.about3DReqId);
         window.about3DReqId = null;
@@ -79,6 +86,7 @@
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(window.devicePixelRatio);
         container.appendChild(renderer.domElement);
+        window.about3DRenderer = renderer; // Expose for cleanup from other pages
 
         // Dynamic Lights
         const ambientLight = new THREE.AmbientLight(0x404040, 1); // Soft white
@@ -155,22 +163,22 @@
         // Wireframe surrounding a core
         const outerGeo = new THREE.IcosahedronGeometry(10, 2);
         const outerMat = new THREE.MeshBasicMaterial({
-            color: 0xffffff,
+            color: 0x8aa4c8,  // Elegant muted blue
             wireframe: true,
             transparent: true,
-            opacity: 0.1
+            opacity: 0.5
         });
         const logosOuter = new THREE.Mesh(outerGeo, outerMat);
-        logosOuter.position.set(30, 0, -20);
+        logosOuter.position.set(25, 5, 20);
         scene.add(logosOuter);
 
         const innerGeo = new THREE.IcosahedronGeometry(4, 0);
         const innerMat = new THREE.MeshStandardMaterial({
-            color: 0xffffff,
-            emissive: 0x6366f1,
-            emissiveIntensity: 1,
-            roughness: 0,
-            metalness: 1
+            color: 0x7a9abb,  // Refined blue core
+            emissive: 0x5c7a9e,  // Muted indigo glow
+            emissiveIntensity: 1.5,
+            roughness: 0.1,
+            metalness: 0.8
         });
         const logosInner = new THREE.Mesh(innerGeo, innerMat);
         logosOuter.add(logosInner);

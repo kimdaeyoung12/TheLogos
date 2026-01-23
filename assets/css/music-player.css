@@ -8,7 +8,7 @@
     width: 420px;
     /* Wider for info */
     height: 70px;
-    z-index: 2000;
+    z-index: 9999;
 
     background: rgba(18, 18, 18, 0.85);
     backdrop-filter: blur(16px);
@@ -257,12 +257,13 @@
         left: 10px;
         right: 10px;
         /* Full width minus margins */
-        bottom: 15px;
+        bottom: calc(20px + env(safe-area-inset-bottom));
         width: auto;
         /* Fluid width */
         height: 64px;
         padding: 0 12px;
         gap: 10px;
+        z-index: 9999;
     }
 
     .mobile-hidden {

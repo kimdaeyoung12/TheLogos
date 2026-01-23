@@ -49,6 +49,16 @@ body.dark {
     overflow: hidden;
 }
 
+/* Override body background when on About page (which has #three-canvas-container) */
+body:has(#three-canvas-container) {
+    background: transparent !important;
+}
+
+/* Fallback for browsers without :has() support */
+.about-page-body {
+    background: transparent !important;
+}
+
 /* Main Layout */
 .about-article {
     position: relative;

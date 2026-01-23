@@ -5,40 +5,62 @@
 {{- $authorName := .Params.author | default (.Site.Params.author | default "DaeYoung Kim") -}}
 {{- $description := .Params.description | default (.Summary | plainify) -}}
 
-{{- /* CATEGORY DETECTION (Unified) */ -}}
+{{- /* CATEGORY DETECTION (Improved Priority) */ -}}
 {{- $category := "other" -}}
 {{- if .Params.categories -}}
-{{- $category = index .Params.categories 0 | lower -}}
+{{- range .Params.categories -}}
+{{- $c := . | lower -}}
+{{- if or (eq $c "religion") (eq $c "종교") -}} {{- $category = "religion" -}} {{- end -}}
+{{- if or (eq $c "philosophy") (eq $c "철학") -}} {{- $category = "philosophy" -}} {{- end -}}
+{{- if or (eq $c "engineering") (eq $c "공학") -}} {{- $category = "engineering" -}} {{- end -}}
+{{- if or (eq $c "writing") (eq $c "글쓰기") -}} {{- $category = "writing" -}} {{- end -}}
+{{- end -}}
 {{- end -}}
 
-{{- /* CATEGORY MAPPING (Korean -> English Keys) */ -}}
-{{- if eq $category "공학" -}} {{- $category = "engineering" -}} {{- end -}}
-{{- if eq $category "철학" -}} {{- $category = "philosophy" -}} {{- end -}}
-{{- if eq $category "종교" -}} {{- $category = "religion" -}} {{- end -}}
-{{- if eq $category "글쓰기" -}} {{- $category = "writing" -}} {{- end -}}
-
 <!-- 3D Background Container -->
+<div id="global-bg"></div>
 <div id="three-canvas-container"></div>
 
 <!-- Inline CSS for 3D Container & Theme Adaptation -->
 <style>
+    #global-bg {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        z-index: -2;
+        /* Behind everything */
+        /* Default Light Mode Background */
+        background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+    }
+
     #three-canvas-container {
         position: fixed;
         top: 0;
         left: 0;
         width: 100%;
         height: 100vh;
-        z-index: -1;
-        /* Default Light Mode Background */
-        background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+        z-index: 50;
+        /* On top of everything (Overlay) */
+        background: transparent !important;
+        /* No background */
         overflow: hidden;
         pointer-events: none;
-        /* Let clicks pass through */
+    }
+
+    body.dark #global-bg {
+        /* Dark Mode Background */
+        background: radial-gradient(circle at 50% 50%, #232526 0%, #0f0c29 100%);
     }
 
     body.dark #three-canvas-container {
-        /* Dark Mode Background */
-        background: radial-gradient(circle at 50% 50%, #232526 0%, #0f0c29 100%);
+        background: transparent !important;
+    }
+
+    /* Make body transparent so 3D canvas is visible */
+    body:has(#three-canvas-container) {
+        background: transparent !important;
     }
 
     /* Article Styling Overrides for Transparency/Glass */
@@ -50,6 +72,25 @@
     .article-container {
         position: relative;
         z-index: 10;
+        background: transparent !important;
+        /* Force transparent to show 3D planet */
+    }
+
+    /* Aggressive Transparency Enforcement */
+    .article-header,
+    .article-container,
+    .article-content,
+    .post-content,
+    main,
+    article,
+    section,
+    .toc-container,
+    .related-posts,
+    .article-footer,
+    .breadcrumb,
+    .header-container,
+    div[class*="content"] {
+        background: transparent !important;
     }
 </style>
 
@@ -62,10 +103,21 @@
     if (window.postDetailCleanup) window.postDetailCleanup();
 
     const container = document.getElementById('three-canvas-container');
+    const bg = document.getElementById('global-bg');
+
+    // Move containers to body root to escape 'main' stacking context
+    if (container && bg) {
+        document.body.appendChild(bg);
+        document.body.appendChild(container);
+    }
 
     if (container) {
+        // Purge Stale Canvases (Fix for "Flash and Disappear")
+        container.innerHTML = '';
+
         // --- DATA ---
-        const currentCategory = "{{ $category }}";
+        const currentCategoryRaw = "{{ $category }}";
+        const currentCategory = currentCategoryRaw.toLowerCase().trim();
 
         // --- SCENE SETUP ---
         const scene = new THREE.Scene();
@@ -82,7 +134,7 @@
         const mainLight = new THREE.DirectionalLight(0xffd1b3, 1.5);
         mainLight.position.set(20, 20, 50);
         scene.add(mainLight);
-        scene.fog = new THREE.FogExp2(0x111116, 0.008); // Initial Fog (Dark)
+        scene.fog = new THREE.FogExp2(0x111116, 0.005); // Reduced Fog Density for better visibility
 
         // Light Mode Fog Update
         function updateAtmosphere() {
@@ -101,36 +153,37 @@
         let planetMesh = null;
 
         // Materials (Matching List Page)
-        const matteGold = new THREE.MeshStandardMaterial({ color: 0xffac41, roughness: 0.7, metalness: 0.1, emissive: 0x553311, emissiveIntensity: 0.2 });
-        const matteBlue = new THREE.MeshStandardMaterial({ color: 0x3e5eb3, roughness: 0.8, metalness: 0.0, emissive: 0x112244, emissiveIntensity: 0.3 });
-        const matteSilver = new THREE.MeshStandardMaterial({ color: 0xcbd5e1, roughness: 0.5, metalness: 0.3 });
-        const softPearl = new THREE.MeshStandardMaterial({ color: 0xfff1f2, roughness: 0.9, emissive: 0x332222, emissiveIntensity: 0.1 });
-        const defaultMat = new THREE.MeshStandardMaterial({ color: 0x888888, roughness: 0.8 });
+        const matteGold = new THREE.MeshStandardMaterial({ color: 0xd4a574, roughness: 0.6, metalness: 0.2, emissive: 0xc49355, emissiveIntensity: 0.5 });
+        const matteBlue = new THREE.MeshStandardMaterial({ color: 0x5c7a9e, roughness: 0.7, metalness: 0.1, emissive: 0x4a6380, emissiveIntensity: 0.5 });
+        const matteSilver = new THREE.MeshStandardMaterial({ color: 0xa8b5c4, roughness: 0.4, metalness: 0.4, emissive: 0x7a8a99, emissiveIntensity: 0.4 });
+        // Balanced Pearl: Visible in Dark Mode, but explains 3D shape (Volumetric) - RESTORED
+        const softPearl = new THREE.MeshStandardMaterial({ color: 0xfff0e0, roughness: 0.4, metalness: 0.3, emissive: 0x555555, emissiveIntensity: 0.5 });
 
-        // Select Planet based on Category (Symbolic Shapes)
+        // Use default material as fallback
+        const defaultMat = matteGold;
+
+        // Select Planet based on Category (Matching List Page Geometries, 2x Scale)
         if (currentCategory === 'religion') {
-            // Trinity/Fire -> Tetrahedron
-            planetMesh = new THREE.Mesh(new THREE.TetrahedronGeometry(14, 0), matteGold);
-            planetMesh.scale.set(1, 1, 1);
+            // Religion: Icosahedron (List: 7 -> Single: 14)
+            planetMesh = new THREE.Mesh(new THREE.IcosahedronGeometry(14, 0), matteGold);
         } else if (currentCategory === 'philosophy') {
-            // Universe/Aether -> Dodecahedron
-            planetMesh = new THREE.Mesh(new THREE.DodecahedronGeometry(11, 0), matteBlue);
+            // Philosophy: Octahedron (List: 6 -> Single: 12)
+            planetMesh = new THREE.Mesh(new THREE.OctahedronGeometry(12, 0), matteBlue);
         } else if (currentCategory === 'engineering') {
-            // Structure/Diamond -> Octahedron
-            planetMesh = new THREE.Mesh(new THREE.OctahedronGeometry(12, 0), matteSilver);
-            // Engineering wireframe overlay
-            const wireGeo = new THREE.OctahedronGeometry(12.2, 0);
-            const wireMat = new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true, transparent: true, opacity: 0.3 });
-            planetMesh.add(new THREE.Mesh(wireGeo, wireMat));
+            // Engineering: Icosahedron (List: 8 -> Single: 16) - No wireframe to match List style strictly or simple
+            // List has Icosahedron(8).
+            planetMesh = new THREE.Mesh(new THREE.IcosahedronGeometry(16, 0), matteSilver);
         } else if (currentCategory === 'writing') {
-            // Flow/Pearl -> Sphere
+            // Writing: Sphere (List: 5 -> Single: 10)
             planetMesh = new THREE.Mesh(new THREE.SphereGeometry(10, 32, 32), softPearl);
         } else {
-            // Default/Other -> Icosahedron
-            planetMesh = new THREE.Mesh(new THREE.IcosahedronGeometry(10, 0), defaultMat);
+            // Default -> Religion style or simple Sphere
+            planetMesh = new THREE.Mesh(new THREE.IcosahedronGeometry(14, 0), defaultMat);
         }
 
         if (planetMesh) {
+            planetMesh.renderOrder = 999; // Always render on top of stars
+            planetMesh.frustumCulled = false; // Prevent accidental culling
             group.add(planetMesh);
         }
 
@@ -163,16 +216,16 @@
                 scene.fog.color.setHex(0xebedee);
             }
 
-            // 2. Planet Position Logic
+            // 2. Planet Position Logic - Moved to POSITIVE Z (in front of camera)
             if (planetMesh) {
                 if (isMobile) {
-                    // Mobile: Top Center/Right, smaller, further back
-                    planetMesh.position.set(15, 25, -40);
-                    planetMesh.scale.set(0.8, 0.8, 0.8);
+                    // Mobile: Top Right corner, adjusted to avoid content overlap
+                    planetMesh.position.set(8, 14, 10);
+                    planetMesh.scale.set(0.35, 0.35, 0.35);
                 } else {
-                    // Desktop: Top Right, prominent "Guardian"
-                    planetMesh.position.set(45, 10, -30);
-                    planetMesh.scale.set(1, 1, 1);
+                    // Desktop: Top Right, prominent "Guardian" planet
+                    planetMesh.position.set(30, 10, 10);
+                    planetMesh.scale.set(0.55, 0.55, 0.55);
                 }
             }
         }
