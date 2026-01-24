@@ -278,3 +278,20 @@
 .hidden {
     display: none !important;
 }
+
+/* Awaiting interaction state - pulsing effect to hint user to click */
+.music-player-bar.awaiting-interaction {
+    animation: pulse-glow 2s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+
+    0%,
+    100% {
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    }
+
+    50% {
+        box-shadow: 0 8px 32px rgba(255, 255, 255, 0.15), 0 0 16px rgba(255, 255, 255, 0.1);
+    }
+}

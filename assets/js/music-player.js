@@ -174,16 +174,57 @@ document.addEventListener('DOMContentLoaded', () => {
         updateSliderGradient(volumeSlider, initialVol * 100);
     }
 
-    // Only attempt autoplay if we haven't interacted yet? 
-    // Actually, just try it.
-    // Use a small timeout to let the page settle.
-    setTimeout(() => {
+    // Autoplay handling with fallback for browser policies
+    let hasAutoplayStarted = false;
+
+    async function attemptAutoplay() {
+        if (hasAutoplayStarted || isPlaying) return;
+
         // Only autoplay if player is visible
         if (playerContainer.style.display !== 'none') {
-            // We just call playAudio. loadTrack(0, false) was called earlier.
-            playAudio();
+            try {
+                await audio.play();
+                isPlaying = true;
+                hasAutoplayStarted = true;
+                updateUIState(true);
+                // Remove interaction listeners once autoplay succeeds
+                removeInteractionListeners();
+            } catch (error) {
+                console.warn("Autoplay blocked, waiting for user interaction:", error);
+                // Show visual indicator that user needs to interact
+                playerContainer.classList.add('awaiting-interaction');
+            }
         }
+    }
+
+    // First attempt: try immediate autoplay after page settles
+    setTimeout(() => {
+        attemptAutoplay();
     }, 800);
+
+    // Fallback: If autoplay was blocked, start on first user interaction
+    function onUserInteraction() {
+        if (!hasAutoplayStarted && !isPlaying) {
+            playerContainer.classList.remove('awaiting-interaction');
+            playAudio().then(() => {
+                hasAutoplayStarted = true;
+                removeInteractionListeners();
+            });
+        }
+    }
+
+    function removeInteractionListeners() {
+        document.removeEventListener('click', onUserInteraction);
+        document.removeEventListener('touchstart', onUserInteraction);
+        document.removeEventListener('keydown', onUserInteraction);
+        document.removeEventListener('scroll', onUserInteraction, { passive: true });
+    }
+
+    // Add interaction listeners as fallback
+    document.addEventListener('click', onUserInteraction);
+    document.addEventListener('touchstart', onUserInteraction);
+    document.addEventListener('keydown', onUserInteraction);
+    document.addEventListener('scroll', onUserInteraction, { passive: true });
 
 
     // --- 5. Seek & Volume ---
