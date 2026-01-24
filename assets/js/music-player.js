@@ -307,6 +307,27 @@ document.addEventListener('DOMContentLoaded', () => {
     addFallbackListeners();
 
     // Disable loop for multi-track playlist
+    // --- 7. Soft Navigation Support ---
+    window.addEventListener('softNavigate', (e) => {
+        const { playerData } = e.detail;
+        if (!playerData || !playerData.initialAudio) return;
+
+        const initialAudio = playerData.initialAudio;
+        if (playlist.length > 0) {
+            // Path normalization logic same as initialization
+            const cleanPath = (p) => p.replace(/^\/?(audio\/)?/, '').replace(/^\//, '');
+            const target = cleanPath(initialAudio);
+
+            const foundIndex = playlist.findIndex(track => cleanPath(track.audio) === target);
+
+            // Only switch track if it's different from current
+            if (foundIndex !== -1 && foundIndex !== currentIndex) {
+                console.log(`Soft navigation to new track: ${initialAudio}`);
+                loadTrack(foundIndex, true); // Auto play new track
+            }
+        }
+    });
+
     if (playlist.length > 1) {
         audio.loop = false;
     }

@@ -121,7 +121,7 @@
             reinitializePageScripts();
 
             // Dispatch custom event for other scripts to hook into
-            window.dispatchEvent(new CustomEvent('softNavigate', { detail: { url } }));
+            window.dispatchEvent(new CustomEvent('softNavigate', { detail: { url, playerData } }));
 
         } catch (error) {
             console.error('Soft navigation failed:', error);

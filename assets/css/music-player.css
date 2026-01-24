@@ -92,6 +92,8 @@
     overflow: hidden;
     flex-grow: 1;
     /* Takes available space */
+    position: relative;
+    z-index: 10;
 }
 
 .bar-song-title {
@@ -112,6 +114,8 @@
     align-items: center;
     gap: 4px;
     transition: color 0.2s;
+    width: fit-content;
+    /* Ensure link implies only text width */
 }
 
 .bar-post-link:hover {
@@ -124,6 +128,9 @@
     display: flex;
     align-items: center;
     gap: 12px;
+    position: relative;
+    z-index: 20;
+    /* Ensure controls are above info if overlap occurs */
 }
 
 .bar-control-btn {
@@ -135,6 +142,8 @@
     display: flex;
     align-items: center;
     transition: transform 0.2s;
+    position: relative;
+    z-index: 21;
 }
 
 .bar-control-btn:hover {
@@ -153,24 +162,46 @@
     width: 80px;
     display: flex;
     align-items: center;
+    position: relative;
+    z-index: 21;
 }
 
 .bar-slider {
     -webkit-appearance: none;
+    appearance: none;
     width: 100%;
-    height: 4px;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 2px;
+    height: 16px;
+    /* Increased touch target */
+    background: transparent;
+    /* Use gradient on a pseudo-element or via complex background? 
+                               Actually simplest for seek bar is to keep it standard but add padding for hitbox.
+                               Or use styles that center the visible track. */
     cursor: pointer;
+    margin: 0;
+    padding: 6px 0;
+    /* Add top/bottom padding to increase hit area while keeping track thin visually inside background? 
+                       No, input background usually fills height. */
+    background: rgba(255, 255, 255, 0.2);
+    /* To make it look thin but be clickable: use a gradient that is transparent top/bottom? */
+    background: linear-gradient(to bottom, transparent 6px, rgba(255, 255, 255, 0.2) 6px, rgba(255, 255, 255, 0.2) 10px, transparent 10px);
+    border-radius: 0;
 }
 
+/* Need to reset thumb vertical alignment because of increased height */
 .bar-slider::-webkit-slider-thumb {
     -webkit-appearance: none;
-    height: 10px;
-    width: 10px;
+    height: 12px;
+    width: 12px;
     border-radius: 50%;
     background: #fff;
     margin-top: 0;
+    /* Center vertically automatically if height matches? No. */
+    cursor: pointer;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
+    position: relative;
+    z-index: 22;
+    transform: translateY(-2px);
+    /* Adjust based on track position */
 }
 
 /* Volume - hidden on small screens */
@@ -178,6 +209,13 @@
     width: 60px;
     display: flex;
     align-items: center;
+    position: relative;
+    z-index: 21;
+}
+
+.bar-volume-container .bar-slider {
+    /* Apply same hit area logic */
+    background: linear-gradient(to bottom, transparent 6px, rgba(255, 255, 255, 0.2) 6px, rgba(255, 255, 255, 0.2) 10px, transparent 10px);
 }
 
 /* Playlist Popup */
@@ -188,13 +226,14 @@
     right: 0;
     width: 250px;
     max-height: 300px;
-    background: rgba(20, 20, 20, 0.9);
+    background: rgba(20, 20, 20, 0.95);
     backdrop-filter: blur(12px);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 12px;
     padding: 12px;
     overflow-y: auto;
-    z-index: 1999;
+    z-index: 10000;
+    /* Ensure high z-index to pop over everything */
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
 
     opacity: 1;
