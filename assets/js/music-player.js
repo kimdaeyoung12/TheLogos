@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const playerContainer = document.getElementById('music-player');
     if (!playerContainer) return;
 
+    // --- Elements ---
     const audio = document.getElementById('bgm-audio');
     const playBtn = document.getElementById('music-control');
     const playIcon = document.getElementById('icon-play');
@@ -9,21 +10,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const seekSlider = document.getElementById('seek-slider');
     const volumeSlider = document.getElementById('volume-slider');
 
-    // New UI Elements
+    // UI Info Elements
     const titleEl = document.getElementById('current-song-title');
     const linkBtn = document.getElementById('song-post-link');
     const playlistToggle = document.getElementById('playlist-toggle');
     const playlistContainer = document.getElementById('playlist-container');
     const playlistList = document.getElementById('playlist-list');
+    const closePlaylistBtn = document.getElementById('close-playlist-btn');
 
-    // State
+    // --- State ---
     let isPlaying = false;
     let isDragging = false;
     let playlist = [];
     let currentIndex = 0;
+    let hasAutoplayStarted = false;
 
-    // --- 1. Initialization ---
-    // Check if we are in Playlist mode or Single Track mode
+    // --- 1. Data Initialization ---
     const playlistData = playerContainer.dataset.playlist;
 
     if (playlistData) {
@@ -32,8 +34,10 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (e) {
             console.error("Failed to parse playlist JSON", e);
         }
-    } else {
-        // Single track mode
+    }
+
+    if (playlist.length === 0) {
+        // Fallback for single track mode or no data
         const src = playerContainer.dataset.audioSrc;
         const title = playerContainer.dataset.title;
         const link = playerContainer.dataset.link;
@@ -43,218 +47,212 @@ document.addEventListener('DOMContentLoaded', () => {
                 audio: src,
                 link: link || "#"
             }];
+        } else {
+            playerContainer.style.display = 'none';
+            return;
         }
     }
 
-    // If no music found, hide player
-    if (playlist.length === 0) {
-        playerContainer.style.display = 'none';
-        return;
+    // Determine Initial Track based on current page's audio
+    const initialAudio = playerContainer.dataset.initialAudio;
+    if (initialAudio && playlist.length > 0) {
+        // Prepare target path for comparison (remove leading slashes/audio prefix for loose matching)
+        // Adjust this logic based on how your paths exactly look in TOML vs JSON
+        const cleanPath = (p) => p.replace(/^\/?(audio\/)?/, '').replace(/^\//, '');
+        const target = cleanPath(initialAudio);
+
+        const foundIndex = playlist.findIndex(track => cleanPath(track.audio) === target);
+        if (foundIndex !== -1) {
+            currentIndex = foundIndex;
+        }
     }
 
-    // Render Playlist UI if multiple tracks
-    if (playlistList && playlist.length > 0) {
-        playlist.forEach((track, index) => {
-            const li = document.createElement('li');
-            li.textContent = track.title;
-            li.addEventListener('click', () => {
-                playTrack(index);
-            });
-            playlistList.appendChild(li);
+    // --- 2. UI Event Listeners (Register EARLY) ---
+    // Toggle Play/Pause
+    if (playBtn) {
+        playBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (isPlaying) pauseAudio();
+            else playAudio();
         });
     }
 
-    // Toggle Playlist Visibility
+    // Playlist Toggle
     if (playlistToggle) {
-        playlistToggle.addEventListener('click', () => {
-            playlistContainer.classList.toggle('hidden');
-        });
-
-        // Close playlist when clicking outside
-        document.addEventListener('click', (e) => {
-            if (!playerContainer.contains(e.target)) {
-                playlistContainer.classList.add('hidden');
-            }
+        playlistToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            togglePlaylist();
         });
     }
 
-    // Load Initial Track (without playing yet, unless autoplay logic kicks in)
-    loadTrack(currentIndex, false);
+    if (closePlaylistBtn) {
+        closePlaylistBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            closePlaylist();
+        });
+    }
 
-    // --- 2. Track Management ---
+    // Close playlist when clicking outside
+    document.addEventListener('click', (e) => {
+        if (playlistContainer && !playlistContainer.classList.contains('hidden')) {
+            // If click is outside playlist container AND not on the toggle button
+            if (!playlistContainer.contains(e.target) && !playlistToggle.contains(e.target)) {
+                closePlaylist();
+            }
+        }
+    });
+
+    // Seek Slider
+    if (seekSlider) {
+        seekSlider.addEventListener('input', (e) => {
+            isDragging = true;
+            updateSliderGradient(seekSlider, e.target.value);
+        });
+        seekSlider.addEventListener('change', (e) => {
+            isDragging = false;
+            const seekTime = (audio.duration / 100) * e.target.value;
+            audio.currentTime = seekTime;
+        });
+    }
+
+    // Volume Slider
+    if (volumeSlider) {
+        volumeSlider.addEventListener('input', (e) => {
+            const val = e.target.value;
+            audio.volume = val;
+            updateSliderGradient(volumeSlider, val * 100);
+        });
+    }
+
+    // Audio Events
+    audio.addEventListener('play', () => {
+        isPlaying = true;
+        updateUIState(true);
+    });
+
+    audio.addEventListener('pause', () => {
+        isPlaying = false;
+        updateUIState(false);
+    });
+
+    audio.addEventListener('timeupdate', () => {
+        if (!isDragging && audio.duration) {
+            const progress = (audio.currentTime / audio.duration) * 100;
+            if (seekSlider) {
+                seekSlider.value = progress || 0;
+                updateSliderGradient(seekSlider, progress);
+            }
+        }
+    });
+
+    audio.addEventListener('ended', () => {
+        if (playlist.length > 1) {
+            playNext();
+        } else {
+            // For single track, loop is handled by native 'loop' attribute unless we want custom logic
+            // If we want manual loop:
+            // audio.currentTime = 0; playAudio();
+        }
+    });
+
+
+    // --- 3. Functions ---
+    function togglePlaylist() {
+        playlistContainer.classList.toggle('hidden');
+    }
+
+    function closePlaylist() {
+        playlistContainer.classList.add('hidden');
+    }
+
     function loadTrack(index, autoPlay = true) {
         if (index < 0 || index >= playlist.length) return;
-
         currentIndex = index;
         const track = playlist[index];
 
-        // Update Audio Source (handle local paths vs URLs if needed, assuming relative paths work)
-        // Note: The template adds /audio/ prefix for single track but not for playlist if generated there?
-        // Let's check how the JSON was built.
-        // In template: "audio": "{{ .Params.audio }}" -> This is just filename.
-        // In single mode: "src": "/audio/filename".
-        // We need to standardize. 
-        // Strategy: If src doesn't start with http or /, assume it needs /audio/ prefix.
-
+        // Path normalization
         let src = track.audio;
         if (!src.startsWith('http') && !src.startsWith('/')) {
             src = '/audio/' + src;
         }
 
-        if (audio.src !== window.location.origin + src) {
+        // Prevent reloading if same src
+        const currentSrcPath = audio.getAttribute('src'); // Use getAttribute for raw value check if needed, or check audio.src
+        // Comparing full URL to relative src can be tricky, so let's just assign. 
+        // Browsers handle reassignment efficiently usually.
+
+        if (audio.src !== new URL(src, window.location.origin).href) {
             audio.src = src;
         }
 
-        // Update UI
+        // Update Text
         if (titleEl) titleEl.textContent = track.title;
         if (linkBtn) linkBtn.href = track.link;
 
-        // Update Active Visuals in Playlist
-        if (playlistList) {
-            const items = playlistList.querySelectorAll('li');
-            items.forEach((item, i) => {
-                if (i === index) item.classList.add('active');
-                else item.classList.remove('active');
-            });
-        }
+        // Update Playlist Highlight
+        renderPlaylist(); // Re-render or just update classes. Re-rendering is safer for sync.
 
-        // Play if requested
         if (autoPlay) {
             playAudio();
         }
     }
 
-    function playTrack(index) {
-        loadTrack(index, true);
+    function renderPlaylist() {
+        if (!playlistList) return;
+        playlistList.innerHTML = '';
+        playlist.forEach((track, idx) => {
+            const li = document.createElement('li');
+            li.textContent = track.title;
+            if (idx === currentIndex) li.classList.add('active');
+
+            li.addEventListener('click', (e) => {
+                e.stopPropagation(); // prevent bubbling to document click
+                loadTrack(idx, true);
+            });
+            playlistList.appendChild(li);
+        });
     }
 
-    // --- 3. Playback Control ---
     async function playAudio() {
         try {
             await audio.play();
-            isPlaying = true;
-            updateUIState(true);
+            // State updates handled by 'play' event listener
+            hasAutoplayStarted = true;
+            playerContainer.classList.remove('awaiting-interaction');
+            removeFallbackListeners();
         } catch (error) {
-            console.warn("Playback blocked or failed:", error);
+            console.warn("Playback prevented:", error);
             isPlaying = false;
             updateUIState(false);
+
+            // If this was an autoplay attempt that failed, show hint
+            if (!hasAutoplayStarted) {
+                playerContainer.classList.add('awaiting-interaction');
+                addFallbackListeners();
+            }
         }
     }
 
     function pauseAudio() {
         audio.pause();
-        isPlaying = false;
-        updateUIState(false);
     }
 
-    playBtn.addEventListener('click', () => {
-        if (isPlaying) pauseAudio();
-        else playAudio();
-    });
+    function playNext() {
+        let next = currentIndex + 1;
+        if (next >= playlist.length) next = 0;
+        loadTrack(next, true);
+    }
 
     function updateUIState(playing) {
         if (playing) {
             playerContainer.classList.add('playing');
-            playIcon.classList.add('hidden');
-            pauseIcon.classList.remove('hidden');
+            if (playIcon) playIcon.classList.add('hidden');
+            if (pauseIcon) pauseIcon.classList.remove('hidden');
         } else {
             playerContainer.classList.remove('playing');
-            playIcon.classList.remove('hidden');
-            pauseIcon.classList.add('hidden');
+            if (playIcon) playIcon.classList.remove('hidden');
+            if (pauseIcon) pauseIcon.classList.add('hidden');
         }
-    }
-
-    // --- 4. Autoplay Policy (Homepage) ---
-    // If on homepage (playlist mode often implies this), try to autoplay the first track.
-    // User requested: "Homepage enter -> Autoplay".
-    const initialVol = 0.2;
-    audio.volume = initialVol;
-    if (volumeSlider) {
-        volumeSlider.value = initialVol;
-        updateSliderGradient(volumeSlider, initialVol * 100);
-    }
-
-    // Autoplay handling with fallback for browser policies
-    let hasAutoplayStarted = false;
-
-    async function attemptAutoplay() {
-        if (hasAutoplayStarted || isPlaying) return;
-
-        // Only autoplay if player is visible
-        if (playerContainer.style.display !== 'none') {
-            try {
-                await audio.play();
-                isPlaying = true;
-                hasAutoplayStarted = true;
-                updateUIState(true);
-                // Remove interaction listeners once autoplay succeeds
-                removeInteractionListeners();
-            } catch (error) {
-                console.warn("Autoplay blocked, waiting for user interaction:", error);
-                // Show visual indicator that user needs to interact
-                playerContainer.classList.add('awaiting-interaction');
-            }
-        }
-    }
-
-    // First attempt: try immediate autoplay after page settles
-    setTimeout(() => {
-        attemptAutoplay();
-    }, 800);
-
-    // Fallback: If autoplay was blocked, start on first user interaction
-    function onUserInteraction() {
-        if (!hasAutoplayStarted && !isPlaying) {
-            playerContainer.classList.remove('awaiting-interaction');
-            playAudio().then(() => {
-                hasAutoplayStarted = true;
-                removeInteractionListeners();
-            });
-        }
-    }
-
-    function removeInteractionListeners() {
-        document.removeEventListener('click', onUserInteraction);
-        document.removeEventListener('touchstart', onUserInteraction);
-        document.removeEventListener('keydown', onUserInteraction);
-        document.removeEventListener('scroll', onUserInteraction, { passive: true });
-    }
-
-    // Add interaction listeners as fallback
-    document.addEventListener('click', onUserInteraction);
-    document.addEventListener('touchstart', onUserInteraction);
-    document.addEventListener('keydown', onUserInteraction);
-    document.addEventListener('scroll', onUserInteraction, { passive: true });
-
-
-    // --- 5. Seek & Volume ---
-    audio.addEventListener('timeupdate', () => {
-        if (!isDragging) {
-            const progress = (audio.currentTime / audio.duration) * 100;
-            seekSlider.value = progress || 0;
-            updateSliderGradient(seekSlider, progress);
-        }
-    });
-
-    seekSlider.addEventListener('input', (e) => {
-        isDragging = true;
-        const progress = e.target.value;
-        updateSliderGradient(seekSlider, progress);
-    });
-
-    seekSlider.addEventListener('change', (e) => {
-        isDragging = false;
-        const progress = e.target.value;
-        const seekTime = (audio.duration / 100) * progress;
-        audio.currentTime = seekTime;
-    });
-
-    if (volumeSlider) {
-        volumeSlider.addEventListener('input', (e) => {
-            const val = e.target.value;
-            audio.volume = val;
-            updateSliderGradient(e.target, val * 100);
-        });
     }
 
     function updateSliderGradient(element, percent) {
@@ -263,24 +261,52 @@ document.addEventListener('DOMContentLoaded', () => {
         element.style.background = `linear-gradient(to right, rgba(255,255,255,0.8) ${percent}%, rgba(255,255,255,0.2) ${percent}%)`;
     }
 
-    // --- 6. End of Track Behavior ---
-    audio.addEventListener('ended', () => {
-        // Auto-play next track if in playlist
-        if (playlist.length > 1) {
-            let nextIndex = currentIndex + 1;
-            if (nextIndex >= playlist.length) nextIndex = 0; // Loop
-            loadTrack(nextIndex, true);
-        } else {
-            // Loop single track if loop attribute set (it is in HTML)
-            // But if we want playlist logic to override 'loop' attribute:
-            // HTML has 'loop'.
-            // If loop is true, 'ended' event might not fire? 
-            // Actually <audio loop> will not fire 'ended'. 
-            // So if we want playlist, we should REMOVE 'loop' attribute from HTML or handle it.
-            // Let's remove 'loop' attribute via JS if playlist > 1.
-        }
-    });
+    // --- 4. Initialization & Autoplay ---
 
+    // Render initial playlist state
+    renderPlaylist();
+
+    // Initialize Volume
+    const initialVol = 0.2;
+    audio.volume = initialVol;
+    if (volumeSlider) {
+        volumeSlider.value = initialVol;
+        updateSliderGradient(volumeSlider, initialVol * 100);
+    }
+
+    // Load track WITHOUT playing immediately (wait for timeout)
+    loadTrack(currentIndex, false);
+
+    // Initial Autoplay Attempt
+    setTimeout(() => {
+        if (playerContainer.style.display !== 'none') {
+            playAudio();
+        }
+    }, 800);
+
+    // --- 5. Fallback Interaction Handling ---
+    function onUserInteraction() {
+        if (!hasAutoplayStarted && !isPlaying) {
+            playAudio();
+        }
+    }
+
+    function addFallbackListeners() {
+        ['click', 'touchstart', 'keydown', 'scroll'].forEach(evt =>
+            document.addEventListener(evt, onUserInteraction, { once: true, passive: true })
+        );
+    }
+
+    function removeFallbackListeners() {
+        ['click', 'touchstart', 'keydown', 'scroll'].forEach(evt =>
+            document.removeEventListener(evt, onUserInteraction)
+        );
+    }
+
+    // Add listeners immediately as a safety net, they execute only once
+    addFallbackListeners();
+
+    // Disable loop for multi-track playlist
     if (playlist.length > 1) {
         audio.loop = false;
     }
