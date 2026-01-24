@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
+    console.log("Music Player Script Loaded - v3 (Soft Nav & Autoplay Fix)");
     const playerContainer = document.getElementById('music-player');
     if (!playerContainer) return;
 
