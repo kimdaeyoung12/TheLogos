@@ -150,7 +150,7 @@
     {{- else }}
     <link rel="icon" href="{{ " favicon.ico" | absURL }}">
     {{- end }}
-    {{- with site.OutputFormats.Get "rss" }}
+    {{- with .OutputFormats.Get "rss" }}
     <link rel="{{ .Rel }}" type="{{ .MediaType }}" href="{{ .Permalink }}" title="{{ site.Title }}">
     {{- end }}
 
