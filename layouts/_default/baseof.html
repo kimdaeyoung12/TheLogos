@@ -1,60 +1,110 @@
 <!DOCTYPE html>
-<html lang="{{ with site.Language }}{{ .Lang }}{{ else }}{{ site.LanguageCode | default " en" }}{{ end }}" dir="ltr">
+<html class="dark" lang="{{ or site.Language.LanguageCode site.Language.Lang }}"
+    dir="{{ or site.Language.LanguageDirection " ltr" }}">
 
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    {{- $title := cond .IsHome site.Title (printf "%s | %s" .Title site.Title) -}}
-    <title>{{ $title }}</title>
-    {{- $description := .Description -}}
-    {{- if not $description }}
-    {{- with .Params.description }}{{ $description = . }}{{ end }}
-    {{- end -}}
-    {{- if not $description }}
-    {{- with site.Params.description }}{{ $description = . }}{{ end }}
-    {{- end -}}
-    {{- if and (not $description) (eq .Kind "page") }}
-    {{- $description = .Summary }}
-    {{- end -}}
-    {{- if $description }}
-    <meta name="description" content="{{ $description }}">
-    {{- end }}
-    {{- if or .Params.draft .Params.noindex }}
-    <meta name="robots" content="noindex, nofollow">
-    {{- else }}
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    {{- if hugo.IsProduction | or (eq site.Params.env "production") }}
     <meta name="robots" content="index, follow">
+    {{- else }}
+    <meta name="robots" content="noindex, nofollow">
     {{- end }}
-    <link rel="canonical" href="{{ .Permalink }}">
+
+    <title>{{- $title := cond .IsHome site.Title (printf "%s | %s" .Title site.Title) -}}{{- $title -}}</title>
+
+    {{- /* Tailwind and Global Design Config */}}
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "design-primary": "#135bec",
+                        "design-background-light": "#f6f6f8",
+                        "design-background-dark": "#101622",
+                        "design-card-dark": "#1c1f27",
+                        "design-text-subtle": "#9da6b9",
+                    },
+                    fontFamily: {
+                        "display": ["Work Sans", "Noto Sans", "sans-serif"],
+                        "serif-title": ["Noto Serif", "serif"]
+                    },
+                    animation: {
+                        'float-slow': 'float 8s ease-in-out infinite',
+                        'float-reverse': 'float-reverse 10s ease-in-out infinite',
+                        'spin-slow': 'spin 15s linear infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0) rotate(0deg)' },
+                            '50%': { transform: 'translateY(-20px) rotate(5deg)' },
+                        },
+                        'float-reverse': {
+                            '0%, 100%': { transform: 'translateY(0) rotate(0deg)' },
+                            '50%': { transform: 'translateY(20px) rotate(-5deg)' },
+                        }
+                    }
+                },
+            },
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,100..900;1,100..900&family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap"
+        rel="stylesheet" />
+
+    {{- /* Meta & Canonical */}}
+    <meta name="description"
+        content="{{- if .Description }}{{ .Description }}{{- else if .IsPage }}{{ .Summary | plainify | truncate 160 }}{{- else }}{{ site.Params.description }}{{- end -}}">
+    <meta name="author" content="{{ (partial " author.html" . ) }}">
+    <link rel="canonical"
+        href="{{ if .Params.canonicalURL -}} {{ trim .Params.canonicalURL " " }} {{- else -}} {{ .Permalink }} {{- end }}">
+
+    {{- /* Favicons & RSS */}}
+    {{- if site.Params.assets.favicon }}
+    <link rel="icon" href="{{ site.Params.assets.favicon | absURL }}">
+    {{- else }}
     <link rel="icon" href="{{ " favicon.ico" | absURL }}">
-    <link rel="icon" type="image/png" sizes="16x16" href="{{ " favicon-16x16.png" | absURL }}">
-    <link rel="icon" type="image/png" sizes="32x32" href="{{ " favicon-32x32.png" | absURL }}">
-    <link rel="apple-touch-icon" href="{{ " apple-touch-icon.png" | absURL }}">
-    <meta name="theme-color" content="#2e2e33">
-    <link rel="stylesheet" as="style" crossorigin
-        href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
-    <!-- Noto Serif KR for philosophical body text -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;700&display=swap" rel="stylesheet">
-    <!-- New Design Fonts: Work Sans, Noto Sans, Material Symbols -->
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,100..900;1,100..900&family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet" />
-    {{- $custom_css := resources.Get "css/main.css" | minify | fingerprint -}}
-    <link rel="stylesheet" href="{{ $custom_css.RelPermalink }}" integrity="{{ $custom_css.Data.Integrity }}">
-    {{ partial "extend_head.html" . }}
-    {{ block "head" . }}{{ end }}
+    {{- end }}
+    {{- with site.OutputFormats.Get "rss" }}
+    <link rel="{{ .Rel }}" type="{{ .MediaType }}" href="{{ .Permalink }}" title="{{ site.Title }}">
+    {{- end }}
+
+    {{- /* Analytics */}}
+    {{- template "_internal/opener.html" . }}
+    {{- template "_internal/google_analytics.html" . }}
+    {{- partial "extend_head.html" . }}
 </head>
 
-<body>
-    {{ partial "header.html" . }}
-    <main id="main-content">
-        {{ block "main" . }}{{ end }}
+<body
+    class="bg-design-background-light dark:bg-design-background-dark font-display text-gray-900 dark:text-white antialiased overflow-x-hidden list"
+    id="top">
+
+    {{- partial "header.html" . }}
+
+    <main class="main">
+        {{- block "main" . }}{{- end }}
     </main>
-    {{ partial "music-player.html" . }}
-    {{/* Soft Navigation for persistent audio playback */}}
-    {{ $soft_nav := resources.Get "js/soft-navigation.js" | fingerprint }}
+
+    {{- partial "footer_design.html" . }}
+    {{- partial "music-player.html" . }}
+
+    {{- /* Logic to handle 3D tilt if needed globally */}}
+    {{- $tilt := resources.Get "js/tilt-3d.js" | fingerprint }}
+    <script src="{{ $tilt.Permalink }}"></script>
+
+    {{- /* Soft Navigation */}}
+    {{- $soft_nav := resources.Get "js/soft-navigation.js" | fingerprint }}
     <script src="{{ $soft_nav.Permalink }}" integrity="{{ $soft_nav.Data.Integrity }}"></script>
-    {{ partial "extend_footer.html" . }}
+
+    {{- partial "extend_footer.html" . }}
+
 </body>
 
 </html>

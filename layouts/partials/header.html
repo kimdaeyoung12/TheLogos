@@ -1,52 +1,11 @@
-{{- /* theme-toggle is enabled */}}
-{{- if (not site.Params.disableThemeToggle) }}
-{{- /* theme is light */}}
-{{- if (eq site.Params.defaultTheme "light") }}
-<script>
-    if (localStorage.getItem("pref-theme") === "dark") {
-        document.body.classList.add('dark');
-        document.documentElement.classList.add('dark');
-    }
-</script>
-{{- /* theme is dark */}}
-{{- else if (eq site.Params.defaultTheme "dark") }}
-<script>
-    if (localStorage.getItem("pref-theme") === "light") {
-        document.body.classList.remove('dark');
-        document.documentElement.classList.remove('dark');
-    }
-</script>
-{{- else }}
-{{- /* theme is auto */}}
-<script>
-    if (localStorage.getItem("pref-theme") === "dark") {
-        document.body.classList.add('dark');
-        document.documentElement.classList.add('dark');
-    } else if (localStorage.getItem("pref-theme") === "light") {
-        document.body.classList.remove('dark');
-        document.documentElement.classList.remove('dark');
-    } else {
-        // Default to Dark Mode
-        document.body.classList.add('dark');
-        document.documentElement.classList.add('dark');
-    }
-</script>
-{{- end }}
-{{- /* theme-toggle is disabled and theme is auto */}}
-{{- else if (and (ne site.Params.defaultTheme "light") (ne site.Params.defaultTheme "dark"))}}
-<script>
-    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        document.body.classList.add('dark');
-        document.documentElement.classList.add('dark');
-    }
-</script>
-{{- end }}
-
-<header class="sticky top-0 z-50 w-full backdrop-blur-md bg-white/70 dark:bg-design-background-dark/70 border-b border-white/20 dark:border-white/5 shadow-sm transition-colors duration-300">
+{{- /* Global Partial: Header */}}
+<header
+    class="sticky top-0 z-50 w-full backdrop-blur-md bg-white/70 dark:bg-design-background-dark/70 border-b border-white/20 dark:border-white/5 shadow-sm transition-colors duration-300">
     <div class="w-full max-w-[1280px] mx-auto px-6 h-16 flex items-center justify-between">
         <!-- Logo -->
         <div class="flex items-center gap-3">
-            <a href="{{ "" | absLangURL }}" class="flex items-center gap-3 text-white drop-shadow-md decoration-transparent">
+            <a href="{{ "" | absLangURL }}"
+                class="flex items-center gap-3 text-white drop-shadow-md decoration-transparent">
                 <span class="material-symbols-outlined text-[28px] text-design-primary">all_inclusive</span>
                 <h2 class="text-gray-900 dark:text-white text-xl font-bold tracking-tight drop-shadow-sm">THE LOGOS</h2>
             </a>
@@ -54,23 +13,28 @@
 
         <!-- Desktop Nav -->
         <nav class="hidden md:flex items-center gap-8">
-            {{- $currentPage := . }}
-            {{- range site.Menus.main }}
-            <a class="text-sm font-medium hover:text-design-primary transition-colors text-gray-700 dark:text-gray-300 drop-shadow-sm {{ if eq $currentPage.RelPermalink .URL }}text-design-primary{{ end }}" href="{{ .URL | absLangURL }}">
-                {{ .Name }}
-            </a>
-            {{- end }}
+            <a class="text-sm font-medium hover:text-design-primary transition-colors text-gray-700 dark:text-gray-300 drop-shadow-sm"
+                href="/">Home</a>
+            <a class="text-sm font-medium hover:text-design-primary transition-colors text-gray-700 dark:text-gray-300 drop-shadow-sm"
+                href="/posts/">Articles</a>
+            <a class="text-sm font-medium hover:text-design-primary transition-colors text-gray-700 dark:text-gray-300 drop-shadow-sm"
+                href="/about">About</a>
         </nav>
 
         <!-- Right Side Actions -->
         <div class="flex items-center gap-4">
             <!-- Theme Toggle -->
-            {{- if (not site.Params.disableThemeToggle) }}
-            <button id="theme-toggle" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-gray-700 dark:text-white" aria-label="Toggle Theme">
-                <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hidden dark:block">
+            <button id="theme-toggle"
+                class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-gray-700 dark:text-white"
+                aria-label="Toggle Theme">
+                <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="hidden dark:block">
                     <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
                 </svg>
-                <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="block dark:hidden">
+                <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="block dark:hidden">
                     <circle cx="12" cy="12" r="5"></circle>
                     <line x1="12" y1="1" x2="12" y2="3"></line>
                     <line x1="12" y1="21" x2="12" y2="23"></line>
@@ -82,12 +46,20 @@
                     <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
                 </svg>
             </button>
-            {{- end }}
 
-            <button class="hidden md:flex bg-design-primary hover:bg-design-primary/90 text-white text-sm font-bold h-9 px-5 rounded-lg items-center justify-center transition-all shadow-lg shadow-design-primary/30 active:scale-95 border-none">
+            <!-- Network Button (Replaces Login) -->
+            <a href="/network"
+                class="hidden md:flex bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-white text-sm font-bold h-9 px-4 rounded-lg items-center justify-center transition-all border border-gray-200 dark:border-white/10">
+                Network
+            </a>
+
+            <!-- Subscribe Button -->
+            <button onclick="alert('Subscription feature coming soon!')"
+                class="hidden md:flex bg-design-primary hover:bg-design-primary/90 text-white text-sm font-bold h-9 px-5 rounded-lg items-center justify-center transition-all shadow-lg shadow-design-primary/30 active:scale-95 border-none">
                 Subscribe
             </button>
 
+            <!-- Mobile Menu Toggle -->
             <button id="mobile-menu-toggle" class="md:hidden text-gray-700 dark:text-white p-1" aria-label="Menu">
                 <span class="material-symbols-outlined">menu</span>
             </button>
@@ -95,13 +67,19 @@
     </div>
 
     <!-- Mobile Menu Drawer -->
-    <div id="mobile-menu" class="hidden absolute top-16 left-0 w-full bg-white dark:bg-design-background-dark border-b border-gray-200 dark:border-white/5 shadow-lg flex-col p-4 gap-4 z-40">
-        {{- range site.Menus.main }}
-        <a class="text-base font-medium hover:text-design-primary transition-colors text-gray-700 dark:text-gray-300 block py-2" href="{{ .URL | absLangURL }}">
-            {{ .Name }}
-        </a>
-        {{- end }}
-        <button class="w-full bg-design-primary hover:bg-design-primary/90 text-white text-sm font-bold h-10 rounded-lg transition-all shadow-md active:scale-95 border-none mt-2">
+    <div id="mobile-menu"
+        class="hidden absolute top-16 left-0 w-full bg-white dark:bg-design-background-dark border-b border-gray-200 dark:border-white/5 shadow-lg flex-col p-4 gap-4 z-40">
+        <a class="text-base font-medium hover:text-design-primary transition-colors text-gray-700 dark:text-gray-300 block py-2"
+            href="/">Home</a>
+        <a class="text-base font-medium hover:text-design-primary transition-colors text-gray-700 dark:text-gray-300 block py-2"
+            href="/posts/">Articles</a>
+        <a class="text-base font-medium hover:text-design-primary transition-colors text-gray-700 dark:text-gray-300 block py-2"
+            href="/about">About</a>
+        <a class="text-base font-medium hover:text-design-primary transition-colors text-gray-700 dark:text-gray-300 block py-2"
+            href="/network">Network</a>
+
+        <button onclick="alert('Subscription feature coming soon!')"
+            class="w-full bg-design-primary hover:bg-design-primary/90 text-white text-sm font-bold h-10 rounded-lg transition-all shadow-md active:scale-95 border-none mt-2">
             Subscribe
         </button>
     </div>
@@ -120,6 +98,17 @@
                 localStorage.setItem('pref-theme', 'light');
             }
         });
+    }
+
+    // Default to dark if pref is not set
+    if (!localStorage.getItem('pref-theme')) {
+        document.body.classList.add('dark');
+        document.documentElement.classList.add('dark');
+    } else {
+        if (localStorage.getItem('pref-theme') === 'dark') {
+            document.body.classList.add('dark');
+            document.documentElement.classList.add('dark');
+        }
     }
 
     // Mobile Menu Toggle Logic
