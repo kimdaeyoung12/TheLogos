@@ -56,10 +56,10 @@
                 <input id="hero-search-input"
                     class="block w-full pl-12 pr-4 py-4 rounded-xl text-sm text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-design-primary/50 transition-all neu-pressed bg-transparent"
                     placeholder="Search topics, authors, or ideas..." type="text"
-                    onkeydown="if(event.key === 'Enter') { window.location.href = '/search/?q=' + this.value; }" />
+                    onkeydown="if(event.key === 'Enter') { window.softNavigate('/search/?q=' + this.value); }" />
                 <div class="absolute inset-y-2 right-2">
                     <button
-                        onclick="window.location.href = '/search/?q=' + document.getElementById('hero-search-input').value"
+                        onclick="window.softNavigate('/search/?q=' + document.getElementById('hero-search-input').value)"
                         class="h-full px-6 text-white bg-design-primary rounded-lg text-sm font-bold transition-all neu-flat border-none active:scale-95 hover:text-white">
                         Search
                     </button>

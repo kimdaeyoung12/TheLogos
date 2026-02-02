@@ -263,6 +263,9 @@
         console.log('Soft navigation initialized for persistent audio');
     }
 
+    // Expose softNavigate globally for programmatic use
+    window.softNavigate = softNavigate;
+
     // Initialize when DOM is ready
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', init);

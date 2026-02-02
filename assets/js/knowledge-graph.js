@@ -141,17 +141,8 @@ function initKnowledgeGraph() {
         window.Graph.d3Force('charge').strength(-60);  // Stronger repulsion = more spacing
         window.Graph.d3Force('link').distance(40);     // Longer links = more spacing
 
-        // Fix: Add explicit click handler for panel link (navigation)
-        const panelLinkEl = document.getElementById('panel-link');
-        if (panelLinkEl) {
-            panelLinkEl.addEventListener('click', function (e) {
-                const href = this.getAttribute('href');
-                if (href && href !== '#') {
-                    console.log('Navigating to:', href);
-                    window.location.href = href;
-                }
-            });
-        }
+        // Explicit click handler removed to allow soft-navigation.js to handle the link
+        // and preserve music playback.
 
         // Speed up scroll zoom
         const controls = window.Graph.controls();
