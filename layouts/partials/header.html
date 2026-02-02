@@ -11,8 +11,8 @@
             </a>
         </div>
 
-        <!-- Desktop Nav (Visible on Small+) -->
-        <nav class="hidden sm:flex items-center gap-8">
+        <!-- Desktop Nav (Always Visible) -->
+        <nav class="flex items-center gap-4 sm:gap-8">
             <a class="text-sm font-medium hover:text-design-primary transition-colors text-gray-700 dark:text-gray-300 drop-shadow-sm"
                 href="{{ "" | absLangURL }}">Home</a>
             <a class="text-sm font-medium hover:text-design-primary transition-colors text-gray-700 dark:text-gray-300 drop-shadow-sm"
@@ -49,7 +49,7 @@
 
             <!-- Network Button (Replaces Login) -->
             <a href="{{ " network" | absLangURL }}"
-                class="hidden sm:flex bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-white text-sm font-bold h-9 px-4 rounded-lg items-center justify-center transition-all border border-gray-200 dark:border-white/10">
+                class="flex bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-white text-sm font-bold h-9 px-4 rounded-lg items-center justify-center transition-all border border-gray-200 dark:border-white/10">
                 Network
             </a>
 
@@ -59,8 +59,8 @@
                 Subscribe
             </button>
 
-            <!-- Mobile Menu Toggle -->
-            <button id="mobile-menu-toggle" class="sm:hidden text-gray-700 dark:text-white p-1" aria-label="Menu">
+            <!-- Mobile Menu Toggle (Hidden as main nav is forced) -->
+            <button id="mobile-menu-toggle" class="hidden text-gray-700 dark:text-white p-1" aria-label="Menu">
                 <span class="material-symbols-outlined">menu</span>
             </button>
         </div>
