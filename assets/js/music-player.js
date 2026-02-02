@@ -222,7 +222,10 @@ document.addEventListener('DOMContentLoaded', () => {
             playerContainer.classList.remove('awaiting-interaction');
             removeFallbackListeners();
         } catch (error) {
-            console.warn("Playback prevented:", error);
+            // Expected behavior for autoplay policies; user interaction required
+            if (error.name !== 'NotAllowedError') {
+                console.warn("Playback prevented:", error);
+            }
             isPlaying = false;
             updateUIState(false);
 
