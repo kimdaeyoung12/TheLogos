@@ -59,10 +59,88 @@
         href="https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,100..900;1,100..900&family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap"
         rel="stylesheet" />
 
+    {{- /* Global CSS for Stitch Design */}}
+    <style>
+        .perspective-container {
+            perspective: 1000px;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform-style: preserve-3d;
+        }
+
+        .dark .glass-card {
+            background: rgba(28, 31, 39, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        }
+
+        /* 3D Tilt Effect applied by tilt-3d.js on hover, but we keep the hover CSS for fallback/enhanced feel */
+        .glass-card:hover {
+            box-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.4), 0 0 20px rgba(19, 91, 236, 0.2);
+            border-color: rgba(19, 91, 236, 0.4);
+            z-index: 10;
+        }
+
+        .title-3d {
+            text-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            transform: perspective(500px) rotateX(10deg);
+            transform-origin: center bottom;
+            display: inline-block;
+            filter: drop-shadow(0px 4px 0px rgba(0, 0, 0, 0.3));
+        }
+
+        .neu-pressed {
+            background: #eef0f5;
+            box-shadow: inset 3px 3px 6px #cbced1, inset -3px -3px 6px #ffffff;
+            border: none;
+        }
+
+        .dark .neu-pressed {
+            background: #0d111a;
+            box-shadow: inset 4px 4px 8px #080a10, inset -4px -4px 8px #181e2a;
+        }
+
+        .neu-flat {
+            background: linear-gradient(145deg, #ffffff, #e6e6e6);
+            box-shadow: 4px 4px 8px #d1d1d1, -4px -4px 8px #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+
+        .dark .neu-flat {
+            background: linear-gradient(145deg, #1c2331, #121620);
+            box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5), -5px -5px 10px rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .neu-flat:hover {
+            transform: translateY(-2px);
+            box-shadow: 6px 6px 12px rgba(0, 0, 0, 0.6), -6px -6px 12px rgba(255, 255, 255, 0.05);
+        }
+
+        .neu-flat:active {
+            transform: translateY(0);
+            box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.5);
+        }
+
+        .floating-shape {
+            position: absolute;
+            opacity: 0.15;
+            pointer-events: none;
+        }
+    </style>
+
     {{- /* Meta & Canonical */}}
     <meta name="description"
         content="{{- if .Description }}{{ .Description }}{{- else if .IsPage }}{{ .Summary | plainify | truncate 160 }}{{- else }}{{ site.Params.description }}{{- end -}}">
-    <meta name="author" content="{{ (partial " author.html" . ) }}">
+    <!-- Removed author.html call to fix build error -->
+    <meta name="author" content="{{ site.Params.author | default " The Logos" }}">
     <link rel="canonical"
         href="{{ if .Params.canonicalURL -}} {{ trim .Params.canonicalURL " " }} {{- else -}} {{ .Permalink }} {{- end }}">
 
@@ -77,6 +155,7 @@
     {{- end }}
 
     {{- /* Analytics */}}
+    {{- template "_internal/opener.html" . }}
     {{- template "_internal/google_analytics.html" . }}
     {{- partial "extend_head.html" . }}
 </head>
