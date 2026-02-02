@@ -9,7 +9,11 @@ hasCJKLanguage = true
 
 # Enable raw HTML in markdown files (required for AI Summary Box)
 [markup.goldmark.renderer]
-  unsafe = false
+  unsafe = true
+
+[outputs]
+  home = ["HTML", "RSS", "JSON"]
+
 
 # Table of Contents configuration
 [markup.tableOfContents]

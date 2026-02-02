@@ -100,6 +100,18 @@
                 <!-- Top Accent Line -->
                 <div class="h-1.5 w-full" style="background-color: {{ $catColor }}"></div>
 
+                {{ if .Params.featuredImage }}
+                <div class="aspect-video w-full overflow-hidden relative">
+                    <img src="{{ .Params.featuredImage }}" alt="{{ .Title }}"
+                        class="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500">
+                </div>
+                {{ else if .Params.image }}
+                <div class="aspect-video w-full overflow-hidden relative">
+                    <img src="{{ .Params.image }}" alt="{{ .Title }}"
+                        class="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500">
+                </div>
+                {{ end }}
+
                 <div class="p-6 flex flex-col flex-grow">
                     <!-- Meta -->
                     <div class="flex items-center justify-between mb-4 text-xs font-bold tracking-wider uppercase">
