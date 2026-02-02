@@ -34,7 +34,14 @@ module.exports = {
                     light: 'var(--light-accent)',
                     dark: 'var(--dark-accent)',
                     hover: 'var(--light-accent-hover)',
-                }
+                },
+
+                // New Design Colors
+                "design-primary": "#135bec",
+                "design-background-light": "#f6f6f8",
+                "design-background-dark": "#101622",
+                "design-card-dark": "#1c1f27",
+                "design-text-subtle": "#9da6b9",
             },
             fontFamily: {
                 sans: [
@@ -56,6 +63,9 @@ module.exports = {
                     '"Times New Roman"',
                     'serif'
                 ],
+                // New Design Fonts
+                "display": ["Work Sans", "Noto Sans", "sans-serif"],
+                "serif-title": ["Noto Serif", "serif"]
             },
             boxShadow: {
                 'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.37)',
@@ -66,6 +76,21 @@ module.exports = {
             transitionProperty: {
                 'height': 'height',
                 'spacing': 'margin, padding',
+            },
+            animation: {
+                'float-slow': 'float 8s ease-in-out infinite',
+                'float-reverse': 'float-reverse 10s ease-in-out infinite',
+                'spin-slow': 'spin 15s linear infinite',
+            },
+            keyframes: {
+                float: {
+                    '0%, 100%': { transform: 'translateY(0) rotate(0deg)' },
+                    '50%': { transform: 'translateY(-20px) rotate(5deg)' },
+                },
+                'float-reverse': {
+                    '0%, 100%': { transform: 'translateY(0) rotate(0deg)' },
+                    '50%': { transform: 'translateY(20px) rotate(-5deg)' },
+                }
             }
         },
     },

@@ -42,97 +42,35 @@
 </script>
 {{- end }}
 
-<header class="header">
-    <nav class="nav">
-        <div class="logo">
-            {{- $label_text := (site.Params.label.text | default site.Title) }}
-            {{- if site.Title }}
-            <a href="{{ "" | absLangURL }}" accesskey="h" title="{{ $label_text }} (Alt + H)" class="logo-link">
-                {{- if site.Params.label.icon }}
-                {{- $img := resources.Get site.Params.label.icon }}
-                {{- if $img }}
-                {{- $processableFormats := (slice "jpg" "jpeg" "png" "tif" "bmp" "gif") -}}
-                {{- if hugo.IsExtended -}}
-                {{- $processableFormats = $processableFormats | append "webp" -}}
-                {{- end -}}
-                {{- $prod := (hugo.IsProduction | or (eq site.Params.env "production")) }}
-                {{- if and (in $processableFormats $img.MediaType.SubType) (eq $prod true)}}
-                {{- if site.Params.label.iconHeight }}
-                {{- $img = $img.Resize (printf "x%d" site.Params.label.iconHeight) }}
-                {{ else }}
-                {{- $img = $img.Resize "x30" }}
-                {{- end }}
-                {{- end }}
-                <img src="{{ $img.Permalink }}" alt="" aria-label="logo"
-                    height="{{- site.Params.label.iconHeight | default " 30" -}}">
-                {{- else }}
-                <img src="{{- site.Params.label.icon | absURL -}}" alt="" aria-label="logo"
-                    height="{{- site.Params.label.iconHeight | default " 30" -}}">
-                {{- end -}}
-                {{- end -}}
-                {{- $label_text -}}
+<header class="sticky top-0 z-50 w-full backdrop-blur-md bg-white/70 dark:bg-design-background-dark/70 border-b border-white/20 dark:border-white/5 shadow-sm transition-colors duration-300">
+    <div class="w-full max-w-[1280px] mx-auto px-6 h-16 flex items-center justify-between">
+        <!-- Logo -->
+        <div class="flex items-center gap-3">
+            <a href="{{ "" | absLangURL }}" class="flex items-center gap-3 text-white drop-shadow-md decoration-transparent">
+                <span class="material-symbols-outlined text-[28px] text-design-primary">all_inclusive</span>
+                <h2 class="text-gray-900 dark:text-white text-xl font-bold tracking-tight drop-shadow-sm">THE LOGOS</h2>
+            </a>
+        </div>
+
+        <!-- Desktop Nav -->
+        <nav class="hidden md:flex items-center gap-8">
+            {{- $currentPage := . }}
+            {{- range site.Menus.main }}
+            <a class="text-sm font-medium hover:text-design-primary transition-colors text-gray-700 dark:text-gray-300 drop-shadow-sm {{ if eq $currentPage.RelPermalink .URL }}text-design-primary{{ end }}" href="{{ .URL | absLangURL }}">
+                {{ .Name }}
             </a>
             {{- end }}
-        </div>
-        {{- $currentPage := . }}
-        <ul id="menu">
-            {{- range site.Menus.main }}
-            {{- $menu_item_url := (cond (strings.HasSuffix .URL "/") .URL (printf "%s/" .URL) ) | absLangURL }}
-            {{- $page_url:= $currentPage.Permalink | absLangURL }}
-            {{- $is_search := eq (site.GetPage .KeyName).Layout `search` }}
+        </nav>
 
-            {{- if .HasChildren }}
-            <li class="menu-item-has-children">
-                <a href="{{ .URL | absLangURL }}" title="{{ .Title | default .Name }} {{- cond $is_search (" (Alt + /)"
-                    | safeHTMLAttr) ("" | safeHTMLAttr ) }}" {{- cond $is_search (" accesskey=/" | safeHTMLAttr) ("" |
-                    safeHTMLAttr ) }} class="menu-link">
-                    <span {{- if eq $menu_item_url $page_url }} class="active" {{- end }}>
-                        {{ .Pre }}{{ .Name }}{{ .Post }}
-                        <svg class="menu-dropdown-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                            stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="6 9 12 15 18 9"></polyline>
-                        </svg>
-                    </span>
-                </a>
-                <ul class="sub-menu">
-                    {{- range .Children }}
-                    <li>
-                        <a href="{{ .URL | absLangURL }}" title="{{ .Title | default .Name }}" class="sub-menu-link">
-                            {{ .Pre }}{{ .Name }}{{ .Post }}
-                        </a>
-                    </li>
-                    {{- end }}
-                </ul>
-            </li>
-            {{- else }}
-            <li>
-                <a href="{{ .URL | absLangURL }}" title="{{ .Title | default .Name }} {{- cond $is_search (" (Alt + /)"
-                    | safeHTMLAttr) ("" | safeHTMLAttr ) }}" {{- cond $is_search (" accesskey=/" | safeHTMLAttr) ("" |
-                    safeHTMLAttr ) }} class="menu-link">
-                    <span {{- if eq $menu_item_url $page_url }} class="active" {{- end }}>
-                        {{ .Pre }}{{ .Name }}{{ .Post }}
-                    </span>
-                </a>
-            </li>
-            {{- end }}
-            {{- end }}
-        </ul>
-        <!-- Mobile Menu Toggle Button -->
-        <button id="mobile-menu-toggle" class="mobile-menu-btn" aria-label="메뉴 열기" aria-expanded="false">
-            <span class="hamburger-line"></span>
-            <span class="hamburger-line"></span>
-            <span class="hamburger-line"></span>
-        </button>
-        <div class="logo-switches">
+        <!-- Right Side Actions -->
+        <div class="flex items-center gap-4">
+            <!-- Theme Toggle -->
             {{- if (not site.Params.disableThemeToggle) }}
-            <button id="theme-toggle" accesskey="t" title="(Alt + T)">
-                <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <button id="theme-toggle" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-gray-700 dark:text-white" aria-label="Toggle Theme">
+                <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hidden dark:block">
                     <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
                 </svg>
-                <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="block dark:hidden">
                     <circle cx="12" cy="12" r="5"></circle>
                     <line x1="12" y1="1" x2="12" y2="3"></line>
                     <line x1="12" y1="21" x2="12" y2="23"></line>
@@ -145,383 +83,59 @@
                 </svg>
             </button>
             {{- end }}
+
+            <button class="hidden md:flex bg-design-primary hover:bg-design-primary/90 text-white text-sm font-bold h-9 px-5 rounded-lg items-center justify-center transition-all shadow-lg shadow-design-primary/30 active:scale-95 border-none">
+                Subscribe
+            </button>
+
+            <button id="mobile-menu-toggle" class="md:hidden text-gray-700 dark:text-white p-1" aria-label="Menu">
+                <span class="material-symbols-outlined">menu</span>
+            </button>
         </div>
-    </nav>
-    <!-- Mobile Menu Overlay -->
-    <div id="mobile-menu-overlay" class="mobile-overlay"></div>
+    </div>
+
+    <!-- Mobile Menu Drawer -->
+    <div id="mobile-menu" class="hidden absolute top-16 left-0 w-full bg-white dark:bg-design-background-dark border-b border-gray-200 dark:border-white/5 shadow-lg flex-col p-4 gap-4 z-40">
+        {{- range site.Menus.main }}
+        <a class="text-base font-medium hover:text-design-primary transition-colors text-gray-700 dark:text-gray-300 block py-2" href="{{ .URL | absLangURL }}">
+            {{ .Name }}
+        </a>
+        {{- end }}
+        <button class="w-full bg-design-primary hover:bg-design-primary/90 text-white text-sm font-bold h-10 rounded-lg transition-all shadow-md active:scale-95 border-none mt-2">
+            Subscribe
+        </button>
+    </div>
 </header>
 
-<style>
-    /* Logo Spacing */
-    .logo {
-        margin-right: 30px;
-        /* Force separation from menu */
-    }
-
-    /* 로고와 네비게이션 링크 색상 */
-    .logo-link,
-    .menu-link,
-    .sub-menu-link {
-        color: var(--primary) !important;
-        text-decoration: none;
-        transition: color 0.2s ease;
-    }
-
-    .logo-link:hover,
-    .menu-link:hover,
-    .sub-menu-link:hover {
-        color: var(--secondary) !important;
-    }
-
-    /* 활성화된 메뉴 스타일 */
-    .menu-link .active {
-        font-weight: 600;
-        border-bottom: 2px solid var(--primary);
-    }
-
-    /* 드롭다운 메뉴 스타일 */
-    .menu-item-has-children {
-        position: relative;
-    }
-
-    .menu-dropdown-icon {
-        display: inline-block;
-        margin-left: 4px;
-        vertical-align: middle;
-        transition: transform 0.3s ease;
-    }
-
-    .menu-item-has-children:hover .menu-dropdown-icon {
-        transform: rotate(180deg);
-    }
-
-    .sub-menu {
-        position: absolute;
-        top: 100%;
-        left: 0;
-        min-width: 150px;
-        background: var(--theme);
-        border: 1px solid var(--border);
-        border-radius: var(--radius);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        opacity: 0;
-        visibility: hidden;
-        transform: translateY(-10px);
-        transition: all 0.3s ease;
-        z-index: 1000;
-        list-style: none;
-        padding: 0;
-        margin: 0;
-        margin-top: 10px;
-    }
-
-    .menu-item-has-children:hover .sub-menu {
-        opacity: 1;
-        visibility: visible;
-        transform: translateY(0);
-    }
-
-    .sub-menu li {
-        margin: 0;
-    }
-
-    .sub-menu a {
-        display: block;
-        padding: 10px 16px;
-        color: var(--primary) !important;
-        text-decoration: none;
-        transition: all 0.2s ease;
-        font-size: 14px;
-    }
-
-    .sub-menu a:hover {
-        background: var(--border);
-        color: var(--primary) !important;
-    }
-
-    .sub-menu li:first-child a {
-        border-radius: calc(var(--radius) - 1px) calc(var(--radius) - 1px) 0 0;
-    }
-
-    .sub-menu li:last-child a {
-        border-radius: 0 0 calc(var(--radius) - 1px) calc(var(--radius) - 1px);
-    }
-
-    /* 다크 모드 스타일 */
-    .dark .header {
-        background: var(--theme);
-        border-color: var(--border);
-    }
-
-    .dark .sub-menu {
-        background: var(--entry);
-        border-color: var(--border);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-    }
-
-    .dark .sub-menu a:hover {
-        background: var(--border);
-    }
-
-    /* 모바일 대응 */
-    @media (max-width: 768px) {
-        .menu-item-has-children {
-            position: static;
-        }
-
-        .sub-menu {
-            position: static;
-            opacity: 1;
-            visibility: visible;
-            transform: none;
-            box-shadow: none;
-            border: none;
-            margin-top: 0;
-            margin-left: 20px;
-            display: none;
-        }
-
-        .menu-item-has-children.active .sub-menu {
-            display: block;
-        }
-
-        .menu-dropdown-icon {
-            float: right;
-        }
-    }
-
-    /* ========================================
-       Mobile Hamburger Menu & Drawer
-       ======================================== */
-    .mobile-menu-btn {
-        display: none;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        width: 40px;
-        height: 40px;
-        padding: 8px;
-        background: transparent;
-        border: none;
-        cursor: pointer;
-        z-index: 1001;
-    }
-
-    .hamburger-line {
-        display: block;
-        width: 22px;
-        height: 2px;
-        background: var(--text-primary);
-        border-radius: 2px;
-        transition: all 0.3s ease;
-        margin: 3px 0;
-    }
-
-    .mobile-menu-btn.active .hamburger-line:nth-child(1) {
-        transform: rotate(45deg) translate(5px, 5px);
-    }
-
-    .mobile-menu-btn.active .hamburger-line:nth-child(2) {
-        opacity: 0;
-    }
-
-    .mobile-menu-btn.active .hamburger-line:nth-child(3) {
-        transform: rotate(-45deg) translate(6px, -6px);
-    }
-
-    .mobile-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.5);
-        opacity: 0;
-        visibility: hidden;
-        transition: opacity 0.3s ease, visibility 0.3s ease;
-        z-index: 99;
-    }
-
-    .mobile-overlay.active {
-        opacity: 1;
-        visibility: visible;
-    }
-
-    @media (max-width: 768px) {
-        .mobile-menu-btn {
-            display: flex;
-        }
-
-        #menu {
-            position: fixed;
-            top: 0;
-            right: 0;
-            width: 280px;
-            max-width: 80vw;
-            height: 100vh;
-            flex-direction: column;
-            justify-content: flex-start;
-            align-items: stretch;
-            padding: 80px 24px 24px 24px;
-            gap: 0;
-            background: var(--bg-primary);
-            box-shadow: -4px 0 20px rgba(0, 0, 0, 0.15);
-            transition: transform 0.3s ease;
-            z-index: 100;
-            overflow-y: auto;
-            overflow-x: hidden;
-            transform: translateX(100%);
-        }
-
-        .dark #menu {
-            background: var(--dark-bg-primary);
-            box-shadow: -4px 0 20px rgba(0, 0, 0, 0.4);
-        }
-
-        #menu.active {
-            transform: translateX(0);
-        }
-
-        #menu li {
-            width: 100%;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        #menu li:last-child {
-            border-bottom: none;
-        }
-
-        #menu .menu-link {
-            display: block;
-            padding: 16px 8px;
-            font-size: 1.1rem;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .logo-switches {
-            position: fixed;
-            top: 18px;
-            right: 60px;
-            z-index: 1002;
-        }
-
-        .logo {
-            margin-right: 0;
-        }
-
-        .nav {
-            padding: 0 16px;
-        }
-    }
-
-    @media (max-width: 480px) {
-        #menu {
-            width: 100%;
-        }
-    }
-</style>
-
 <script>
-    // 모바일에서 드롭다운 토글
-    document.addEventListener('DOMContentLoaded', function () {
-        const menuItems = document.querySelectorAll('.menu-item-has-children');
-        const isMobile = window.innerWidth <= 768;
-
-        menuItems.forEach(item => {
-            const link = item.querySelector('a');
-            const subMenu = item.querySelector('.sub-menu');
-
-            if (isMobile) {
-                // 모바일: 클릭으로 토글
-                link.addEventListener('click', function (e) {
-                    if (subMenu) {
-                        e.preventDefault();
-
-                        // 다른 열린 메뉴 닫기
-                        menuItems.forEach(other => {
-                            if (other !== item) {
-                                other.classList.remove('active');
-                            }
-                        });
-
-                        item.classList.toggle('active');
-                    }
-                });
+    // Theme Toggle Logic
+    const themeToggle = document.getElementById('theme-toggle');
+    if (themeToggle) {
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark');
+            document.documentElement.classList.toggle('dark');
+            if (document.body.classList.contains('dark')) {
+                localStorage.setItem('pref-theme', 'dark');
             } else {
-                // 데스크톱: 호버 효과 유지
-                let timeout;
-
-                item.addEventListener('mouseenter', function () {
-                    clearTimeout(timeout);
-                });
-
-                item.addEventListener('mouseleave', function () {
-                    timeout = setTimeout(() => {
-                        // 지연된 닫기 (사용자 경험 개선)
-                    }, 100);
-                });
+                localStorage.setItem('pref-theme', 'light');
             }
         });
+    }
 
-        // 외부 클릭시 메뉴 닫기
-        document.addEventListener('click', function (e) {
-            if (!e.target.closest('.menu-item-has-children')) {
-                menuItems.forEach(item => {
-                    item.classList.remove('active');
-                });
+    // Mobile Menu Toggle Logic
+    const mobileBtn = document.getElementById('mobile-menu-toggle');
+    const mobileMenu = document.getElementById('mobile-menu');
+
+    if (mobileBtn && mobileMenu) {
+        mobileBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+            mobileMenu.classList.toggle('flex');
+            const icon = mobileBtn.querySelector('span');
+            if (mobileMenu.classList.contains('flex')) {
+                icon.textContent = 'close';
+            } else {
+                icon.textContent = 'menu';
             }
         });
-
-        // Mobile Menu Toggle
-        const mobileMenuBtn = document.getElementById('mobile-menu-toggle');
-        const mobileMenu = document.getElementById('menu');
-        const mobileOverlay = document.getElementById('mobile-menu-overlay');
-
-        function toggleMobileMenu() {
-            const isOpen = mobileMenu.classList.contains('active');
-            mobileMenu.classList.toggle('active');
-            mobileMenuBtn.classList.toggle('active');
-            mobileOverlay.classList.toggle('active');
-            mobileMenuBtn.setAttribute('aria-expanded', !isOpen);
-            document.body.style.overflow = isOpen ? '' : 'hidden';
-        }
-
-        if (mobileMenuBtn) {
-            mobileMenuBtn.addEventListener('click', toggleMobileMenu);
-        }
-
-        if (mobileOverlay) {
-            mobileOverlay.addEventListener('click', () => {
-                if (mobileMenu.classList.contains('active')) {
-                    toggleMobileMenu();
-                }
-            });
-        }
-
-        // Close menu on resize to desktop
-        window.addEventListener('resize', () => {
-            if (window.innerWidth > 768 && mobileMenu.classList.contains('active')) {
-                mobileMenu.classList.remove('active');
-                mobileMenuBtn.classList.remove('active');
-                mobileOverlay.classList.remove('active');
-                document.body.style.overflow = '';
-            }
-        });
-
-        // Theme Toggle Logic
-        const themeToggle = document.getElementById('theme-toggle');
-        if (themeToggle) {
-            themeToggle.addEventListener('click', () => {
-                document.body.classList.toggle('dark');
-                document.documentElement.classList.toggle('dark');
-                if (document.body.classList.contains('dark')) {
-                    localStorage.setItem('pref-theme', 'dark');
-                } else {
-                    localStorage.setItem('pref-theme', 'light');
-                }
-            });
-        }
-    });
+    }
 </script>
