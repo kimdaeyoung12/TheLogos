@@ -1,234 +1,386 @@
-{{ define "main" }}
-<section class="hero-section">
-    <div id="canvas-container"></div>
-    <div class="hero-bg-animation"></div>
-    <div class="hero-container">
-        <div class="hero-content glass-card">
-            <h1 class="hero-title">
-                <span class="title-main">The Logos</span>
-                <span class="title-divider">✦</span>
-            </h1>
-            <p class="hero-subtitle"><span class="ancient-text">Ἐν ἀρχῇ ἦν ὁ λόγος</span> — 태초에 말씀이 계시니라</p>
-            <div class="hero-description">
-                <p>질서를 만들고 세상을 의미 있게 변화시키는 자만이 살아있는 자다.</p>
-                <p>과학의 언어로 신앙을 읽고, 신앙의 눈으로 기술을 바라봅니다.</p>
-            </div>
-            <div class="hero-actions">
-                <a href="/about/" class="button button-primary">
-                    <span>소개</span>
-                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"
-                        aria-hidden="true">
-                        <path d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                    </svg>
-                </a>
-                <a href="/posts/" class="button button-secondary">
-                    <span>글 목록</span>
-                </a>
-            </div>
+<!DOCTYPE html>
+<html class="dark" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>The Logos Home Improved v1</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,100..900;1,100..900&family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#135bec",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101622",
+                        "card-dark": "#1c1f27",
+                        "text-subtle": "#9da6b9",
+                    },
+                    fontFamily: {
+                        "display": ["Work Sans", "Noto Sans", "sans-serif"],
+                        "serif-title": ["Noto Serif", "serif"]
+                    },
+                    animation: {
+                        'float-slow': 'float 8s ease-in-out infinite',
+                        'float-reverse': 'float-reverse 10s ease-in-out infinite',
+                        'spin-slow': 'spin 15s linear infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0) rotate(0deg)' },
+                            '50%': { transform: 'translateY(-20px) rotate(5deg)' },
+                        },
+                        'float-reverse': {
+                            '0%, 100%': { transform: 'translateY(0) rotate(0deg)' },
+                            '50%': { transform: 'translateY(20px) rotate(-5deg)' },
+                        }
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        .perspective-container {
+            perspective: 1000px;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform-style: preserve-3d;
+        }
+
+        .dark .glass-card {
+            background: rgba(28, 31, 39, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        }
+
+        .glass-card:hover {
+            transform: translateY(-8px) scale(1.02) rotateX(2deg);
+            box-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.4), 0 0 20px rgba(19, 91, 236, 0.2);
+            border-color: rgba(19, 91, 236, 0.4);
+            z-index: 10;
+        }
+
+        .title-3d {
+            text-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            transform: perspective(500px) rotateX(10deg);
+            transform-origin: center bottom;
+            display: inline-block;
+            filter: drop-shadow(0px 4px 0px rgba(0, 0, 0, 0.3));
+        }
+
+        .neu-pressed {
+            background: #eef0f5;
+            box-shadow: inset 3px 3px 6px #cbced1, inset -3px -3px 6px #ffffff;
+            border: none;
+        }
+
+        .dark .neu-pressed {
+            background: #0d111a;
+            box-shadow: inset 4px 4px 8px #080a10, inset -4px -4px 8px #181e2a;
+        }
+
+        .neu-flat {
+            background: linear-gradient(145deg, #ffffff, #e6e6e6);
+            box-shadow: 4px 4px 8px #d1d1d1, -4px -4px 8px #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+
+        .dark .neu-flat {
+            background: linear-gradient(145deg, #1c2331, #121620);
+            box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5), -5px -5px 10px rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .neu-flat:hover {
+            transform: translateY(-2px);
+            box-shadow: 6px 6px 12px rgba(0, 0, 0, 0.6), -6px -6px 12px rgba(255, 255, 255, 0.05);
+        }
+
+        .neu-flat:active {
+            transform: translateY(0);
+            box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.5);
+        }
+
+        .floating-shape {
+            position: absolute;
+            opacity: 0.15;
+            pointer-events: none;
+        }
+    </style>
+</head>
+
+<body
+    class="bg-background-light dark:bg-background-dark font-display text-gray-900 dark:text-white antialiased overflow-x-hidden">
+    <div class="fixed inset-0 z-0 pointer-events-none overflow-hidden perspective-container">
+        <div
+            class="absolute inset-0 bg-gradient-to-b from-gray-200 via-gray-100 to-white dark:from-[#080b12] dark:via-[#101622] dark:to-[#080b12]">
+        </div>
+        <div class="floating-shape top-[10%] left-[5%] w-32 h-32 animate-float-slow text-primary">
+            <svg class="w-full h-full" fill="none" stroke="currentColor" stroke-width="0.5" viewBox="0 0 24 24">
+                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 7v10l10 5 10-5V7l-10 5-10-5z"></path>
+            </svg>
+        </div>
+        <div
+            class="floating-shape top-[40%] right-[8%] w-48 h-48 animate-spin-slow opacity-10 dark:text-gray-400 text-gray-800">
+            <svg class="w-full h-full" fill="none" stroke="currentColor" stroke-width="0.3" viewBox="0 0 24 24">
+                <path
+                    d="M21 16.5c0 .38-.21.71-.53.88l-7.9 4.44c-.16.12-.36.18-.57.18-.21 0-.41-.06-.57-.18l-7.9-4.44A.991.991 0 0 1 3 16.5v-9c0-.38.21-.71.53-.88l7.9-4.44A.99.99 0 0 1 12 2.1c.21 0 .41.06.57.18l7.9 4.44c.32.17.53.5.53.88v9zM12 4.15L6.04 7.5 12 10.85l5.96-3.35L12 4.15zM5 15.91l6 3.38v-6.71L5 9.21v6.7zM13 19.29l6-3.38V9.21l-6 3.38v6.7z">
+                </path>
+            </svg>
+        </div>
+        <div class="floating-shape bottom-[15%] left-[15%] w-24 h-24 animate-float-reverse text-primary/50">
+            <svg class="w-full h-full" fill="none" stroke="currentColor" stroke-width="0.5" viewBox="0 0 24 24">
+                <path d="M12 2L2 22h20L12 2zm0 4l6.5 13h-13L12 6z"></path>
+                <path d="M12 6v13"></path>
+            </svg>
+        </div>
+        <div
+            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/10 blur-[100px] rounded-full animate-pulse">
         </div>
     </div>
-</section>
-
-<div class="sections-container">
-    <!-- Religion Section -->
-    <section class="category-section" id="section-religion">
-        <div class="category-container">
-            <div class="category-header-3d">
-                <div class="monolith-plate">
-                    <div class="icon-layer">
-                        <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M12 2v20"></path>
-                            <path d="M7 8h10"></path>
-                        </svg>
+    <div class="relative min-h-screen flex flex-col z-10">
+        <header
+            class="sticky top-0 z-50 w-full backdrop-blur-md bg-white/70 dark:bg-[#101622]/70 border-b border-white/20 dark:border-white/5 shadow-sm">
+            <div class="w-full max-w-[1280px] mx-auto px-6 h-16 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="text-white drop-shadow-md">
+                        <span class="material-symbols-outlined text-[28px] text-primary">all_inclusive</span>
                     </div>
-                    <h2 class="title-layer">Religion</h2>
-                    <p class="subtitle-layer">Truth & Faith</p>
+                    <h2 class="text-gray-900 dark:text-white text-xl font-bold tracking-tight drop-shadow-sm">THE LOGOS
+                    </h2>
                 </div>
-                <div class="depth-layer-back"></div>
+                <nav class="hidden md:flex items-center gap-8">
+                    <a class="text-sm font-medium hover:text-primary transition-colors text-gray-700 dark:text-gray-300 drop-shadow-sm"
+                        href="#">Home</a>
+                    <a class="text-sm font-medium hover:text-primary transition-colors text-gray-700 dark:text-gray-300 drop-shadow-sm"
+                        href="#">Articles</a>
+                    <a class="text-sm font-medium hover:text-primary transition-colors text-gray-700 dark:text-gray-300 drop-shadow-sm"
+                        href="#">About</a>
+                    <a class="text-sm font-medium hover:text-primary transition-colors text-gray-700 dark:text-gray-300 drop-shadow-sm"
+                        href="#">Login</a>
+                </nav>
+                <div class="flex items-center gap-4">
+                    <button
+                        class="hidden md:flex bg-primary hover:bg-primary/90 text-white text-sm font-bold h-9 px-5 rounded-lg items-center justify-center transition-all shadow-lg shadow-primary/30 active:scale-95 neu-flat border-none">
+                        Subscribe
+                    </button>
+                    <button class="md:hidden text-gray-700 dark:text-white">
+                        <span class="material-symbols-outlined">menu</span>
+                    </button>
+                </div>
             </div>
-            <div class="category-posts-grid">
-                {{ range first 3 (where .Site.RegularPages "Params.categories" "intersect" (slice "religion")) }}
-                <a href="{{ .RelPermalink }}" class="post-card-3d">
-                    <span class="post-card-date">{{ .Date.Format "Jan 2, 2006" }}</span>
-                    <h3 class="post-card-title">{{ .Title }}</h3>
-                    <p class="post-card-excerpt">{{ .Summary | plainify | truncate 120 }}</p>
-                </a>
-                {{ end }}
-                <a href="/posts/?category=religion" class="post-card-3d view-more-card">
-                    <span class="view-more-text">
-                        View All
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <line x1="5" y1="12" x2="19" y2="12"></line>
-                            <polyline points="12 5 19 12 12 19"></polyline>
-                        </svg>
-                    </span>
-                </a>
-            </div>
-        </div>
-    </section>
-
-    <!-- Philosophy Section -->
-    <section class="category-section" id="section-philosophy">
-        <div class="category-container">
-            <div class="category-header-3d">
-                <div class="monolith-plate">
-                    <div class="icon-layer">
-                        <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                            <path
-                                d="M15 14c.2-1 .7-1.7 1.5-2.5 1-1 1.5-2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5">
-                            </path>
-                            <path d="M9 18h6"></path>
-                            <path d="M10 22h4"></path>
-                        </svg>
+        </header>
+        <section
+            class="relative w-full flex flex-col items-center justify-center py-20 px-4 md:py-32 overflow-hidden perspective-container">
+            <div class="relative z-10 w-full max-w-[800px] flex flex-col items-center text-center gap-6">
+                <h1
+                    class="title-3d text-5xl md:text-8xl font-black tracking-tighter pb-4 bg-clip-text text-transparent bg-gradient-to-b from-gray-800 via-gray-600 to-gray-400 dark:from-white dark:via-gray-200 dark:to-gray-500">
+                    THE LOGOS
+                </h1>
+                <p
+                    class="text-lg md:text-xl text-gray-600 dark:text-text-subtle max-w-xl leading-relaxed drop-shadow-md">
+                    Exploring the intersections of faith, reason, and the cosmos through an academic lens.
+                </p>
+                <div class="w-full max-w-md mt-8 relative group">
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-20">
+                        <span class="material-symbols-outlined text-gray-400">search</span>
                     </div>
-                    <h2 class="title-layer">Philosophy</h2>
-                    <p class="subtitle-layer">Reason & Being</p>
-                </div>
-                <div class="depth-layer-back"></div>
-            </div>
-            <div class="category-posts-grid">
-                {{ range first 3 (where .Site.RegularPages "Params.categories" "intersect" (slice "philosophy")) }}
-                <a href="{{ .RelPermalink }}" class="post-card-3d">
-                    <span class="post-card-date">{{ .Date.Format "Jan 2, 2006" }}</span>
-                    <h3 class="post-card-title">{{ .Title }}</h3>
-                    <p class="post-card-excerpt">{{ .Summary | plainify | truncate 120 }}</p>
-                </a>
-                {{ end }}
-                <a href="/posts/?category=philosophy" class="post-card-3d view-more-card">
-                    <span class="view-more-text">
-                        View All
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <line x1="5" y1="12" x2="19" y2="12"></line>
-                            <polyline points="12 5 19 12 12 19"></polyline>
-                        </svg>
-                    </span>
-                </a>
-            </div>
-        </div>
-    </section>
-
-    <!-- Engineering Section -->
-    <section class="category-section" id="section-engineering">
-        <div class="category-container">
-            <div class="category-header-3d">
-                <div class="monolith-plate">
-                    <div class="icon-layer">
-                        <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect>
-                            <rect x="9" y="9" width="6" height="6"></rect>
-                            <line x1="9" y1="1" x2="9" y2="4"></line>
-                            <line x1="15" y1="1" x2="15" y2="4"></line>
-                            <line x1="9" y1="20" x2="9" y2="23"></line>
-                            <line x1="15" y1="20" x2="15" y2="23"></line>
-                            <line x1="20" y1="9" x2="23" y2="9"></line>
-                            <line x1="20" y1="15" x2="23" y2="15"></line>
-                            <line x1="1" y1="9" x2="4" y2="9"></line>
-                            <line x1="1" y1="15" x2="4" y2="15"></line>
-                        </svg>
+                    <input
+                        class="block w-full pl-12 pr-4 py-4 rounded-xl text-sm text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all neu-pressed"
+                        placeholder="Search topics, authors, or ideas..." type="text" />
+                    <div class="absolute inset-y-2 right-2">
+                        <button
+                            class="h-full px-6 text-white bg-primary rounded-lg text-sm font-bold transition-all neu-flat border-none active:scale-95 hover:text-white">
+                            Search
+                        </button>
                     </div>
-                    <h2 class="title-layer">Engineering</h2>
-                    <p class="subtitle-layer">Logic & System</p>
                 </div>
-                <div class="depth-layer-back"></div>
             </div>
-            <div class="category-posts-grid">
-                {{ range first 3 (where .Site.RegularPages "Params.categories" "intersect" (slice "engineering")) }}
-                <a href="{{ .RelPermalink }}" class="post-card-3d">
-                    <span class="post-card-date">{{ .Date.Format "Jan 2, 2006" }}</span>
-                    <h3 class="post-card-title">{{ .Title }}</h3>
-                    <p class="post-card-excerpt">{{ .Summary | plainify | truncate 120 }}</p>
-                </a>
-                {{ end }}
-                <a href="/posts/?category=engineering" class="post-card-3d view-more-card">
-                    <span class="view-more-text">
-                        View All
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <line x1="5" y1="12" x2="19" y2="12"></line>
-                            <polyline points="12 5 19 12 12 19"></polyline>
-                        </svg>
-                    </span>
+        </section>
+        <main class="w-full max-w-[1280px] mx-auto px-6 py-12 flex-1 relative z-10">
+            <div class="flex items-center justify-between mb-8 border-b border-gray-200 dark:border-white/10 pb-4">
+                <h2 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white drop-shadow-sm">Explore
+                    Disciplines</h2>
+                <a class="text-sm font-medium text-primary hover:text-primary/80 flex items-center gap-1" href="#">
+                    View all <span class="material-symbols-outlined text-sm">arrow_forward</span>
                 </a>
             </div>
-        </div>
-    </section>
-
-    <!-- Writing Section -->
-    <section class="category-section" id="section-writing">
-        <div class="category-container">
-            <div class="category-header-3d">
-                <div class="monolith-plate">
-                    <div class="icon-layer">
-                        <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"></path>
-                            <line x1="16" y1="8" x2="2" y2="22"></line>
-                            <line x1="17.5" y1="15" x2="9" y2="15"></line>
-                        </svg>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 perspective-container">
+                <div class="md:col-span-2 group relative overflow-hidden rounded-2xl glass-card">
+                    <div class="flex flex-col md:flex-row h-full">
+                        <div class="w-full md:w-1/2 h-64 md:h-auto bg-cover bg-center relative"
+                            data-alt="Abstract golden light shining through ancient cathedral arches"
+                            style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDvVXmyNVJc4ZG-TfDfcxXgD7E4KikCUr0Qa51RCIXH5jYEdnQ1Lj_9rc4VWD88ZF9PT8wYKyIUHcO82Rs3msDOvcxzpQcumotCtq9jOVCgLWclPE8F3XQRo-WBuzdIWuDuXFcbC9pJl3pEoK-czWsKBj8yJgxOepGYJHtwnUZ2GCOKhjijgReGgPnYSYEI95rv6edJA4S-dBnjiEFGPRklGoDTQgYolHxI9Qfj2Acwn0mITpZC1L4l6IP2cAdkx6du7k5Mtx-pwq_N');">
+                            <div
+                                class="absolute inset-0 bg-gradient-to-r from-transparent to-white/80 dark:to-[#1c1f27]/80 md:to-transparent">
+                            </div>
+                        </div>
+                        <div class="p-6 md:p-8 flex flex-col justify-center flex-1 relative">
+                            <div
+                                class="flex items-center gap-2 mb-3 text-xs font-bold uppercase tracking-wider text-primary">
+                                <span class="material-symbols-outlined text-sm">church</span> Religion
+                            </div>
+                            <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-3">Divine & Sacred Texts</h3>
+                            <p class="text-gray-600 dark:text-gray-300 mb-6 line-clamp-3">
+                                Examining the historical context of scripture through a modern lens, bridging ancient
+                                wisdom with contemporary understanding.
+                            </p>
+                            <div class="mt-auto">
+                                <a class="inline-flex items-center text-sm font-semibold text-gray-900 dark:text-white hover:text-primary dark:hover:text-primary transition-colors"
+                                    href="#">
+                                    Read Article <span
+                                        class="material-symbols-outlined ml-1 text-sm">arrow_forward</span>
+                                </a>
+                            </div>
+                        </div>
                     </div>
-                    <h2 class="title-layer">Writing</h2>
-                    <p class="subtitle-layer">Record & Memory</p>
                 </div>
-                <div class="depth-layer-back"></div>
+                <div
+                    class="md:col-span-1 md:row-span-2 group relative overflow-hidden rounded-2xl glass-card flex flex-col">
+                    <div class="h-64 bg-cover bg-center relative"
+                        data-alt="Black and white bust of a Greek philosopher with geometric overlay"
+                        style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBGXZJsRbg-lMxK94hZgAGqhIpadVbtCpur8q64ihuFlldzx-pRzQP0rU0ycZ8dPTYGcVHApdQLpFnQ2kBX6OUbJiQtbH0U_vy_ISLhT8QmNULGhXQsexSDbCnwe1MJRhA7Kx4RQ2vxHrW6snBhPcL_7tu3dA5vOmViw9M88B1uTF0Ip95TJCI5ZvrqUuQeNN8TlSEWIvnw0rNDvLhpRixXQf8wohX9azweWGRN9Y2bu6JKTrK3rDoWX43ji6Z-Pds5UweCekR_ShOx');">
+                        <div
+                            class="absolute inset-0 bg-gradient-to-t from-white dark:from-[#1c1f27] via-transparent to-transparent opacity-90">
+                        </div>
+                    </div>
+                    <div class="p-6 flex flex-col flex-1 relative">
+                        <div
+                            class="flex items-center gap-2 mb-3 text-xs font-bold uppercase tracking-wider text-primary">
+                            <span class="material-symbols-outlined text-sm">psychology</span> Philosophy
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3">The Nature of Existence</h3>
+                        <p class="text-gray-600 dark:text-gray-300 mb-6 flex-1">
+                            Questioning reality, knowledge, and ethical frameworks in a post-truth era. What does it
+                            mean to be truly conscious?
+                        </p>
+                        <div class="mt-auto pt-4 border-t border-gray-200/50 dark:border-white/10">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs text-gray-500">5 min read</span>
+                                <button
+                                    class="bg-gray-100 dark:bg-black/30 p-2 rounded-full hover:bg-primary hover:text-white transition-colors neu-flat border-none">
+                                    <span class="material-symbols-outlined text-sm">bookmark</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="group relative overflow-hidden rounded-2xl glass-card flex flex-col">
+                    <div class="h-48 bg-cover bg-center"
+                        data-alt="Nebula and starry space background with deep blue colors"
+                        style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuD0UQUs18uLNmrT5I4OKrWOPoVyj6K5e9vNGK8q9sqjRlKGLFa08vZvYhZC2rg8z1dPzrzoZfoxbiO-aV3wjSC3-ZXoOQtI7Ggq5hBGHsMb0uFU-4-apUAOzr3M9NVrJKkAItOXgLSZaAKGAtKqlX773tgQSTLFqDEz0rz_oOc3BmGZXxmvDU8cqdc8KTol-wlf8ry1b_ZC7KZAztTOOsD3frUrvpDS2gqauBtKM7xLjAd4zf1ixQ1ejZoMtmIP83K3Qi7sXn37zRxY');">
+                    </div>
+                    <div class="p-6">
+                        <div
+                            class="flex items-center gap-2 mb-3 text-xs font-bold uppercase tracking-wider text-primary">
+                            <span class="material-symbols-outlined text-sm">science</span> Science
+                        </div>
+                        <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Cosmic Origins</h3>
+                        <p class="text-sm text-gray-600 dark:text-gray-300 mb-4">
+                            From the Big Bang to quantum mechanics, understanding the fabric of our universe.
+                        </p>
+                        <a class="text-sm font-medium text-primary hover:underline" href="#">Read more</a>
+                    </div>
+                </div>
+                <div class="group relative overflow-hidden rounded-2xl glass-card flex flex-col">
+                    <div class="h-48 bg-cover bg-center"
+                        data-alt="Abstract geometric shapes representing balance and justice"
+                        style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuB1ElOysd4LJhukNhurCI_5bu1GHsdBqBWMhdY9l-0s-5xWMXxm1ckiOlFJ2VuwHYoZ8oY6UxohiDSu8iMCR59fcXRUylkiND9bvGDVW8SDDtNGMI1_V2zo6IAhCkGuc9nGyRK39_lfMeH0acZ0UiMenK1N3EWGl09UTi_bTR1wOPkf6MNoK-OZj6HzVx863keZ3YUGIkeJu5vj7yxff0GE3DTb-25DJx72GZfvSWTDGCN97AyRMnN030Z_90m0hHxvFbWluZudy7C9');">
+                    </div>
+                    <div class="p-6">
+                        <div
+                            class="flex items-center gap-2 mb-3 text-xs font-bold uppercase tracking-wider text-primary">
+                            <span class="material-symbols-outlined text-sm">balance</span> Ethics
+                        </div>
+                        <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Moral Dilemmas</h3>
+                        <p class="text-sm text-gray-600 dark:text-gray-300 mb-4">
+                            Navigating the complex landscape of right and wrong in modern society.
+                        </p>
+                        <a class="text-sm font-medium text-primary hover:underline" href="#">Read more</a>
+                    </div>
+                </div>
             </div>
-            <div class="category-posts-grid">
-                {{ range first 3 (where .Site.RegularPages "Params.categories" "intersect" (slice "writing")) }}
-                <a href="{{ .RelPermalink }}" class="post-card-3d">
-                    <span class="post-card-date">{{ .Date.Format "Jan 2, 2006" }}</span>
-                    <h3 class="post-card-title">{{ .Title }}</h3>
-                    <p class="post-card-excerpt">{{ .Summary | plainify | truncate 120 }}</p>
-                </a>
-                {{ end }}
-                <a href="/posts/?category=writing" class="post-card-3d view-more-card">
-                    <span class="view-more-text">
-                        View All
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <line x1="5" y1="12" x2="19" y2="12"></line>
-                            <polyline points="12 5 19 12 12 19"></polyline>
-                        </svg>
-                    </span>
-                </a>
+            <div class="mt-16 rounded-2xl p-8 md:p-12 text-center relative overflow-hidden glass-card border-none">
+                <div class="absolute inset-0 bg-gradient-to-r from-background-dark/80 to-[#1c1f27]/90 -z-10"></div>
+                <div class="absolute top-0 right-0 p-12 opacity-10">
+                    <span class="material-symbols-outlined text-9xl text-white">mail</span>
+                </div>
+                <div class="relative z-10 max-w-2xl mx-auto">
+                    <h3 class="text-2xl font-bold text-white mb-4 drop-shadow-lg">Join the Intellectual Pursuit</h3>
+                    <p class="text-gray-300 mb-8">Get weekly insights on philosophy, theology, and science delivered
+                        directly to your inbox.</p>
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <input
+                            class="flex-1 rounded-xl px-4 py-3 outline-none text-white placeholder:text-gray-500 transition-all neu-pressed"
+                            placeholder="Enter your email address" type="email" />
+                        <button
+                            class="bg-primary hover:bg-primary/90 text-white font-bold py-3 px-8 rounded-xl transition-all shadow-lg shadow-primary/25 active:scale-95 neu-flat border-none">
+                            Subscribe
+                        </button>
+                    </div>
+                </div>
             </div>
-        </div>
-    </section>
-</div>
+        </main>
+        <footer
+            class="w-full border-t border-gray-200 dark:border-white/5 bg-white/80 dark:bg-background-dark/90 backdrop-blur-md py-12 px-6 relative z-10">
+            <div class="max-w-[1280px] mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div class="col-span-1 md:col-span-1">
+                    <div class="flex items-center gap-2 mb-4">
+                        <span class="material-symbols-outlined text-primary">all_inclusive</span>
+                        <span class="font-bold text-lg dark:text-white">THE LOGOS</span>
+                    </div>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">
+                        Illuminating the path to understanding through rigorous inquiry and open dialogue.
+                    </p>
+                </div>
+                <div>
+                    <h4 class="font-bold text-gray-900 dark:text-white mb-4">Discover</h4>
+                    <ul class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+                        <li><a class="hover:text-primary transition-colors" href="#">Philosophy</a></li>
+                        <li><a class="hover:text-primary transition-colors" href="#">Religion</a></li>
+                        <li><a class="hover:text-primary transition-colors" href="#">Science</a></li>
+                        <li><a class="hover:text-primary transition-colors" href="#">History</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold text-gray-900 dark:text-white mb-4">Community</h4>
+                    <ul class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+                        <li><a class="hover:text-primary transition-colors" href="#">Events</a></li>
+                        <li><a class="hover:text-primary transition-colors" href="#">Forum</a></li>
+                        <li><a class="hover:text-primary transition-colors" href="#">Authors</a></li>
+                        <li><a class="hover:text-primary transition-colors" href="#">Podcasts</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold text-gray-900 dark:text-white mb-4">Legal</h4>
+                    <ul class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+                        <li><a class="hover:text-primary transition-colors" href="#">Privacy Policy</a></li>
+                        <li><a class="hover:text-primary transition-colors" href="#">Terms of Service</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div
+                class="max-w-[1280px] mx-auto mt-12 pt-8 border-t border-gray-100 dark:border-white/5 text-center text-sm text-gray-500">
+                © 2024 The Logos. All rights reserved.
+            </div>
+        </footer>
+    </div>
+</body>
 
-{{- /* Include Home CSS */ -}}
-{{- $home_css := resources.Get "css/home.css" | minify | fingerprint -}}
-<link rel="stylesheet" href="{{ $home_css.Permalink }}" integrity="{{ $home_css.Data.Integrity }}">
-
-{{- /* Include 3D Layout CSS */ -}}
-{{- $layout_css := resources.Get "css/home-3d-layout.css" | minify | fingerprint -}}
-<link rel="stylesheet" href="{{ $layout_css.Permalink }}" integrity="{{ $layout_css.Data.Integrity }}">
-
-{{- /* Load 3D Hero Script (Black Swan Attractor) */ -}}
-{{- $hero_js := resources.Get "js/black-swan-attractor.js" | fingerprint -}}
-<script type="module" src="{{ $hero_js.Permalink }}" integrity="{{ $hero_js.Data.Integrity }}"></script>
-
-{{- /* Load 3D Tilt Script */ -}}
-{{- $tilt_js := resources.Get "js/tilt-3d.js" | fingerprint -}}
-<script src="{{ $tilt_js.Permalink }}" integrity="{{ $tilt_js.Data.Integrity }}"></script>
-
-<!-- Parallax Script for Monoliths -->
-<script>
-    document.addEventListener('mousemove', (e) => {
-        const headers = document.querySelectorAll('.category-header-3d');
-        const x = (e.clientX / window.innerWidth - 0.5) * 20; // -10 to 10 deg
-        const y = (e.clientY / window.innerHeight - 0.5) * 20;
-
-        headers.forEach(header => {
-            const rect = header.getBoundingClientRect();
-            if (rect.top < window.innerHeight && rect.bottom > 0) {
-                // Apply subtle tilt
-                header.style.transform = `perspective(1000px) rotateY(${x * 0.5}deg) rotateX(${-y * 0.5}deg)`;
-            }
-        });
-    });
-</script>
-{{ end }}
+</html>
