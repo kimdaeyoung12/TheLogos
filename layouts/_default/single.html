@@ -153,6 +153,9 @@
     <div class="article-container">
         <div class="article-content" itemprop="articleBody">
             {{ .Content }}
+
+            <!-- Content Verification Badge -->
+            {{ partial "verification_badge.html" . }}
         </div>
 
         <!-- Task 1: Sticky TOC Sidebar - Only show if has real headers, not shortcode garbage -->
