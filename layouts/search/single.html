@@ -77,13 +77,17 @@
         const html = results.map(result => {
             const item = result.item;
             return `
-            <a href="${item.permalink}" class="group relative block bg-white dark:bg-design-card-dark rounded-xl overflow-hidden border border-gray-100 dark:border-white/5 hover:border-design-primary/30 transition-all hover:-translate-y-1 shadow-sm hover:shadow-md">
-                <div class="p-6">
+            <a href="${item.permalink}" class="group relative flex flex-col sm:flex-row bg-white dark:bg-design-card-dark rounded-xl overflow-hidden border border-gray-100 dark:border-white/5 hover:border-design-primary/30 transition-all hover:-translate-y-1 shadow-sm hover:shadow-md h-full">
+                <!-- Text Content -->
+                <div class="p-6 flex flex-col flex-1">
                     <div class="flex items-center gap-2 mb-3">
                          <span class="text-xs font-bold uppercase tracking-wider text-design-primary">${item.categories ? item.categories[0] : 'Article'}</span>
                     </div>
                     <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2 group-hover:text-design-primary transition-colors">${item.title}</h3>
-                    <p class="text-sm text-gray-600 dark:text-gray-400 line-clamp-3">${item.description || item.summary || ''}</p>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 line-clamp-3 mb-4">${item.description || item.summary || ''}</p>
+                    <div class="mt-auto flex items-center text-sm font-medium text-design-primary">
+                        Read Article <span class="material-symbols-outlined text-sm ml-1">arrow_forward</span>
+                    </div>
                 </div>
             </a>
             `;
