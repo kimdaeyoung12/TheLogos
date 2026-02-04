@@ -12,7 +12,7 @@
         </div>
 
         <!-- Desktop Nav -->
-        <nav class="d-desktop-flex items-center gap-8">
+        <nav id="desktop-nav" class="items-center gap-8">
             <a class="text-sm font-medium hover:text-design-primary transition-colors text-gray-700 dark:text-gray-300 drop-shadow-sm"
                 href="{{ "" | absLangURL }}">Home</a>
             <a class="text-sm font-medium hover:text-design-primary transition-colors text-gray-700 dark:text-gray-300 drop-shadow-sm"
@@ -28,13 +28,12 @@
                 class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-gray-700 dark:text-white"
                 aria-label="Toggle Theme">
                 <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                    class="d-dark-block">
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
                 </svg>
                 <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                    class="d-light-block">
+                    style="display: none;">
                     <circle cx="12" cy="12" r="5"></circle>
                     <line x1="12" y1="1" x2="12" y2="3"></line>
                     <line x1="12" y1="21" x2="12" y2="23"></line>
@@ -48,19 +47,19 @@
             </button>
 
             <!-- Network Button - Desktop only -->
-            <a href="{{ " network" | absLangURL }}"
-                class="d-desktop-flex bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-white text-sm font-bold h-9 px-4 rounded-lg items-center justify-center transition-all border border-gray-200 dark:border-white/10">
+            <a id="network-btn" href="{{ " network" | absLangURL }}"
+                class="bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-white text-sm font-bold h-9 px-4 rounded-lg items-center justify-center transition-all border border-gray-200 dark:border-white/10">
                 Network
             </a>
 
             <!-- Subscribe Button - Desktop only -->
-            <button onclick="alert('Subscription feature coming soon!')"
-                class="d-desktop-flex bg-design-primary hover:bg-design-primary/90 text-white text-sm font-bold h-9 px-5 rounded-lg items-center justify-center transition-all shadow-lg shadow-design-primary/30 active:scale-95 border-none">
+            <button id="subscribe-btn" onclick="alert('Subscription feature coming soon!')"
+                class="bg-design-primary hover:bg-design-primary/90 text-white text-sm font-bold h-9 px-5 rounded-lg items-center justify-center transition-all shadow-lg shadow-design-primary/30 active:scale-95 border-none">
                 Subscribe
             </button>
 
             <!-- Mobile Menu Toggle -->
-            <button id="mobile-menu-toggle" class="d-mobile-block text-gray-700 dark:text-white p-1" aria-label="Menu">
+            <button id="mobile-menu-toggle" class="text-gray-700 dark:text-white p-1" aria-label="Menu">
                 <span class="material-symbols-outlined">menu</span>
             </button>
         </div>
@@ -68,7 +67,8 @@
 
     <!-- Mobile Menu Drawer -->
     <div id="mobile-menu"
-        class="mobile-menu-hidden absolute top-16 left-0 w-full bg-white dark:bg-design-background-dark border-b border-gray-200 dark:border-white/5 shadow-lg flex-col p-4 gap-4 z-40">
+        class="absolute top-16 left-0 w-full bg-white dark:bg-design-background-dark border-b border-gray-200 dark:border-white/5 shadow-lg flex-col p-4 gap-4 z-40"
+        style="display: none;">
         <a class="text-base font-medium hover:text-design-primary transition-colors text-gray-700 dark:text-gray-300 block py-2"
             href="{{ "" | absLangURL }}">Home</a>
         <a class="text-base font-medium hover:text-design-primary transition-colors text-gray-700 dark:text-gray-300 block py-2"
@@ -85,8 +85,50 @@
     </div>
 </header>
 <script>
+    // Responsive header logic
+    function updateHeaderResponsive() {
+        const isMobile = window.innerWidth < 640;
+        const desktopNav = document.getElementById('desktop-nav');
+        const networkBtn = document.getElementById('network-btn');
+        const subscribeBtn = document.getElementById('subscribe-btn');
+        const mobileToggle = document.getElementById('mobile-menu-toggle');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        if (isMobile) {
+            // Mobile: hide desktop elements, show hamburger
+            if (desktopNav) desktopNav.style.display = 'none';
+            if (networkBtn) networkBtn.style.display = 'none';
+            if (subscribeBtn) subscribeBtn.style.display = 'none';
+            if (mobileToggle) mobileToggle.style.display = 'block';
+        } else {
+            // Desktop: show desktop elements, hide hamburger and mobile menu
+            if (desktopNav) desktopNav.style.display = 'flex';
+            if (networkBtn) networkBtn.style.display = 'flex';
+            if (subscribeBtn) subscribeBtn.style.display = 'flex';
+            if (mobileToggle) mobileToggle.style.display = 'none';
+            if (mobileMenu) mobileMenu.style.display = 'none';
+        }
+    }
+
+    // Run on load and resize
+    updateHeaderResponsive();
+    window.addEventListener('resize', updateHeaderResponsive);
+
     // Theme Toggle Logic
     const themeToggle = document.getElementById('theme-toggle');
+    const moonIcon = document.getElementById('moon');
+    const sunIcon = document.getElementById('sun');
+
+    function updateThemeIcons() {
+        if (document.body.classList.contains('dark')) {
+            if (moonIcon) moonIcon.style.display = 'block';
+            if (sunIcon) sunIcon.style.display = 'none';
+        } else {
+            if (moonIcon) moonIcon.style.display = 'none';
+            if (sunIcon) sunIcon.style.display = 'block';
+        }
+    }
+
     if (themeToggle) {
         themeToggle.addEventListener('click', () => {
             document.body.classList.toggle('dark');
@@ -96,6 +138,7 @@
             } else {
                 localStorage.setItem('pref-theme', 'light');
             }
+            updateThemeIcons();
         });
     }
 
@@ -112,6 +155,7 @@
             document.documentElement.classList.remove('dark');
         }
     }
+    updateThemeIcons();
 
     // Mobile Menu Toggle Logic
     const mobileBtn = document.getElementById('mobile-menu-toggle');
@@ -119,13 +163,11 @@
 
     if (mobileBtn && mobileMenu) {
         mobileBtn.addEventListener('click', () => {
-            mobileMenu.classList.toggle('mobile-menu-hidden');
-            mobileMenu.classList.toggle('mobile-menu-open');
+            const isOpen = mobileMenu.style.display === 'flex';
+            mobileMenu.style.display = isOpen ? 'none' : 'flex';
             const icon = mobileBtn.querySelector('span');
-            if (mobileMenu.classList.contains('mobile-menu-open')) {
-                icon.textContent = 'close';
-            } else {
-                icon.textContent = 'menu';
+            if (icon) {
+                icon.textContent = isOpen ? 'menu' : 'close';
             }
         });
     }
