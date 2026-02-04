@@ -1558,26 +1558,268 @@ body:not(.dark) ::-webkit-scrollbar-thumb {
         font-size: 1rem;
     }
 
-    .timeline-excerpt {
-        font-size: 0.85rem;
-        -webkit-line-clamp: 2;
-        line-clamp: 2;
+
+    .dark .timeline-marker {
+        border-color: var(--dark-bg-primary);
+        box-shadow: 0 0 0 3px var(--dark-bg-secondary);
+    }
+
+    /* ========================================
+   Additional Mobile Responsive Styles
+   ======================================== */
+
+    /* Tablet and below */
+    @media (max-width: 768px) {
+        main {
+            padding: 1.5rem 1rem;
+        }
+
+        .page-header {
+            margin-bottom: 40px;
+        }
+
+        .page-title {
+            font-size: 2rem;
+        }
+
+        .category-filters {
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+            overflow: visible;
+            padding-bottom: 0;
+        }
+
+        .category-filters::-webkit-scrollbar {
+            display: none;
+        }
+
+        .filter-btn {
+            padding: 8px 14px;
+            font-size: 0.85rem;
+        }
+
+        .search-container {
+            max-width: 100%;
+            margin: 16px 0;
+        }
+
+        .posts-grid {
+            grid-template-columns: 1fr;
+            gap: 16px;
+        }
+
+        .post-card {
+            padding: 20px;
+        }
+
+        .post-title {
+            font-size: 1.2rem;
+        }
+    }
+
+    /* Mobile phones */
+    @media (max-width: 640px) {
+        :root {
+            --radius-md: 10px;
+            --radius-lg: 12px;
+        }
+
+        body {
+            font-size: 15px;
+        }
+
+        h1 {
+            font-size: 1.75rem;
+        }
+
+        h2 {
+            font-size: 1.4rem;
+        }
+
+        h3 {
+            font-size: 1.2rem;
+        }
+
+        main {
+            padding: 1rem 0.75rem;
+        }
+
+        .container {
+            padding: 0 12px;
+        }
+
+        .post-entry,
+        .first-entry,
+        .post-card {
+            padding: 16px !important;
+            margin-bottom: 12px !important;
+        }
+
+        .entry-header h2 {
+            font-size: 1.2rem;
+        }
+
+        .entry-content {
+            font-size: 0.9rem;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+        }
+
+        .featured-post {
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 40px;
+        }
+
+        .featured-title {
+            font-size: 1.5rem;
+        }
+
+        .featured-excerpt {
+            font-size: 0.95rem;
+        }
+
+        .section-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+        }
+
+        footer {
+            padding: 2rem 1rem;
+            margin-top: 2rem;
+        }
+    }
+
+    /* Small phones */
+    @media (max-width: 480px) {
+        main {
+            padding: 0.75rem 0.5rem;
+        }
+
+        .page-title {
+            font-size: 1.6rem;
+        }
+
+        .category-filters {
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            justify-content: flex-start;
+            padding-bottom: 8px;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+
+        .category-filters::-webkit-scrollbar {
+            display: none;
+        }
+
+        .filter-btn {
+            flex-shrink: 0;
+            padding: 6px 12px;
+            font-size: 0.8rem;
+        }
+
+        .filter-btn .icon {
+            font-size: 1rem;
+        }
+
+        .timeline::before {
+            left: 8px;
+        }
+
+        .timeline-items {
+            margin-left: 28px;
+        }
+
+        .timeline-marker {
+            left: -24px;
+            width: 8px;
+            height: 8px;
+        }
+
+        .timeline-item {
+            padding: 14px;
+        }
+
+        .timeline-title {
+            font-size: 1rem;
+        }
+
+        .timeline-excerpt {
+            font-size: 0.85rem;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+        }
     }
 }
-/* Custom Visibility Overrides */
+
+/* ========================================
+   Custom Responsive Visibility Classes
+   ======================================== */
+
+/* Desktop (640px and above): show desktop elements, hide mobile elements */
 @media (min-width: 640px) {
     .d-desktop-flex {
         display: flex !important;
     }
-    .d-desktop-none {
+
+    .d-desktop-block {
+        display: block !important;
+    }
+
+    .d-mobile-block,
+    .d-mobile-flex {
         display: none !important;
     }
 }
+
+/* Mobile (below 640px): show mobile elements, hide desktop elements */
 @media (max-width: 639px) {
-    .d-desktop-flex {
+
+    .d-desktop-flex,
+    .d-desktop-block {
         display: none !important;
     }
-     .d-desktop-none {
+
+    .d-mobile-block {
         display: block !important;
     }
+
+    .d-mobile-flex {
+        display: flex !important;
+    }
+}
+
+/* Dark/Light mode visibility */
+.d-dark-block {
+    display: none !important;
+}
+
+.d-light-block {
+    display: block !important;
+}
+
+.dark .d-dark-block {
+    display: block !important;
+}
+
+.dark .d-light-block {
+    display: none !important;
+}
+
+/* Mobile Menu States */
+.mobile-menu-hidden {
+    display: none !important;
+}
+
+.mobile-menu-open {
+    display: flex !important;
 }
