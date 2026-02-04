@@ -11,14 +11,14 @@
             </a>
         </div>
 
-        <!-- Desktop Nav (Always Visible) -->
-        <nav class="flex items-center gap-4 sm:gap-8">
+        <!-- Desktop Nav (Hidden on Mobile) -->
+        <nav class="hidden md:flex items-center gap-4 sm:gap-8">
             <a class="text-sm font-medium hover:text-design-primary transition-colors text-gray-700 dark:text-gray-300 drop-shadow-sm"
                 href="{{ "" | absLangURL }}">Home</a>
             <a class="text-sm font-medium hover:text-design-primary transition-colors text-gray-700 dark:text-gray-300 drop-shadow-sm"
-                href="{{ "posts" | absLangURL }}">Articles</a>
+                href="{{ " posts" | absLangURL }}">Articles</a>
             <a class="text-sm font-medium hover:text-design-primary transition-colors text-gray-700 dark:text-gray-300 drop-shadow-sm"
-                href="{{ "about" | absLangURL }}">About</a>
+                href="{{ " about" | absLangURL }}">About</a>
         </nav>
 
         <!-- Right Side Actions -->
@@ -47,20 +47,20 @@
                 </svg>
             </button>
 
-            <!-- Network Button (Replaces Login) -->
-            <a href="{{ "network" | absLangURL }}"
-                class="flex bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-white text-sm font-bold h-9 px-4 rounded-lg items-center justify-center transition-all border border-gray-200 dark:border-white/10">
+            <!-- Network Button (Replaces Login) - Hidden on mobile -->
+            <a href="{{ " network" | absLangURL }}"
+                class="hidden md:flex bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-white text-sm font-bold h-9 px-4 rounded-lg items-center justify-center transition-all border border-gray-200 dark:border-white/10">
                 Network
             </a>
 
             <!-- Subscribe Button -->
             <button onclick="alert('Subscription feature coming soon!')"
-                class="hidden sm:flex bg-design-primary hover:bg-design-primary/90 text-white text-sm font-bold h-9 px-5 rounded-lg items-center justify-center transition-all shadow-lg shadow-design-primary/30 active:scale-95 border-none">
+                class="hidden md:flex bg-design-primary hover:bg-design-primary/90 text-white text-sm font-bold h-9 px-5 rounded-lg items-center justify-center transition-all shadow-lg shadow-design-primary/30 active:scale-95 border-none">
                 Subscribe
             </button>
 
-            <!-- Mobile Menu Toggle (Hidden as main nav is forced) -->
-            <button id="mobile-menu-toggle" class="hidden text-gray-700 dark:text-white p-1" aria-label="Menu">
+            <!-- Mobile Menu Toggle (Visible on mobile) -->
+            <button id="mobile-menu-toggle" class="block md:hidden text-gray-700 dark:text-white p-1" aria-label="Menu">
                 <span class="material-symbols-outlined">menu</span>
             </button>
         </div>
@@ -72,11 +72,11 @@
         <a class="text-base font-medium hover:text-design-primary transition-colors text-gray-700 dark:text-gray-300 block py-2"
             href="{{ "" | absLangURL }}">Home</a>
         <a class="text-base font-medium hover:text-design-primary transition-colors text-gray-700 dark:text-gray-300 block py-2"
-            href="{{ "posts" | absLangURL }}">Articles</a>
+            href="{{ " posts" | absLangURL }}">Articles</a>
         <a class="text-base font-medium hover:text-design-primary transition-colors text-gray-700 dark:text-gray-300 block py-2"
-            href="{{ "about" | absLangURL }}">About</a>
+            href="{{ " about" | absLangURL }}">About</a>
         <a class="text-base font-medium hover:text-design-primary transition-colors text-gray-700 dark:text-gray-300 block py-2"
-            href="{{ "network" | absLangURL }}">Network</a>
+            href="{{ " network" | absLangURL }}">Network</a>
 
         <button onclick="alert('Subscription feature coming soon!')"
             class="w-full bg-design-primary hover:bg-design-primary/90 text-white text-sm font-bold h-10 rounded-lg transition-all shadow-md active:scale-95 border-none mt-2">
