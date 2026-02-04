@@ -12,7 +12,7 @@
         </div>
 
         <!-- Desktop Nav (Hidden on Mobile) -->
-        <nav class="hidden sm:flex items-center gap-4 sm:gap-8">
+        <nav class="hidden sm:flex d-desktop-flex items-center gap-4 sm:gap-8">
             <a class="text-sm font-medium hover:text-design-primary transition-colors text-gray-700 dark:text-gray-300 drop-shadow-sm"
                 href="{{ "" | absLangURL }}">Home</a>
             <a class="text-sm font-medium hover:text-design-primary transition-colors text-gray-700 dark:text-gray-300 drop-shadow-sm"
@@ -49,18 +49,19 @@
 
             <!-- Network Button (Replaces Login) - Hidden on mobile -->
             <a href="{{ " network" | absLangURL }}"
-                class="hidden sm:flex bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-white text-sm font-bold h-9 px-4 rounded-lg items-center justify-center transition-all border border-gray-200 dark:border-white/10">
+                class="hidden sm:flex d-desktop-flex bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-white text-sm font-bold h-9 px-4 rounded-lg items-center justify-center transition-all border border-gray-200 dark:border-white/10">
                 Network
             </a>
 
             <!-- Subscribe Button -->
             <button onclick="alert('Subscription feature coming soon!')"
-                class="hidden sm:flex bg-design-primary hover:bg-design-primary/90 text-white text-sm font-bold h-9 px-5 rounded-lg items-center justify-center transition-all shadow-lg shadow-design-primary/30 active:scale-95 border-none">
+                class="hidden sm:flex d-desktop-flex bg-design-primary hover:bg-design-primary/90 text-white text-sm font-bold h-9 px-5 rounded-lg items-center justify-center transition-all shadow-lg shadow-design-primary/30 active:scale-95 border-none">
                 Subscribe
             </button>
 
             <!-- Mobile Menu Toggle (Visible on mobile) -->
-            <button id="mobile-menu-toggle" class="block sm:hidden text-gray-700 dark:text-white p-1" aria-label="Menu">
+            <button id="mobile-menu-toggle" class="block sm:hidden d-desktop-none text-gray-700 dark:text-white p-1"
+                aria-label="Menu">
                 <span class="material-symbols-outlined">menu</span>
             </button>
         </div>

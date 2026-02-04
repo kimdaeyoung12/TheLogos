@@ -1564,3 +1564,20 @@ body:not(.dark) ::-webkit-scrollbar-thumb {
         line-clamp: 2;
     }
 }
+/* Custom Visibility Overrides */
+@media (min-width: 640px) {
+    .d-desktop-flex {
+        display: flex !important;
+    }
+    .d-desktop-none {
+        display: none !important;
+    }
+}
+@media (max-width: 639px) {
+    .d-desktop-flex {
+        display: none !important;
+    }
+     .d-desktop-none {
+        display: block !important;
+    }
+}
