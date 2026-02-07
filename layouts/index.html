@@ -237,7 +237,8 @@
         </div>
 
         <!-- Subscribe Section -->
-        <div class="mt-16 rounded-2xl p-8 md:p-12 text-center relative overflow-hidden glass-card border-none">
+        <div id="subscribe"
+            class="mt-16 rounded-2xl p-8 md:p-12 text-center relative overflow-hidden glass-card border-none">
             <div class="absolute inset-0 bg-gradient-to-r from-design-background-dark/80 to-[#1c1f27]/90 -z-10"></div>
             <div class="absolute top-0 right-0 p-12 opacity-10">
                 <span class="material-symbols-outlined text-9xl text-white">mail</span>
@@ -246,15 +247,46 @@
                 <h3 class="text-2xl font-bold text-white mb-4 drop-shadow-lg">Join the Intellectual Pursuit</h3>
                 <p class="text-gray-300 mb-8">Get weekly insights on philosophy, theology, and science delivered
                     directly to your inbox.</p>
-                <div class="flex flex-col sm:flex-row gap-4">
-                    <input
-                        class="flex-1 rounded-xl px-4 py-3 outline-none text-white placeholder:text-gray-500 transition-all neu-pressed bg-transparent border border-white/10"
-                        placeholder="Enter your email address" type="email" />
-                    <button onclick="alert('Subscription feature coming soon!')"
-                        class="bg-design-primary hover:bg-design-primary/90 text-white font-bold py-3 px-8 rounded-xl transition-all shadow-lg shadow-design-primary/25 active:scale-95 neu-flat border-none">
+                <form id="kit-form" class="flex flex-col sm:flex-row gap-4"
+                    action="https://app.kit.com/forms/9062318/subscriptions" method="post" data-sv-form="9062318"
+                    data-uid="5ede2cf68e">
+                    <input name="email_address" type="email" required
+                        class="flex-1 rounded-xl px-4 py-3 outline-none text-white placeholder:text-gray-500 transition-all neu-pressed bg-transparent border border-white/10 focus:ring-2 focus:ring-design-primary/50 focus:border-transparent"
+                        placeholder="Enter your email address" />
+                    <button type="submit"
+                        class="bg-design-primary hover:bg-design-primary/90 text-white font-bold py-3 px-8 rounded-xl transition-all shadow-lg shadow-design-primary/25 active:scale-95 neu-flat border-none cursor-pointer">
                         Subscribe
                     </button>
-                </div>
+                </form>
+                <p id="kit-success" class="text-green-400 font-medium mt-4 hidden">✓ 구독해주셔서 감사합니다!</p>
+                <p id="kit-error" class="text-red-400 font-medium mt-4 hidden">구독 중 오류가 발생했습니다. 다시 시도해주세요.</p>
+                <script>
+                    document.getElementById('kit-form')?.addEventListener('submit', async function (e) {
+                        e.preventDefault();
+                        const form = e.target;
+                        const email = form.email_address.value;
+                        const btn = form.querySelector('button');
+                        const origText = btn.textContent;
+                        btn.textContent = '...';
+                        btn.disabled = true;
+                        try {
+                            const resp = await fetch(form.action, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                                body: JSON.stringify({ email_address: email })
+                            });
+                            if (resp.ok) {
+                                document.getElementById('kit-success').classList.remove('hidden');
+                                document.getElementById('kit-error').classList.add('hidden');
+                                form.classList.add('hidden');
+                            } else { throw new Error('fail'); }
+                        } catch (err) {
+                            document.getElementById('kit-error').classList.remove('hidden');
+                            btn.textContent = origText;
+                            btn.disabled = false;
+                        }
+                    });
+                </script>
             </div>
         </div>
     </main>
