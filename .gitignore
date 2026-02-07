@@ -1,5 +1,9 @@
 /index.html
 /public/
+/resources/
+/node_modules/
+.DS_Store
+hugo_server.log
 
 # API Keys and Secrets
 scripts/.env
