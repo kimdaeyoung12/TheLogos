@@ -282,6 +282,16 @@
             if (initialCategory && document.querySelector(`.filter-btn[data-category="${initialCategory}"]`)) {
                 setCategory(initialCategory, false);
             }
+
+            // Handle ?q= parameter (from home page search)
+            const initialQuery = urlParams.get('q');
+            if (initialQuery && searchInput) {
+                searchInput.value = initialQuery;
+                currentQuery = initialQuery.trim().toLowerCase().normalize('NFC');
+                if (searchClear) searchClear.classList.remove('hidden');
+                runFilter();
+                searchInput.focus();
+            }
         }
 
         // Run immediately as this script is injected when DOM is ready
