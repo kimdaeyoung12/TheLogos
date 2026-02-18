@@ -11,6 +11,13 @@ hasCJKLanguage = true
 [markup.goldmark.renderer]
   unsafe = true
 
+# Enable math rendering passthrough for KaTeX
+[markup.goldmark.extensions.passthrough]
+  enable = true
+[markup.goldmark.extensions.passthrough.delimiters]
+  block = [['$$', '$$']]
+  inline = [['$', '$']]
+
 [outputs]
   home = ["HTML", "RSS", "JSON"]
 

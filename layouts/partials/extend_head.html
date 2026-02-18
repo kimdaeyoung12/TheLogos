@@ -5,7 +5,7 @@
 
 <!-- Content Security Policy -->
 <meta http-equiv="Content-Security-Policy"
-    content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://plausible.io https://busuanzi.ibruce.info https://cdn.jsdelivr.net https://www.instagram.com https://cdn.skypack.dev https://cdnjs.cloudflare.com https://unpkg.com https://cdn.tailwindcss.com https://*.kit.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://*.kit.com; font-src 'self' data: https://fonts.gstatic.com https://cdn.jsdelivr.net; img-src 'self' data: https://*.instagram.com https://*.cdninstagram.com https://i.ytimg.com https://lh3.googleusercontent.com https://*.kit.com; frame-src https://*.instagram.com https://www.youtube.com https://www.youtube-nocookie.com https://*.kit.com; connect-src 'self' https://www.google-analytics.com https://plausible.io https://busuanzi.ibruce.info https://cdn.skypack.dev https://cdnjs.cloudflare.com https://unpkg.com https://*.kit.com https://app.kit.com;">
+    content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://plausible.io https://busuanzi.ibruce.info https://cdn.jsdelivr.net https://www.instagram.com https://cdn.skypack.dev https://cdnjs.cloudflare.com https://unpkg.com https://cdn.tailwindcss.com https://*.kit.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net https://*.kit.com; font-src 'self' data: https://fonts.gstatic.com https://cdn.jsdelivr.net; img-src 'self' data: https://*.instagram.com https://*.cdninstagram.com https://i.ytimg.com https://lh3.googleusercontent.com https://*.kit.com; frame-src https://*.instagram.com https://www.youtube.com https://www.youtube-nocookie.com https://*.kit.com; connect-src 'self' https://www.google-analytics.com https://plausible.io https://busuanzi.ibruce.info https://cdn.skypack.dev https://cdnjs.cloudflare.com https://unpkg.com https://*.kit.com https://app.kit.com;">
 
 <!-- Preload custom stylesheets to improve performance -->
 <!-- Load Tailwind first -->
@@ -68,6 +68,18 @@ site.Params.description -}}
 {{- with .Params.mentions }}
 <meta name="ai-mentions" content="{{ delimit . " , " }}">
 {{- end }}
+
+<!-- KaTeX Math Rendering -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/katex.min.css" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/katex.min.js" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/contrib/auto-render.min.js" crossorigin="anonymous"
+    onload="renderMathInElement(document.body, {
+        delimiters: [
+            {left: '$$', right: '$$', display: true},
+            {left: '$', right: '$', display: false}
+        ],
+        throwOnError: false
+    });"></script>
 
 <!-- Inject FAQ structured data if defined in the page front matter -->
 {{ partial "seo-faq.html" . }}
