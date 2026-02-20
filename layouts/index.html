@@ -102,7 +102,9 @@
                         {{ range $religion }}
                         <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-3">{{ .Title }}</h3>
                         <p class="text-gray-600 dark:text-gray-300 mb-6 line-clamp-3">
-                            {{ .Summary | plainify | truncate 150 }}
+                            {{ if in .RawContent "ai_summary" }}<span
+                                class="inline-flex items-center rounded-md bg-indigo-50 px-1.5 py-0.5 text-xs font-medium text-indigo-700 ring-1 ring-inset ring-indigo-700/10 dark:bg-indigo-400/10 dark:text-indigo-400 dark:ring-indigo-400/20 mr-1.5 align-text-bottom mb-0.5">AI
+                                요약</span>{{ end }}{{ .Summary | plainify | truncate 150 }}
                         </p>
                         <div class="mt-auto">
                             <a class="inline-flex items-center text-sm font-semibold text-gray-900 dark:text-white hover:text-design-primary dark:hover:text-design-primary transition-colors"
@@ -145,7 +147,9 @@
                     {{ range $philosophy }}
                     <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3">{{ .Title }}</h3>
                     <p class="text-gray-600 dark:text-gray-300 mb-6 flex-1">
-                        {{ .Summary | plainify | truncate 200 }}
+                        {{ if in .RawContent "ai_summary" }}<span
+                            class="inline-flex items-center rounded-md bg-indigo-50 px-1.5 py-0.5 text-xs font-medium text-indigo-700 ring-1 ring-inset ring-indigo-700/10 dark:bg-indigo-400/10 dark:text-indigo-400 dark:ring-indigo-400/20 mr-1.5 align-text-bottom mb-0.5">AI
+                            요약</span>{{ end }}{{ .Summary | plainify | truncate 200 }}
                     </p>
                     <div class="mt-auto pt-4 border-t border-gray-200/50 dark:border-white/10">
                         <div class="flex items-center justify-between">
@@ -189,7 +193,9 @@
                     {{ range $engineering }}
                     <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">{{ .Title }}</h3>
                     <p class="text-sm text-gray-600 dark:text-gray-300 mb-4 line-clamp-2">
-                        {{ .Summary | plainify }}
+                        {{ if in .RawContent "ai_summary" }}<span
+                            class="inline-flex items-center rounded bg-indigo-50 px-1 py-0.5 text-[10px] sm:text-xs font-medium text-indigo-700 ring-1 ring-inset ring-indigo-700/10 dark:bg-indigo-400/10 dark:text-indigo-400 dark:ring-indigo-400/20 mr-1.5 align-text-bottom mb-0.5">AI
+                            요약</span>{{ end }}{{ .Summary | plainify }}
                     </p>
                     <a class="text-sm font-medium text-design-primary hover:underline" href="{{ .RelPermalink }}">Read
                         more</a>
@@ -219,7 +225,9 @@
                     {{ range $writing }}
                     <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">{{ .Title }}</h3>
                     <p class="text-sm text-gray-600 dark:text-gray-300 mb-4 line-clamp-2">
-                        {{ .Summary | plainify }}
+                        {{ if in .RawContent "ai_summary" }}<span
+                            class="inline-flex items-center rounded bg-indigo-50 px-1 py-0.5 text-[10px] sm:text-xs font-medium text-indigo-700 ring-1 ring-inset ring-indigo-700/10 dark:bg-indigo-400/10 dark:text-indigo-400 dark:ring-indigo-400/20 mr-1.5 align-text-bottom mb-0.5">AI
+                            요약</span>{{ end }}{{ .Summary | plainify }}
                     </p>
                     <a class="text-sm font-medium text-design-primary hover:underline" href="{{ .RelPermalink }}">Read
                         more</a>
