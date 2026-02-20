@@ -1,3 +1,23 @@
-<div class="ai-summary-box">
-    {{ .Inner | safeHTML }}
+<div
+    class="ai-summary-box my-6 p-5 rounded-2xl bg-indigo-50/50 dark:bg-slate-800/50 backdrop-blur-sm border border-indigo-100 dark:border-indigo-500/20 shadow-sm relative overflow-hidden group">
+    <div
+        class="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
+    </div>
+    <div class="relative z-10 flex items-start gap-4">
+        <div class="flex-1">
+            <div class="flex items-center gap-2 mb-2">
+                <span
+                    class="inline-flex items-center rounded-md bg-indigo-100 px-2.5 py-1 text-xs font-bold text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-300 ring-1 ring-inset ring-indigo-700/10 dark:ring-indigo-400/20 shadow-sm">
+                    <svg class="w-3.5 h-3.5 mr-1.5" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                    </svg>
+                    AI 요약
+                </span>
+            </div>
+            <div class="text-slate-700 dark:text-slate-300 text-sm md:text-base leading-relaxed break-keep [&>p]:m-0">
+                {{ .Inner | safeHTML }}
+            </div>
+        </div>
+    </div>
 </div>
