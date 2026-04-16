@@ -83,5 +83,22 @@ site.Params.description -}}
         throwOnError: false
     });"></script>
 
+<script>
+    // Re-render math when soft-navigation (PJAX) replaces the main content
+    document.addEventListener('pageReady', function() {
+        if (typeof renderMathInElement === 'function') {
+            renderMathInElement(document.getElementById('main-content') || document.body, {
+                delimiters: [
+                    {left: '$$', right: '$$', display: true},
+                    {left: '$', right: '$', display: false},
+                    {left: '\\(', right: '\\)', display: false},
+                    {left: '\\[', right: '\\]', display: true}
+                ],
+                throwOnError: false
+            });
+        }
+    });
+</script>
+
 <!-- Inject FAQ structured data if defined in the page front matter -->
 {{ partial "seo-faq.html" . }}
