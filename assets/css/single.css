@@ -817,3 +817,42 @@ blockquote.instagram-media>a:not(:first-of-type) {
         font-size: 14px;
     }
 }
+
+/* ========================================
+   Table Styles
+   ======================================== */
+.article-content table {
+    width: 100%;
+    margin: 32px 0;
+    border-collapse: collapse;
+    background: var(--bg-secondary);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.article-content th,
+.article-content td {
+    padding: 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.article-content th {
+    background: rgba(99, 102, 241, 0.1);
+    font-weight: 600;
+    color: var(--primary-color);
+    white-space: nowrap;
+}
+
+.article-content tr:last-child td {
+    border-bottom: none;
+}
+
+.article-content tr:hover td {
+    background: rgba(0, 0, 0, 0.02);
+}
+
+.dark .article-content tr:hover td {
+    background: rgba(255, 255, 255, 0.02);
+}
