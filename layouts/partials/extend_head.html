@@ -85,7 +85,7 @@ site.Params.description -}}
 
 <script>
     // Re-render math when soft-navigation (PJAX) replaces the main content
-    document.addEventListener('pageReady', function() {
+    window.addEventListener('pageReady', function() {
         if (typeof renderMathInElement === 'function') {
             renderMathInElement(document.getElementById('main-content') || document.body, {
                 delimiters: [
