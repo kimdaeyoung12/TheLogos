@@ -15,6 +15,13 @@ function initKnowledgeGraph() {
     const width = container.clientWidth;
     const height = container.clientHeight;
 
+    // During PJAX (soft navigation), DOM might not be fully laid out yet
+    if (width === 0 || height === 0) {
+        console.warn('Graph container dimensions are zero, waiting for layout...');
+        setTimeout(initKnowledgeGraph, 50);
+        return;
+    }
+
     // Use embedded graphData
     try {
         if (!window.graphData) {

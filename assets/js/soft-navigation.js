@@ -148,6 +148,11 @@
                     newScript.setAttribute(attr.name, attr.value);
                 });
 
+                // IMPORTANT: preserve script execution order for PJAX injections
+                if (newScript.src) {
+                    newScript.async = false;
+                }
+
                 // Copy inline content if no src
                 if (!oldScript.src) {
                     newScript.textContent = oldScript.textContent;
