@@ -2,7 +2,7 @@
 title = "AI의 두 축을 관통하는 철학: 강화학습(RL)은 연역적이고, LLM은 귀납적이다?"
 date = 2026-05-11T09:52:19+09:00
 draft = false
-categories = ["AI", "Philosophy"]
+categories = ["engineering"]
 tags = ["LLM", "강화학습", "RL", "귀납법", "연역법", "RLHF", "인공지능"]
 +++
 
