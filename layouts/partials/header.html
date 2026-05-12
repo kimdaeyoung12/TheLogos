@@ -12,7 +12,7 @@
         </div>
 
         <!-- Desktop Nav -->
-        <nav id="desktop-nav" class="items-center gap-8">
+        <nav id="menu" class="flex items-center gap-8">
             <a class="text-sm font-medium hover:text-design-primary transition-colors text-gray-700 dark:text-gray-300 drop-shadow-sm"
                 href="{{ "" | absLangURL }}">Home</a>
             <a class="text-sm font-medium hover:text-design-primary transition-colors text-gray-700 dark:text-gray-300 drop-shadow-sm"
@@ -104,19 +104,6 @@
         });
     }
 
-    // Default to dark if pref is not set
-    if (!localStorage.getItem('pref-theme')) {
-        document.body.classList.add('dark');
-        document.documentElement.classList.add('dark');
-    } else {
-        if (localStorage.getItem('pref-theme') === 'dark') {
-            document.body.classList.add('dark');
-            document.documentElement.classList.add('dark');
-        } else {
-            document.body.classList.remove('dark');
-            document.documentElement.classList.remove('dark');
-        }
-    }
     updateThemeIcons();
 
     // Mobile Menu Toggle Logic

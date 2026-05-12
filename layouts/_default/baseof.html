@@ -50,24 +50,32 @@
         (function() {
             var pref = localStorage.getItem('pref-theme');
             if (pref === 'light') {
-                // User explicitly chose light mode
                 document.documentElement.classList.remove('dark');
-                // body not yet available at this point, handled below
             }
-            // body.dark must be added synchronously as soon as body is parseable
-            // We use a MutationObserver trick: watch for body and add dark immediately
-            var observer = new MutationObserver(function(mutations) {
+            
+            function syncBody() {
                 var body = document.body;
                 if (body) {
-                    observer.disconnect();
                     if (document.documentElement.classList.contains('dark')) {
                         body.classList.add('dark');
                     } else {
                         body.classList.remove('dark');
                     }
+                    return true;
                 }
-            });
-            observer.observe(document.documentElement, { childList: true });
+                return false;
+            }
+
+            // Try immediately
+            if (!syncBody()) {
+                // If not available, observe
+                var observer = new MutationObserver(function(mutations) {
+                    if (syncBody()) {
+                        observer.disconnect();
+                    }
+                });
+                observer.observe(document.documentElement, { childList: true });
+            }
         })();
     </script>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
