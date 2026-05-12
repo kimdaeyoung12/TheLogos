@@ -29,15 +29,29 @@
             color: #111827;
         }
     </style>
-    {{- /* Also sync html class from localStorage before Tailwind renders */}}
+    {{- /* Sync dark class on html AND body from localStorage, before anything renders */}}
     <script>
         (function() {
             var pref = localStorage.getItem('pref-theme');
             if (pref === 'light') {
-                // User explicitly chose light: remove dark class from html
+                // User explicitly chose light mode
                 document.documentElement.classList.remove('dark');
+                // body not yet available at this point, handled below
             }
-            // If pref is 'dark' or not set, html already has class="dark" from server
+            // body.dark must be added synchronously as soon as body is parseable
+            // We use a MutationObserver trick: watch for body and add dark immediately
+            var observer = new MutationObserver(function(mutations) {
+                var body = document.body;
+                if (body) {
+                    observer.disconnect();
+                    if (document.documentElement.classList.contains('dark')) {
+                        body.classList.add('dark');
+                    } else {
+                        body.classList.remove('dark');
+                    }
+                }
+            });
+            observer.observe(document.documentElement, { childList: true });
         })();
     </script>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
@@ -186,7 +200,7 @@
 </head>
 
 <body
-    class="bg-design-background-light dark:bg-design-background-dark font-display text-gray-900 dark:text-white antialiased overflow-x-hidden list"
+    class="dark bg-design-background-light dark:bg-design-background-dark font-display text-gray-900 dark:text-white antialiased overflow-x-hidden list"
     id="top">
 
     {{- partial "header.html" . }}
