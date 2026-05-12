@@ -28,6 +28,22 @@
             background-color: #f6f6f8;
             color: #111827;
         }
+        /* Dark mode header: ensure navbar is dark even before Tailwind CDN loads */
+        html.dark header {
+            background-color: rgba(16, 22, 34, 0.85) !important;
+            border-bottom-color: rgba(255, 255, 255, 0.05) !important;
+        }
+        html:not(.dark) header {
+            background-color: rgba(255, 255, 255, 0.85) !important;
+            border-bottom-color: rgba(226, 232, 240, 1) !important;
+        }
+        /* Ensure nav links are visible in dark mode */
+        html.dark header a, html.dark header button {
+            color: #ffffff;
+        }
+        html:not(.dark) header a, html:not(.dark) header button {
+            color: #111827;
+        }
     </style>
     {{- /* Sync dark class on html AND body from localStorage, before anything renders */}}
     <script>

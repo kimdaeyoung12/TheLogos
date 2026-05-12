@@ -8,14 +8,6 @@
 
     // Configuration
     const MAIN_CONTENT_SELECTOR = '#main-content';
-    const EXCLUDED_LINKS = [
-        'mailto:',
-        'tel:',
-        'javascript:',
-        '#',
-        'http://',
-        'https://'
-    ];
 
     /**
      * Check if a link should use soft navigation
@@ -23,19 +15,31 @@
     function shouldSoftNavigate(href) {
         if (!href) return false;
 
-        // Exclude external links and special protocols
-        for (const prefix of EXCLUDED_LINKS) {
-            if (prefix === 'http://' || prefix === 'https://') {
-                // Allow same-origin http/https links
-                if (href.startsWith(prefix) && !href.startsWith(window.location.origin)) {
-                    return false;
-                }
-            } else if (href.startsWith(prefix)) {
-                return false;
-            }
+        // Handle special protocols immediately
+        if (href.startsWith('mailto:') || href.startsWith('tel:') || href.startsWith('javascript:')) {
+            return false;
         }
 
-        return true;
+        // Anchors-only links: skip
+        if (href === '#' || href.startsWith('#')) return false;
+
+        try {
+            // Resolve to absolute URL relative to current page
+            const url = new URL(href, window.location.href);
+
+            // Only same-origin navigations use soft nav
+            if (url.origin !== window.location.origin) return false;
+
+            // Skip if it has a file extension that isn't HTML (e.g., .pdf, .zip)
+            const path = url.pathname;
+            const nonHtmlExtensions = /\.(pdf|zip|png|jpg|jpeg|gif|svg|mp3|mp4|doc|docx|xls|xlsx)$/i;
+            if (nonHtmlExtensions.test(path)) return false;
+
+            return true;
+        } catch (e) {
+            // If URL parsing fails, fall back to hard nav
+            return false;
+        }
     }
 
     /**

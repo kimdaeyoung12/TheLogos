@@ -1,7 +1,7 @@
 {{- /* Global Partial: Header */}}
 <header
-    class="sticky top-0 z-50 w-full backdrop-blur-md bg-white/70 dark:bg-design-background-dark/70 border-b border-white/20 dark:border-white/5 shadow-sm transition-colors duration-300">
-    <div class="w-full max-w-[1280px] mx-auto px-6 h-16 flex items-center justify-between">
+    class="header sticky top-0 z-50 w-full backdrop-blur-md bg-white/70 dark:bg-design-background-dark/70 border-b border-white/20 dark:border-white/5 shadow-sm transition-colors duration-300">
+    <div class="nav w-full max-w-[1280px] mx-auto px-6 h-16 flex items-center justify-between">
         <!-- Logo -->
         <div class="flex items-center gap-3">
             <a href="{{ "" | absLangURL }}"
@@ -59,83 +59,43 @@
                 Subscribe
             </button>
 
-            <!-- Mobile Menu Toggle -->
-            <button id="mobile-menu-toggle" class="text-gray-700 dark:text-white p-1" aria-label="Menu">
+            <!-- Mobile Menu Toggle Button -->
+            <button id="mobile-menu-toggle"
+                class="p-2 rounded-lg lg:hidden hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-gray-700 dark:text-white"
+                aria-label="Menu">
                 <span class="material-symbols-outlined">menu</span>
             </button>
         </div>
     </div>
 
-    <!-- Mobile Menu Drawer -->
+    <!-- Mobile Navigation Menu -->
     <div id="mobile-menu"
-        class="absolute top-16 left-0 w-full bg-white dark:bg-design-background-dark border-b border-gray-200 dark:border-white/5 shadow-lg flex-col p-4 gap-4 z-40"
-        style="display: none;">
-        <a class="text-base font-medium hover:text-design-primary transition-colors text-gray-700 dark:text-gray-300 block py-2"
-            href="{{ "" | absLangURL }}">Home</a>
-        <a class="text-base font-medium hover:text-design-primary transition-colors text-gray-700 dark:text-gray-300 block py-2"
-            href="{{ "posts/" | absLangURL }}">Articles</a>
-        <a class="text-base font-medium hover:text-design-primary transition-colors text-gray-700 dark:text-gray-300 block py-2"
-            href="{{ "about/" | absLangURL }}">About</a>
-        <a class="text-base font-medium hover:text-design-primary transition-colors text-gray-700 dark:text-gray-300 block py-2"
-            href="{{ "network/" | absLangURL }}">Network</a>
-
-        <button
-            onclick="const el = document.getElementById('subscribe'); if(el) { el.scrollIntoView({behavior:'smooth'}); } else { window.location.href='/#subscribe'; }"
-            class="w-full bg-design-primary hover:bg-design-primary/90 text-white text-sm font-bold h-10 rounded-lg transition-all shadow-md active:scale-95 border-none mt-2 cursor-pointer">
-            Subscribe
-        </button>
+        class="hidden lg:hidden flex-col bg-white dark:bg-design-background-dark border-t border-gray-100 dark:border-white/5 py-4 px-6 gap-4">
+        <a class="text-base font-medium text-gray-700 dark:text-gray-300" href="{{ "" | absLangURL }}">Home</a>
+        <a class="text-base font-medium text-gray-700 dark:text-gray-300" href="{{ "posts/" | absLangURL }}">Articles</a>
+        <a class="text-base font-medium text-gray-700 dark:text-gray-300" href="{{ "about/" | absLangURL }}">About</a>
+        <a class="text-base font-medium text-gray-700 dark:text-gray-300" href="{{ "network/" | absLangURL }}">Network</a>
     </div>
 </header>
+
 <script>
-    // Responsive header logic
-    function updateHeaderResponsive() {
-        const isMobile = window.innerWidth < 640;
-        const desktopNav = document.getElementById('desktop-nav');
-        const networkBtn = document.getElementById('network-btn');
-        const subscribeBtn = document.getElementById('subscribe-btn');
-        const mobileToggle = document.getElementById('mobile-menu-toggle');
-        const mobileMenu = document.getElementById('mobile-menu');
-
-        if (isMobile) {
-            // Mobile: hide desktop elements, show hamburger
-            if (desktopNav) desktopNav.style.display = 'none';
-            if (networkBtn) networkBtn.style.display = 'none';
-            if (subscribeBtn) subscribeBtn.style.display = 'none';
-            if (mobileToggle) mobileToggle.style.display = 'block';
-        } else {
-            // Desktop: show desktop elements, hide hamburger and mobile menu
-            if (desktopNav) desktopNav.style.display = 'flex';
-            if (networkBtn) networkBtn.style.display = 'flex';
-            if (subscribeBtn) subscribeBtn.style.display = 'flex';
-            if (mobileToggle) mobileToggle.style.display = 'none';
-            if (mobileMenu) mobileMenu.style.display = 'none';
-        }
-    }
-
-    // Run on load and resize
-    updateHeaderResponsive();
-    window.addEventListener('resize', updateHeaderResponsive);
-
-    // Theme Toggle Logic
-    const themeToggle = document.getElementById('theme-toggle');
-    const moonIcon = document.getElementById('moon');
-    const sunIcon = document.getElementById('sun');
-
     function updateThemeIcons() {
-        if (document.body.classList.contains('dark')) {
-            if (moonIcon) moonIcon.style.display = 'block';
-            if (sunIcon) sunIcon.style.display = 'none';
-        } else {
-            if (moonIcon) moonIcon.style.display = 'none';
-            if (sunIcon) sunIcon.style.display = 'block';
+        const isDark = document.documentElement.classList.contains('dark') || document.body.classList.contains('dark');
+        const moon = document.getElementById('moon');
+        const sun = document.getElementById('sun');
+        if (moon && sun) {
+            moon.style.display = isDark ? 'none' : 'block';
+            sun.style.display = isDark ? 'block' : 'none';
         }
     }
 
+    const themeToggle = document.getElementById('theme-toggle');
     if (themeToggle) {
         themeToggle.addEventListener('click', () => {
-            document.body.classList.toggle('dark');
-            document.documentElement.classList.toggle('dark');
-            if (document.body.classList.contains('dark')) {
+            const isDark = document.documentElement.classList.toggle('dark');
+            document.body.classList.toggle('dark', isDark);
+
+            if (isDark) {
                 localStorage.setItem('pref-theme', 'dark');
             } else {
                 localStorage.setItem('pref-theme', 'light');
