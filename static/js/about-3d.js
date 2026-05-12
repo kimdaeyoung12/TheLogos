@@ -73,8 +73,8 @@
         const container = document.getElementById('three-canvas-container');
         if (!container) return; // Exit if not on a page with the container
 
-        // Avoid double init in same container
-        if (container.querySelectorAll('canvas').length > 0) return;
+        // Clear container to avoid double canvas
+        container.innerHTML = '';
 
         const scene = new THREE.Scene();
         scene.fog = new THREE.FogExp2(0x020205, 0.001); // Very deep space black
@@ -251,12 +251,23 @@
     }
 
     // --- Init ---
-    // 1. Try to init immediately (if we are soft navigated here)
-    initAbout3D();
+    function startAbout3DInit() {
+        // Small delay to ensure layout is ready
+        setTimeout(initAbout3D, 50);
+    }
 
-    // 2. Listen for future navigations (re-hydration)
-    // We remove any existing listener first to be safe
-    window.removeEventListener('pageReady', initAbout3D);
-    window.addEventListener('pageReady', initAbout3D);
+    if (!window._about3DInitBound) {
+        window.addEventListener('pageReady', () => {
+            console.log('[About3D] pageReady received');
+            startAbout3DInit();
+        });
+        window._about3DInitBound = true;
+    }
 
+    // Initial call
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', startAbout3DInit);
+    } else {
+        startAbout3DInit();
+    }
 })();
