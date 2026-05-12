@@ -35,33 +35,34 @@ function initKnowledgeGraph() {
         return;
     }
 
-    let data = window.graphData;
-    if (typeof data === 'string') {
-        try {
-            data = JSON.parse(data);
-        } catch (e) {
-            console.error("[KnowledgeGraph] JSON parse failed:", e);
+    try {
+        let data = window.graphData;
+        if (typeof data === 'string') {
+            try {
+                data = JSON.parse(data);
+            } catch (e) {
+                console.error("[KnowledgeGraph] JSON parse failed:", e);
+                return;
+            }
+        }
+
+        if (!data.nodes || !data.links) {
+            console.error("[KnowledgeGraph] Data structure is invalid:", data);
             return;
         }
-    }
 
-    if (!data.nodes || !data.links) {
-        console.error("[KnowledgeGraph] Data structure is invalid:", data);
-        return;
-    }
+        console.log('[KnowledgeGraph] Initializing with', data.nodes.length, 'nodes');
 
-    console.log('[KnowledgeGraph] Initializing with', data.nodes.length, 'nodes');
+        // Check if ForceGraph3D is loaded
+        if (typeof ForceGraph3D === 'undefined') {
+            console.warn('[KnowledgeGraph] ForceGraph3D library not found, retrying...');
+            setTimeout(initKnowledgeGraph, 200);
+            return;
+        }
 
-    // Check if ForceGraph3D is loaded
-    if (typeof ForceGraph3D === 'undefined') {
-        console.warn('[KnowledgeGraph] ForceGraph3D library not found, retrying...');
-        setTimeout(initKnowledgeGraph, 200);
-        return;
-    }
-
-    // Clear container to avoid double canvas/interference
-    container.innerHTML = '';
-    container._graphInitialized = true;
+        // Clear container to avoid double canvas/interference
+        container.innerHTML = '';
+        container._graphInitialized = true;
 
     // Expose globally for debugging
     window.Graph = ForceGraph3D()
