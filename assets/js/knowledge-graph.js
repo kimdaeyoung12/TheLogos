@@ -2,57 +2,73 @@
 
 // Initialize function
 function initKnowledgeGraph() {
+    console.log('[KnowledgeGraph] initKnowledgeGraph called');
     const container = document.getElementById('knowledge-graph-container');
-    if (!container) return;
+    if (!container) {
+        console.warn('[KnowledgeGraph] Container not found');
+        return;
+    }
 
     // Avoid double init if already initialized on this specific container element
     if (container._graphInitialized) {
-        console.log('Graph already initialized for this container');
+        console.log('[KnowledgeGraph] Already initialized for this container');
         return;
     }
 
     // Get width/height from container
     const width = container.clientWidth;
     const height = container.clientHeight;
+    console.log('[KnowledgeGraph] Dimensions:', width, 'x', height);
 
     // During PJAX (soft navigation), DOM might not be fully laid out yet
     if (width === 0 || height === 0) {
-        console.warn('Graph container dimensions are zero, waiting for layout...');
-        setTimeout(initKnowledgeGraph, 50);
+        console.warn('[KnowledgeGraph] Dimensions are zero, retrying...');
+        setTimeout(initKnowledgeGraph, 100);
         return;
     }
 
     // Use embedded graphData
-    try {
-        if (!window.graphData) {
-            console.error("No graph data found.");
+    if (!window.graphData) {
+        console.error("[KnowledgeGraph] window.graphData is missing!");
+        // Small retry in case of race condition with data script
+        setTimeout(initKnowledgeGraph, 100);
+        return;
+    }
+
+    let data = window.graphData;
+    if (typeof data === 'string') {
+        try {
+            data = JSON.parse(data);
+        } catch (e) {
+            console.error("[KnowledgeGraph] JSON parse failed:", e);
             return;
         }
-        let data = window.graphData;
-        if (typeof data === 'string') {
-            try {
-                data = JSON.parse(data);
-            } catch (e) {
-                console.error("Failed to parse graphData:", e);
-                return;
-            }
-        }
+    }
 
-        console.log('Initializing graph with', data.nodes.length, 'nodes and', data.links.length, 'links');
+    if (!data.nodes || !data.links) {
+        console.error("[KnowledgeGraph] Data structure is invalid:", data);
+        return;
+    }
 
-        // Check if ForceGraph3D is loaded
-        if (typeof ForceGraph3D === 'undefined') {
-            console.warn('ForceGraph3D library not loaded yet, retrying shortly...');
-            setTimeout(initKnowledgeGraph, 100);
-            return;
-        }
+    console.log('[KnowledgeGraph] Initializing with', data.nodes.length, 'nodes');
 
-        // Expose globally for debugging
-        window.Graph = ForceGraph3D()
-            (container)
-            .width(width)
-            .height(height)
-            .graphData(data)
+    // Check if ForceGraph3D is loaded
+    if (typeof ForceGraph3D === 'undefined') {
+        console.warn('[KnowledgeGraph] ForceGraph3D library not found, retrying...');
+        setTimeout(initKnowledgeGraph, 200);
+        return;
+    }
+
+    // Clear container to avoid double canvas/interference
+    container.innerHTML = '';
+    container._graphInitialized = true;
+
+    // Expose globally for debugging
+    window.Graph = ForceGraph3D()
+        (container)
+        .width(width)
+        .height(height)
+        .graphData(data)
             .nodeLabel('name')
             // Node styling
             .nodeColor(node => {

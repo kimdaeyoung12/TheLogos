@@ -122,9 +122,11 @@
             // Re-run any necessary scripts for the new content (Await completion)
             await reinitializePageScripts();
 
-            // Dispatch custom events for other scripts to hook into
-            window.dispatchEvent(new CustomEvent('softNavigate', { detail: { url, playerData } }));
-            window.dispatchEvent(new CustomEvent('pageReady', { detail: { url, playerData } }));
+            // Dispatch custom events after a frame to ensure DOM layout is complete
+            requestAnimationFrame(() => {
+                window.dispatchEvent(new CustomEvent('softNavigate', { detail: { url, playerData } }));
+                window.dispatchEvent(new CustomEvent('pageReady', { detail: { url, playerData } }));
+            });
 
         } catch (error) {
             console.error('Soft navigation failed:', error);
