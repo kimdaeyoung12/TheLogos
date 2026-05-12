@@ -112,12 +112,25 @@
 
     if (mobileBtn && mobileMenu) {
         mobileBtn.addEventListener('click', () => {
-            const isOpen = mobileMenu.style.display === 'flex';
-            mobileMenu.style.display = isOpen ? 'none' : 'flex';
+            const isHidden = mobileMenu.classList.toggle('hidden');
+            // If we are not hidden, ensure display is flex (Tailwind compatibility)
+            mobileMenu.style.display = isHidden ? 'none' : 'flex';
+            
             const icon = mobileBtn.querySelector('span');
             if (icon) {
-                icon.textContent = isOpen ? 'menu' : 'close';
+                icon.textContent = isHidden ? 'menu' : 'close';
             }
+        });
+
+        // Close menu when clicking a link (important for soft navigation)
+        const mobileLinks = mobileMenu.querySelectorAll('a');
+        mobileLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+                mobileMenu.style.display = 'none';
+                const icon = mobileBtn.querySelector('span');
+                if (icon) icon.textContent = 'menu';
+            });
         });
     }
 </script>
