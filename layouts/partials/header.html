@@ -12,7 +12,7 @@
         </div>
 
         <!-- Desktop Nav -->
-        <nav id="menu" class="flex items-center gap-8">
+        <nav id="menu" class="hidden md:flex items-center gap-8">
             <a class="text-sm font-medium hover:text-design-primary transition-colors text-gray-700 dark:text-gray-300 drop-shadow-sm"
                 href="{{ "" | absLangURL }}">Home</a>
             <a class="text-sm font-medium hover:text-design-primary transition-colors text-gray-700 dark:text-gray-300 drop-shadow-sm"
@@ -48,20 +48,20 @@
 
             <!-- Network Button - Desktop only -->
             <a id="network-btn" href="{{ "network/" | absLangURL }}"
-                class="bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-white text-sm font-bold h-9 px-4 rounded-lg items-center justify-center transition-all border border-gray-200 dark:border-white/10">
+                class="hidden md:flex bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-white text-sm font-bold h-9 px-4 rounded-lg items-center justify-center transition-all border border-gray-200 dark:border-white/10">
                 Network
             </a>
 
             <!-- Subscribe Button - Desktop only -->
             <button id="subscribe-btn"
                 onclick="const el = document.getElementById('subscribe'); if(el) { el.scrollIntoView({behavior:'smooth'}); } else { window.location.href='/#subscribe'; }"
-                class="bg-design-primary hover:bg-design-primary/90 text-white text-sm font-bold h-9 px-5 rounded-lg items-center justify-center transition-all shadow-lg shadow-design-primary/30 active:scale-95 border-none cursor-pointer">
+                class="hidden md:flex bg-design-primary hover:bg-design-primary/90 text-white text-sm font-bold h-9 px-5 rounded-lg items-center justify-center transition-all shadow-lg shadow-design-primary/30 active:scale-95 border-none cursor-pointer">
                 Subscribe
             </button>
 
             <!-- Mobile Menu Toggle Button -->
             <button id="mobile-menu-toggle"
-                class="p-2 rounded-lg lg:hidden hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-gray-700 dark:text-white"
+                class="p-2 rounded-lg md:hidden hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-gray-700 dark:text-white"
                 aria-label="Menu">
                 <span class="material-symbols-outlined">menu</span>
             </button>
@@ -70,7 +70,7 @@
 
     <!-- Mobile Navigation Menu -->
     <div id="mobile-menu"
-        class="hidden lg:hidden flex-col bg-white dark:bg-design-background-dark border-t border-gray-100 dark:border-white/5 py-4 px-6 gap-4">
+        class="hidden md:hidden flex-col bg-white dark:bg-design-background-dark border-t border-gray-100 dark:border-white/5 py-4 px-6 gap-4">
         <a class="text-base font-medium text-gray-700 dark:text-gray-300" href="{{ "" | absLangURL }}">Home</a>
         <a class="text-base font-medium text-gray-700 dark:text-gray-300" href="{{ "posts/" | absLangURL }}">Articles</a>
         <a class="text-base font-medium text-gray-700 dark:text-gray-300" href="{{ "about/" | absLangURL }}">About</a>
