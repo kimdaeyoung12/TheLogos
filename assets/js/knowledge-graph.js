@@ -79,8 +79,8 @@ function initKnowledgeGraph() {
 
             // Link styling (using valid API)
             .linkWidth(0.5)
-            .linkOpacity(0.3)
-            .linkColor('#475569')
+            .linkOpacity(0.6)
+            .linkColor('#94a3b8')
 
             // Background
             .backgroundColor('rgba(0,0,0,0)') // Transparent
@@ -179,7 +179,7 @@ function initKnowledgeGraph() {
         setTimeout(() => {
             window.Graph.zoomToFit(400);
             console.log('zoomToFit triggered');
-        }, 3000);
+        }, 1000);
 
         // Handle Window Resize
         const resizeHandler = () => {
@@ -257,13 +257,24 @@ function initKnowledgeGraph() {
     }
 }
 
-// 1. Try to init immediately (for soft navigation where DOM is ready)
-initKnowledgeGraph();
-
-// 2. Init on DOMContentLoaded (for hard refresh)
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initKnowledgeGraph);
+// --- Initialization Wrapper ---
+function startKnowledgeGraphInit() {
+    // Small delay to ensure container layout and scripts are ready
+    setTimeout(initKnowledgeGraph, 100);
 }
 
-// 3. Re-initialize on future soft navigations
-window.addEventListener('pageReady', initKnowledgeGraph);
+// Ensure the graph initializes correctly on both hard and soft navigation
+if (!window._graphInitBound) {
+    window.addEventListener('pageReady', () => {
+        console.log('[KnowledgeGraph] pageReady received, starting init');
+        startKnowledgeGraphInit();
+    });
+    window._graphInitBound = true;
+}
+
+// Immediate call for current page load
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', startKnowledgeGraphInit);
+} else {
+    startKnowledgeGraphInit();
+}
