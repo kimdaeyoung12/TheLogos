@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
+/* Enable class-based dark mode (Tailwind v4 syntax).
+   This makes 'dark:' utilities respond to the .dark class on html/body,
+   instead of the OS-level prefers-color-scheme media query. */
+@custom-variant dark (&:where(.dark, .dark *));
+
 /* Custom Glassmorphism Utilities */
 @layer utilities {
     .glass {

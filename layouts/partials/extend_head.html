@@ -1,5 +1,21 @@
 <!-- Additional head elements and metadata for TheLogos -->
 
+<!-- FOUC Prevention: Apply dark/light class BEFORE any rendering occurs.
+     This MUST be an inline render-blocking script to prevent white flash. -->
+<script>
+    (function() {
+        var pref = localStorage.getItem('pref-theme');
+        // Default to dark if no preference is saved
+        if (!pref || pref === 'dark') {
+            document.documentElement.classList.add('dark');
+            document.body && document.body.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+            document.body && document.body.classList.remove('dark');
+        }
+    })();
+</script>
+
 <!-- Define document language explicitly for accessibility -->
 <meta http-equiv="content-language" content="ko">
 

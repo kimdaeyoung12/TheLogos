@@ -15,6 +15,31 @@
     <title>{{- $title := cond .IsHome site.Title (printf "%s | %s" .Title site.Title) -}}{{- $title -}}</title>
 
     {{- /* Tailwind and Global Design Config */}}
+    {{- /* FOUC Prevention: Set background color BEFORE Tailwind CDN loads.
+         Tailwind CDN takes network time to load, causing a white flash.
+         This inline style ensures the correct background color is applied immediately. */}}
+    <style>
+        /* Immediately apply dark background to prevent white flash while Tailwind CDN loads */
+        html.dark body, html.dark {
+            background-color: #101622;
+            color: #ffffff;
+        }
+        html:not(.dark) body, html:not(.dark) {
+            background-color: #f6f6f8;
+            color: #111827;
+        }
+    </style>
+    {{- /* Also sync html class from localStorage before Tailwind renders */}}
+    <script>
+        (function() {
+            var pref = localStorage.getItem('pref-theme');
+            if (pref === 'light') {
+                // User explicitly chose light: remove dark class from html
+                document.documentElement.classList.remove('dark');
+            }
+            // If pref is 'dark' or not set, html already has class="dark" from server
+        })();
+    </script>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <script>
         tailwind.config = {
