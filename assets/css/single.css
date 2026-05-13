@@ -1,52 +1,58 @@
-/* static/css/single.css - Extracted from layouts/_default/single.html */
+/* static/css/single.css - Article Page Styles */
 
-/* Reset */
-* {
-    line-height: 1.6;
-    color: var(--text-primary);
-    /* Removed background: var(--bg-primary) - was causing disconnect */
-}
-
-/* Article */
+/* Article Layout */
 .article {
     width: 100%;
-    max-width: var(--max-width);
+    max-width: 1000px;
     margin: 0 auto;
     padding: 0 20px;
 }
 
-/* Header */
 .article-header {
-    padding: 60px 0 40px;
+    padding: 40px 0;
     border-bottom: 1px solid var(--border-color);
     margin-bottom: 40px;
 }
 
-.header-container {
-    max-width: var(--content-width);
-    margin: 0 auto;
-}
-
-.article-category {
-    margin-bottom: 16px;
-}
-
-.article-category a {
-    display: inline-block;
-    padding: 4px 12px;
-    background: var(--primary-color);
-    color: white;
-    font-size: 14px;
-    font-weight: 500;
-    text-decoration: none;
-    border-radius: 4px;
-}
-
 .article-title {
-    font-size: 2.5rem;
+    font-size: clamp(2rem, 5vw, 3.5rem);
     font-weight: 800;
     line-height: 1.2;
     margin-bottom: 24px;
+    font-family: var(--font-family-base);
+}
+
+.article-meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--text-tertiary);
+    font-size: 0.95rem;
+    flex-wrap: wrap;
+}
+
+/* TOC Sidebar */
+.toc-container {
+    position: sticky;
+    top: 100px;
+    height: fit-content;
+    padding: 20px;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-md);
+}
+
+/* Related Posts */
+.related-posts {
+    margin-top: 80px;
+    padding-top: 40px;
+    border-top: 1px solid var(--border-color);
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .article-title {
+        font-size: 2.2rem;
+    }
 }
 
 .article-meta {

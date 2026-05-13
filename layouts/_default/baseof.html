@@ -30,20 +30,12 @@
         }
         /* Dark mode header: ensure navbar is dark even before Tailwind CDN loads */
         html.dark header {
-            background-color: rgba(16, 22, 34, 0.85) !important;
+            background-color: rgba(16, 22, 34, 0.95) !important;
             border-bottom-color: rgba(255, 255, 255, 0.05) !important;
         }
         html:not(.dark) header {
             background-color: rgba(255, 255, 255, 0.95) !important;
             border-bottom-color: rgba(226, 232, 240, 1) !important;
-        }
-        header {
-            position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-            width: 100% !important;
-            z-index: 99999 !important;
-            display: block !important;
         }
         /* Ensure nav links are visible in dark mode */
         html.dark header a, html.dark header button {
@@ -228,6 +220,11 @@
     {{- /* Analytics */}}
     {{- template "_internal/google_analytics.html" . }}
     {{- partial "extend_head.html" . }}
+    
+    {{- /* Core Design System CSS */}}
+    {{- $main_css := resources.Get "css/main.css" | minify | fingerprint }}
+    <link rel="stylesheet" href="{{ $main_css.Permalink }}" integrity="{{ $main_css.Data.Integrity }}">
+
     <script src="/js/restore-nav.js" defer></script>
 </head>
 
