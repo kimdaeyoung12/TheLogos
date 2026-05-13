@@ -8,7 +8,7 @@
 
         // Force sticky positioning and high z-index
         header.classList.remove('hidden', '-translate-y-full', 'opacity-0', 'd-desktop-none');
-        header.classList.add('sticky', 'top-0', 'z-50', 'translate-y-0', 'opacity-100', 'visible');
+        header.classList.add('sticky', 'top-0', 'z-[1000]', 'translate-y-0', 'opacity-100', 'visible');
 
         // Ensure display block/flex
         // We use important to override inline styles
