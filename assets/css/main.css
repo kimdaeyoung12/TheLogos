@@ -186,7 +186,7 @@ body:not(.dark) .header {
     border-bottom: 1px solid var(--dark-border);
 }
 
-/* Nav Layout - Strict Flexbox */
+/* Nav Layout - Desktop components handled by Tailwind classes in HTML */
 .nav {
     display: flex !important;
     justify-content: space-between !important;
@@ -195,27 +195,6 @@ body:not(.dark) .header {
     margin: 0 auto;
     padding: 0 1rem;
     height: 60px;
-}
-
-/* 1. Logo (Left) */
-.logo {
-    display: flex;
-    align-items: center;
-    flex: 0 0 auto;
-    /* Do not grow or shrink */
-}
-
-/* 2. Menu (Center) */
-#menu {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    gap: 1.5rem;
-    justify-content: center;
-    /* Center items inside the container */
-    flex: 1;
-    /* Take up remaining space */
 }
 
 /* 3. Theme Toggle (Right) */
@@ -622,7 +601,7 @@ body:not(.dark) footer {
    Utilities
    ======================================== */
 .hidden {
-    display: none !important;
+    display: none;
 }
 
 /* Scrollbar */

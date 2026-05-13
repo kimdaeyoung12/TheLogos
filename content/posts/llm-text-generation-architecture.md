@@ -26,7 +26,7 @@ tags = ["LLM", "Architecture", "Transformer", "Machine Learning", "NLP"]
 <div class="llm-arch-container bg-[#121212] text-gray-200 p-4 md:p-8 font-sans text-sm md:text-base rounded-3xl my-8 overflow-hidden">
   <div class="max-w-5xl mx-auto space-y-8">
     
-    {/* Header & Legend */}
+    <!-- Header & Legend -->
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-gray-700 pb-4">
       <div>
         <h1 class="text-2xl font-bold text-white mb-2 border-0">LLM 텍스트 생성 아키텍처</h1>
@@ -38,14 +38,14 @@ tags = ["LLM", "Architecture", "Transformer", "Machine Learning", "NLP"]
       </div>
     </div>
 
-    {/* Global Annotation */}
+    <!-- Global Annotation -->
     <div class="flex justify-end">
       <div class="text-orange-400 text-xs text-right border-r-2 border-orange-400 pr-2">
         프롬프트 단계: 모든 입력 토큰을 병렬 처리<br/>(연산 병목)
       </div>
     </div>
 
-    {/* Step 3: Embedding Layer */}
+    <!-- Step 3: Embedding Layer -->
     <section class="flex flex-col items-center">
       <div class="w-full max-w-3xl flex flex-col md:flex-row items-center justify-between gap-4">
         <div class="flex-1 flex items-center gap-2">
@@ -81,7 +81,7 @@ tags = ["LLM", "Architecture", "Transformer", "Machine Learning", "NLP"]
 
     <div class="flex justify-center"><i data-lucide="arrow-down" class="text-gray-500 w-6 h-6"></i></div>
 
-    {/* Step 4: Transformer Block */}
+    <!-- Step 4: Transformer Block -->
     <section class="relative border-2 border-dashed border-gray-600 rounded-xl p-4 md:p-6 w-full max-w-4xl mx-auto">
       <div class="absolute -left-4 -top-4 bg-[#121212] px-2 flex items-center gap-2">
         <span class="text-xl font-bold text-gray-400">④</span>
@@ -91,10 +91,10 @@ tags = ["LLM", "Architecture", "Transformer", "Machine Learning", "NLP"]
 
       <div class="flex flex-col lg:flex-row gap-6 mt-4">
         
-        {/* Main Flow inside Transformer */}
+        <!-- Main Flow inside Transformer -->
         <div class="flex-[3] flex flex-col items-center w-full">
           
-          {/* Multi-Head Self Attention */}
+          <!-- Multi-Head Self Attention -->
           <div class="border border-blue-500 rounded-lg p-4 w-full relative">
             <h3 class="text-blue-300 font-bold mb-4 text-center border-0 m-0">멀티헤드 셀프 어텐션</h3>
             <div class="flex justify-center gap-4 mb-4 text-xs">
@@ -189,7 +189,7 @@ tags = ["LLM", "Architecture", "Transformer", "Machine Learning", "NLP"]
 
           <i data-lucide="arrow-down" class="text-gray-500 my-2 w-4 h-4"></i>
           
-          {/* Add & Norm 1 */}
+          <!-- Add & Norm 1 -->
           <div class="border border-gray-500 rounded-full px-6 py-2 text-sm flex items-center gap-2">
             <span class="border border-gray-400 rounded-full w-4 h-4 flex items-center justify-center text-xs">+</span>
             더하기 & 레이어 정규화
@@ -197,7 +197,7 @@ tags = ["LLM", "Architecture", "Transformer", "Machine Learning", "NLP"]
 
           <i data-lucide="arrow-down" class="text-gray-500 my-2 w-4 h-4"></i>
 
-          {/* Feed Forward Network */}
+          <!-- Feed Forward Network -->
           <div class="border border-blue-500 rounded-lg p-4 w-full flex flex-col items-center">
             <h3 class="text-blue-300 font-bold mb-3 border-0 m-0">피드포워드 네트워크 (FFN)</h3>
             <div class="flex items-center gap-2 text-xs">
@@ -218,7 +218,7 @@ tags = ["LLM", "Architecture", "Transformer", "Machine Learning", "NLP"]
 
           <i data-lucide="arrow-down" class="text-gray-500 my-2 w-4 h-4"></i>
 
-          {/* Add & Norm 2 */}
+          <!-- Add & Norm 2 -->
           <div class="border border-gray-500 rounded-full px-6 py-2 text-sm flex items-center gap-2">
             <span class="border border-gray-400 rounded-full w-4 h-4 flex items-center justify-center text-xs">+</span>
             더하기 & 레이어 정규화
@@ -226,7 +226,7 @@ tags = ["LLM", "Architecture", "Transformer", "Machine Learning", "NLP"]
 
         </div>
 
-        {/* Side Annotations (KV Cache & Bottlenecks) */}
+        <!-- Side Annotations (KV Cache & Bottlenecks) -->
         <div class="flex-1 flex flex-col gap-4 pl-4 lg:border-l border-dashed border-gray-600">
           
           <div class="text-orange-400 text-xs">
@@ -279,7 +279,7 @@ tags = ["LLM", "Architecture", "Transformer", "Machine Learning", "NLP"]
 
     <div class="flex justify-center"><i data-lucide="arrow-down" class="text-gray-500 w-6 h-6"></i></div>
 
-    {/* Step 5: LM Head */}
+    <!-- Step 5: LM Head -->
     <section class="flex flex-col md:flex-row items-center justify-between w-full max-w-4xl mx-auto border-b border-gray-800 pb-8">
       <div class="flex items-center gap-2 w-full md:w-1/4 mb-4 md:mb-0">
         <span class="text-xl font-bold text-gray-400">⑤</span>
@@ -325,7 +325,7 @@ tags = ["LLM", "Architecture", "Transformer", "Machine Learning", "NLP"]
       </div>
     </section>
 
-    {/* Step 6: Sampling Strategies */}
+    <!-- Step 6: Sampling Strategies -->
     <section class="flex flex-col md:flex-row items-start w-full max-w-4xl mx-auto border-b border-gray-800 pb-8 mt-8">
       <div class="flex items-center gap-2 w-full md:w-1/4 mb-4 md:mb-0">
         <span class="text-xl font-bold text-gray-400">⑥</span>
@@ -378,14 +378,14 @@ tags = ["LLM", "Architecture", "Transformer", "Machine Learning", "NLP"]
         </div>
       </div>
       
-      {/* Side Annotation for step 6 */}
+      <!-- Side Annotation for step 6 -->
        <div class="text-orange-400 text-xs w-full md:w-auto md:ml-4 mt-4 md:mt-0 text-right md:text-left">
           <span class="font-bold">양자화:</span><br/>
           INT8/INT4 가중치로<br/>메모리 2~4배 절감
       </div>
     </section>
 
-    {/* Step 7: Speculative Decoding */}
+    <!-- Step 7: Speculative Decoding -->
     <section class="flex flex-col md:flex-row items-start w-full max-w-4xl mx-auto mt-8 relative">
       <div class="flex items-center gap-2 w-full md:w-1/4 mb-4 md:mb-0">
         <span class="text-xl font-bold text-gray-400">⑦</span>
