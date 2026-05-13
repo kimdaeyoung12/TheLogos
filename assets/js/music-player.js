@@ -6,6 +6,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Elements ---
     const audio = document.getElementById('bgm-audio');
     const playBtn = document.getElementById('music-control');
+    const prevBtn = document.getElementById('music-prev');
+    const nextBtn = document.getElementById('music-next');
     const playIcon = document.getElementById('icon-play');
     const pauseIcon = document.getElementById('icon-pause');
     const seekSlider = document.getElementById('seek-slider');
@@ -25,6 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let playlist = [];
     let currentIndex = 0;
     let hasAutoplayStarted = false;
+    let isInitialized = false;
 
     // --- 1. Data Initialization ---
     const playlistData = playerContainer.dataset.playlist;
@@ -54,18 +57,19 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Determine Initial Track based on current page's audio
+    // Determine Initial Track based on current page's audio or localStorage
+    const savedTrackIndex = localStorage.getItem('music-player-index');
     const initialAudio = playerContainer.dataset.initialAudio;
+    
     if (initialAudio && playlist.length > 0) {
-        // Prepare target path for comparison (remove leading slashes/audio prefix for loose matching)
-        // Adjust this logic based on how your paths exactly look in TOML vs JSON
         const cleanPath = (p) => p.replace(/^\/?(audio\/)?/, '').replace(/^\//, '');
         const target = cleanPath(initialAudio);
-
         const foundIndex = playlist.findIndex(track => cleanPath(track.audio) === target);
         if (foundIndex !== -1) {
             currentIndex = foundIndex;
         }
+    } else if (savedTrackIndex !== null && playlist[savedTrackIndex]) {
+        currentIndex = parseInt(savedTrackIndex, 10);
     }
 
     // --- 2. UI Event Listeners (Register EARLY) ---
@@ -75,6 +79,21 @@ document.addEventListener('DOMContentLoaded', () => {
             e.stopPropagation();
             if (isPlaying) pauseAudio();
             else playAudio();
+        });
+    }
+
+    // Skip Controls
+    if (prevBtn) {
+        prevBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            playPrevious();
+        });
+    }
+
+    if (nextBtn) {
+        nextBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            playNext();
         });
     }
 
@@ -96,7 +115,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Close playlist when clicking outside
     document.addEventListener('click', (e) => {
         if (playlistContainer && !playlistContainer.classList.contains('hidden')) {
-            // If click is outside playlist container AND not on the toggle button
             if (!playlistContainer.contains(e.target) && !playlistToggle.contains(e.target)) {
                 closePlaylist();
             }
@@ -111,8 +129,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         seekSlider.addEventListener('change', (e) => {
             isDragging = false;
-            const seekTime = (audio.duration / 100) * e.target.value;
-            audio.currentTime = seekTime;
+            if (audio.duration) {
+                const seekTime = (audio.duration / 100) * e.target.value;
+                audio.currentTime = seekTime;
+            }
         });
     }
 
@@ -121,6 +141,7 @@ document.addEventListener('DOMContentLoaded', () => {
         volumeSlider.addEventListener('input', (e) => {
             const val = e.target.value;
             audio.volume = val;
+            localStorage.setItem('music-player-volume', val);
             updateSliderGradient(volumeSlider, val * 100);
         });
     }
@@ -129,6 +150,7 @@ document.addEventListener('DOMContentLoaded', () => {
     audio.addEventListener('play', () => {
         isPlaying = true;
         updateUIState(true);
+        localStorage.setItem('music-player-index', currentIndex);
     });
 
     audio.addEventListener('pause', () => {
@@ -143,19 +165,25 @@ document.addEventListener('DOMContentLoaded', () => {
                 seekSlider.value = progress || 0;
                 updateSliderGradient(seekSlider, progress);
             }
+            // Save position periodically (every 5 seconds)
+            if (Math.floor(audio.currentTime) % 5 === 0) {
+                localStorage.setItem('music-player-position', audio.currentTime);
+            }
         }
     });
 
     audio.addEventListener('ended', () => {
         if (playlist.length > 1) {
             playNext();
-        } else {
-            // For single track, loop is handled by native 'loop' attribute unless we want custom logic
-            // If we want manual loop:
-            // audio.currentTime = 0; playAudio();
         }
     });
 
+    audio.addEventListener('error', (e) => {
+        console.warn("Audio error encountered, skipping to next track", e);
+        if (playlist.length > 1) {
+            playNext();
+        }
+    });
 
     // --- 3. Functions ---
     function togglePlaylist() {
@@ -168,6 +196,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function loadTrack(index, autoPlay = true) {
         if (index < 0 || index >= playlist.length) return;
+        
+        const isSameTrack = currentIndex === index && isInitialized;
         currentIndex = index;
         const track = playlist[index];
 
@@ -177,13 +207,13 @@ document.addEventListener('DOMContentLoaded', () => {
             src = '/audio/' + src;
         }
 
-        // Prevent reloading if same src
-        const currentSrcPath = audio.getAttribute('src'); // Use getAttribute for raw value check if needed, or check audio.src
-        // Comparing full URL to relative src can be tricky, so let's just assign. 
-        // Browsers handle reassignment efficiently usually.
-
-        if (audio.src !== new URL(src, window.location.origin).href) {
+        const fullSrc = new URL(src, window.location.origin).href;
+        if (audio.src !== fullSrc) {
             audio.src = src;
+            // If it's a new track, reset position
+            if (isInitialized && !isSameTrack) {
+                localStorage.setItem('music-player-position', 0);
+            }
         }
 
         // Update Text
@@ -191,7 +221,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (linkBtn) linkBtn.href = track.link;
 
         // Update Playlist Highlight
-        renderPlaylist(); // Re-render or just update classes. Re-rendering is safer for sync.
+        renderPlaylist();
 
         if (autoPlay) {
             playAudio();
@@ -207,7 +237,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (idx === currentIndex) li.classList.add('active');
 
             li.addEventListener('click', (e) => {
-                e.stopPropagation(); // prevent bubbling to document click
+                e.stopPropagation();
                 loadTrack(idx, true);
             });
             playlistList.appendChild(li);
@@ -217,19 +247,16 @@ document.addEventListener('DOMContentLoaded', () => {
     async function playAudio() {
         try {
             await audio.play();
-            // State updates handled by 'play' event listener
             hasAutoplayStarted = true;
             playerContainer.classList.remove('awaiting-interaction');
             removeFallbackListeners();
         } catch (error) {
-            // Expected behavior for autoplay policies; user interaction required
             if (error.name !== 'NotAllowedError') {
                 console.warn("Playback prevented:", error);
             }
             isPlaying = false;
             updateUIState(false);
 
-            // If this was an autoplay attempt that failed, show hint
             if (!hasAutoplayStarted) {
                 playerContainer.classList.add('awaiting-interaction');
                 addFallbackListeners();
@@ -245,6 +272,12 @@ document.addEventListener('DOMContentLoaded', () => {
         let next = currentIndex + 1;
         if (next >= playlist.length) next = 0;
         loadTrack(next, true);
+    }
+
+    function playPrevious() {
+        let prev = currentIndex - 1;
+        if (prev < 0) prev = playlist.length - 1;
+        loadTrack(prev, true);
     }
 
     function updateUIState(playing) {
@@ -266,24 +299,31 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- 4. Initialization & Autoplay ---
-
-    // Render initial playlist state
     renderPlaylist();
 
-    // Initialize Volume
-    const initialVol = 0.2;
+    // Initialize Volume from localStorage
+    const savedVol = localStorage.getItem('music-player-volume');
+    const initialVol = savedVol !== null ? parseFloat(savedVol) : 0.2;
     audio.volume = initialVol;
     if (volumeSlider) {
         volumeSlider.value = initialVol;
         updateSliderGradient(volumeSlider, initialVol * 100);
     }
 
-    // Load track WITHOUT playing immediately (wait for timeout)
+    // Load initial track
     loadTrack(currentIndex, false);
+    
+    // Restore position from localStorage
+    const savedPos = localStorage.getItem('music-player-position');
+    if (savedPos !== null) {
+        audio.currentTime = parseFloat(savedPos);
+    }
+
+    isInitialized = true;
 
     // Initial Autoplay Attempt
     setTimeout(() => {
-        if (playerContainer.style.display !== 'none') {
+        if (playerContainer.style.display !== 'none' && !isPlaying) {
             playAudio();
         }
     }, 800);
@@ -307,10 +347,8 @@ document.addEventListener('DOMContentLoaded', () => {
         );
     }
 
-    // Add listeners immediately as a safety net, they execute only once
     addFallbackListeners();
 
-    // Disable loop for multi-track playlist
     // --- 7. Soft Navigation Support ---
     window.addEventListener('softNavigate', (e) => {
         const { playerData } = e.detail;
@@ -318,16 +356,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const initialAudio = playerData.initialAudio;
         if (playlist.length > 0) {
-            // Path normalization logic same as initialization
             const cleanPath = (p) => p.replace(/^\/?(audio\/)?/, '').replace(/^\//, '');
             const target = cleanPath(initialAudio);
-
             const foundIndex = playlist.findIndex(track => cleanPath(track.audio) === target);
 
-            // Only switch track if it's different from current
             if (foundIndex !== -1 && foundIndex !== currentIndex) {
                 console.log(`Soft navigation to new track: ${initialAudio}`);
-                loadTrack(foundIndex, true); // Auto play new track
+                loadTrack(foundIndex, true);
             }
         }
     });

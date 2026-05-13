@@ -151,6 +151,16 @@
     color: #fff;
 }
 
+.skip-btn svg {
+    width: 20px;
+    height: 20px;
+    opacity: 0.8;
+}
+
+.skip-btn:hover svg {
+    opacity: 1;
+}
+
 .play-btn svg {
     width: 36px;
     height: 36px;

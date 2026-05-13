@@ -49,17 +49,21 @@
         const parser = new DOMParser();
         const doc = parser.parseFromString(html, 'text/html');
 
-        // Get link tags inside main content (page-specific CSS)
         const mainContent = doc.querySelector(MAIN_CONTENT_SELECTOR);
         const pageLinks = mainContent ? Array.from(mainContent.querySelectorAll('link[rel="stylesheet"]')) : [];
+
+        // Extract metadata
+        const metaTags = Array.from(doc.querySelectorAll('meta[name], meta[property]'));
+        const headLinks = Array.from(doc.querySelectorAll('head link:not([rel="stylesheet"])'));
 
         return {
             content: mainContent,
             title: doc.querySelector('title')?.textContent || document.title,
-            // Get new player data if present
+            bodyClass: doc.body.className,
             playerData: doc.querySelector('#music-player')?.dataset,
-            // Page-specific CSS links
-            cssLinks: pageLinks
+            cssLinks: pageLinks,
+            metaTags: metaTags,
+            headLinks: headLinks
         };
     }
 
@@ -68,6 +72,12 @@
      */
     async function softNavigate(url, pushState = true) {
         try {
+            // Save scroll position for the current page
+            if (pushState) {
+                const currentUrl = window.location.href;
+                sessionStorage.setItem('scroll-' + currentUrl, window.scrollY);
+            }
+
             // Show loading state
             document.body.classList.add('soft-loading');
 
@@ -77,19 +87,21 @@
             }
 
             const html = await response.text();
-            const { content, title, playerData, cssLinks } = extractMainContent(html);
+            const { content, title, bodyClass, playerData, cssLinks, metaTags, headLinks } = extractMainContent(html);
 
             if (!content) {
-                // Fallback to hard navigation if main content not found
                 window.location.href = url;
                 return;
             }
 
-            // Cleanup old page-specific CSS that was Soft-Loaded
+            // Update Meta Tags & Head Links
+            updateHeadElements(metaTags, headLinks);
+
+            // Cleanup old page-specific CSS
             const oldSoftLinks = document.head.querySelectorAll('link[data-soft-css="true"]');
             oldSoftLinks.forEach(link => link.remove());
 
-            // Load any page-specific CSS that we don't already have
+            // Load new page-specific CSS
             cssLinks.forEach(link => {
                 const href = link.getAttribute('href');
                 if (!document.head.querySelector(`link[href="${href}"]`)) {
@@ -108,21 +120,30 @@
                 mainContent.innerHTML = content.innerHTML;
             }
 
-            // Update page title
+            // Update page title & body class
             document.title = title;
+            // Preserving 'dark' class if user toggled it manually might be needed, 
+            // but usually Hugo handles it. Let's merge if 'dark' is present in current body.
+            const isDark = document.body.classList.contains('dark');
+            document.body.className = bodyClass;
+            if (isDark) document.body.classList.add('dark');
 
             // Update URL
             if (pushState) {
                 history.pushState({ softNav: true }, '', url);
+                window.scrollTo(0, 0);
+            } else {
+                // Restoration from PopState (Back/Forward)
+                const savedScroll = sessionStorage.getItem('scroll-' + url);
+                if (savedScroll) {
+                    window.scrollTo(0, parseInt(savedScroll, 10));
+                } else {
+                    window.scrollTo(0, 0);
+                }
             }
 
-            // Scroll to top
-            window.scrollTo(0, 0);
-
-            // Re-run any necessary scripts for the new content (Await completion)
             await reinitializePageScripts();
 
-            // Dispatch custom events after a frame to ensure DOM layout is complete
             requestAnimationFrame(() => {
                 window.dispatchEvent(new CustomEvent('softNavigate', { detail: { url, playerData } }));
                 window.dispatchEvent(new CustomEvent('pageReady', { detail: { url, playerData } }));
@@ -134,6 +155,31 @@
         } finally {
             document.body.classList.remove('soft-loading');
         }
+    }
+
+    /**
+     * Update head elements (Meta tags, SEO, etc.)
+     */
+    function updateHeadElements(newMeta, newLinks) {
+        // Remove existing dynamic-friendly meta
+        const targetSelectors = [
+            'meta[name="description"]',
+            'meta[property^="og:"]',
+            'meta[name^="twitter:"]',
+            'meta[name^="ai-"]'
+        ];
+        targetSelectors.forEach(sel => {
+            document.querySelectorAll(sel).forEach(el => el.remove());
+        });
+
+        // Add new ones
+        newMeta.forEach(meta => {
+            const name = meta.getAttribute('name');
+            const prop = meta.getAttribute('property');
+            if (name === 'description' || (prop && prop.startsWith('og:')) || (name && (name.startsWith('twitter:') || name.startsWith('ai-')))) {
+                document.head.appendChild(meta.cloneNode(true));
+            }
+        });
     }
 
     /**
