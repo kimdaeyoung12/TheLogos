@@ -6,13 +6,17 @@
         const header = document.querySelector('header');
         if (!header) return;
 
-        // Force sticky positioning and high z-index
-        header.classList.remove('hidden', '-translate-y-full', 'opacity-0', 'd-desktop-none');
-        header.classList.add('sticky', 'top-0', 'z-[1000]', 'translate-y-0', 'opacity-100', 'visible');
+        // Force fixed positioning and high z-index
+        header.classList.remove('hidden', '-translate-y-full', 'opacity-0', 'd-desktop-none', 'sticky');
+        header.classList.add('fixed', 'top-0', 'left-0', 'w-full', 'z-[1000]', 'translate-y-0', 'opacity-100', 'visible');
 
         // Ensure display block/flex
-        // We use important to override inline styles
-        header.style.cssText += 'display: block !important; visibility: visible !important; opacity: 1 !important; transform: none !important;';
+        header.style.setProperty('display', 'block', 'important');
+        header.style.setProperty('visibility', 'visible', 'important');
+        header.style.setProperty('opacity', '1', 'important');
+        header.style.setProperty('transform', 'none', 'important');
+        header.style.setProperty('position', 'fixed', 'important');
+        header.style.setProperty('z-index', '99999', 'important');
     }
 
     // Initialize Observer
