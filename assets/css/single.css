@@ -862,3 +862,84 @@ blockquote.instagram-media>a:not(:first-of-type) {
 .dark .article-content tr:hover td {
     background: rgba(255, 255, 255, 0.02);
 }
+
+/* ========================================
+   LLM Architecture Diagram
+   ======================================== */
+.article-content .llm-arch-container {
+    box-sizing: border-box;
+    width: min(1120px, calc(100vw - 40px));
+    max-width: none;
+    margin-left: 50%;
+    transform: translateX(-50%);
+    overflow-x: auto !important;
+    overflow-y: visible;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-color: rgba(148, 163, 184, 0.75) rgba(15, 23, 42, 0.35);
+}
+
+.article-content .llm-arch-container * {
+    box-sizing: border-box;
+}
+
+.article-content .llm-arch-container > .max-w-5xl {
+    min-width: 0;
+}
+
+.article-content .llm-arch-container h1,
+.article-content .llm-arch-container h2,
+.article-content .llm-arch-container h3,
+.article-content .llm-arch-container h4 {
+    line-height: 1.25;
+    word-break: keep-all;
+}
+
+.article-content .llm-arch-container .flex {
+    min-width: 0;
+}
+
+.article-content .llm-arch-container .grid {
+    min-width: 0;
+}
+
+@media (max-width: 768px) {
+    .article-content .llm-arch-container {
+        width: calc(100vw - 24px);
+        padding: 20px 14px !important;
+        border-radius: 18px !important;
+    }
+
+    .article-content .llm-arch-container .text-right {
+        text-align: left !important;
+    }
+
+    .article-content .llm-arch-container section {
+        scroll-margin-top: 88px;
+    }
+
+    .article-content .llm-arch-container section .absolute {
+        position: static !important;
+        margin-bottom: 16px;
+        padding: 0 !important;
+        background: transparent !important;
+    }
+}
+
+@media (max-width: 520px) {
+    .article-content .llm-arch-container {
+        width: calc(100vw - 16px);
+        font-size: 14px !important;
+    }
+
+    .article-content .llm-arch-container h1 {
+        font-size: 1.75rem !important;
+    }
+
+    .article-content .llm-arch-container h2 {
+        font-size: 1.25rem !important;
+    }
+
+    .article-content .llm-arch-container h3 {
+        font-size: 1.1rem !important;
+    }
+}
