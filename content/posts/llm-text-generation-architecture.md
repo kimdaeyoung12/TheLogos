@@ -24,7 +24,7 @@ tags = ["LLM", "Architecture", "Transformer", "Machine Learning", "NLP"]
 </script>
 
 <div class="llm-arch-container bg-[#121212] text-gray-200 p-4 md:p-8 font-sans text-base md:text-lg rounded-3xl my-8 overflow-x-auto">
-  <div class="max-w-5xl mx-auto space-y-8">
+  <div class="max-w-6xl mx-auto space-y-8">
     
     <!-- Header & Legend -->
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-gray-700 pb-4">
