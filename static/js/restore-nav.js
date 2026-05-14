@@ -8,7 +8,7 @@
 
         // Force fixed positioning and high z-index
         header.classList.remove('hidden', '-translate-y-full', 'opacity-0', 'd-desktop-none', 'sticky');
-        header.classList.add('fixed', 'top-0', 'left-0', 'w-full', 'z-[1000]', 'translate-y-0', 'opacity-100', 'visible');
+        header.classList.add('fixed', 'top-0', 'left-0', 'w-full', 'z-[20000]', 'translate-y-0', 'opacity-100', 'visible');
 
         // Ensure display block/flex
         header.style.setProperty('display', 'block', 'important');
@@ -16,7 +16,7 @@
         header.style.setProperty('opacity', '1', 'important');
         header.style.setProperty('transform', 'none', 'important');
         header.style.setProperty('position', 'fixed', 'important');
-        header.style.setProperty('z-index', '99999', 'important');
+        header.style.setProperty('z-index', '20000', 'important');
     }
 
     // Initialize Observer

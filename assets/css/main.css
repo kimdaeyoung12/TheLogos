@@ -24,22 +24,22 @@ body {
 body.dark { background-color: var(--dark-bg); color: #f8fafc; }
 body:not(.dark) { background-color: var(--light-bg); color: #1e293b; }
 
-/* Header (Z-index 10000 to be above everything) */
+/* Header (Z-index 20000 to be above everything) */
 .header {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 64px;
-    z-index: 10000;
+    z-index: 20000;
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.dark .header { background-color: rgba(15, 23, 42, 0.8); }
+.dark .header { background-color: rgba(16, 22, 34, 0.95); }
 body:not(.dark) .header { 
-    background-color: rgba(255, 255, 255, 0.8); 
+    background-color: rgba(255, 255, 255, 0.95); 
     border-bottom: 1px solid rgba(0, 0, 0, 0.1); 
 }
 
