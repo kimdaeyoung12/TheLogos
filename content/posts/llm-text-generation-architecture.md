@@ -23,7 +23,7 @@ tags = ["LLM", "Architecture", "Transformer", "Machine Learning", "NLP"]
   }
 </script>
 
-<div class="llm-arch-container bg-[#121212] text-gray-200 p-4 md:p-8 font-sans text-base md:text-lg rounded-3xl my-8 overflow-hidden">
+<div class="llm-arch-container bg-[#121212] text-gray-200 p-4 md:p-8 font-sans text-base md:text-lg rounded-3xl my-8 overflow-x-auto">
   <div class="max-w-5xl mx-auto space-y-8">
     
     <!-- Header & Legend -->
@@ -82,14 +82,14 @@ tags = ["LLM", "Architecture", "Transformer", "Machine Learning", "NLP"]
     <div class="flex justify-center"><i data-lucide="arrow-down" class="text-gray-500 w-6 h-6"></i></div>
 
     <!-- Step 4: Transformer Block -->
-    <section class="relative border-2 border-dashed border-gray-600 rounded-xl p-4 md:p-6 w-full max-w-4xl mx-auto">
-      <div class="absolute -left-4 -top-4 bg-[#121212] px-2 flex items-center gap-2">
-        <span class="text-xl font-bold text-gray-400">④</span>
+    <section class="relative border-2 border-dashed border-gray-600 rounded-xl p-6 md:p-10 pt-10 md:pt-12 w-full max-w-4xl mx-auto mt-10">
+      <div class="absolute left-4 -top-5 bg-[#121212] px-3 flex items-center gap-3 whitespace-nowrap">
+        <span class="text-2xl font-bold text-gray-400">④</span>
         <h2 class="text-xl md:text-2xl font-bold text-white border-0 m-0">트랜스포머 블록</h2>
-        <span class="text-gray-400 text-sm">(x N 레이어)</span>
+        <span class="text-gray-400 text-sm whitespace-nowrap">(x N 레이어)</span>
       </div>
 
-      <div class="flex flex-col lg:flex-row gap-6 mt-4">
+      <div class="flex flex-col lg:flex-row gap-8 mt-4">
         
         <!-- Main Flow inside Transformer -->
         <div class="flex-[3] flex flex-col items-center w-full">
@@ -100,88 +100,90 @@ tags = ["LLM", "Architecture", "Transformer", "Machine Learning", "NLP"]
             <div class="flex justify-center gap-4 mb-4 text-sm">
               <div class="text-center">
                 <div class="text-red-400 font-bold mb-1">Q</div>
-                <div class="grid grid-cols-3 gap-0.5 border border-red-400 p-0.5 opacity-80">
-                  <div class="w-2 h-2 bg-red-400/50"></div>
-                  <div class="w-2 h-2 bg-red-400/50"></div>
-                  <div class="w-2 h-2 bg-red-400/50"></div>
-                  <div class="w-2 h-2 bg-red-400/50"></div>
-                  <div class="w-2 h-2 bg-red-400/50"></div>
-                  <div class="w-2 h-2 bg-red-400/50"></div>
-                  <div class="w-2 h-2 bg-red-400/50"></div>
-                  <div class="w-2 h-2 bg-red-400/50"></div>
-                  <div class="w-2 h-2 bg-red-400/50"></div>
-                  <div class="w-2 h-2 bg-red-400/50"></div>
-                  <div class="w-2 h-2 bg-red-400/50"></div>
-                  <div class="w-2 h-2 bg-red-400/50"></div>
+                <div class="grid grid-cols-3 gap-1 border border-red-400 p-1 opacity-80">
+                  <div class="w-2.5 h-2.5 bg-red-400/50"></div>
+                  <div class="w-2.5 h-2.5 bg-red-400/50"></div>
+                  <div class="w-2.5 h-2.5 bg-red-400/50"></div>
+                  <div class="w-2.5 h-2.5 bg-red-400/50"></div>
+                  <div class="w-2.5 h-2.5 bg-red-400/50"></div>
+                  <div class="w-2.5 h-2.5 bg-red-400/50"></div>
+                  <div class="w-2.5 h-2.5 bg-red-400/50"></div>
+                  <div class="w-2.5 h-2.5 bg-red-400/50"></div>
+                  <div class="w-2.5 h-2.5 bg-red-400/50"></div>
+                  <div class="w-2.5 h-2.5 bg-red-400/50"></div>
+                  <div class="w-2.5 h-2.5 bg-red-400/50"></div>
+                  <div class="w-2.5 h-2.5 bg-red-400/50"></div>
                 </div>
-                <div class="text-purple-300 mt-1 scale-75">(d_model x d_k)</div>
+                <div class="text-purple-300 mt-2 text-[10px]">(d_model x d_k)</div>
               </div>
               <div class="text-center">
                 <div class="text-blue-400 font-bold mb-1">K</div>
-                <div class="grid grid-cols-3 gap-0.5 border border-blue-400 p-0.5 opacity-80">
-                  <div class="w-2 h-2 bg-blue-400/50"></div>
-                  <div class="w-2 h-2 bg-blue-400/50"></div>
-                  <div class="w-2 h-2 bg-blue-400/50"></div>
-                  <div class="w-2 h-2 bg-blue-400/50"></div>
-                  <div class="w-2 h-2 bg-blue-400/50"></div>
-                  <div class="w-2 h-2 bg-blue-400/50"></div>
-                  <div class="w-2 h-2 bg-blue-400/50"></div>
-                  <div class="w-2 h-2 bg-blue-400/50"></div>
-                  <div class="w-2 h-2 bg-blue-400/50"></div>
-                  <div class="w-2 h-2 bg-blue-400/50"></div>
-                  <div class="w-2 h-2 bg-blue-400/50"></div>
-                  <div class="w-2 h-2 bg-blue-400/50"></div>
+                <div class="grid grid-cols-3 gap-1 border border-blue-400 p-1 opacity-80">
+                  <div class="w-2.5 h-2.5 bg-blue-400/50"></div>
+                  <div class="w-2.5 h-2.5 bg-blue-400/50"></div>
+                  <div class="w-2.5 h-2.5 bg-blue-400/50"></div>
+                  <div class="w-2.5 h-2.5 bg-blue-400/50"></div>
+                  <div class="w-2.5 h-2.5 bg-blue-400/50"></div>
+                  <div class="w-2.5 h-2.5 bg-blue-400/50"></div>
+                  <div class="w-2.5 h-2.5 bg-blue-400/50"></div>
+                  <div class="w-2.5 h-2.5 bg-blue-400/50"></div>
+                  <div class="w-2.5 h-2.5 bg-blue-400/50"></div>
+                  <div class="w-2.5 h-2.5 bg-blue-400/50"></div>
+                  <div class="w-2.5 h-2.5 bg-blue-400/50"></div>
+                  <div class="w-2.5 h-2.5 bg-blue-400/50"></div>
                 </div>
-                <div class="text-purple-300 mt-1 scale-75">(d_model x d_k)</div>
+                <div class="text-purple-300 mt-2 text-[10px]">(d_model x d_k)</div>
               </div>
               <div class="text-center">
                 <div class="text-green-400 font-bold mb-1">V</div>
-                <div class="grid grid-cols-3 gap-0.5 border border-green-400 p-0.5 opacity-80">
-                  <div class="w-2 h-2 bg-green-400/50"></div>
-                  <div class="w-2 h-2 bg-green-400/50"></div>
-                  <div class="w-2 h-2 bg-green-400/50"></div>
-                  <div class="w-2 h-2 bg-green-400/50"></div>
-                  <div class="w-2 h-2 bg-green-400/50"></div>
-                  <div class="w-2 h-2 bg-green-400/50"></div>
-                  <div class="w-2 h-2 bg-green-400/50"></div>
-                  <div class="w-2 h-2 bg-green-400/50"></div>
-                  <div class="w-2 h-2 bg-green-400/50"></div>
-                  <div class="w-2 h-2 bg-green-400/50"></div>
-                  <div class="w-2 h-2 bg-green-400/50"></div>
-                  <div class="w-2 h-2 bg-green-400/50"></div>
+                <div class="grid grid-cols-3 gap-1 border border-green-400 p-1 opacity-80">
+                  <div class="w-2.5 h-2.5 bg-green-400/50"></div>
+                  <div class="w-2.5 h-2.5 bg-green-400/50"></div>
+                  <div class="w-2.5 h-2.5 bg-green-400/50"></div>
+                  <div class="w-2.5 h-2.5 bg-green-400/50"></div>
+                  <div class="w-2.5 h-2.5 bg-green-400/50"></div>
+                  <div class="w-2.5 h-2.5 bg-green-400/50"></div>
+                  <div class="w-2.5 h-2.5 bg-green-400/50"></div>
+                  <div class="w-2.5 h-2.5 bg-green-400/50"></div>
+                  <div class="w-2.5 h-2.5 bg-green-400/50"></div>
+                  <div class="w-2.5 h-2.5 bg-green-400/50"></div>
+                  <div class="w-2.5 h-2.5 bg-green-400/50"></div>
+                  <div class="w-2.5 h-2.5 bg-green-400/50"></div>
                 </div>
-                <div class="text-purple-300 mt-1 scale-75">(d_model x d_v)</div>
+                <div class="text-purple-300 mt-2 text-[10px]">(d_model x d_v)</div>
               </div>
               
               <div class="flex flex-col justify-center items-center px-2">
                 <i data-lucide="arrow-right" class="text-gray-500 w-5 h-5"></i>
               </div>
               
-              <div class="text-center flex flex-col items-center">
-                <div class="text-gray-300 mb-1">어텐션 점수</div>
-                <div class="text-gray-400 mb-1">i</div>
-                <div class="grid grid-cols-4 gap-0.5 border border-gray-500 p-0.5 relative">
-                  <div class="absolute -top-4 left-1/2 -translate-x-1/2">j</div>
-                  <div class="w-3 h-3 bg-gray-200"></div>
-                  <div class="w-3 h-3 bg-gray-700"></div>
-                  <div class="w-3 h-3 bg-gray-700"></div>
-                  <div class="w-3 h-3 bg-gray-700"></div>
-                  <div class="w-3 h-3 bg-gray-700"></div>
-                  <div class="w-3 h-3 bg-gray-200"></div>
-                  <div class="w-3 h-3 bg-gray-700"></div>
-                  <div class="w-3 h-3 bg-gray-700"></div>
-                  <div class="w-3 h-3 bg-gray-700"></div>
-                  <div class="w-3 h-3 bg-gray-700"></div>
-                  <div class="w-3 h-3 bg-gray-200"></div>
-                  <div class="w-3 h-3 bg-gray-700"></div>
-                  <div class="w-3 h-3 bg-gray-700"></div>
-                  <div class="w-3 h-3 bg-gray-700"></div>
-                  <div class="w-3 h-3 bg-gray-700"></div>
-                  <div class="w-3 h-3 bg-gray-200"></div>
+              <div class="text-center flex flex-col items-center ml-2">
+                <div class="text-gray-300 mb-3 text-sm">어텐션 점수</div>
+                <div class="flex items-center gap-2">
+                  <div class="text-gray-400 text-xs">i</div>
+                  <div class="grid grid-cols-4 gap-1 border border-gray-500 p-1 relative">
+                    <div class="absolute -top-5 left-1/2 -translate-x-1/2 text-gray-400 text-xs">j</div>
+                    <div class="w-3.5 h-3.5 bg-gray-200"></div>
+                    <div class="w-3.5 h-3.5 bg-gray-700"></div>
+                    <div class="w-3.5 h-3.5 bg-gray-700"></div>
+                    <div class="w-3.5 h-3.5 bg-gray-700"></div>
+                    <div class="w-3.5 h-3.5 bg-gray-700"></div>
+                    <div class="w-3.5 h-3.5 bg-gray-200"></div>
+                    <div class="w-3.5 h-3.5 bg-gray-700"></div>
+                    <div class="w-3.5 h-3.5 bg-gray-700"></div>
+                    <div class="w-3.5 h-3.5 bg-gray-700"></div>
+                    <div class="w-3.5 h-3.5 bg-gray-700"></div>
+                    <div class="w-3.5 h-3.5 bg-gray-200"></div>
+                    <div class="w-3.5 h-3.5 bg-gray-700"></div>
+                    <div class="w-3.5 h-3.5 bg-gray-700"></div>
+                    <div class="w-3.5 h-3.5 bg-gray-700"></div>
+                    <div class="w-3.5 h-3.5 bg-gray-700"></div>
+                    <div class="w-3.5 h-3.5 bg-gray-200"></div>
+                  </div>
                 </div>
-                <div class="mt-2 border border-orange-400 text-orange-300 rounded px-2 py-1 flex items-center">
-                  <span class="mr-1 text-xs">softmax</span>
-                  <span class="border-l border-orange-400 pl-1 text-xs">(QKᵀ) / √dₖ</span>
+                <div class="mt-4 border border-orange-400 text-orange-300 rounded px-2 py-1 flex items-center bg-orange-400/10">
+                  <span class="mr-1 text-[10px]">softmax</span>
+                  <span class="border-l border-orange-400 pl-1 text-[10px]">(QK<sup>T</sup>) / √dk</span>
                 </div>
               </div>
             </div>
@@ -207,7 +209,9 @@ tags = ["LLM", "Architecture", "Transformer", "Machine Learning", "NLP"]
               <i data-lucide="arrow-right" class="text-gray-500 w-5 h-5"></i>
               <div class="border border-orange-500 p-2 text-center rounded text-orange-300">
                 ReLU / SwiGLU<br/>
-                <div class="w-8 h-4 border-b-2 border-r-2 border-orange-300 mx-auto mt-1 transform rotate-45"></div>
+                <svg class="w-8 h-8 mx-auto mt-1" viewBox="0 0 40 40">
+                  <path d="M 5 35 L 20 35 L 35 5" fill="none" stroke="currentColor" stroke-width="2" />
+                </svg>
               </div>
               <i data-lucide="arrow-right" class="text-gray-500 w-5 h-5"></i>
               <div class="border border-purple-500 p-2 text-center rounded">
@@ -235,13 +239,13 @@ tags = ["LLM", "Architecture", "Transformer", "Machine Learning", "NLP"]
 
           <div class="border border-blue-500 rounded-lg p-3 text-sm">
             <h4 class="text-blue-300 text-base md:text-lg font-bold mb-2 border-0 m-0">KV 캐시 <span class="text-gray-400 font-normal">(레이어별)</span></h4>
-            <div class="text-gray-400 mb-1">시간 t₁, t₂, t₃ ... t</div>
+            <div class="text-gray-400 mb-1">시간 t1, t2, t3 ... t</div>
             <div class="flex items-center gap-2 mb-1">
               <span class="text-blue-400 font-bold">K</span>
               <div class="flex gap-0.5">
-                <div class="w-3 h-4 border border-gray-500"></div>
-                <div class="w-3 h-4 border border-gray-500"></div>
-                <div class="w-3 h-4 border border-gray-500"></div>
+                <div class="w-3 h-4 border border-gray-500 bg-gray-800/50"></div>
+                <div class="w-3 h-4 border border-gray-500 bg-gray-800/50"></div>
+                <div class="w-3 h-4 border border-gray-500 bg-gray-800/50"></div>
                 <span class="text-gray-500">→</span>
                 <div class="w-3 h-4 border border-dashed border-gray-500"></div>
               </div>
@@ -249,9 +253,9 @@ tags = ["LLM", "Architecture", "Transformer", "Machine Learning", "NLP"]
             <div class="flex items-center gap-2 mb-2">
               <span class="text-green-400 font-bold">V</span>
               <div class="flex gap-0.5">
-                <div class="w-3 h-4 border border-gray-500"></div>
-                <div class="w-3 h-4 border border-gray-500"></div>
-                <div class="w-3 h-4 border border-gray-500"></div>
+                <div class="w-3 h-4 border border-gray-500 bg-gray-800/50"></div>
+                <div class="w-3 h-4 border border-gray-500 bg-gray-800/50"></div>
+                <div class="w-3 h-4 border border-gray-500 bg-gray-800/50"></div>
                 <span class="text-gray-500">→</span>
                 <div class="w-3 h-4 border border-dashed border-gray-500"></div>
               </div>
@@ -332,45 +336,44 @@ tags = ["LLM", "Architecture", "Transformer", "Machine Learning", "NLP"]
         <h2 class="text-xl md:text-2xl font-bold text-white border-0 m-0">샘플링 전략</h2>
       </div>
       
-      <div class="grid grid-cols-2 lg:grid-cols-4 gap-2 w-full md:w-3/4">
-        <div class="border border-green-500 rounded p-2 text-center flex flex-col items-center h-full">
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 w-full md:w-3/4">
+        <div class="border border-green-500 rounded p-3 text-center flex flex-col items-center h-full bg-green-500/5">
           <div class="text-green-400 font-bold text-sm mb-1">그리디:</div>
-          <div class="text-sm text-gray-300 mb-2">최대확률 선택<br/>↓ 샘플</div>
-          <div class="flex items-end gap-1 h-6 border-b border-gray-600">
-             <div class="w-2 h-3 bg-gray-600"></div>
-             <div class="w-2 h-5 bg-green-500 border border-white"></div>
-             <div class="w-2 h-2 bg-gray-600"></div>
+          <div class="text-xs text-gray-300 mb-2">최대확률 선택</div>
+          <div class="flex items-end gap-1 h-8 border-b border-gray-600">
+             <div class="w-2.5 h-4 bg-gray-600"></div>
+             <div class="w-2.5 h-7 bg-green-500 border border-white"></div>
+             <div class="w-2.5 h-3 bg-gray-600"></div>
           </div>
         </div>
         
-        <div class="border border-blue-500 rounded p-2 text-center flex flex-col items-center h-full">
+        <div class="border border-blue-500 rounded p-3 text-center flex flex-col items-center h-full bg-blue-500/5">
           <div class="text-blue-400 font-bold text-sm mb-1">Top-K:</div>
-          <div class="text-sm text-gray-300 mb-2">상위 K 토큰에서<br/>샘플</div>
-          <div class="flex items-end gap-1 h-6 border-b border-gray-600">
-             <div class="w-1.5 h-5 bg-blue-400"></div>
-             <div class="w-1.5 h-4 bg-blue-400"></div>
-             <div class="w-1.5 h-3 bg-blue-400"></div>
-             <div class="w-1.5 h-1 bg-gray-600"></div>
+          <div class="text-xs text-gray-300 mb-2">상위 K 토큰</div>
+          <div class="flex items-end gap-1 h-8 border-b border-gray-600">
+             <div class="w-2 h-7 bg-blue-400"></div>
+             <div class="w-2 h-5 bg-blue-400"></div>
+             <div class="w-2 h-4 bg-blue-400"></div>
+             <div class="w-2 h-2 bg-gray-600"></div>
           </div>
         </div>
-
-        <div class="border border-orange-500 rounded p-2 text-center flex flex-col items-center h-full">
-          <div class="text-orange-400 font-bold text-sm mb-1">Top-P(뉴클리어스):</div>
-          <div class="text-sm text-gray-300 mb-2">누적확률 기준<br/>샘플</div>
-          <div class="flex items-end gap-1 h-6 border-b border-gray-600 relative">
-             <div class="w-1.5 h-5 bg-orange-400"></div>
-             <div class="w-1.5 h-3 bg-orange-400"></div>
-             <div class="w-1.5 h-2 bg-gray-600"></div>
-             <div class="absolute top-0 right-0 border-t border-r border-orange-400 w-5 h-5 rounded-tr"></div>
+ 
+        <div class="border border-orange-500 rounded p-3 text-center flex flex-col items-center h-full bg-orange-500/5">
+          <div class="text-orange-400 font-bold text-sm mb-1 text-[11px] md:text-sm">Top-P(뉴클리어스):</div>
+          <div class="text-xs text-gray-300 mb-2">누적확률 기준</div>
+          <div class="flex items-end gap-1 h-8 border-b border-gray-600 relative">
+             <div class="w-2 h-7 bg-orange-400"></div>
+             <div class="w-2 h-4 bg-orange-400"></div>
+             <div class="w-2 h-2 bg-gray-600"></div>
+             <div class="absolute top-0 right-0 border-t border-r border-orange-400 w-6 h-6 rounded-tr"></div>
           </div>
         </div>
-
-        <div class="border border-blue-300 rounded p-2 text-center flex flex-col items-center h-full">
+ 
+        <div class="border border-blue-300 rounded p-3 text-center flex flex-col items-center h-full bg-blue-300/5">
           <div class="text-blue-300 font-bold text-sm mb-1">Temperature:</div>
-          <div class="text-xs text-gray-300 mb-1">무작위성 조절</div>
-          <div class="text-xs text-blue-200">T→0 결정적</div>
-          <div class="text-xs text-blue-200">T→1 창의적</div>
-          <div class="w-full h-4 border-b border-gray-600 mt-1 relative">
+          <div class="text-[10px] text-gray-300">T→0 결정적</div>
+          <div class="text-[10px] text-gray-300 mb-2">T→1 창의적</div>
+          <div class="w-full h-6 border-b border-gray-600 mt-auto relative">
             <svg class="w-full h-full absolute bottom-0" preserveAspectRatio="none" viewBox="0 0 100 20">
                <path d="M0,20 Q50,0 100,20" fill="none" stroke="#60a5fa" stroke-width="2" />
             </svg>
@@ -419,11 +422,31 @@ tags = ["LLM", "Architecture", "Transformer", "Machine Learning", "NLP"]
         <i data-lucide="arrow-right" class="text-gray-500 w-5 h-5"></i>
 
         <div class="flex flex-col items-center">
-           <div class="flex gap-2 mb-1">
-             <div class="flex flex-col items-center text-green-400"><span class="text-lg">✓</span><span>중력</span><span class="text-xs text-gray-500 mt-1">26110</span><span class="text-xs">수락</span></div>
-             <div class="flex flex-col items-center text-green-400"><span class="text-lg">✓</span><span>이란</span><span class="text-xs text-gray-500 mt-1">879</span><span class="text-xs">수락</span></div>
-             <div class="flex flex-col items-center text-green-400"><span class="text-lg">✓</span><span>무엇</span><span class="text-xs text-gray-500 mt-1">318</span><span class="text-xs">거절</span></div>
-             <div class="flex flex-col items-center text-red-400"><span class="text-lg">✗</span><span>a</span><span class="text-xs text-gray-500 mt-1">256</span><span class="text-xs">거절</span></div>
+           <div class="flex gap-3 mb-1">
+             <div class="flex flex-col items-center text-green-400">
+               <i data-lucide="check-circle-2" class="w-5 h-5 mb-1"></i>
+               <span class="font-bold">중력</span>
+               <span class="text-[10px] text-gray-500 mt-1">26110</span>
+               <span class="text-[10px] bg-green-900/30 px-1 rounded">수락</span>
+             </div>
+             <div class="flex flex-col items-center text-green-400">
+               <i data-lucide="check-circle-2" class="w-5 h-5 mb-1"></i>
+               <span class="font-bold">이란</span>
+               <span class="text-[10px] text-gray-500 mt-1">879</span>
+               <span class="text-[10px] bg-green-900/30 px-1 rounded">수락</span>
+             </div>
+             <div class="flex flex-col items-center text-red-400">
+               <i data-lucide="x-circle" class="w-5 h-5 mb-1"></i>
+               <span class="font-bold">무엇</span>
+               <span class="text-[10px] text-gray-500 mt-1">318</span>
+               <span class="text-[10px] bg-red-900/30 px-1 rounded">거절</span>
+             </div>
+             <div class="flex flex-col items-center text-red-400 opacity-50">
+               <i data-lucide="x-circle" class="w-5 h-5 mb-1"></i>
+               <span class="font-bold">a</span>
+               <span class="text-[10px] text-gray-500 mt-1">256</span>
+               <span class="text-[10px] bg-red-900/30 px-1 rounded">거절</span>
+             </div>
            </div>
         </div>
 
