@@ -1,297 +1,374 @@
-// Ensure Graph depends on ForceGraph3D script loading first, but we handle that check inside init.
+(function () {
+    'use strict';
 
-// Initialize function
-function initKnowledgeGraph() {
-    console.log('[KnowledgeGraph] initKnowledgeGraph called');
-    const container = document.getElementById('knowledge-graph-container');
-    if (!container) {
-        console.warn('[KnowledgeGraph] Container not found');
-        return;
+    const D3_SRC = 'https://unpkg.com/d3';
+    const FORCE_GRAPH_SRC = 'https://unpkg.com/3d-force-graph';
+
+    const state = window._knowledgeGraphState || {
+        initSeq: 0,
+        scriptPromises: {},
+        graph: null,
+        container: null,
+        resizeHandler: null
+    };
+    window._knowledgeGraphState = state;
+
+    function findScript(src) {
+        const absoluteSrc = new URL(src, window.location.href).href;
+        return Array.from(document.scripts).find(script =>
+            script.src === absoluteSrc || script.dataset.knowledgeGraphSrc === src
+        );
     }
 
-    // Avoid double init if already initialized on this specific container element
-    if (container._graphInitialized) {
-        console.log('[KnowledgeGraph] Already initialized for this container');
-        return;
-    }
+    function loadScriptOnce(src, isReady) {
+        if (isReady()) return Promise.resolve();
+        if (state.scriptPromises[src]) return state.scriptPromises[src];
 
-    // Get width/height from container
-    const width = container.clientWidth;
-    const height = container.clientHeight;
-    console.log('[KnowledgeGraph] Dimensions:', width, 'x', height);
+        state.scriptPromises[src] = new Promise((resolve, reject) => {
+            let script = findScript(src);
 
-    // During PJAX (soft navigation), DOM might not be fully laid out yet
-    if (width === 0 || height === 0) {
-        console.warn('[KnowledgeGraph] Dimensions are zero, retrying...');
-        setTimeout(initKnowledgeGraph, 100);
-        return;
-    }
+            if (script?.dataset.loaded === 'true' && !isReady()) {
+                script.remove();
+                script = null;
+            }
 
-    // Use embedded graphData
-    if (!window.graphData) {
-        console.error("[KnowledgeGraph] window.graphData is missing!");
-        // Small retry in case of race condition with data script
-        setTimeout(initKnowledgeGraph, 100);
-        return;
-    }
+            if (!script) {
+                script = document.createElement('script');
+                script.src = src;
+                script.async = false;
+                script.dataset.knowledgeGraphSrc = src;
+            }
 
-    try {
-        let data = window.graphData;
-        if (typeof data === 'string') {
-            try {
-                data = JSON.parse(data);
-            } catch (e) {
-                console.error("[KnowledgeGraph] JSON parse failed:", e);
+            if (isReady()) {
+                script.dataset.loaded = 'true';
+                resolve();
                 return;
             }
-        }
 
-        if (!data.nodes || !data.links) {
-            console.error("[KnowledgeGraph] Data structure is invalid:", data);
-            return;
-        }
-
-        console.log('[KnowledgeGraph] Initializing with', data.nodes.length, 'nodes');
-
-        // Check if ForceGraph3D is loaded
-        if (typeof ForceGraph3D === 'undefined') {
-            console.warn('[KnowledgeGraph] ForceGraph3D library not found, retrying...');
-            setTimeout(initKnowledgeGraph, 200);
-            return;
-        }
-
-        // Clear container to avoid double canvas/interference
-        container.innerHTML = '';
-        container._graphInitialized = true;
-
-    // Expose globally for debugging
-    window.Graph = ForceGraph3D()
-        (container)
-        .width(width)
-        .height(height)
-        .graphData(data)
-            .nodeLabel('name')
-            // Node styling
-            .nodeColor(node => {
-                if (node.group === 'category') {
-                    // Planetary Colors
-                    const name = node.name.toLowerCase();
-                    if (name.includes('religion') || name.includes('종교')) return '#f59e0b'; // Amber
-                    if (name.includes('philosophy') || name.includes('철학')) return '#c084fc'; // Bright Purple
-                    if (name.includes('engineering') || name.includes('공학') || name.includes('dev')) return '#ef4444'; // Red
-                    if (name.includes('writing') || name.includes('글') || name.includes('essay')) return '#10b981'; // Emerald
-                    return '#fbbf24'; // Default Planet Gold
-                }
-                if (node.group === 'post') return '#e2e8f0'; // White/Star-like
-                if (node.group === 'tag') return '#475569'; // Dim Gray Stardust
-                return '#ffffff';
-            })
-            .nodeVal(node => {
-                // Use logarithmic scaling or exact 'val' from JSON
-                // JSON vals: Post=20, Cat=30, Tag=5
-                return node.val;
-            })
-            .nodeResolution(16) // Higher polygon count for spheres
-            .nodeOpacity(0.9)
-
-            // Link styling (using valid API)
-            .linkWidth(0.5)
-            .linkOpacity(0.6)
-            .linkColor('#94a3b8')
-
-            // Background
-            .backgroundColor('rgba(0,0,0,0)') // Transparent
-
-            // Interaction - Show floating panel on click
-            .onNodeClick(node => {
-                // Category/Tag click: zoom to center on this node
-                if (node.group === 'category' || node.group === 'tag') {
-                    // Calculate camera position to center on this node
-                    const distance = 120;  // Distance from node
-                    const distRatio = 1 + distance / Math.hypot(node.x, node.y, node.z);
-                    window.Graph.cameraPosition(
-                        { x: node.x * distRatio, y: node.y * distRatio, z: node.z * distRatio },
-                        node,  // lookAt the clicked node
-                        1000   // animation duration
-                    );
-                }
-
-                // Populate and show panel
-                const panel = document.getElementById('node-panel');
-                const panelType = document.getElementById('panel-type');
-                const panelTitle = document.getElementById('panel-title');
-                const panelDate = document.getElementById('panel-date');
-                const panelSummary = document.getElementById('panel-summary');
-                const panelLink = document.getElementById('panel-link');
-                const panelLinkText = document.getElementById('panel-link-text');
-
-                panelTitle.textContent = node.name;
-                panelType.textContent = node.group;
-                panelType.className = 'panel-type ' + node.group;
-
-                // Show date/summary for posts only
-                if (node.group === 'post') {
-                    panelDate.textContent = node.date || '';
-                    panelSummary.textContent = node.summary || '';
-                    panelDate.style.display = 'block';
-                    panelSummary.style.display = 'block';
-                    panelLink.href = node.id;
-                    panelLinkText.textContent = 'Read Article';
+            script.addEventListener('load', () => {
+                script.dataset.loaded = 'true';
+                if (isReady()) {
+                    resolve();
                 } else {
-                    panelDate.style.display = 'none';
-                    panelSummary.style.display = 'none';
-                    if (node.group === 'category') {
-                        // Use posts page with category filter
-                        const catSlug = node.id.replace('cat-', '');
-                        const catUrl = '/posts/?category=' + catSlug;
-                        panelLink.href = catUrl;
-                        panelLinkText.textContent = 'Explore Category';
-                        console.log('Category URL:', catUrl);
-                    } else if (node.group === 'tag') {
-                        // Use posts page with tag filter
-                        const tagSlug = node.id.replace('tag-', '');
-                        const tagUrl = '/posts/?tag=' + tagSlug;
-                        panelLink.href = tagUrl;
-                        panelLinkText.textContent = 'Browse Tag';
-                        console.log('Tag URL:', tagUrl);
-                    }
+                    reject(new Error(`Script loaded but global is missing: ${src}`));
+                }
+            }, { once: true });
+
+            script.addEventListener('error', () => {
+                delete state.scriptPromises[src];
+                reject(new Error(`Failed to load script: ${src}`));
+            }, { once: true });
+
+            if (!script.parentNode) {
+                document.head.appendChild(script);
+            }
+        });
+
+        return state.scriptPromises[src];
+    }
+
+    async function ensureDependencies() {
+        await loadScriptOnce(D3_SRC, () => typeof window.d3 !== 'undefined');
+        await loadScriptOnce(FORCE_GRAPH_SRC, () => typeof window.ForceGraph3D !== 'undefined');
+    }
+
+    function setStatus(container, message, isError = false) {
+        if (!container) return;
+        let status = container.querySelector('.network-graph-status');
+        if (!status) {
+            status = document.createElement('div');
+            status.className = 'network-graph-status';
+            container.appendChild(status);
+        }
+        status.textContent = message;
+        status.style.color = isError ? '#f87171' : '#94a3b8';
+    }
+
+    function getGraphData() {
+        let data = window.graphData;
+        if (typeof data === 'string') {
+            data = JSON.parse(data);
+        }
+        if (!data || !Array.isArray(data.nodes) || !Array.isArray(data.links)) {
+            throw new Error('Graph data must include nodes and links arrays.');
+        }
+        return data;
+    }
+
+    function waitForContainerSize(container, seq, attempts = 30) {
+        return new Promise((resolve, reject) => {
+            function check(remaining) {
+                if (seq !== state.initSeq) return;
+
+                const width = container.clientWidth;
+                const height = container.clientHeight;
+                if (width > 0 && height > 0) {
+                    resolve({ width, height });
+                    return;
                 }
 
-                panel.classList.add('open');
-            });
-        // Note: Removed onEngineStop zoomToFit to prevent camera auto-reset
+                if (remaining <= 0) {
+                    reject(new Error('Graph container has zero width or height.'));
+                    return;
+                }
 
-        // Increase spacing between nodes for better clickability
-        window.Graph.d3Force('charge').strength(-60);  // Stronger repulsion = more spacing
-        window.Graph.d3Force('link').distance(40);     // Longer links = more spacing
-
-        // Explicit click handler removed to allow soft-navigation.js to handle the link
-        // and preserve music playback.
-
-        // Speed up scroll zoom
-        const controls = window.Graph.controls();
-        controls.zoomSpeed = 2.5;  // Default is 1.0, increase for faster zoom
-
-        // Panel close handlers
-        const panelCloseCtx = document.getElementById('panel-close');
-        if (panelCloseCtx) {
-            panelCloseCtx.addEventListener('click', () => {
-                document.getElementById('node-panel').classList.remove('open');
-            });
-        }
-
-        // Reset View Button Handler
-        const resetViewCtx = document.getElementById('reset-view');
-        if (resetViewCtx) {
-            resetViewCtx.addEventListener('click', () => {
-                window.Graph.zoomToFit(600);
-                document.getElementById('node-panel').classList.remove('open');
-            });
-        }
-
-        // Initial Camera setup - start far back
-        window.Graph.cameraPosition({ z: 500 });
-
-        // Force zoomToFit after a delay (backup if onEngineStop doesn't fire)
-        setTimeout(() => {
-            window.Graph.zoomToFit(400);
-            console.log('zoomToFit triggered');
-        }, 1000);
-
-        // Handle Window Resize
-        const resizeHandler = () => {
-            if (window.Graph && container) {
-                window.Graph.width(container.clientWidth);
-                window.Graph.height(container.clientHeight);
+                requestAnimationFrame(() => check(remaining - 1));
             }
-        };
-        window.addEventListener('resize', resizeHandler);
-        // Store handler for potential cleanup if we implemented it
-        container._resizeHandler = resizeHandler;
 
-        // Search Functionality - Highlight matching nodes
+            check(attempts);
+        });
+    }
+
+    function removeResizeHandler() {
+        if (state.resizeHandler) {
+            window.removeEventListener('resize', state.resizeHandler);
+            state.resizeHandler = null;
+        }
+    }
+
+    function destroyKnowledgeGraphPage() {
+        state.initSeq += 1;
+        removeResizeHandler();
+
+        if (state.graph) {
+            try {
+                if (typeof state.graph.pauseAnimation === 'function') {
+                    state.graph.pauseAnimation();
+                }
+                if (typeof state.graph._destructor === 'function') {
+                    state.graph._destructor();
+                }
+            } catch (error) {
+                console.warn('[KnowledgeGraph] Graph cleanup skipped:', error);
+            }
+        }
+
+        const container = state.container || document.getElementById('knowledge-graph-container');
+        if (container) {
+            container.dataset.graphInitialized = 'false';
+            container.innerHTML = '<div class="network-graph-status">Loading network...</div>';
+        }
+
+        state.graph = null;
+        state.container = null;
+        window.Graph = null;
+    }
+
+    async function initKnowledgeGraphPage() {
+        const container = document.getElementById('knowledge-graph-container');
+        if (!container) return;
+
+        if (container.dataset.graphInitialized === 'true' && state.graph) {
+            return;
+        }
+
+        if (state.container && state.container !== container) {
+            destroyKnowledgeGraphPage();
+        }
+
+        const seq = state.initSeq + 1;
+        state.initSeq = seq;
+        state.container = container;
+        setStatus(container, 'Loading network...');
+
+        try {
+            const { width, height } = await waitForContainerSize(container, seq);
+            await ensureDependencies();
+            if (seq !== state.initSeq || !document.getElementById('knowledge-graph-container')) return;
+
+            const data = getGraphData();
+            container.innerHTML = '';
+            container.dataset.graphInitialized = 'true';
+
+            const graph = window.ForceGraph3D()(container)
+                .width(width)
+                .height(height)
+                .graphData(data)
+                .nodeLabel('name')
+                .nodeColor(node => {
+                    if (node.group === 'category') {
+                        const name = node.name.toLowerCase();
+                        if (name.includes('religion') || name.includes('종교')) return '#f59e0b';
+                        if (name.includes('philosophy') || name.includes('철학')) return '#c084fc';
+                        if (name.includes('engineering') || name.includes('공학') || name.includes('dev')) return '#ef4444';
+                        if (name.includes('writing') || name.includes('글') || name.includes('essay')) return '#10b981';
+                        return '#fbbf24';
+                    }
+                    if (node.group === 'post') return '#e2e8f0';
+                    if (node.group === 'tag') return '#475569';
+                    return '#ffffff';
+                })
+                .nodeVal(node => node.val)
+                .nodeResolution(16)
+                .nodeOpacity(0.9)
+                .linkWidth(0.5)
+                .linkOpacity(0.6)
+                .linkColor('#94a3b8')
+                .backgroundColor('rgba(0,0,0,0)')
+                .onNodeClick(handleNodeClick);
+
+            state.graph = graph;
+            window.Graph = graph;
+
+            graph.d3Force('charge').strength(-60);
+            graph.d3Force('link').distance(40);
+            graph.controls().zoomSpeed = 2.5;
+            graph.cameraPosition({ z: 500 });
+
+            bindNetworkControls(graph);
+
+            state.resizeHandler = () => {
+                const activeContainer = document.getElementById('knowledge-graph-container');
+                if (!state.graph || !activeContainer) return;
+                state.graph.width(activeContainer.clientWidth);
+                state.graph.height(activeContainer.clientHeight);
+            };
+            window.addEventListener('resize', state.resizeHandler);
+
+            setTimeout(() => {
+                if (state.graph === graph) {
+                    graph.zoomToFit(400);
+                }
+            }, 1000);
+        } catch (error) {
+            console.error('[KnowledgeGraph] Failed to render graph:', error);
+            setStatus(container, 'Network failed to load. Try refreshing this page.', true);
+            container.dataset.graphInitialized = 'false';
+        }
+    }
+
+    function handleNodeClick(node) {
+        const graph = state.graph;
+        if (!graph) return;
+
+        if (node.group === 'category' || node.group === 'tag') {
+            const distance = 120;
+            const distRatio = 1 + distance / Math.hypot(node.x, node.y, node.z);
+            graph.cameraPosition(
+                { x: node.x * distRatio, y: node.y * distRatio, z: node.z * distRatio },
+                node,
+                1000
+            );
+        }
+
+        const panel = document.getElementById('node-panel');
+        const panelType = document.getElementById('panel-type');
+        const panelTitle = document.getElementById('panel-title');
+        const panelDate = document.getElementById('panel-date');
+        const panelSummary = document.getElementById('panel-summary');
+        const panelLink = document.getElementById('panel-link');
+        const panelLinkText = document.getElementById('panel-link-text');
+        if (!panel || !panelType || !panelTitle || !panelDate || !panelSummary || !panelLink || !panelLinkText) return;
+
+        panelTitle.textContent = node.name;
+        panelType.textContent = node.group;
+        panelType.className = 'panel-type ' + node.group;
+
+        if (node.group === 'post') {
+            panelDate.textContent = node.date || '';
+            panelSummary.textContent = node.summary || '';
+            panelDate.style.display = 'block';
+            panelSummary.style.display = 'block';
+            panelLink.href = node.id;
+            panelLinkText.textContent = 'Read Article';
+        } else {
+            panelDate.style.display = 'none';
+            panelSummary.style.display = 'none';
+
+            if (node.group === 'category') {
+                panelLink.href = '/posts/?category=' + node.id.replace('cat-', '');
+                panelLinkText.textContent = 'Explore Category';
+            } else if (node.group === 'tag') {
+                panelLink.href = '/posts/?tag=' + node.id.replace('tag-', '');
+                panelLinkText.textContent = 'Browse Tag';
+            }
+        }
+
+        panel.classList.add('open');
+    }
+
+    function bindNetworkControls(graph) {
+        const panel = document.getElementById('node-panel');
+        const panelClose = document.getElementById('panel-close');
+        const resetView = document.getElementById('reset-view');
         const searchInput = document.getElementById('network-search');
         const searchClear = document.getElementById('network-search-clear');
         let searchQuery = '';
 
+        panelClose?.addEventListener('click', () => panel?.classList.remove('open'));
+        resetView?.addEventListener('click', () => {
+            graph.zoomToFit(600);
+            panel?.classList.remove('open');
+        });
+
         function updateNodeHighlight() {
             if (!searchQuery) {
-                // Reset all nodes to original size
-                window.Graph.nodeVal(node => node.val);
-            } else {
-                // Enlarge matching nodes, shrink non-matching
-                window.Graph.nodeVal(node => {
-                    const nodeName = node.name.toLowerCase();
-                    const isMatch = nodeName.includes(searchQuery);
+                graph.nodeVal(node => node.val);
+                return;
+            }
 
-                    if (isMatch) {
-                        // Matched - make 3x larger
-                        return node.val * 3;
-                    } else {
-                        // Not matched - make very small
-                        return node.val * 0.2;
-                    }
-                });
+            graph.nodeVal(node => {
+                const nodeName = node.name.toLowerCase();
+                return nodeName.includes(searchQuery) ? node.val * 3 : node.val * 0.2;
+            });
 
-                // Zoom to first matching node
-                const data = window.Graph.graphData();
-                const matchingNode = data.nodes.find(n => n.name.toLowerCase().includes(searchQuery));
-                if (matchingNode && matchingNode.x !== undefined) {
-                    const distance = 150;
-                    const distRatio = 1 + distance / Math.hypot(matchingNode.x, matchingNode.y, matchingNode.z);
-                    window.Graph.cameraPosition(
-                        { x: matchingNode.x * distRatio, y: matchingNode.y * distRatio, z: matchingNode.z * distRatio },
-                        matchingNode,
-                        800
-                    );
-                }
+            const matchingNode = graph.graphData().nodes.find(node =>
+                node.name.toLowerCase().includes(searchQuery)
+            );
+
+            if (matchingNode && matchingNode.x !== undefined) {
+                const distance = 150;
+                const distRatio = 1 + distance / Math.hypot(matchingNode.x, matchingNode.y, matchingNode.z);
+                graph.cameraPosition(
+                    {
+                        x: matchingNode.x * distRatio,
+                        y: matchingNode.y * distRatio,
+                        z: matchingNode.z * distRatio
+                    },
+                    matchingNode,
+                    800
+                );
             }
         }
 
-        if (searchInput) {
-            searchInput.addEventListener('input', (e) => {
-                searchQuery = e.target.value.trim().toLowerCase();
-                searchClear.style.display = searchQuery ? 'block' : 'none';
-                updateNodeHighlight();
-            });
-        }
+        searchInput?.addEventListener('input', event => {
+            searchQuery = event.target.value.trim().toLowerCase();
+            if (searchClear) searchClear.style.display = searchQuery ? 'block' : 'none';
+            updateNodeHighlight();
+        });
 
-        if (searchClear) {
-            searchClear.addEventListener('click', () => {
-                searchInput.value = '';
-                searchQuery = '';
-                searchClear.style.display = 'none';
-                updateNodeHighlight();
-                window.Graph.zoomToFit(600);
-            });
-        }
-
-        // Mark as initialized
-        container._graphInitialized = true;
-
-    } catch (err) {
-        console.error("Failed to render graph:", err);
+        searchClear?.addEventListener('click', () => {
+            if (!searchInput) return;
+            searchInput.value = '';
+            searchQuery = '';
+            searchClear.style.display = 'none';
+            updateNodeHighlight();
+            graph.zoomToFit(600);
+        });
     }
-}
 
-// --- Initialization Wrapper ---
-function startKnowledgeGraphInit() {
-    // Small delay to ensure container layout and scripts are ready
-    setTimeout(initKnowledgeGraph, 100);
-}
+    window.initKnowledgeGraphPage = initKnowledgeGraphPage;
+    window.destroyKnowledgeGraphPage = destroyKnowledgeGraphPage;
 
-// Ensure the graph initializes correctly on both hard and soft navigation
-if (!window._graphInitBound) {
-    window.addEventListener('pageReady', () => {
-        console.log('[KnowledgeGraph] pageReady received, starting init');
-        startKnowledgeGraphInit();
-    });
-    window._graphInitBound = true;
-}
+    if (!window._knowledgeGraphLifecycleBound) {
+        window.addEventListener('beforeSoftNavigate', () => {
+            if (document.getElementById('knowledge-graph-container')) {
+                window.destroyKnowledgeGraphPage?.();
+            }
+        });
 
-// Immediate call for current page load
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', startKnowledgeGraphInit);
-} else {
-    startKnowledgeGraphInit();
-}
+        window.addEventListener('pageReady', () => {
+            if (document.getElementById('knowledge-graph-container')) {
+                window.initKnowledgeGraphPage?.();
+            }
+        });
+
+        window._knowledgeGraphLifecycleBound = true;
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => window.initKnowledgeGraphPage?.(), { once: true });
+    } else {
+        window.initKnowledgeGraphPage?.();
+    }
+})();

@@ -211,7 +211,7 @@
     {{- if site.Params.assets.favicon }}
     <link rel="icon" href="{{ site.Params.assets.favicon | absURL }}">
     {{- else }}
-    <link rel="icon" href="{{ " favicon.ico" | absURL }}">
+    <link rel="icon" href="{{ "favicon.ico" | absURL }}">
     {{- end }}
     {{- with .OutputFormats.Get "rss" }}
     <link rel="{{ .Rel }}" type="{{ .MediaType }}" href="{{ .Permalink }}" title="{{ site.Title }}">

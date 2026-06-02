@@ -71,17 +71,19 @@
      * Perform soft navigation
      */
     async function softNavigate(url, pushState = true) {
+        const targetUrl = new URL(url, window.location.href).href;
+        const currentUrl = window.location.href;
+
         try {
             // Save scroll position for the current page
             if (pushState) {
-                const currentUrl = window.location.href;
                 sessionStorage.setItem('scroll-' + currentUrl, window.scrollY);
             }
 
             // Show loading state
             document.body.classList.add('soft-loading');
 
-            const response = await fetch(url);
+            const response = await fetch(targetUrl);
             if (!response.ok) {
                 throw new Error(`HTTP ${response.status}`);
             }
@@ -90,9 +92,13 @@
             const { content, title, bodyClass, playerData, cssLinks, metaTags, headLinks } = extractMainContent(html);
 
             if (!content) {
-                window.location.href = url;
+                window.location.href = targetUrl;
                 return;
             }
+
+            window.dispatchEvent(new CustomEvent('beforeSoftNavigate', {
+                detail: { url: targetUrl, currentUrl }
+            }));
 
             // Update Meta Tags & Head Links
             updateHeadElements(metaTags, headLinks);
@@ -130,11 +136,11 @@
 
             // Update URL
             if (pushState) {
-                history.pushState({ softNav: true }, '', url);
+                history.pushState({ softNav: true }, '', targetUrl);
                 window.scrollTo(0, 0);
             } else {
                 // Restoration from PopState (Back/Forward)
-                const savedScroll = sessionStorage.getItem('scroll-' + url);
+                const savedScroll = sessionStorage.getItem('scroll-' + targetUrl);
                 if (savedScroll) {
                     window.scrollTo(0, parseInt(savedScroll, 10));
                 } else {
@@ -145,13 +151,13 @@
             await reinitializePageScripts();
 
             requestAnimationFrame(() => {
-                window.dispatchEvent(new CustomEvent('softNavigate', { detail: { url, playerData } }));
-                window.dispatchEvent(new CustomEvent('pageReady', { detail: { url, playerData } }));
+                window.dispatchEvent(new CustomEvent('softNavigate', { detail: { url: targetUrl, playerData } }));
+                window.dispatchEvent(new CustomEvent('pageReady', { detail: { url: targetUrl, playerData } }));
             });
 
         } catch (error) {
             console.error('Soft navigation failed:', error);
-            window.location.href = url;
+            window.location.href = targetUrl;
         } finally {
             document.body.classList.remove('soft-loading');
         }

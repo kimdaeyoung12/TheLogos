@@ -48,23 +48,38 @@
                 class="text-lg md:text-xl text-gray-600 dark:text-design-text-subtle max-w-xl leading-relaxed drop-shadow-md">
                 Exploring the intersections of faith, reason, and the cosmos through an academic lens.
             </p>
-            <div class="w-full max-w-md mt-8 relative group">
+            <form id="hero-search-form" class="w-full max-w-md mt-8 relative group" action="/posts/" method="get">
                 <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-20">
                     <span class="material-symbols-outlined text-gray-400">search</span>
                 </div>
-                <!-- Search functionality for Hero -->
-                <input id="hero-search-input"
+                <input id="hero-search-input" name="q"
                     class="block w-full pl-12 pr-4 py-4 rounded-xl text-sm text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-design-primary/50 transition-all neu-pressed bg-transparent"
-                    placeholder="Search topics, authors, or ideas..." type="text"
-                    onkeydown="if(event.key === 'Enter') { window.softNavigate('/posts/?q=' + this.value); }" />
+                    placeholder="Search topics, authors, or ideas..." type="text" />
                 <div class="absolute inset-y-2 right-2">
-                    <button
-                        onclick="window.softNavigate('/posts/?q=' + document.getElementById('hero-search-input').value)"
+                    <button type="submit"
                         class="h-full px-6 text-white bg-design-primary rounded-lg text-sm font-bold transition-all neu-flat border-none active:scale-95 hover:text-white">
                         Search
                     </button>
                 </div>
-            </div>
+            </form>
+            <script>
+                (function () {
+                    const form = document.getElementById('hero-search-form');
+                    if (!form || form.dataset.bound === 'true') return;
+                    form.dataset.bound = 'true';
+                    form.addEventListener('submit', function (event) {
+                        event.preventDefault();
+                        const input = document.getElementById('hero-search-input');
+                        const query = (input?.value || '').trim();
+                        const url = query ? '/posts/?q=' + encodeURIComponent(query) : '/posts/';
+                        if (typeof window.softNavigate === 'function') {
+                            window.softNavigate(url);
+                        } else {
+                            window.location.href = url;
+                        }
+                    });
+                })();
+            </script>
         </div>
     </section>
 
@@ -297,7 +312,7 @@
                 </script>
             </div>
         </div>
-    </main>
+    </div>
 
     <!-- Footer Removed -->
     <!-- Lorenz Script -->
