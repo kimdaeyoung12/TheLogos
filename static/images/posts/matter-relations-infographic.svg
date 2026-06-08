@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-labelledby="title desc">
+  <title id="title">Matter to relations conceptual infographic</title>
+  <desc id="desc">A visual transition from solid blocks to waves, information, and connected systems.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fbfaf6"/>
+      <stop offset="1" stop-color="#eef7f4"/>
+    </linearGradient>
+    <linearGradient id="teal" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1f8a84"/>
+      <stop offset="1" stop-color="#76c7b7"/>
+    </linearGradient>
+    <filter id="soft" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="12" stdDeviation="18" flood-color="#263238" flood-opacity=".14"/>
+    </filter>
+  </defs>
+  <rect width="1200" height="675" fill="url(#bg)"/>
+  <path d="M70 565 C245 465 350 570 515 470 C690 365 745 475 925 360 C1040 286 1090 308 1140 260" fill="none" stroke="#d8e7e2" stroke-width="42" stroke-linecap="round"/>
+  <g filter="url(#soft)">
+    <rect x="95" y="375" width="124" height="124" rx="18" fill="#3d4543"/>
+    <rect x="168" y="286" width="108" height="108" rx="16" fill="#69716d"/>
+    <rect x="258" y="399" width="92" height="92" rx="14" fill="#9aa19a"/>
+    <circle cx="118" cy="264" r="18" fill="#c49a54"/>
+    <circle cx="235" cy="226" r="12" fill="#2f6f6b"/>
+    <circle cx="332" cy="298" r="9" fill="#b9c8c2"/>
+  </g>
+  <g fill="none" stroke-linecap="round">
+    <path d="M390 230 C455 150 525 150 590 230 S720 310 785 230" stroke="#1f8a84" stroke-width="8"/>
+    <path d="M390 305 C455 225 525 225 590 305 S720 385 785 305" stroke="#76c7b7" stroke-width="8"/>
+    <path d="M390 380 C455 300 525 300 590 380 S720 460 785 380" stroke="#c49a54" stroke-width="8"/>
+    <path d="M408 190 C470 265 520 305 590 338 C660 371 718 420 766 500" stroke="#263238" stroke-width="2.5" opacity=".28"/>
+    <path d="M408 500 C470 425 520 385 590 352 C660 319 718 270 766 190" stroke="#263238" stroke-width="2.5" opacity=".28"/>
+  </g>
+  <g stroke="#263238" stroke-width="3" fill="none" opacity=".78">
+    <path d="M840 248 L925 160 L1038 222 L1086 348 L997 462 L862 430 Z"/>
+    <path d="M925 160 L997 462 M1038 222 L862 430 M840 248 L1086 348"/>
+  </g>
+  <g fill="#fbfaf6" stroke="#263238" stroke-width="4" filter="url(#soft)">
+    <circle cx="840" cy="248" r="30"/>
+    <circle cx="925" cy="160" r="30"/>
+    <circle cx="1038" cy="222" r="30"/>
+    <circle cx="1086" cy="348" r="30"/>
+    <circle cx="997" cy="462" r="30"/>
+    <circle cx="862" cy="430" r="30"/>
+  </g>
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M908 145 C942 170 908 194 942 217" stroke="#1f8a84" stroke-width="5"/>
+    <path d="M942 145 C908 170 942 194 908 217" stroke="#c49a54" stroke-width="5"/>
+    <path d="M913 164 H937 M913 184 H937 M913 204 H937" stroke="#263238" stroke-width="2.5"/>
+    <rect x="1019" y="203" width="38" height="38" rx="4" stroke="#1f8a84" stroke-width="5"/>
+    <path d="M1011 211 H1000 M1011 223 H1000 M1011 235 H1000 M1065 211 H1076 M1065 223 H1076 M1065 235 H1076" stroke="#263238" stroke-width="3"/>
+    <circle cx="1086" cy="336" r="12" stroke="#c49a54" stroke-width="5"/>
+    <path d="M1067 369 C1077 348 1095 348 1105 369" stroke="#c49a54" stroke-width="5"/>
+    <path d="M983 459 C1007 420 1035 444 1000 485 C972 468 960 450 983 459 Z" fill="#76c7b7" stroke="#1f8a84" stroke-width="4"/>
+    <path d="M990 462 C1002 462 1012 455 1022 445" stroke="#1f8a84" stroke-width="2.5"/>
+  </g>
+  <g fill="url(#teal)" opacity=".88">
+    <circle cx="596" cy="344" r="9"/>
+    <circle cx="642" cy="326" r="7"/>
+    <circle cx="690" cy="336" r="6"/>
+    <circle cx="735" cy="316" r="5"/>
+  </g>
+  <g fill="none" stroke="#263238" stroke-width="3" opacity=".34">
+    <path d="M345 445 C485 510 615 502 744 430"/>
+    <path d="M344 255 C500 204 625 193 784 248"/>
+  </g>
+</svg>
