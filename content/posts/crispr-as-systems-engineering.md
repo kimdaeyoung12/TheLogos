@@ -88,43 +88,9 @@ DSB의 위험과 outcome variability를 줄이기 위해 base editing과 prime e
 
 다음은 CRISPR 편집을 control pipeline으로 정리한 구조다.
 
-<figure class="not-prose my-8 rounded border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
-  <svg viewBox="0 0 980 210" role="img" aria-label="CRISPR editing pipeline diagram" style="width:100%;height:auto;">
-    <defs>
-      <marker id="arrow-crispr" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
-        <path d="M0,0 L0,6 L9,3 z" fill="#64748b"></path>
-      </marker>
-    </defs>
-    <g font-family="Arial, sans-serif" font-size="18" fill="#111827">
-      <rect x="20" y="50" width="140" height="72" rx="8" fill="#e0f2fe" stroke="#0369a1"></rect>
-      <text x="90" y="80" text-anchor="middle" font-weight="700">Target</text>
-      <text x="90" y="104" text-anchor="middle" font-size="14">locus + PAM</text>
-
-      <rect x="210" y="50" width="140" height="72" rx="8" fill="#dcfce7" stroke="#15803d"></rect>
-      <text x="280" y="80" text-anchor="middle" font-weight="700">Guide</text>
-      <text x="280" y="104" text-anchor="middle" font-size="14">sgRNA / pegRNA</text>
-
-      <rect x="400" y="50" width="150" height="72" rx="8" fill="#fef3c7" stroke="#b45309"></rect>
-      <text x="475" y="80" text-anchor="middle" font-weight="700">Editor</text>
-      <text x="475" y="104" text-anchor="middle" font-size="14">Cas / BE / PE</text>
-
-      <rect x="600" y="50" width="150" height="72" rx="8" fill="#fae8ff" stroke="#a21caf"></rect>
-      <text x="675" y="80" text-anchor="middle" font-weight="700">Repair</text>
-      <text x="675" y="104" text-anchor="middle" font-size="14">NHEJ / HDR</text>
-
-      <rect x="800" y="50" width="150" height="72" rx="8" fill="#fee2e2" stroke="#b91c1c"></rect>
-      <text x="875" y="80" text-anchor="middle" font-weight="700">Outcome</text>
-      <text x="875" y="104" text-anchor="middle" font-size="14">allele distribution</text>
-
-      <line x1="160" y1="86" x2="205" y2="86" stroke="#64748b" stroke-width="3" marker-end="url(#arrow-crispr)"></line>
-      <line x1="350" y1="86" x2="395" y2="86" stroke="#64748b" stroke-width="3" marker-end="url(#arrow-crispr)"></line>
-      <line x1="550" y1="86" x2="595" y2="86" stroke="#64748b" stroke-width="3" marker-end="url(#arrow-crispr)"></line>
-      <line x1="750" y1="86" x2="795" y2="86" stroke="#64748b" stroke-width="3" marker-end="url(#arrow-crispr)"></line>
-
-      <text x="475" y="165" text-anchor="middle" font-size="15" fill="#475569">Final phenotype depends on delivery, chromatin state, repair dynamics, and error profile.</text>
-    </g>
-  </svg>
-  <figcaption class="mt-3 text-sm text-gray-600 dark:text-gray-300">CRISPR 편집은 guide 설계만으로 끝나지 않는다. editor, repair pathway, delivery, outcome distribution을 함께 제어해야 한다.</figcaption>
+<figure>
+  <img src="/images/posts/crispr-editing-pipeline.svg" alt="Target, Guide, Editor, Repair, Outcome으로 이어지는 CRISPR 편집 파이프라인">
+  <figcaption>CRISPR 편집은 guide 설계만으로 끝나지 않는다. editor, repair pathway, delivery, outcome distribution을 함께 제어해야 한다.</figcaption>
 </figure>
 
 기술 검토의 최소 파이프라인은 다음과 같다.
