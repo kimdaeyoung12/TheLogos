@@ -3,6 +3,7 @@ title: "ChristianDays Child Safety Standards"
 date: 2026-06-13T00:00:00+09:00
 draft: false
 description: "Published child safety standards for ChristianDays, including standards against child sexual abuse and exploitation."
+url: "/christiandays/child-safety-standards/"
 ---
 
 # ChristianDays Child Safety Standards
