@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DSR(Deflated Sharpe Ratio): 좋아 보이는 백테스트를 의심하는 법 · 인터랙티브 인포그래픽</title>
+  <meta name="description" content="DSR은 높은 샤프지수가 실제 투자 실력인지, 많은 후보를 테스트하다 우연히 좋은 결과를 고른 것인지 판단하기 위한 통계적 검증 도구다." />
+  <style>
+
+:root{
+  --bg:#07111f; --panel:#0f1d33; --panel2:#13243e; --text:#edf5ff; --muted:#b5c5d8;
+  --line:#2b4261; --accent:#5dd6ff; --accent2:#9cffc8; --accent3:#ffd166; --danger:#ff7b8a;
+  --purple:#c7a7ff; --shadow:0 22px 70px rgba(0,0,0,.30); --radius:22px;
+}
+*{box-sizing:border-box} html{scroll-behavior:smooth}
+body{
+  margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans KR",Roboto,Arial,sans-serif;
+  background:radial-gradient(circle at top left, rgba(93,214,255,.22), transparent 34rem),
+             radial-gradient(circle at 80% 4%, rgba(199,167,255,.16), transparent 34rem),
+             radial-gradient(circle at 72% 34%, rgba(156,255,200,.12), transparent 28rem),
+             linear-gradient(180deg,#07111f 0%,#0a1424 50%,#08101e 100%);
+  color:var(--text); line-height:1.72;
+}
+a{color:var(--accent2);text-decoration:none} a:hover{text-decoration:underline}
+.wrap{width:min(1120px,calc(100% - 36px));margin:0 auto}
+.topbar{position:sticky;top:0;z-index:9;backdrop-filter:blur(12px);background:rgba(7,17,31,.78);border-bottom:1px solid rgba(255,255,255,.08)}
+.topbar .wrap{display:flex;gap:10px;overflow:auto;padding:10px 0;align-items:center}.topbar a,.topbar span{white-space:nowrap;padding:8px 12px;border-radius:999px;background:rgba(255,255,255,.055);color:var(--muted);font-weight:750;font-size:14px}.topbar span{color:var(--accent);background:rgba(93,214,255,.08)}
+.hero{padding:70px 0 34px;position:relative;overflow:hidden}.badge{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid rgba(93,214,255,.35);border-radius:999px;color:var(--accent);background:rgba(93,214,255,.08);font-weight:850;font-size:14px}.badge span{width:8px;height:8px;border-radius:50%;background:var(--accent2);box-shadow:0 0 16px var(--accent2)}
+h1{font-size:clamp(38px,6.4vw,78px);line-height:1.02;margin:20px 0 18px;letter-spacing:-.055em}h2{font-size:clamp(27px,3.3vw,42px);margin:0 0 16px;letter-spacing:-.035em}h3{font-size:22px;margin:0 0 10px;letter-spacing:-.02em}h4{font-size:18px;margin:18px 0 8px;color:#eaf6ff}p{margin:0 0 13px}.lead{font-size:clamp(18px,2.1vw,23px);color:var(--muted);max-width:960px}.section{padding:34px 0}.card{background:linear-gradient(180deg,rgba(255,255,255,.065),rgba(255,255,255,.035));border:1px solid rgba(255,255,255,.12);border-radius:var(--radius);box-shadow:var(--shadow);padding:24px;backdrop-filter:blur(10px)}
+.grid2{display:grid;grid-template-columns:0.92fr 1.08fr;gap:22px}.mini{background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.1);border-radius:18px;padding:18px}.mini strong{display:block;margin:0 0 6px;color:#f5fbff}.mini small{color:var(--muted)}.smallcaps{text-transform:uppercase;letter-spacing:.1em;font-size:12px;color:var(--accent);font-weight:900}.formula{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;background:#050b14;border:1px solid rgba(93,214,255,.25);color:#d9f7ff;padding:16px;border-radius:16px;font-size:clamp(14px,1.6vw,18px);overflow:auto;white-space:pre-wrap}.note{color:var(--muted);font-size:14px;margin-top:10px}.pill-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}.pill{border:1px solid rgba(255,255,255,.14);border-radius:999px;padding:8px 12px;background:rgba(255,255,255,.055);color:var(--muted)}.pill b{color:var(--text)}
+canvas{width:100%;height:auto;border-radius:18px;background:rgba(5,11,20,.92);border:1px solid rgba(255,255,255,.10)}button{border:0;color:#06111f;background:var(--accent2);border-radius:12px;padding:10px 14px;font-weight:850;cursor:pointer;box-shadow:0 10px 24px rgba(156,255,200,.13);transition:.15s transform ease,.15s opacity ease}button:hover{transform:translateY(-1px)}button.secondary{background:rgba(255,255,255,.08);color:var(--text);border:1px solid rgba(255,255,255,.14);box-shadow:none}input[type=range]{width:100%}.controls{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:14px}.control{background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:14px}.control label{display:flex;justify-content:space-between;gap:12px;color:#dfeeff;font-weight:800;font-size:14px;margin-bottom:8px}.metric-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px}.metric{background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:14px}.metric strong{font-size:25px;display:block;color:var(--accent2);line-height:1.1}.metric span{font-size:13px;color:var(--muted)}
+.gridworld{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}.cell{min-height:86px;border-radius:16px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);display:flex;flex-direction:column;justify-content:center;align-items:center;font-weight:900;position:relative;overflow:hidden}.cell small{font-weight:700;color:var(--muted)}.cell.goal{background:rgba(156,255,200,.12);border-color:rgba(156,255,200,.25)}.cell.pit{background:rgba(255,123,138,.13);border-color:rgba(255,123,138,.25)}.cell.wall{background:rgba(255,255,255,.025);color:#52647a}.arrowPolicy{font-size:27px;color:var(--accent3)}.dsr-result{font-size:42px;font-weight:950;letter-spacing:-.04em;line-height:1.1;margin:12px 0 4px;color:var(--accent2)}
+.article{max-width:900px;margin:0 auto}.article h2{margin-top:42px}.article h3{margin-top:30px}.article p,.article li{color:#d7e5f5}.article blockquote{margin:18px 0;padding:18px 20px;border-left:5px solid var(--accent3);background:rgba(255,209,102,.08);border-radius:14px;color:#fff4d7}.article blockquote p{color:#fff4d7}.article pre{background:#050b14;border:1px solid rgba(93,214,255,.25);border-radius:16px;padding:16px;overflow:auto;color:#d9f7ff}.article code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace}.article :not(pre)>code{background:rgba(93,214,255,.12);border:1px solid rgba(93,214,255,.18);padding:.1em .35em;border-radius:6px}.article ul{padding-left:22px}.article li{margin:8px 0}.article hr{border:0;border-top:1px solid rgba(255,255,255,.12);margin:32px 0}.article a{word-break:break-all}.tagrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}.tag{font-size:13px;color:var(--muted);padding:7px 10px;border-radius:999px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.10)}.foot{padding:38px 0 58px;color:var(--muted);font-size:14px;text-align:center}
+@media (max-width:920px){.grid2,.controls,.metric-grid{grid-template-columns:1fr}.hero{padding-top:46px}.card{padding:20px}.cell{min-height:70px}}
+
+html{background:#07111f}body{padding:0;overflow-x:hidden}.section{padding:24px 0 28px}.wrap{width:min(1120px,calc(100% - 24px))}.card{box-shadow:none}.metric-grid{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}.metric strong{font-size:22px}.control input{accent-color:#5dd6ff}@media(max-width:920px){.grid2{gap:16px}.controls{gap:10px}.metric-grid{gap:10px}canvas{min-height:240px;object-fit:cover}}
+  </style>
+</head>
+<body>
+<section id="interactive" class="section">
+  <div class="wrap grid2">
+    <div class="card">
+      <div class="smallcaps">Interactive infographic</div>
+      <h2>좋은 백테스트를 낮춰 보는 장치</h2>
+      <p><b>핵심:</b> DSR은 높은 Sharpe가 진짜 실력인지, 여러 후보 중 우연히 좋아 보인 결과인지 평가하려는 통계적 검증 도구다.</p>
+      <div class="formula">일반 Sharpe = 평균 초과수익 / 수익률 표준편차
+DSR의 질문 = 이 Sharpe가 여러 번의 시도와 비정규성을 고려해도 충분히 큰가?</div>
+      <p class="note">아래 계산기는 논문 공식을 단순화한 교육용 근사다. 실제 투자 검증에는 거래비용, 슬리피지, 데이터 누수, 시장 제약을 별도로 검증해야 한다.</p>
+      <div class="pill-row"><span class="pill"><b>N 증가</b> 요구 Sharpe 상승</span><span class="pill"><b>기간 증가</b> 신뢰도 상승</span><span class="pill"><b>비정규성</b> 해석 왜곡</span></div>
+    </div>
+    <div class="card">
+      <h3>Sharpe가 우연인지 점검해보기</h3>
+      <div class="dsr-result" id="dsrProb">-</div>
+      <p id="dsrText" class="lead" style="font-size:18px"></p>
+      <div class="controls">
+        <div class="control"><label>관측 Sharpe <span id="srVal">1.20</span></label><input id="sr" type="range" min="20" max="300" value="120"/></div>
+        <div class="control"><label>테스트한 후보 수 N <span id="trialsVal">100</span></label><input id="trials" type="range" min="1" max="1000" value="100"/></div>
+        <div class="control"><label>백테스트 기간 年 <span id="yearsVal">3.0</span></label><input id="years" type="range" min="5" max="100" value="30"/></div>
+      </div>
+      <div class="controls">
+        <div class="control"><label>왜도 skew <span id="skewVal">0.0</span></label><input id="skew" type="range" min="-200" max="200" value="0"/></div>
+        <div class="control"><label>첨도 kurtosis <span id="kurtVal">3.0</span></label><input id="kurt" type="range" min="100" max="1000" value="300"/></div>
+        <div class="control"><label>교육용 임계치 <span id="hurdleVal">-</span></label><input id="dummy" type="range" min="0" max="1" value="0" disabled/></div>
+      </div>
+      <canvas id="dsrCanvas" width="900" height="330"></canvas>
+      <div class="metric-grid">
+        <div class="metric"><strong id="dsrTail">-</strong><span>왜도가 바꾸는 꼬리 방향</span></div>
+        <div class="metric"><strong id="dsrPenalty">-</strong><span>비정규성 불확실성 배율</span></div>
+        <div class="metric"><strong id="dsrShape">-</strong><span>첨도가 바꾸는 꼬리 두께</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+<script>
+function reportHeight(){try{const height=Math.max(document.documentElement.scrollHeight,document.body.scrollHeight);window.parent.postMessage({type:'thelogos-interactive-height',height},window.location.origin)}catch(error){}}
+window.addEventListener('load',reportHeight);window.addEventListener('resize',reportHeight);window.addEventListener('message',function(event){if(event.origin!==window.location.origin||event.data?.type!=='thelogos-interactive-theme')return;document.documentElement.dataset.theme=event.data.theme});if('ResizeObserver' in window){new ResizeObserver(reportHeight).observe(document.body)}setTimeout(reportHeight,60);
+
+function rng(seed){let s=seed>>>0;return function(){s=(1664525*s+1013904223)>>>0;return s/4294967296}}
+function normal(rand){let u=0,v=0;while(u===0)u=rand();while(v===0)v=rand();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)}
+function fmt(x,d=2){return Number(x).toFixed(d)}
+function clearCanvas(ctx,w,h){ctx.clearRect(0,0,w,h);ctx.fillStyle='rgba(5,11,20,.92)';ctx.fillRect(0,0,w,h)}
+function drawAxes(ctx,w,h){ctx.strokeStyle='rgba(255,255,255,.16)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(48,h-42);ctx.lineTo(w-18,h-42);ctx.moveTo(48,16);ctx.lineTo(48,h-42);ctx.stroke()}
+function drawLine(ctx,pts,color,width=2,alpha=1){ctx.save();ctx.globalAlpha=alpha;ctx.strokeStyle=color;ctx.lineWidth=width;ctx.beginPath();pts.forEach((p,i)=>{if(i===0)ctx.moveTo(p[0],p[1]);else ctx.lineTo(p[0],p[1])});ctx.stroke();ctx.restore()}
+
+function erf(x){const sign=x>=0?1:-1;x=Math.abs(x);const a1=0.254829592,a2=-0.284496736,a3=1.421413741,a4=-1.453152027,a5=1.061405429,p=0.3275911;const t=1/(1+p*x);const y=1-(((((a5*t+a4)*t)+a3)*t+a2)*t+a1)*t*Math.exp(-x*x);return sign*y}
+function normcdf(x){return 0.5*(1+erf(x/Math.sqrt(2)))}
+function norminv(p){if(p<=0)return -Infinity;if(p>=1)return Infinity;const a=[-39.69683028665376,220.9460984245205,-275.9285104469687,138.3577518672690,-30.66479806614716,2.506628277459239];const b=[-54.47609879822406,161.5858368580409,-155.6989798598866,66.80131188771972,-13.28068155288572];const c=[-0.007784894002430293,-0.3223964580411365,-2.400758277161838,-2.549732539343734,4.374664141464968,2.938163982698783];const d=[0.007784695709041462,0.3224671290700398,2.445134137142996,3.754408661907416];const plow=0.02425,phigh=1-plow;let q,r;if(p<plow){q=Math.sqrt(-2*Math.log(p));return (((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5])/((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1)}if(phigh<p){q=Math.sqrt(-2*Math.log(1-p));return -(((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5])/((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1)}q=p-0.5;r=q*q;return (((((a[0]*r+a[1])*r+a[2])*r+a[3])*r+a[4])*r+a[5])*q/(((((b[0]*r+b[1])*r+b[2])*r+b[3])*r+b[4])*r+1)}
+function shapeDensity(x, skew, kurt){const base=Math.exp(-0.5*x*x)/Math.sqrt(2*Math.PI);const excess=kurt-3;const edge=1+(skew*(x*x*x-3*x)/6)+(excess*(x*x*x*x-6*x*x+3)/24);return Math.max(0,base*edge)}
+function drawVertical(ctx,x,top,base,color,label){ctx.strokeStyle=color;ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(x,top);ctx.lineTo(x,base);ctx.stroke();ctx.fillStyle=color;ctx.font='bold 14px system-ui';ctx.fillText(label,x+8,top+18)}
+function renderDSR(){
+  const sr=+document.getElementById('sr').value/100,N=+document.getElementById('trials').value,years=+document.getElementById('years').value/10,skew=+document.getElementById('skew').value/100,kurt=+document.getElementById('kurt').value/100;
+  document.getElementById('srVal').textContent=fmt(sr,2);document.getElementById('trialsVal').textContent=N;document.getElementById('yearsVal').textContent=fmt(years,1);document.getElementById('skewVal').textContent=fmt(skew,1);document.getElementById('kurtVal').textContent=fmt(kurt,1);
+  const T=Math.max(30,years*252);const zN=N<=1?0:((1-0.5772156649)*norminv(1-1/N)+0.5772156649*norminv(1-1/(N*Math.E)));const hurdleAnnual=zN/Math.sqrt(years);const srDaily=sr/Math.sqrt(252);const hurdleDaily=hurdleAnnual/Math.sqrt(252);const denom=Math.sqrt(Math.max(0.05,1-skew*srDaily+((kurt-1)/4)*srDaily*srDaily));const z=(srDaily-hurdleDaily)*Math.sqrt(T-1)/denom;const prob=normcdf(z);
+  document.getElementById('hurdleVal').textContent=fmt(hurdleAnnual,2);document.getElementById('dsrProb').textContent=fmt(prob*100,0)+'%';const label=prob>.95?'강함':prob>.8?'검토 가능':prob>.6?'불충분':'위험';document.getElementById('dsrText').textContent='교육용 근사 기준: 후보 수, 표본 길이, 왜도, 첨도를 함께 반영하면 이 Sharpe의 신뢰도는 “'+label+'” 구간입니다.';
+  document.getElementById('dsrTail').textContent=skew<-0.35?'왼쪽 꼬리 확대':skew>0.35?'오른쪽 꼬리 확대':'거의 대칭';document.getElementById('dsrPenalty').textContent=fmt(denom,2)+'x';document.getElementById('dsrShape').textContent=kurt>4.2?'두꺼운 꼬리':kurt<2.2?'얇은 꼬리':'정규 근처';
+  const canvas=document.getElementById('dsrCanvas'),ctx=canvas.getContext('2d'),w=canvas.width,h=canvas.height;clearCanvas(ctx,w,h);const left=64,right=w-34,top=26,base=h-54;ctx.strokeStyle='rgba(255,255,255,.16)';ctx.beginPath();ctx.moveTo(left,base);ctx.lineTo(right,base);ctx.moveTo(left,top);ctx.lineTo(left,base);ctx.stroke();
+  const seAnnual=Math.max(0.035,denom*Math.sqrt(252)/Math.sqrt(T-1));const xMin=Math.min(-0.5,hurdleAnnual-4.2*seAnnual,sr-4.2*seAnnual);const xMax=Math.max(3.2,hurdleAnnual+4.2*seAnnual,sr+4.2*seAnnual);const sx=v=>left+(v-xMin)/(xMax-xMin)*(right-left);
+  const points=[];let maxY=0;for(let i=0;i<=360;i++){const val=xMin+(xMax-xMin)*i/360;const std=(val-hurdleAnnual)/seAnnual;const y=shapeDensity(std,skew,kurt);maxY=Math.max(maxY,y);points.push({val,y})}const sy=y=>base-(y/Math.max(maxY,0.001))*(base-top-18);
+  ctx.fillStyle='rgba(93,214,255,.16)';ctx.beginPath();points.forEach((p,i)=>{const px=sx(p.val),py=sy(p.y);if(i===0)ctx.moveTo(px,base);ctx.lineTo(px,py)});ctx.lineTo(right,base);ctx.closePath();ctx.fill();
+  ctx.fillStyle='rgba(255,123,138,.28)';ctx.beginPath();let started=false;points.forEach(p=>{if(p.val<sr)return;const px=sx(p.val),py=sy(p.y);if(!started){ctx.moveTo(px,base);started=true}ctx.lineTo(px,py)});if(started){ctx.lineTo(right,base);ctx.closePath();ctx.fill()}drawLine(ctx,points.map(p=>[sx(p.val),sy(p.y)]),'#5dd6ff',3,.95);drawVertical(ctx,sx(hurdleAnnual),top,base,'#ffd166','후보 수 보정 임계치 '+fmt(hurdleAnnual,2));drawVertical(ctx,sx(sr),top+34,base,'#9cffc8','관측 Sharpe '+fmt(sr,2));
+  ctx.fillStyle='#b5c5d8';ctx.font='14px system-ui';ctx.fillText('왜도는 곡선의 기울어짐을, 첨도는 꼬리 두께를 바꾼다. 붉은 영역은 관측 Sharpe 이상으로 남는 신뢰 영역이다.',left,base+34);if(typeof reportHeight==='function')reportHeight()
+}
+function attach(){['sr','trials','years','skew','kurt'].forEach(id=>document.getElementById(id).addEventListener('input',renderDSR));renderDSR()}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',attach);else attach();
+
+</script>
+</body>
+</html>

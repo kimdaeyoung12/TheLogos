@@ -1,0 +1,91 @@
+{{- $src := .Get "src" -}}
+{{- $title := .Get "title" | default "Interactive explainer" -}}
+{{- if $src -}}
+<style>
+  .thelogos-interactive-frame-shell {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+    margin: 36px 0 56px;
+    overflow: hidden;
+    border: 1px solid rgba(15, 23, 42, 0.16);
+    border-radius: 18px;
+    background: #07111f;
+    box-shadow: 0 24px 60px rgba(15, 23, 42, 0.16);
+  }
+
+  .dark .thelogos-interactive-frame-shell,
+  body.dark .thelogos-interactive-frame-shell {
+    border-color: rgba(255, 255, 255, 0.12);
+    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.36);
+  }
+
+  .thelogos-interactive-frame-shell iframe {
+    display: block;
+    width: 100%;
+    min-height: 680px;
+    border: 0;
+    background: #07111f;
+  }
+
+  .thelogos-interactive-frame-fallback {
+    padding: 16px 18px;
+    margin: 0;
+    color: #d7e5f5;
+    background: #0f1d33;
+  }
+
+  @media (max-width: 640px) {
+    .thelogos-interactive-frame-shell {
+      margin-top: 28px;
+      margin-bottom: 44px;
+      border-radius: 14px;
+    }
+
+    .thelogos-interactive-frame-shell iframe {
+      min-height: 760px;
+    }
+  }
+</style>
+
+<div class="thelogos-interactive-frame-shell">
+  <iframe src="{{ $src }}" title="{{ $title }}" loading="lazy" scrolling="no"></iframe>
+  <noscript>
+    <p class="thelogos-interactive-frame-fallback">
+      자바스크립트가 꺼져 있으면 인터랙티브 인포그래픽이 표시되지 않을 수 있다.
+      <a href="{{ $src }}">인포그래픽 페이지를 직접 열기</a>
+    </p>
+  </noscript>
+</div>
+
+<script>
+  (function () {
+    const shell = document.currentScript.previousElementSibling;
+    const iframe = shell && shell.querySelector('iframe');
+    if (!iframe) return;
+
+    function currentTheme() {
+      return (document.documentElement.classList.contains('dark') || document.body.classList.contains('dark')) ? 'dark' : 'light';
+    }
+
+    function syncTheme() {
+      iframe.contentWindow?.postMessage({
+        type: 'thelogos-interactive-theme',
+        theme: currentTheme()
+      }, window.location.origin);
+    }
+
+    window.addEventListener('message', function (event) {
+      if (event.origin !== window.location.origin || event.source !== iframe.contentWindow || event.data?.type !== 'thelogos-interactive-height') return;
+      const nextHeight = Math.max(680, Math.ceil(Number(event.data.height) || 0));
+      iframe.style.height = nextHeight + 'px';
+    });
+
+    iframe.addEventListener('load', syncTheme);
+    const observer = new MutationObserver(syncTheme);
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+    syncTheme();
+  }());
+</script>
+{{- end -}}

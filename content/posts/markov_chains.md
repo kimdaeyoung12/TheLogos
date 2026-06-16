@@ -19,10 +19,9 @@ mentions = ["Markov Chain", "Transition Probability Matrix", "Stationary Distrib
 <style>
   .markov-infographic-frame-shell {
     box-sizing: border-box;
-    width: min(1180px, calc(100vw - 40px));
-    max-width: none;
-    margin: 36px 0 56px 50%;
-    transform: translateX(-50%);
+    width: 100%;
+    max-width: 100%;
+    margin: 36px 0 56px;
     overflow: hidden;
     border: 1px solid rgba(15, 23, 42, 0.16);
     border-radius: 24px;
@@ -65,7 +64,6 @@ mentions = ["Markov Chain", "Transition Probability Matrix", "Stationary Distrib
 
   @media (max-width: 640px) {
     .markov-infographic-frame-shell {
-      width: calc(100vw - 16px);
       margin-top: 28px;
       margin-bottom: 44px;
       border-radius: 18px;

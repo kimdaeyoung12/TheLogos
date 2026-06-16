@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>강화학습과 MDP: 불확실한 세계에서 행동을 선택하는 수학 · 인터랙티브 인포그래픽</title>
+  <meta name="description" content="MDP는 상태, 행동, 전이확률, 보상, 할인율로 순차적 의사결정 문제를 표현하는 틀이다. 강화학습은 이 틀 위에서 경험을 통해 장기 보상을 극대화하는 정책을 학습한다." />
+  <style>
+
+:root{
+  --bg:#07111f; --panel:#0f1d33; --panel2:#13243e; --text:#edf5ff; --muted:#b5c5d8;
+  --line:#2b4261; --accent:#5dd6ff; --accent2:#9cffc8; --accent3:#ffd166; --danger:#ff7b8a;
+  --purple:#c7a7ff; --shadow:0 22px 70px rgba(0,0,0,.30); --radius:22px;
+}
+*{box-sizing:border-box} html{scroll-behavior:smooth}
+body{
+  margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans KR",Roboto,Arial,sans-serif;
+  background:radial-gradient(circle at top left, rgba(93,214,255,.22), transparent 34rem),
+             radial-gradient(circle at 80% 4%, rgba(199,167,255,.16), transparent 34rem),
+             radial-gradient(circle at 72% 34%, rgba(156,255,200,.12), transparent 28rem),
+             linear-gradient(180deg,#07111f 0%,#0a1424 50%,#08101e 100%);
+  color:var(--text); line-height:1.72;
+}
+a{color:var(--accent2);text-decoration:none} a:hover{text-decoration:underline}
+.wrap{width:min(1120px,calc(100% - 36px));margin:0 auto}
+.topbar{position:sticky;top:0;z-index:9;backdrop-filter:blur(12px);background:rgba(7,17,31,.78);border-bottom:1px solid rgba(255,255,255,.08)}
+.topbar .wrap{display:flex;gap:10px;overflow:auto;padding:10px 0;align-items:center}.topbar a,.topbar span{white-space:nowrap;padding:8px 12px;border-radius:999px;background:rgba(255,255,255,.055);color:var(--muted);font-weight:750;font-size:14px}.topbar span{color:var(--accent);background:rgba(93,214,255,.08)}
+.hero{padding:70px 0 34px;position:relative;overflow:hidden}.badge{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid rgba(93,214,255,.35);border-radius:999px;color:var(--accent);background:rgba(93,214,255,.08);font-weight:850;font-size:14px}.badge span{width:8px;height:8px;border-radius:50%;background:var(--accent2);box-shadow:0 0 16px var(--accent2)}
+h1{font-size:clamp(38px,6.4vw,78px);line-height:1.02;margin:20px 0 18px;letter-spacing:-.055em}h2{font-size:clamp(27px,3.3vw,42px);margin:0 0 16px;letter-spacing:-.035em}h3{font-size:22px;margin:0 0 10px;letter-spacing:-.02em}h4{font-size:18px;margin:18px 0 8px;color:#eaf6ff}p{margin:0 0 13px}.lead{font-size:clamp(18px,2.1vw,23px);color:var(--muted);max-width:960px}.section{padding:34px 0}.card{background:linear-gradient(180deg,rgba(255,255,255,.065),rgba(255,255,255,.035));border:1px solid rgba(255,255,255,.12);border-radius:var(--radius);box-shadow:var(--shadow);padding:24px;backdrop-filter:blur(10px)}
+.grid2{display:grid;grid-template-columns:0.92fr 1.08fr;gap:22px}.mini{background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.1);border-radius:18px;padding:18px}.mini strong{display:block;margin:0 0 6px;color:#f5fbff}.mini small{color:var(--muted)}.smallcaps{text-transform:uppercase;letter-spacing:.1em;font-size:12px;color:var(--accent);font-weight:900}.formula{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;background:#050b14;border:1px solid rgba(93,214,255,.25);color:#d9f7ff;padding:16px;border-radius:16px;font-size:clamp(14px,1.6vw,18px);overflow:auto;white-space:pre-wrap}.note{color:var(--muted);font-size:14px;margin-top:10px}.pill-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}.pill{border:1px solid rgba(255,255,255,.14);border-radius:999px;padding:8px 12px;background:rgba(255,255,255,.055);color:var(--muted)}.pill b{color:var(--text)}
+canvas{width:100%;height:auto;border-radius:18px;background:rgba(5,11,20,.92);border:1px solid rgba(255,255,255,.10)}button{border:0;color:#06111f;background:var(--accent2);border-radius:12px;padding:10px 14px;font-weight:850;cursor:pointer;box-shadow:0 10px 24px rgba(156,255,200,.13);transition:.15s transform ease,.15s opacity ease}button:hover{transform:translateY(-1px)}button.secondary{background:rgba(255,255,255,.08);color:var(--text);border:1px solid rgba(255,255,255,.14);box-shadow:none}input[type=range]{width:100%}.controls{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:14px}.control{background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:14px}.control label{display:flex;justify-content:space-between;gap:12px;color:#dfeeff;font-weight:800;font-size:14px;margin-bottom:8px}.metric-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px}.metric{background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:14px}.metric strong{font-size:25px;display:block;color:var(--accent2);line-height:1.1}.metric span{font-size:13px;color:var(--muted)}
+.gridworld{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}.cell{min-height:86px;border-radius:16px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);display:flex;flex-direction:column;justify-content:center;align-items:center;font-weight:900;position:relative;overflow:hidden}.cell small{font-weight:700;color:var(--muted)}.cell.goal{background:rgba(156,255,200,.12);border-color:rgba(156,255,200,.25)}.cell.pit{background:rgba(255,123,138,.13);border-color:rgba(255,123,138,.25)}.cell.wall{background:rgba(255,255,255,.025);color:#52647a}.arrowPolicy{font-size:27px;color:var(--accent3)}.dsr-result{font-size:42px;font-weight:950;letter-spacing:-.04em;line-height:1.1;margin:12px 0 4px;color:var(--accent2)}
+.article{max-width:900px;margin:0 auto}.article h2{margin-top:42px}.article h3{margin-top:30px}.article p,.article li{color:#d7e5f5}.article blockquote{margin:18px 0;padding:18px 20px;border-left:5px solid var(--accent3);background:rgba(255,209,102,.08);border-radius:14px;color:#fff4d7}.article blockquote p{color:#fff4d7}.article pre{background:#050b14;border:1px solid rgba(93,214,255,.25);border-radius:16px;padding:16px;overflow:auto;color:#d9f7ff}.article code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace}.article :not(pre)>code{background:rgba(93,214,255,.12);border:1px solid rgba(93,214,255,.18);padding:.1em .35em;border-radius:6px}.article ul{padding-left:22px}.article li{margin:8px 0}.article hr{border:0;border-top:1px solid rgba(255,255,255,.12);margin:32px 0}.article a{word-break:break-all}.tagrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}.tag{font-size:13px;color:var(--muted);padding:7px 10px;border-radius:999px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.10)}.foot{padding:38px 0 58px;color:var(--muted);font-size:14px;text-align:center}
+@media (max-width:920px){.grid2,.controls,.metric-grid{grid-template-columns:1fr}.hero{padding-top:46px}.card{padding:20px}.cell{min-height:70px}}
+
+html{background:#07111f}body{padding:0;overflow-x:hidden}.section{padding:24px 0 28px}.wrap{width:min(1120px,calc(100% - 24px))}.card{box-shadow:none}.metric-grid{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}.metric strong{font-size:22px}.control input{accent-color:#5dd6ff}@media(max-width:920px){.grid2{gap:16px}.controls{gap:10px}.metric-grid{gap:10px}canvas{min-height:240px;object-fit:cover}}
+  </style>
+</head>
+<body>
+<section id="interactive" class="section">
+  <div class="wrap grid2">
+    <div class="card">
+      <div class="smallcaps">Interactive infographic</div>
+      <h2>상태, 행동, 보상의 지도</h2>
+      <p><b>핵심:</b> MDP는 마코프 체인에 행동과 보상을 더한 모델이다. 강화학습은 이 구조 위에서 장기 보상을 크게 만드는 정책을 배운다.</p>
+      <div class="formula">MDP = (S, A, P, R, γ)
+S: 상태  A: 행동  P: 전이확률
+R: 보상  γ: 미래 보상 할인율</div>
+      <p class="note">아래 Grid World에서 각 칸의 화살표는 현재 가치 추정 기준 가장 좋아 보이는 행동이다.</p>
+      <div class="pill-row"><span class="pill"><b>목표</b> +1</span><span class="pill"><b>위험</b> -1</span><span class="pill"><b>일반 이동</b> -0.03</span></div>
+    </div>
+    <div class="card">
+      <h3>Grid World 가치 반복</h3>
+      <div id="gridWorld" class="gridworld"></div>
+      <div class="controls">
+        <div class="control"><label>할인율 γ <span id="gammaVal">0.90</span></label><input id="gamma" type="range" min="50" max="99" value="90"/></div>
+        <div class="control"><label>미끄러짐 확률 <span id="slipVal">0.10</span></label><input id="slip" type="range" min="0" max="40" value="10"/></div>
+        <div class="control"><label>반복 횟수 <span id="iterVal">0</span></label><input id="iters" type="range" min="0" max="60" value="0"/></div>
+      </div>
+      <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap"><button id="mdpRun">20회 더 반복</button><button id="mdpReset" class="secondary">초기화</button></div>
+      <div class="metric-grid">
+        <div class="metric"><strong id="mdpStartValue">-</strong><span>출발 칸 가치</span></div>
+        <div class="metric"><strong id="mdpStartPolicy">-</strong><span>출발 칸 정책</span></div>
+        <div class="metric"><strong id="mdpRiskMode">-</strong><span>정책 성향</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+<script>
+function reportHeight(){try{const height=Math.max(document.documentElement.scrollHeight,document.body.scrollHeight);window.parent.postMessage({type:'thelogos-interactive-height',height},window.location.origin)}catch(error){}}
+window.addEventListener('load',reportHeight);window.addEventListener('resize',reportHeight);window.addEventListener('message',function(event){if(event.origin!==window.location.origin||event.data?.type!=='thelogos-interactive-theme')return;document.documentElement.dataset.theme=event.data.theme});if('ResizeObserver' in window){new ResizeObserver(reportHeight).observe(document.body)}setTimeout(reportHeight,60);
+
+function rng(seed){let s=seed>>>0;return function(){s=(1664525*s+1013904223)>>>0;return s/4294967296}}
+function normal(rand){let u=0,v=0;while(u===0)u=rand();while(v===0)v=rand();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)}
+function fmt(x,d=2){return Number(x).toFixed(d)}
+function clearCanvas(ctx,w,h){ctx.clearRect(0,0,w,h);ctx.fillStyle='rgba(5,11,20,.92)';ctx.fillRect(0,0,w,h)}
+function drawAxes(ctx,w,h){ctx.strokeStyle='rgba(255,255,255,.16)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(48,h-42);ctx.lineTo(w-18,h-42);ctx.moveTo(48,16);ctx.lineTo(48,h-42);ctx.stroke()}
+function drawLine(ctx,pts,color,width=2,alpha=1){ctx.save();ctx.globalAlpha=alpha;ctx.strokeStyle=color;ctx.lineWidth=width;ctx.beginPath();pts.forEach((p,i)=>{if(i===0)ctx.moveTo(p[0],p[1]);else ctx.lineTo(p[0],p[1])});ctx.stroke();ctx.restore()}
+
+const actions=['↑','→','↓','←'];const dirs=[[0,-1],[1,0],[0,1],[-1,0]];let V=Array(12).fill(0);
+function idx(x,y){return y*4+x}function xy(i){return [i%4,Math.floor(i/4)]}function isWall(i){return i===5}function isGoal(i){return i===3}function isPit(i){return i===7}
+function stepState(i,a){if(isGoal(i)||isPit(i)||isWall(i))return i;let [x,y]=xy(i),[dx,dy]=dirs[a];let nx=x+dx,ny=y+dy;if(nx<0||nx>3||ny<0||ny>2)return i;let ni=idx(nx,ny);if(isWall(ni))return i;return ni}
+function reward(i){if(isGoal(i))return 1;if(isPit(i))return -1;return -0.03}
+function bestAction(i,gamma,slip,Vin){if(isWall(i)||isGoal(i)||isPit(i))return {a:-1,val:reward(i)};let best=-1e9,ba=0;for(let a=0;a<4;a++){let val=0;for(let k=0;k<4;k++){let prob=(k===a)?1-slip:slip/3;const ni=stepState(i,k);val+=prob*(reward(ni)+gamma*Vin[ni])}if(val>best){best=val;ba=a}}return {a:ba,val:best}}
+
+function computeMDP(){const gamma=+document.getElementById('gamma').value/100,slip=+document.getElementById('slip').value/100,iters=+document.getElementById('iters').value;document.getElementById('gammaVal').textContent=fmt(gamma,2);document.getElementById('slipVal').textContent=fmt(slip,2);document.getElementById('iterVal').textContent=iters;V=Array(12).fill(0);for(let t=0;t<iters;t++){const old=V.slice();for(let i=0;i<12;i++){if(isWall(i))continue;if(isGoal(i)||isPit(i)){V[i]=reward(i);continue}V[i]=bestAction(i,gamma,slip,old).val}}const start=8;const ba=bestAction(start,gamma,slip,V);document.getElementById('mdpStartValue').textContent=fmt(V[start],2);document.getElementById('mdpStartPolicy').textContent=actions[ba.a]||'-';document.getElementById('mdpRiskMode').textContent=slip>.25?'위험 회피':gamma>.93?'장기 보상':'균형';renderGrid();if(typeof reportHeight==='function')reportHeight()}
+function renderGrid(){const grid=document.getElementById('gridWorld');grid.innerHTML='';const gamma=+document.getElementById('gamma').value/100,slip=+document.getElementById('slip').value/100;for(let i=0;i<12;i++){const cell=document.createElement('div');cell.className='cell';if(isWall(i)){cell.classList.add('wall');cell.textContent='벽'}else if(isGoal(i)){cell.classList.add('goal');cell.innerHTML='목표<br><small>+1.00</small>'}else if(isPit(i)){cell.classList.add('pit');cell.innerHTML='위험<br><small>-1.00</small>'}else{const ba=bestAction(i,gamma,slip,V);const val=V[i];const pos=Math.max(0,Math.min(1,val));const neg=Math.max(0,Math.min(1,-val));cell.style.background='linear-gradient(180deg, rgba(156,255,200,'+(0.08+pos*0.25)+'), rgba(255,123,138,'+(0.05+neg*0.26)+'))';cell.style.borderColor=val>=0?'rgba(156,255,200,.22)':'rgba(255,123,138,.24)';cell.innerHTML='<div class="arrowPolicy">'+actions[ba.a]+'</div><small>'+fmt(V[i],2)+'</small>'}grid.appendChild(cell)}}function attach(){['gamma','slip','iters'].forEach(id=>document.getElementById(id).addEventListener('input',computeMDP));document.getElementById('mdpRun').addEventListener('click',()=>{const it=document.getElementById('iters');it.value=Math.min(60,+it.value+20);computeMDP()});document.getElementById('mdpReset').addEventListener('click',()=>{document.getElementById('iters').value=0;computeMDP()});computeMDP()}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',attach);else attach();
+
+</script>
+</body>
+</html>
