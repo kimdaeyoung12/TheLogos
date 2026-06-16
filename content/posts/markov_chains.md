@@ -11,6 +11,114 @@ mentions = ["Markov Chain", "Transition Probability Matrix", "Stationary Distrib
 마코프 체인은 '메모리리스' 특성의 이산 시간 확률 과정으로, 전이 확률 행렬을 통해 상태 간 이동을 정의한다. 에르고딕 체인은 유일한 정상 분포로 수렴하며, 이 이론은 구글 페이지랭크, 생성형 AI, 강화 학습, MCMC 등 현대 기술 전반에 걸쳐 핵심적인 분석 도구로 활용된다.
 {{< /ai_summary >}}
 
+## 인터랙티브 인포그래픽
+
+마코프 체인의 핵심 직관을 먼저 보고 싶다면 아래 인포그래픽에서 상태 전이, 전이행렬, n일 후 확률, 장기분포를 직접 확인할 수 있다.
+
+{{< rawhtml >}}
+<style>
+  .markov-infographic-frame-shell {
+    box-sizing: border-box;
+    width: min(1180px, calc(100vw - 40px));
+    max-width: none;
+    margin: 36px 0 56px 50%;
+    transform: translateX(-50%);
+    overflow: hidden;
+    border: 1px solid rgba(15, 23, 42, 0.16);
+    border-radius: 24px;
+    background: #f7fbff;
+    box-shadow: 0 24px 60px rgba(15, 23, 42, 0.16);
+  }
+
+  .dark .markov-infographic-frame-shell,
+  body.dark .markov-infographic-frame-shell {
+    border-color: rgba(255, 255, 255, 0.12);
+    background: #07111f;
+    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.36);
+  }
+
+  .markov-infographic-frame-shell iframe {
+    display: block;
+    width: 100%;
+    min-height: 900px;
+    border: 0;
+    background: #f7fbff;
+  }
+
+  .dark .markov-infographic-frame-shell iframe,
+  body.dark .markov-infographic-frame-shell iframe {
+    background: #07111f;
+  }
+
+  .markov-infographic-fallback {
+    padding: 16px 18px;
+    margin: 0;
+    color: #405169;
+    background: #eef6ff;
+  }
+
+  .dark .markov-infographic-fallback,
+  body.dark .markov-infographic-fallback {
+    color: #b5c5d8;
+    background: #0f1d33;
+  }
+
+  @media (max-width: 640px) {
+    .markov-infographic-frame-shell {
+      width: calc(100vw - 16px);
+      margin-top: 28px;
+      margin-bottom: 44px;
+      border-radius: 18px;
+    }
+  }
+</style>
+
+<div class="markov-infographic-frame-shell">
+  <iframe
+    id="markov-infographic-frame"
+    src="/markov-chains-infographic/"
+    title="마코프 체인 인터랙티브 인포그래픽"
+    loading="lazy"
+    scrolling="no"></iframe>
+  <noscript>
+    <p class="markov-infographic-fallback">
+      자바스크립트가 꺼져 있으면 인터랙티브 인포그래픽이 표시되지 않을 수 있다.
+      <a href="/markov-chains-infographic/">인포그래픽 페이지를 직접 열기</a>
+    </p>
+  </noscript>
+</div>
+
+<script>
+  (function () {
+    const iframe = document.getElementById('markov-infographic-frame');
+    if (!iframe) return;
+
+    function currentTheme() {
+      return (document.documentElement.classList.contains('dark') || document.body.classList.contains('dark')) ? 'dark' : 'light';
+    }
+
+    function syncTheme() {
+      iframe.contentWindow?.postMessage({
+        type: 'markov-infographic-theme',
+        theme: currentTheme()
+      }, window.location.origin);
+    }
+
+    window.addEventListener('message', function (event) {
+      if (event.origin !== window.location.origin || event.data?.type !== 'markov-infographic-height') return;
+      const nextHeight = Math.max(900, Math.ceil(Number(event.data.height) || 0));
+      iframe.style.height = nextHeight + 'px';
+    });
+
+    iframe.addEventListener('load', syncTheme);
+    const observer = new MutationObserver(syncTheme);
+    observer.observe(document.documentElement, {attributes: true, attributeFilter: ['class']});
+    observer.observe(document.body, {attributes: true, attributeFilter: ['class']});
+    syncTheme();
+  }());
+</script>
+{{< /rawhtml >}}
+
 ## 1. 요약 (Executive Summary)
 
 마코프 체인(Markov Chain)은 '메모리리스(Memoryless)' 특성을 가진 이산 시간 확률 과정으로, 미래 상태가 과거의 이력과는 무관하게 오직 현재 상태에 의해서만 결정되는 시스템을 모델링한다. 이 시스템은 전이 확률 행렬(Transition Probability Matrix)을 통해 상태 간의 이동을 정의하며, 장기적으로는 시스템이 평형 상태인 정상 분포(Stationary Distribution)에 도달하는지 여부를 분석하는 데 핵심적인 목적이 있다. 마코프 체인은 물리학, 생물학, 대기 행렬 이론(Queuing Theory)과 같은 전통적 과학 분야부터 구글의 페이지랭크(PageRank) 알고리즘, 생성형 AI 및 강화 학습(Reinforcement Learning)에 이르기까지 현대 기술 전반에 걸쳐 필수적인 분석 도구로 활용되고 있다.

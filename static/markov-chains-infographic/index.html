@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Markov Chains 웹 인포그래픽</title>
+  <script>
+    window.applyMarkovTheme = function () {
+      const pref = localStorage.getItem('pref-theme');
+      let parentIsDark = false;
+      try {
+        parentIsDark = window.parent !== window && (
+          window.parent.document.documentElement.classList.contains('dark') ||
+          window.parent.document.body.classList.contains('dark')
+        );
+      } catch (_) {
+        parentIsDark = false;
+      }
+      const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const useDark = pref ? pref === 'dark' : (parentIsDark || prefersDark);
+      document.documentElement.classList.toggle('dark', useDark);
+    };
+    window.applyMarkovTheme();
+  </script>
+  <style>
+    :root{
+      color-scheme: light dark;
+      --bg-start:#f7fbff;
+      --bg-mid:#edf6ff;
+      --bg-end:#f8fbff;
+      --panel:#ffffff;
+      --panel2:#eef6ff;
+      --text:#102033;
+      --muted:#405169;
+      --line:#c8d6e8;
+      --accent:#0369a1;
+      --accent-soft:rgba(3,105,161,.14);
+      --accent-border:rgba(3,105,161,.28);
+      --accent2:#087f5b;
+      --accent2-soft:rgba(8,127,91,.12);
+      --accent3:#b45309;
+      --danger:#be123c;
+      --shadow: 0 20px 54px rgba(15,23,42,.14);
+      --radius: 22px;
+      --card-bg:linear-gradient(180deg, rgba(255,255,255,.94), rgba(255,255,255,.78));
+      --card-border:rgba(15,23,42,.13);
+      --mini-bg:rgba(255,255,255,.72);
+      --pill-bg:rgba(255,255,255,.68);
+      --formula-bg:#eef8ff;
+      --formula-text:#0b4663;
+      --matrix-head:#dff3ff;
+      --matrix-cell:rgba(255,255,255,.72);
+      --button-text:#06111f;
+      --button-secondary-bg:rgba(15,23,42,.06);
+      --bartrack-bg:rgba(15,23,42,.10);
+      --callout-bg:rgba(180,83,9,.10);
+      --callout-text:#4a2a07;
+      --toc-bg:rgba(248,251,255,.92);
+      --yes-bg:rgba(8,127,91,.10);
+      --no-bg:rgba(190,18,60,.10);
+      --svg-strong:#102033;
+      --svg-muted:#405169;
+    }
+    html.dark{
+      --bg-start:#07111f;
+      --bg-mid:#0a1424;
+      --bg-end:#08101e;
+      --panel:#0f1d33;
+      --panel2:#13243e;
+      --text:#edf5ff;
+      --muted:#b5c5d8;
+      --line:#2b4261;
+      --accent:#5dd6ff;
+      --accent-soft:rgba(93,214,255,.13);
+      --accent-border:rgba(93,214,255,.35);
+      --accent2:#9cffc8;
+      --accent2-soft:rgba(156,255,200,.13);
+      --accent3:#ffd166;
+      --danger:#ff7b8a;
+      --shadow: 0 20px 60px rgba(0,0,0,.28);
+      --card-bg:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.035));
+      --card-border:rgba(255,255,255,.12);
+      --mini-bg:rgba(255,255,255,.06);
+      --pill-bg:rgba(255,255,255,.055);
+      --formula-bg:#050b14;
+      --formula-text:#d9f7ff;
+      --matrix-head:rgba(93,214,255,.13);
+      --matrix-cell:rgba(255,255,255,.035);
+      --button-text:#06111f;
+      --button-secondary-bg:rgba(255,255,255,.08);
+      --bartrack-bg:rgba(255,255,255,.08);
+      --callout-bg:rgba(255,209,102,.08);
+      --callout-text:#fff4d7;
+      --toc-bg:rgba(7,17,31,.76);
+      --yes-bg:rgba(156,255,200,.08);
+      --no-bg:rgba(255,123,138,.08);
+      --svg-strong:#edf5ff;
+      --svg-muted:#b5c5d8;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", Roboto, Arial, sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(93,214,255,.22), transparent 34rem),
+        radial-gradient(circle at 80% 10%, rgba(156,255,200,.13), transparent 32rem),
+        linear-gradient(180deg, var(--bg-start) 0%, var(--bg-mid) 50%, var(--bg-end) 100%);
+      color:var(--text);
+      line-height:1.55;
+    }
+    a{color:var(--accent2); text-decoration:none}
+    a:hover{text-decoration:underline}
+    .wrap{width:min(1180px, calc(100% - 36px)); margin:0 auto}
+    .hero{padding:72px 0 42px; position:relative; overflow:hidden}
+    .badge{
+      display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border:1px solid var(--accent-border);
+      border-radius:999px; color:var(--accent); background:var(--accent-soft); font-weight:700; font-size:14px;
+    }
+    .badge span{width:8px; height:8px; border-radius:50%; background:var(--accent2); box-shadow:0 0 16px var(--accent2)}
+    h1{font-size:clamp(42px, 7vw, 86px); line-height:1.02; margin:20px 0 18px; letter-spacing:-.05em}
+    h2{font-size:clamp(28px, 3.6vw, 44px); margin:0 0 16px; letter-spacing:-.035em}
+    h3{font-size:22px; margin:0 0 10px; letter-spacing:-.02em}
+    p{margin:0 0 12px}
+    .lead{font-size:clamp(18px, 2.2vw, 25px); color:var(--muted); max-width:900px}
+    .hero-grid{display:grid; grid-template-columns: 1.15fr .85fr; gap:24px; align-items:stretch; margin-top:34px}
+    .card{
+      background:var(--card-bg);
+      border:1px solid var(--card-border);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:24px;
+      backdrop-filter: blur(10px);
+    }
+    .quick{display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-top:20px}
+    .quick .mini{background:var(--mini-bg); border:1px solid var(--card-border); border-radius:18px; padding:18px}
+    .num{font-size:36px; font-weight:900; color:var(--accent3); line-height:1}
+    .mini strong{display:block; margin:8px 0 4px}
+    .mini small{color:var(--muted)}
+    .section{padding:34px 0}
+    .grid2{display:grid; grid-template-columns:1fr 1fr; gap:22px}
+    .grid3{display:grid; grid-template-columns:repeat(3,1fr); gap:18px}
+    .pill-row{display:flex; flex-wrap:wrap; gap:10px; margin-top:14px}
+    .pill{border:1px solid var(--card-border); border-radius:999px; padding:8px 12px; background:var(--pill-bg); color:var(--muted)}
+    .pill b{color:var(--text)}
+    .formula{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+      background:var(--formula-bg); border:1px solid var(--accent-border); color:var(--formula-text); padding:18px; border-radius:16px;
+      font-size:clamp(16px, 2vw, 24px); overflow:auto;
+    }
+    .diagram{min-height:330px; display:flex; align-items:center; justify-content:center; padding:10px}
+    svg{max-width:100%; height:auto}
+    svg text{fill:var(--svg-strong)}
+    .matrix{width:100%; border-collapse:separate; border-spacing:0; overflow:hidden; border-radius:16px; border:1px solid var(--card-border)}
+    .matrix th,.matrix td{padding:12px 10px; text-align:center; border-right:1px solid var(--card-border); border-bottom:1px solid var(--card-border)}
+    .matrix th{background:var(--matrix-head); color:var(--text)}
+    .matrix td{background:var(--matrix-cell)}
+    .matrix tr:last-child td{border-bottom:0}
+    .matrix th:last-child,.matrix td:last-child{border-right:0}
+    .note{color:var(--muted); font-size:14px; margin-top:10px}
+    .selector{display:flex; flex-wrap:wrap; gap:8px; margin:12px 0 16px}
+    button{
+      border:0; color:var(--button-text); background:var(--accent2); border-radius:12px; padding:10px 14px; font-weight:800; cursor:pointer;
+      box-shadow:0 10px 24px rgba(156,255,200,.13); transition:.15s transform ease, .15s opacity ease;
+    }
+    button:hover{transform:translateY(-1px)}
+    button.secondary{background:var(--button-secondary-bg); color:var(--text); border:1px solid var(--card-border); box-shadow:none}
+    button.active{background:var(--accent3); color:#171007}
+    .state-big{font-size:42px; font-weight:900; letter-spacing:-.04em; margin:10px 0 4px}
+    .path{display:flex; flex-wrap:wrap; gap:8px; min-height:42px; align-items:center; padding:10px 0}
+    .chip{display:inline-flex; align-items:center; gap:6px; padding:8px 10px; border-radius:999px; background:var(--accent-soft); border:1px solid var(--accent-border); color:var(--text); font-weight:700; font-size:14px}
+    .barbox{display:grid; gap:12px; margin-top:14px}
+    .barrow{display:grid; grid-template-columns:92px 1fr 58px; gap:10px; align-items:center}
+    .barlabel{font-weight:800; color:#dceaff}
+    .bartrack{height:16px; background:var(--bartrack-bg); border-radius:999px; overflow:hidden; border:1px solid var(--card-border)}
+    .bar{height:100%; width:0%; border-radius:999px; transition:.3s width ease; background:linear-gradient(90deg, var(--accent), var(--accent2))}
+    .percent{text-align:right; color:var(--muted); font-variant-numeric:tabular-nums}
+    input[type=range]{width:100%}
+    .timeline{position:relative; display:grid; gap:14px; margin-top:16px}
+    .step{display:grid; grid-template-columns:48px 1fr; gap:14px; align-items:start}
+    .dot{width:48px; height:48px; border-radius:16px; background:var(--callout-bg); color:var(--accent3); border:1px solid rgba(255,209,102,.35); display:grid; place-items:center; font-weight:900; font-size:20px}
+    .step div:last-child{padding-top:2px}
+    .step p{color:var(--muted)}
+    .compare{display:grid; grid-template-columns:1fr 1fr; gap:14px}
+    .yes,.no{padding:18px; border-radius:18px; border:1px solid var(--card-border)}
+    .yes{background:var(--yes-bg)}
+    .no{background:var(--no-bg)}
+    ul.clean{padding-left:18px; margin:10px 0 0; color:var(--muted)}
+    ul.clean li{margin:8px 0}
+    .callout{border-left:5px solid var(--accent3); background:var(--callout-bg); padding:18px 20px; border-radius:14px; color:var(--callout-text)}
+    .foot{padding:38px 0 58px; color:var(--muted); font-size:14px}
+    .toc{position:sticky; top:0; z-index:5; backdrop-filter: blur(12px); background:var(--toc-bg); border-bottom:1px solid var(--card-border)}
+    .toc .wrap{display:flex; gap:10px; overflow:auto; padding:10px 0}
+    .toc a{white-space:nowrap; padding:8px 12px; border-radius:999px; background:var(--pill-bg); color:var(--muted); font-weight:700; font-size:14px}
+    .toc a:hover{color:var(--text); text-decoration:none; background:var(--accent-soft)}
+    .kpi{display:grid; grid-template-columns:repeat(4,1fr); gap:14px}
+    .kpi .card{padding:18px}
+    .kpi strong{font-size:26px; display:block; color:var(--accent2)}
+    .smallcaps{text-transform:uppercase; letter-spacing:.1em; font-size:12px; color:var(--accent); font-weight:900}
+    .mobile-only{display:none}
+    @media (max-width:900px){
+      .hero-grid,.grid2,.grid3,.compare{grid-template-columns:1fr}
+      .quick,.kpi{grid-template-columns:1fr 1fr}
+      .hero{padding-top:46px}
+    }
+    @media (max-width:560px){
+      .wrap{width:min(100% - 22px, 1180px)}
+      .quick,.kpi{grid-template-columns:1fr}
+      .card{padding:18px}
+      .barrow{grid-template-columns:74px 1fr 50px}
+      .state-big{font-size:34px}
+    }
+    @media print{
+      body{background:white; color:#111}
+      .toc, button, input{display:none}
+      .card{box-shadow:none; border-color:#bbb; background:white}
+      .note,.lead,.pill,ul.clean,.foot{color:#333}
+      a{color:#111}
+    }
+  </style>
+</head>
+<body>
+  <nav class="toc">
+    <div class="wrap">
+      <a href="#one">한 문장 정의</a>
+      <a href="#diagram">그림으로 보기</a>
+      <a href="#matrix">전이행렬</a>
+      <a href="#interactive">직접 실험</a>
+      <a href="#longrun">장기분포</a>
+      <a href="#usecase">활용/한계</a>
+    </div>
+  </nav>
+
+  <header class="hero wrap">
+    <div class="badge"><span></span> Beginner Web Infographic</div>
+    <h1>Markov Chains<br/>“지금 상태”만 보고<br/>다음 상태를 예측하는 법</h1>
+    <p class="lead">마르코프 체인은 복잡한 미래를 한 번에 맞히려는 도구가 아닙니다. 현재 상태에서 다음 상태로 이동할 확률을 정하고, 그 이동을 반복해서 “앞으로 어떤 상태가 얼마나 자주 나타날지” 보는 확률 모델입니다.</p>
+
+    <div class="hero-grid">
+      <div class="card">
+        <div class="smallcaps">Core intuition</div>
+        <h2 id="one">한 문장 정의</h2>
+        <div class="callout">
+          <b>마르코프 체인 = 상태들의 지도 + 상태 사이를 이동할 확률표</b><br/>
+          단, 다음 상태의 확률은 “현재 상태”에만 의존한다고 가정합니다.
+        </div>
+        <div class="quick">
+          <div class="mini"><div class="num">1</div><strong>상태</strong><small>맑음, 흐림, 비처럼 가능한 경우를 나눕니다.</small></div>
+          <div class="mini"><div class="num">2</div><strong>전이</strong><small>현재 상태에서 다음 상태로 넘어가는 움직임입니다.</small></div>
+          <div class="mini"><div class="num">3</div><strong>확률</strong><small>각 이동 경로에 가능성을 숫자로 붙입니다.</small></div>
+        </div>
+      </div>
+      <div class="card diagram" aria-label="과거, 현재, 미래 관계 도식">
+        <svg viewBox="0 0 520 360" role="img">
+          <defs>
+            <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+              <path d="M0,0 L0,6 L9,3 z" fill="#9cffc8" />
+            </marker>
+            <filter id="glow"><feGaussianBlur stdDeviation="4" result="coloredBlur"/><feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          </defs>
+          <rect x="24" y="52" width="130" height="86" rx="20" fill="rgba(255,123,138,.12)" stroke="rgba(255,123,138,.45)" />
+          <text x="89" y="86" text-anchor="middle" fill="#ffd6dc" font-size="22" font-weight="800">과거</text>
+          <text x="89" y="116" text-anchor="middle" fill="#ff9faa" font-size="15">어제·그제</text>
+          <line x1="40" y1="132" x2="140" y2="58" stroke="#ff7b8a" stroke-width="5" opacity=".8" />
+
+          <rect x="195" y="38" width="150" height="112" rx="24" fill="rgba(93,214,255,.13)" stroke="rgba(93,214,255,.55)" filter="url(#glow)"/>
+          <text x="270" y="82" text-anchor="middle" fill="#dff7ff" font-size="24" font-weight="900">현재</text>
+          <text x="270" y="115" text-anchor="middle" fill="#bfefff" font-size="16">오늘의 상태</text>
+
+          <rect x="386" y="52" width="110" height="86" rx="20" fill="rgba(156,255,200,.13)" stroke="rgba(156,255,200,.5)" />
+          <text x="441" y="86" text-anchor="middle" fill="#d7ffe9" font-size="22" font-weight="800">미래</text>
+          <text x="441" y="116" text-anchor="middle" fill="#c1f7da" font-size="15">내일</text>
+          <path d="M348 94 C365 94, 370 94, 384 94" stroke="#9cffc8" stroke-width="4" marker-end="url(#arrow)" fill="none" />
+
+          <path d="M270 180 C175 180, 175 285, 270 285 C365 285, 365 180, 270 180" stroke="#5dd6ff" stroke-width="4" fill="none" opacity=".8" marker-end="url(#arrow)" />
+          <text x="270" y="237" text-anchor="middle" fill="#edf5ff" font-size="20" font-weight="800">반복하면</text>
+          <text x="270" y="266" text-anchor="middle" fill="#b5c5d8" font-size="15">1일 후, 2일 후, 100일 후 확률</text>
+        </svg>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="section" id="diagram">
+      <div class="grid2">
+        <div class="card">
+          <div class="smallcaps">Visual model</div>
+          <h2>날씨 예제로 보는 상태 지도</h2>
+          <p>아래 그림에서 원은 <b>상태</b>, 화살표는 <b>전이</b>, 숫자는 <b>전이확률</b>입니다. 예를 들어 오늘이 맑음이면 내일도 맑을 확률이 70%, 흐릴 확률이 20%, 비가 올 확률이 10%라고 둡니다.</p>
+          <div class="pill-row">
+            <span class="pill"><b>상태</b> = 맑음 / 흐림 / 비</span>
+            <span class="pill"><b>전이</b> = 오늘 → 내일</span>
+            <span class="pill"><b>확률</b> = 각 행의 합 100%</span>
+          </div>
+        </div>
+        <div class="card diagram">
+          <svg viewBox="0 0 560 380" role="img" aria-label="날씨 마르코프 체인 전이 다이어그램">
+            <defs>
+              <marker id="arr2" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+                <path d="M0,0 L0,6 L9,3 z" fill="#5dd6ff" />
+              </marker>
+            </defs>
+            <circle cx="125" cy="105" r="58" fill="rgba(255,209,102,.18)" stroke="#ffd166" stroke-width="3"/>
+            <text x="125" y="98" text-anchor="middle" fill="#fff4d7" font-size="24" font-weight="900">맑음</text>
+            <text x="125" y="128" text-anchor="middle" fill="#ffe8a3" font-size="16">Sunny</text>
+            <circle cx="430" cy="105" r="58" fill="rgba(93,214,255,.16)" stroke="#5dd6ff" stroke-width="3"/>
+            <text x="430" y="98" text-anchor="middle" fill="#dff7ff" font-size="24" font-weight="900">흐림</text>
+            <text x="430" y="128" text-anchor="middle" fill="#bfefff" font-size="16">Cloudy</text>
+            <circle cx="280" cy="278" r="58" fill="rgba(156,255,200,.15)" stroke="#9cffc8" stroke-width="3"/>
+            <text x="280" y="270" text-anchor="middle" fill="#d7ffe9" font-size="24" font-weight="900">비</text>
+            <text x="280" y="302" text-anchor="middle" fill="#c1f7da" font-size="16">Rainy</text>
+
+            <path d="M183 94 C245 52, 310 52, 372 94" stroke="#5dd6ff" stroke-width="4" fill="none" marker-end="url(#arr2)"/>
+            <text x="278" y="60" text-anchor="middle" fill="#dff7ff" font-size="17" font-weight="800">20%</text>
+            <path d="M371 118 C316 176, 315 201, 306 225" stroke="#5dd6ff" stroke-width="4" fill="none" marker-end="url(#arr2)"/>
+            <text x="350" y="190" fill="#dff7ff" font-size="17" font-weight="800">30%</text>
+            <path d="M252 227 C220 174, 183 148, 156 137" stroke="#5dd6ff" stroke-width="4" fill="none" marker-end="url(#arr2)"/>
+            <text x="194" y="198" fill="#dff7ff" font-size="17" font-weight="800">20%</text>
+            <path d="M142 161 C172 220, 201 251, 225 264" stroke="#5dd6ff" stroke-width="4" fill="none" marker-end="url(#arr2)"/>
+            <text x="146" y="239" fill="#dff7ff" font-size="17" font-weight="800">10%</text>
+            <path d="M342 272 C389 244, 425 200, 433 164" stroke="#5dd6ff" stroke-width="4" fill="none" marker-end="url(#arr2)"/>
+            <text x="430" y="236" fill="#dff7ff" font-size="17" font-weight="800">50%</text>
+            <path d="M370 83 C315 36, 235 36, 176 83" stroke="#5dd6ff" stroke-width="4" fill="none" marker-end="url(#arr2)" opacity=".55"/>
+            <text x="278" y="31" text-anchor="middle" fill="#dff7ff" font-size="17" font-weight="800">30%</text>
+
+            <path d="M91 54 C55 18, 28 57, 65 91" stroke="#ffd166" stroke-width="4" fill="none" marker-end="url(#arr2)" opacity=".9"/>
+            <text x="35" y="44" fill="#fff4d7" font-size="16" font-weight="800">70%</text>
+            <path d="M474 56 C529 38, 535 105, 488 124" stroke="#5dd6ff" stroke-width="4" fill="none" marker-end="url(#arr2)" opacity=".9"/>
+            <text x="513" y="72" fill="#dff7ff" font-size="16" font-weight="800">40%</text>
+            <path d="M280 338 C226 368, 212 308, 244 288" stroke="#9cffc8" stroke-width="4" fill="none" marker-end="url(#arr2)" opacity=".9"/>
+            <text x="211" y="361" fill="#d7ffe9" font-size="16" font-weight="800">30%</text>
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="matrix">
+      <div class="grid2">
+        <div class="card">
+          <div class="smallcaps">Transition matrix</div>
+          <h2>그림을 표로 바꾸면 전이행렬</h2>
+          <p>행은 <b>오늘 상태</b>, 열은 <b>내일 상태</b>입니다. 행 하나는 “오늘이 이 상태라면 내일은 어디로 갈까?”를 나타내므로 각 행의 합은 1이 됩니다.</p>
+          <table class="matrix" aria-label="날씨 전이행렬">
+            <thead><tr><th>오늘 \ 내일</th><th>맑음</th><th>흐림</th><th>비</th></tr></thead>
+            <tbody>
+              <tr><th>맑음</th><td>0.70</td><td>0.20</td><td>0.10</td></tr>
+              <tr><th>흐림</th><td>0.30</td><td>0.40</td><td>0.30</td></tr>
+              <tr><th>비</th><td>0.20</td><td>0.50</td><td>0.30</td></tr>
+            </tbody>
+          </table>
+          <p class="note">체크포인트: 0.70 + 0.20 + 0.10 = 1.00</p>
+        </div>
+        <div class="card">
+          <div class="smallcaps">Math in one line</div>
+          <h2>계산은 행렬 곱셈</h2>
+          <div class="formula">내일확률 = 오늘확률 × 전이행렬<br/>v<sub>1</sub> = v<sub>0</sub>P<br/><br/>n일 후 확률 = v<sub>0</sub>P<sup>n</sup></div>
+          <p class="note">예: 오늘이 100% 맑음이면 v<sub>0</sub> = [1, 0, 0]. 내일은 [1, 0, 0]P = [0.70, 0.20, 0.10]입니다.</p>
+          <div class="pill-row">
+            <span class="pill"><b>P</b> = 전이행렬</span>
+            <span class="pill"><b>P²</b> = 두 번 이동</span>
+            <span class="pill"><b>Pⁿ</b> = n번 이동</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="interactive">
+      <div class="grid2">
+        <div class="card">
+          <div class="smallcaps">Interactive 1</div>
+          <h2>직접 눌러보기: 다음 날 시뮬레이션</h2>
+          <p>시작 상태를 고른 뒤 “하루 진행”을 눌러보세요. 매번 같은 결과가 나오지는 않지만, 여러 번 반복하면 전이확률에 가까운 패턴이 나타납니다.</p>
+          <div class="selector" id="stateButtons"></div>
+          <div class="state-big" id="currentState">맑음</div>
+          <p class="note" id="currentRule">오늘이 맑음이면 내일은 맑음 70%, 흐림 20%, 비 10%</p>
+          <div class="selector">
+            <button id="nextBtn">하루 진행</button>
+            <button id="tenBtn" class="secondary">10일 빠르게 진행</button>
+            <button id="resetBtn" class="secondary">초기화</button>
+          </div>
+          <div class="path" id="path"></div>
+        </div>
+        <div class="card">
+          <div class="smallcaps">Interactive 2</div>
+          <h2>n일 후 확률 계산</h2>
+          <p>오늘이 맑음이라고 할 때, n일 뒤 각각의 날씨가 될 확률을 계산합니다. 무작위 시뮬레이션이 아니라 행렬 곱셈으로 계산한 값입니다.</p>
+          <label for="days"><b>며칠 뒤?</b> <span id="daysText">1일 후</span></label>
+          <input id="days" type="range" min="1" max="30" value="1" />
+          <div class="barbox" id="probBars"></div>
+          <p class="note">n이 커질수록 시작 상태의 영향이 줄고 일정한 비율에 접근할 수 있습니다. 단, 모든 마르코프 체인이 반드시 그렇게 되는 것은 아닙니다.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="longrun">
+      <div class="grid2">
+        <div class="card">
+          <div class="smallcaps">Long-run behavior</div>
+          <h2>장기분포: 오래 보면 어디에 머무는가?</h2>
+          <p>일부 마르코프 체인은 충분히 오래 반복하면 시작 상태와 거의 무관한 안정 비율에 가까워집니다. 이 예제에서는 장기적으로 대략 아래 비율에 접근합니다.</p>
+          <div class="barbox" id="stationaryBars"></div>
+          <p class="note">이 값은 위 전이행렬을 반복 곱해서 근사한 것입니다. 엄밀하게는 πP = π, π의 원소 합 = 1을 만족하는 분포를 구합니다.</p>
+        </div>
+        <div class="card">
+          <div class="smallcaps">Mental model</div>
+          <h2>초보자가 기억할 비유</h2>
+          <div class="timeline">
+            <div class="step"><div class="dot">1</div><div><h3>도시 지도</h3><p>상태는 도시의 정류장입니다.</p></div></div>
+            <div class="step"><div class="dot">2</div><div><h3>갈림길 확률</h3><p>각 정류장에서 다음 정류장으로 갈 확률이 정해져 있습니다.</p></div></div>
+            <div class="step"><div class="dot">3</div><div><h3>기억 짧은 여행자</h3><p>여행자는 “지금 어느 정류장에 있는지”만 보고 다음 이동을 정합니다.</p></div></div>
+            <div class="step"><div class="dot">4</div><div><h3>많이 걸으면 패턴</h3><p>하루만 보면 우연이 크지만, 오래 보면 머무는 비율이 보입니다.</p></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="usecase">
+      <div class="card">
+        <div class="smallcaps">Application map</div>
+        <h2>어디에 쓰이나?</h2>
+        <div class="grid3">
+          <div class="mini"><h3>설비 상태 예측</h3><p class="note">정상 → 경고 → 고장 → 수리 같은 상태 전이를 모델링할 수 있습니다.</p></div>
+          <div class="mini"><h3>대기열·교통</h3><p class="note">혼잡도, 고객 수, 부품 대기 상태가 시간에 따라 어떻게 변하는지 볼 수 있습니다.</p></div>
+          <div class="mini"><h3>금융·리스크</h3><p class="note">시장 국면을 상승/횡보/하락 등으로 나누어 상태 전이를 분석할 수 있습니다.</p></div>
+          <div class="mini"><h3>검색·추천</h3><p class="note">사용자 이동, 페이지 이동, 클릭 패턴을 확률 전이로 표현할 수 있습니다.</p></div>
+          <div class="mini"><h3>언어 모델의 역사적 기초</h3><p class="note">이전 단어 또는 상태가 다음 단어 확률에 영향을 주는 모델의 단순한 출발점입니다.</p></div>
+          <div class="mini"><h3>생명과학·물리</h3><p class="note">분자 상태, 유전자 상태, 확산 과정의 단순 모델로 쓰입니다.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="compare">
+        <div class="yes">
+          <h2>장점</h2>
+          <ul class="clean">
+            <li><b>직관적입니다.</b> 상태와 확률표만 있으면 설명 가능합니다.</li>
+            <li><b>계산이 명확합니다.</b> n단계 뒤 확률은 행렬 곱으로 계산합니다.</li>
+            <li><b>데이터에서 추정하기 쉽습니다.</b> 관찰된 전이 횟수를 세어 확률표를 만들 수 있습니다.</li>
+            <li><b>현장 모델링에 좋습니다.</b> 설비 상태, 작업 흐름, 품질 등급처럼 상태가 명확한 문제에 적합합니다.</li>
+          </ul>
+        </div>
+        <div class="no">
+          <h2>한계</h2>
+          <ul class="clean">
+            <li><b>현재만 본다는 가정이 강합니다.</b> 실제로는 긴 과거 이력이 중요할 수 있습니다.</li>
+            <li><b>확률이 고정된다고 가정할 수 있습니다.</b> 계절, 정책, 노후화, 운영 조건이 바뀌면 전이확률도 바뀝니다.</li>
+            <li><b>상태 설계가 부정확하면 모델도 부정확합니다.</b> 상태를 너무 거칠게 나누면 중요한 차이를 잃습니다.</li>
+            <li><b>숨은 원인을 직접 설명하지 않습니다.</b> “왜 이동했는가”보다 “얼마나 자주 이동하는가”에 강합니다.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="card">
+        <div class="smallcaps">How to build one</div>
+        <h2>실제로 만드는 순서</h2>
+        <div class="kpi">
+          <div class="card"><strong>01</strong><b>상태 정의</b><p class="note">서로 겹치지 않고 관찰 가능한 상태로 나눕니다.</p></div>
+          <div class="card"><strong>02</strong><b>전이 기록</b><p class="note">시간 t에서 t+1로 이동한 횟수를 셉니다.</p></div>
+          <div class="card"><strong>03</strong><b>확률화</b><p class="note">각 행을 합이 1이 되도록 나눕니다.</p></div>
+          <div class="card"><strong>04</strong><b>검증</b><p class="note">예측 분포와 실제 관측 분포가 맞는지 비교합니다.</p></div>
+        </div>
+        <p class="note" style="margin-top:16px">현장 팁: 설비 데이터라면 “정상/주의/경고/정지/수리중”처럼 너무 많은 센서값을 바로 쓰기보다, 운영자가 의사결정할 수 있는 상태로 먼저 압축하는 것이 좋습니다.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot wrap">
+    <p><b>참고자료</b></p>
+    <p>MIT OpenCourseWare, “Lecture 16: Markov Chains I”, 확인일 2026-06-16. Markov process definition, n-step transition probabilities, state classification을 다루는 강의 페이지.</p>
+    <p>Grinstead & Snell, <i>Introduction to Probability</i>, Chapter 11 “Markov Chains”, PDF version dated 2006-07-04, 확인일 2026-06-16. 상태, step, 전이확률, 전이행렬, n-step probability 설명을 참고.</p>
+    <p>LibreTexts, “11.1: Introduction”, 확인일 2026-06-16. Markov chain 입문 예제와 transition matrix 설명을 참고.</p>
+  </footer>
+
+  <script>
+    const states = ["맑음", "흐림", "비"];
+    const emoji = {"맑음":"☀️", "흐림":"☁️", "비":"🌧️"};
+    const P = [
+      [0.70, 0.20, 0.10],
+      [0.30, 0.40, 0.30],
+      [0.20, 0.50, 0.30]
+    ];
+    let current = 0;
+    let path = [0];
+
+    const stateButtons = document.getElementById('stateButtons');
+    const currentState = document.getElementById('currentState');
+    const currentRule = document.getElementById('currentRule');
+    const pathEl = document.getElementById('path');
+
+    function pickNext(i){
+      const r = Math.random();
+      let acc = 0;
+      for(let j=0;j<P[i].length;j++){
+        acc += P[i][j];
+        if(r <= acc) return j;
+      }
+      return P[i].length - 1;
+    }
+    function renderButtons(){
+      stateButtons.innerHTML = '';
+      states.forEach((s,i)=>{
+        const b = document.createElement('button');
+        b.textContent = `${emoji[s]} ${s}에서 시작`;
+        b.className = i === current ? 'active' : 'secondary';
+        b.onclick = () => { current=i; path=[i]; renderSim(); renderButtons(); };
+        stateButtons.appendChild(b);
+      });
+    }
+    function renderSim(){
+      const s = states[current];
+      currentState.textContent = `${emoji[s]} ${s}`;
+      currentRule.textContent = `오늘이 ${s}이면 내일은 맑음 ${(P[current][0]*100).toFixed(0)}%, 흐림 ${(P[current][1]*100).toFixed(0)}%, 비 ${(P[current][2]*100).toFixed(0)}%`;
+      pathEl.innerHTML = path.slice(-18).map(i=>`<span class="chip">${emoji[states[i]]} ${states[i]}</span>`).join('');
+    }
+    document.getElementById('nextBtn').onclick = () => { current = pickNext(current); path.push(current); renderSim(); renderButtons(); };
+    document.getElementById('tenBtn').onclick = () => { for(let k=0;k<10;k++){ current = pickNext(current); path.push(current); } renderSim(); renderButtons(); };
+    document.getElementById('resetBtn').onclick = () => { current = 0; path = [0]; renderSim(); renderButtons(); };
+
+    function matVec(v, M){
+      const out = Array(M[0].length).fill(0);
+      for(let j=0;j<M[0].length;j++){
+        for(let i=0;i<v.length;i++) out[j] += v[i]*M[i][j];
+      }
+      return out;
+    }
+    function distAfter(days, start=0){
+      let v = [0,0,0]; v[start] = 1;
+      for(let d=0; d<days; d++) v = matVec(v, P);
+      return v;
+    }
+    function barsHTML(v){
+      return states.map((s,i)=>{
+        const pct = Math.round(v[i]*1000)/10;
+        return `<div class="barrow"><div class="barlabel">${emoji[s]} ${s}</div><div class="bartrack"><div class="bar" style="width:${pct}%"></div></div><div class="percent">${pct.toFixed(1)}%</div></div>`;
+      }).join('');
+    }
+    const days = document.getElementById('days');
+    const daysText = document.getElementById('daysText');
+    const probBars = document.getElementById('probBars');
+    function renderProb(){
+      const d = Number(days.value);
+      daysText.textContent = `${d}일 후`;
+      probBars.innerHTML = barsHTML(distAfter(d,0));
+    }
+    days.oninput = renderProb;
+
+    const stationaryBars = document.getElementById('stationaryBars');
+    function renderStationary(){
+      let v = [1,0,0];
+      for(let n=0;n<200;n++) v = matVec(v, P);
+      stationaryBars.innerHTML = barsHTML(v);
+    }
+
+    renderButtons();
+    renderSim();
+    renderProb();
+    renderStationary();
+
+    function notifyParentHeight(){
+      if(window.parent === window) return;
+      const height = Math.max(
+        document.body.scrollHeight,
+        document.documentElement.scrollHeight,
+        document.body.offsetHeight,
+        document.documentElement.offsetHeight
+      );
+      window.parent.postMessage({type:'markov-infographic-height', height}, window.location.origin);
+    }
+    window.addEventListener('load', notifyParentHeight);
+    window.addEventListener('resize', notifyParentHeight);
+    window.addEventListener('storage', (event) => {
+      if(event.key === 'pref-theme'){
+        window.applyMarkovTheme();
+        requestAnimationFrame(notifyParentHeight);
+      }
+    });
+    window.addEventListener('message', (event) => {
+      if(event.origin !== window.location.origin || event.data?.type !== 'markov-infographic-theme') return;
+      document.documentElement.classList.toggle('dark', event.data.theme === 'dark');
+      requestAnimationFrame(notifyParentHeight);
+    });
+    if('ResizeObserver' in window){
+      new ResizeObserver(notifyParentHeight).observe(document.body);
+    } else {
+      setInterval(notifyParentHeight, 1000);
+    }
+    notifyParentHeight();
+  </script>
+</body>
+</html>
