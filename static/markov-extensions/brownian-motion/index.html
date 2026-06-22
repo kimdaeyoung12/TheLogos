@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>브라운 운동(Brownian Motion): 보이지 않는 분자 충돌을 확률로 읽는 법 · 인터랙티브 인포그래픽</title>
+  <meta name="description" content="브라운 운동은 액체나 기체 속 작은 입자가 주변 분자와 충돌하면서 불규칙하게 흔들리는 현상이다. 확산계수, 시간, 드리프트를 바꾸며 평균제곱변위와 √t 확산 스케일을 직관적으로 확인한다." />
+  <style>
+:root{
+  --bg:#07111f; --panel:#0f1d33; --panel2:#13243e; --text:#edf5ff; --muted:#b5c5d8;
+  --line:#2b4261; --accent:#5dd6ff; --accent2:#9cffc8; --accent3:#ffd166; --danger:#ff7b8a;
+  --purple:#c7a7ff; --shadow:0 22px 70px rgba(0,0,0,.30); --radius:22px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;background:#07111f}
+body{
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans KR",Roboto,Arial,sans-serif;
+  background:
+    radial-gradient(circle at top left, rgba(93,214,255,.22), transparent 34rem),
+    radial-gradient(circle at 82% 5%, rgba(199,167,255,.16), transparent 34rem),
+    radial-gradient(circle at 70% 38%, rgba(156,255,200,.12), transparent 28rem),
+    linear-gradient(180deg,#07111f 0%,#0a1424 50%,#08101e 100%);
+  color:var(--text);
+  line-height:1.72;
+  padding:0;
+  overflow-x:hidden;
+}
+.wrap{width:min(1120px,calc(100% - 24px));margin:0 auto}
+.section{padding:24px 0 28px}
+.card{
+  background:linear-gradient(180deg,rgba(255,255,255,.065),rgba(255,255,255,.035));
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:var(--radius);
+  box-shadow:none;
+  padding:24px;
+  backdrop-filter:blur(10px);
+}
+.grid2{display:grid;grid-template-columns:0.9fr 1.1fr;gap:22px}
+h2{font-size:clamp(27px,3.3vw,42px);line-height:1.12;margin:0 0 16px;letter-spacing:-.035em}
+h3{font-size:22px;margin:0 0 10px;letter-spacing:-.02em}
+p{margin:0 0 13px;color:#d7e5f5}
+b{color:#f5fbff}
+.smallcaps{text-transform:uppercase;letter-spacing:.1em;font-size:12px;color:var(--accent);font-weight:900}
+.formula{
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  background:#050b14;
+  border:1px solid rgba(93,214,255,.25);
+  color:#d9f7ff;
+  padding:16px;
+  border-radius:16px;
+  font-size:clamp(14px,1.55vw,18px);
+  overflow:auto;
+  white-space:pre-wrap;
+  margin:14px 0 10px;
+}
+.note{color:var(--muted);font-size:14px;margin-top:10px}
+.pill-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+.pill{border:1px solid rgba(255,255,255,.14);border-radius:999px;padding:8px 12px;background:rgba(255,255,255,.055);color:var(--muted)}
+.pill b{color:var(--text)}
+canvas{width:100%;height:auto;border-radius:18px;background:rgba(5,11,20,.92);border:1px solid rgba(255,255,255,.10)}
+.controls{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:14px}
+.control{background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:14px}
+.control label{display:flex;justify-content:space-between;gap:12px;color:#dfeeff;font-weight:800;font-size:14px;margin-bottom:8px}
+.control input{width:100%;accent-color:#5dd6ff}
+.metric-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:14px}
+.metric{background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:14px}
+.metric strong{font-size:22px;display:block;color:var(--accent2);line-height:1.1}
+.metric span{font-size:13px;color:var(--muted)}
+.timeline{display:grid;gap:10px;margin-top:16px}
+.titem{display:grid;grid-template-columns:74px 1fr;gap:12px;align-items:start;padding:12px;border-radius:16px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.1)}
+.year{font-weight:950;color:var(--accent3);font-size:18px;line-height:1.2}
+.titem p{font-size:14px;margin:0;color:var(--muted)}
+.legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;color:var(--muted);font-size:13px}
+.legend span{display:inline-flex;align-items:center;gap:7px}
+.dot{width:10px;height:10px;border-radius:50%;display:inline-block}
+.dot.cloud{background:#5dd6ff}.dot.path{background:#ffd166}.dot.drift{background:#9cffc8}.dot.ring{background:#c7a7ff}
+.explain-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px}
+.explain{background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.1);border-radius:18px;padding:16px}
+.explain strong{display:block;margin-bottom:6px;color:#f5fbff}
+.explain small{color:var(--muted);font-size:14px}
+@media (max-width:920px){
+  .grid2,.controls,.explain-grid{grid-template-columns:1fr}
+  .card{padding:20px}
+  .section{padding:18px 0 22px}
+  canvas{min-height:270px;object-fit:cover}
+}
+  </style>
+</head>
+<body>
+<section id="interactive" class="section">
+  <div class="wrap grid2">
+    <div class="card">
+      <div class="smallcaps">Interactive infographic</div>
+      <h2>보이지 않는 분자 충돌이 보이는 흔들림을 만든다</h2>
+      <p><b>핵심:</b> 브라운 운동은 작은 입자가 주변 분자와 계속 충돌하면서 불규칙하게 흔들리는 현상이다. 개별 경로는 예측하기 어렵지만, 입자 구름의 폭은 시간에 따라 법칙적으로 넓어진다.</p>
+      <div class="formula">Δx ~ Normal(μΔt, 2DΔt)
+Δy ~ Normal(0, 2DΔt)
+
+E[x(t)²] = 2Dt
+E[y(t)²] = 2Dt
+E[r(t)²] = 4Dt</div>
+      <p class="note">2차원 브라운 운동에서 전형적 거리는 대략 √(4Dt) 규모로 커진다. 시간은 선형으로 늘지만, 퍼지는 거리는 √t로 늘어난다.</p>
+      <div class="pill-row">
+        <span class="pill"><b>D</b> 확산계수</span>
+        <span class="pill"><b>μ</b> 외부 흐름/드리프트</span>
+        <span class="pill"><b>MSD</b> 평균제곱변위</span>
+      </div>
+      <div class="timeline" aria-label="브라운 운동 역사 타임라인">
+        <div class="titem"><div class="year">1827</div><p>Robert Brown이 물속 입자의 불규칙한 흔들림을 관찰했다.</p></div>
+        <div class="titem"><div class="year">1905</div><p>Einstein이 분자 충돌과 확산으로 이 현상을 설명했다.</p></div>
+        <div class="titem"><div class="year">1908</div><p>Perrin의 실험이 원자·분자의 실제성 논쟁에 강한 증거를 제공했다.</p></div>
+        <div class="titem"><div class="year">1923</div><p>Wiener가 브라운 운동을 엄밀한 확률과정으로 정식화했다.</p></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>확산 폭을 직접 바꿔보기</h3>
+      <p class="note">파란 점은 여러 입자의 마지막 위치, 노란 선은 한 입자의 대표 경로, 초록 선은 드리프트 방향이다.</p>
+      <canvas id="bmCanvas" width="920" height="420"></canvas>
+      <div class="legend">
+        <span><i class="dot cloud"></i>입자 구름</span>
+        <span><i class="dot path"></i>대표 경로</span>
+        <span><i class="dot drift"></i>드리프트</span>
+        <span><i class="dot ring"></i>확산 기준 원</span>
+      </div>
+      <div class="controls">
+        <div class="control"><label>시간 t <span id="timeVal">10.0</span></label><input id="time" type="range" min="1" max="40" value="10" step="1" /></div>
+        <div class="control"><label>확산계수 D <span id="diffVal">0.50</span></label><input id="diffusion" type="range" min="5" max="160" value="50" step="5" /></div>
+        <div class="control"><label>드리프트 μ <span id="driftVal">0.00</span></label><input id="drift" type="range" min="-60" max="60" value="0" step="5" /></div>
+        <div class="control"><label>입자 수 <span id="countVal">320</span></label><input id="count" type="range" min="80" max="800" value="320" step="40" /></div>
+        <div class="control"><label>시드 <span id="seedVal">7</span></label><input id="seed" type="range" min="1" max="99" value="7" step="1" /></div>
+      </div>
+      <div class="metric-grid">
+        <div class="metric"><strong id="sigmaX">-</strong><span>축별 표준편차 √(2Dt)</span></div>
+        <div class="metric"><strong id="msd">-</strong><span>2D 평균제곱변위 4Dt</span></div>
+        <div class="metric"><strong id="rms">-</strong><span>전형적 거리 √(4Dt)</span></div>
+        <div class="metric"><strong id="driftMetric">-</strong><span>드리프트 이동량 μt</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="explain-grid">
+      <div class="explain">
+        <strong>평균은 0이어도 폭은 커진다</strong>
+        <small>드리프트가 없으면 평균 위치는 원점 근처에 남지만, 가능한 위치의 분산은 시간에 비례해 커진다.</small>
+      </div>
+      <div class="explain">
+        <strong>거리 스케일은 √t</strong>
+        <small>확산은 속도처럼 t에 비례해서 멀어지는 운동이 아니다. 전형적 거리는 시간의 제곱근에 비례한다.</small>
+      </div>
+      <div class="explain">
+        <strong>랜덤워크의 연속 극한</strong>
+        <small>작은 무작위 스텝을 매우 촘촘히 쌓으면 브라운 운동이라는 연속시간 확률과정으로 이어진다.</small>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+function reportHeight(){
+  try{
+    const height=Math.max(document.documentElement.scrollHeight,document.body.scrollHeight);
+    window.parent.postMessage({type:'thelogos-interactive-height',height},window.location.origin);
+  }catch(error){}
+}
+window.addEventListener('load',reportHeight);
+window.addEventListener('resize',reportHeight);
+window.addEventListener('message',function(event){
+  if(event.origin!==window.location.origin||event.data?.type!=='thelogos-interactive-theme')return;
+  document.documentElement.dataset.theme=event.data.theme;
+});
+if('ResizeObserver' in window){new ResizeObserver(reportHeight).observe(document.body)}
+setTimeout(reportHeight,80);
+
+function rng(seed){
+  let s=seed>>>0;
+  return function(){
+    s=(1664525*s+1013904223)>>>0;
+    return s/4294967296;
+  }
+}
+function normal(rand){
+  let u=0,v=0;
+  while(u===0)u=rand();
+  while(v===0)v=rand();
+  return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);
+}
+function fmt(x,d=2){return Number(x).toFixed(d)}
+function clearCanvas(ctx,w,h){
+  ctx.clearRect(0,0,w,h);
+  ctx.fillStyle='rgba(5,11,20,.92)';
+  ctx.fillRect(0,0,w,h);
+}
+function drawLine(ctx,pts,color,width=2,alpha=1){
+  ctx.save();
+  ctx.globalAlpha=alpha;
+  ctx.strokeStyle=color;
+  ctx.lineWidth=width;
+  ctx.beginPath();
+  pts.forEach((p,i)=>{if(i===0)ctx.moveTo(p[0],p[1]);else ctx.lineTo(p[0],p[1])});
+  ctx.stroke();
+  ctx.restore();
+}
+function drawArrow(ctx,x1,y1,x2,y2,color){
+  const angle=Math.atan2(y2-y1,x2-x1);
+  const head=11;
+  ctx.save();
+  ctx.strokeStyle=color;
+  ctx.fillStyle=color;
+  ctx.lineWidth=3;
+  ctx.beginPath();
+  ctx.moveTo(x1,y1);
+  ctx.lineTo(x2,y2);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(x2,y2);
+  ctx.lineTo(x2-head*Math.cos(angle-Math.PI/6),y2-head*Math.sin(angle-Math.PI/6));
+  ctx.lineTo(x2-head*Math.cos(angle+Math.PI/6),y2-head*Math.sin(angle+Math.PI/6));
+  ctx.closePath();
+  ctx.fill();
+  ctx.restore();
+}
+function updateText(id,value){document.getElementById(id).textContent=value}
+
+function renderBM(){
+  const canvas=document.getElementById('bmCanvas');
+  const ctx=canvas.getContext('2d');
+  const w=canvas.width,h=canvas.height;
+  const t=Number(document.getElementById('time').value);
+  const D=Number(document.getElementById('diffusion').value)/100;
+  const mu=Number(document.getElementById('drift').value)/100;
+  const n=Number(document.getElementById('count').value);
+  const seed=Number(document.getElementById('seed').value);
+
+  updateText('timeVal',fmt(t,1));
+  updateText('diffVal',fmt(D,2));
+  updateText('driftVal',fmt(mu,2));
+  updateText('countVal',n);
+  updateText('seedVal',seed);
+
+  const sigma=Math.sqrt(2*D*t);
+  const msd=4*D*t;
+  const rms=Math.sqrt(msd);
+  const driftDistance=mu*t;
+
+  updateText('sigmaX',fmt(sigma,2));
+  updateText('msd',fmt(msd,2));
+  updateText('rms',fmt(rms,2));
+  updateText('driftMetric',fmt(driftDistance,2));
+
+  const rand=rng(seed*9973+n*13+Math.round(D*1000));
+  const particles=[];
+  let minX=0,maxX=0,minY=0,maxY=0;
+
+  for(let i=0;i<n;i++){
+    const x=driftDistance + normal(rand)*sigma;
+    const y=normal(rand)*sigma;
+    particles.push({x,y});
+    minX=Math.min(minX,x); maxX=Math.max(maxX,x);
+    minY=Math.min(minY,y); maxY=Math.max(maxY,y);
+  }
+
+  const pathRand=rng(seed*104729+17);
+  const path=[];
+  const steps=220;
+  let px=0,py=0;
+  path.push({x:px,y:py});
+  for(let i=0;i<steps;i++){
+    const dt=t/steps;
+    px += mu*dt + normal(pathRand)*Math.sqrt(2*D*dt);
+    py += normal(pathRand)*Math.sqrt(2*D*dt);
+    path.push({x:px,y:py});
+    minX=Math.min(minX,px); maxX=Math.max(maxX,px);
+    minY=Math.min(minY,py); maxY=Math.max(maxY,py);
+  }
+
+  minX=Math.min(minX,-rms*1.5,driftDistance-rms*1.5);
+  maxX=Math.max(maxX,rms*1.5,driftDistance+rms*1.5);
+  minY=Math.min(minY,-rms*1.5);
+  maxY=Math.max(maxY,rms*1.5);
+
+  const pad=48;
+  const spanX=Math.max(1,maxX-minX);
+  const spanY=Math.max(1,maxY-minY);
+  const scale=Math.min((w-pad*2)/spanX,(h-pad*2)/spanY);
+  const cx=pad + (0-minX)*scale;
+  const cy=h-pad - (0-minY)*scale;
+  function sx(x){return pad+(x-minX)*scale}
+  function sy(y){return h-pad-(y-minY)*scale}
+
+  clearCanvas(ctx,w,h);
+
+  ctx.strokeStyle='rgba(255,255,255,.13)';
+  ctx.lineWidth=1;
+  ctx.beginPath();
+  ctx.moveTo(pad,cy);
+  ctx.lineTo(w-pad,cy);
+  ctx.moveTo(cx,pad);
+  ctx.lineTo(cx,h-pad);
+  ctx.stroke();
+
+  const gridStep=Math.max(1,Math.pow(10,Math.floor(Math.log10(Math.max(spanX,spanY)/6))));
+  ctx.fillStyle='rgba(255,255,255,.38)';
+  ctx.font='12px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace';
+  for(let gx=Math.ceil(minX/gridStep)*gridStep;gx<=maxX;gx+=gridStep){
+    const x=sx(gx);
+    ctx.strokeStyle='rgba(255,255,255,.055)';
+    ctx.beginPath();ctx.moveTo(x,pad);ctx.lineTo(x,h-pad);ctx.stroke();
+    if(Math.abs(gx)>1e-9)ctx.fillText(fmt(gx,0),x+3,cy+16);
+  }
+  for(let gy=Math.ceil(minY/gridStep)*gridStep;gy<=maxY;gy+=gridStep){
+    const y=sy(gy);
+    ctx.strokeStyle='rgba(255,255,255,.055)';
+    ctx.beginPath();ctx.moveTo(pad,y);ctx.lineTo(w-pad,y);ctx.stroke();
+    if(Math.abs(gy)>1e-9)ctx.fillText(fmt(gy,0),cx+6,y-4);
+  }
+
+  ctx.save();
+  ctx.strokeStyle='rgba(199,167,255,.38)';
+  ctx.lineWidth=2;
+  ctx.setLineDash([7,7]);
+  ctx.beginPath();
+  ctx.arc(sx(driftDistance),sy(0),sigma*scale,0,Math.PI*2);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.arc(sx(driftDistance),sy(0),rms*scale,0,Math.PI*2);
+  ctx.stroke();
+  ctx.restore();
+
+  ctx.save();
+  ctx.globalAlpha=.58;
+  for(const p of particles){
+    ctx.fillStyle='rgba(93,214,255,.72)';
+    ctx.beginPath();
+    ctx.arc(sx(p.x),sy(p.y),2.1,0,Math.PI*2);
+    ctx.fill();
+  }
+  ctx.restore();
+
+  const linePts=path.map(p=>[sx(p.x),sy(p.y)]);
+  drawLine(ctx,linePts,'#ffd166',3,.95);
+
+  ctx.fillStyle='#ffd166';
+  const last=path[path.length-1];
+  ctx.beginPath();
+  ctx.arc(sx(last.x),sy(last.y),6,0,Math.PI*2);
+  ctx.fill();
+
+  ctx.fillStyle='#9cffc8';
+  ctx.beginPath();
+  ctx.arc(cx,cy,5,0,Math.PI*2);
+  ctx.fill();
+
+  if(Math.abs(driftDistance)>.04){
+    drawArrow(ctx,cx,cy,sx(driftDistance),sy(0),'#9cffc8');
+  }
+
+  ctx.fillStyle='rgba(237,245,255,.94)';
+  ctx.font='700 14px -apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans KR",Roboto,Arial,sans-serif';
+  ctx.fillText('원점',cx+8,cy-8);
+  ctx.fillStyle='rgba(181,197,216,.95)';
+  ctx.font='12px -apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans KR",Roboto,Arial,sans-serif';
+  ctx.fillText('점선 원: 축별 1σ와 RMS 기준 확산 폭',pad,h-18);
+
+  reportHeight();
+}
+
+['time','diffusion','drift','count','seed'].forEach(id=>{
+  document.getElementById(id).addEventListener('input',renderBM);
+});
+renderBM();
+</script>
+</body>
+</html>
