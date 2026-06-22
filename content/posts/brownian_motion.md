@@ -1,6 +1,6 @@
 +++
 title = "브라운 운동(Brownian Motion): 보이지 않는 분자 충돌을 확률로 읽는 법"
-date = 2026-06-22T22:00:00+09:00
+date = 2026-06-22T20:52:49+09:00
 draft = false
 slug = "brownian-motion"
 categories = ["engineering"]
