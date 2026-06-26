@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lévy Flights: 드물지만 거대한 점프가 탐색을 바꾸는 법 · 인터랙티브 인포그래픽</title>
+  <meta name="description" content="Lévy flight의 중꼬리 스텝 길이, 꼬리 지수 α, 브라운 운동과의 차이, 긴 점프가 탐색 경로를 바꾸는 방식을 시뮬레이션으로 확인한다." />
+  <style>
+:root{
+  --bg:#10100f; --panel:#181817; --panel2:#20201e; --text:#f4f1e8; --muted:#c7c0b1;
+  --line:#3a3833; --teal:#41d6c3; --amber:#f7c948; --coral:#ff7a66; --violet:#b79cff;
+  --green:#8ee88e; --ink:#080807; --radius:18px;
+}
+*{box-sizing:border-box}
+html{background:var(--bg);scroll-behavior:smooth}
+body{
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans KR",Roboto,Arial,sans-serif;
+  color:var(--text);
+  background:
+    linear-gradient(135deg,rgba(65,214,195,.12),transparent 28%),
+    linear-gradient(225deg,rgba(247,201,72,.10),transparent 26%),
+    linear-gradient(180deg,#10100f 0%,#171614 58%,#11100f 100%);
+  line-height:1.7;
+  overflow-x:hidden;
+}
+.wrap{width:min(1120px,calc(100% - 24px));margin:0 auto}
+.section{padding:24px 0 30px}
+.grid{display:grid;grid-template-columns:.82fr 1.18fr;gap:18px;align-items:start}
+.panel{
+  background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.035));
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:var(--radius);
+  padding:22px;
+}
+.kicker{text-transform:uppercase;letter-spacing:.1em;font-size:12px;color:var(--teal);font-weight:900}
+h1{font-size:clamp(28px,4vw,48px);line-height:1.08;margin:8px 0 14px;letter-spacing:0}
+h2{font-size:clamp(21px,2.4vw,30px);line-height:1.16;margin:0 0 12px;letter-spacing:0}
+h3{font-size:19px;margin:0 0 8px;letter-spacing:0}
+p{margin:0 0 12px;color:#e2dccf}
+b{color:#fffaf0}
+.formula{
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  background:#080807;
+  border:1px solid rgba(65,214,195,.28);
+  color:#eafffb;
+  padding:14px;
+  border-radius:14px;
+  font-size:clamp(13px,1.4vw,17px);
+  overflow:auto;
+  white-space:pre-wrap;
+  margin:14px 0 12px;
+}
+.note{font-size:14px;color:var(--muted)}
+.pill-row{display:flex;flex-wrap:wrap;gap:9px;margin-top:14px}
+.pill{border:1px solid rgba(255,255,255,.14);border-radius:999px;padding:7px 11px;background:rgba(255,255,255,.055);color:var(--muted);font-size:14px}
+.pill b{color:var(--text)}
+canvas{display:block;width:100%;height:auto;border-radius:16px;background:#080807;border:1px solid rgba(255,255,255,.10)}
+.canvas-stack{display:grid;gap:12px}
+.legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;color:var(--muted);font-size:13px}
+.legend span{display:inline-flex;align-items:center;gap:7px}
+.dot{width:10px;height:10px;border-radius:50%;display:inline-block}
+.path{background:var(--teal)}.jump{background:var(--coral)}.end{background:var(--amber)}.brown{background:var(--violet)}
+.controls{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:14px}
+.control{background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:12px;min-width:0}
+.control label{display:flex;justify-content:space-between;gap:10px;color:#f2eadf;font-weight:800;font-size:13px;margin-bottom:7px}
+.control input,.control select{width:100%;accent-color:var(--teal)}
+.control select{border:1px solid rgba(255,255,255,.18);border-radius:10px;background:#10100f;color:var(--text);padding:7px}
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px}
+.metric{background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:12px}
+.metric strong{display:block;color:var(--amber);font-size:21px;line-height:1.1}
+.metric span{display:block;color:var(--muted);font-size:12px;margin-top:5px}
+.explain-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:18px}
+.explain{background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:15px}
+.explain strong{display:block;color:#fffaf0;margin-bottom:6px}
+.explain small{color:var(--muted);font-size:14px}
+@media (max-width:920px){
+  .grid,.controls,.metrics,.explain-grid{grid-template-columns:1fr}
+  .panel{padding:18px}
+  .section{padding:16px 0 22px}
+}
+  </style>
+</head>
+<body>
+<section class="section">
+  <div class="wrap grid">
+    <div class="panel">
+      <div class="kicker">Interactive explainer</div>
+      <h1>Lévy Flights</h1>
+      <p><b>핵심:</b> 대부분은 짧게 움직이지만, 아주 드물게 긴 점프가 나온다. 그 긴 점프가 이미 살핀 지역을 벗어나게 만들고 탐색 경로의 구조를 바꾼다.</p>
+      <div class="formula">P(L &gt; l) ∝ l^-α
+
+작은 α: 긴 점프가 자주 나온다.
+큰 α: 짧은 이동이 많아진다.</div>
+      <p class="note">아래 시뮬레이션은 정확한 α-stable 표본기가 아니라 직관용 Pareto 꼬리 모델이다. 꼬리는 절단해 현실적인 화면 안에 들어오도록 만들었다.</p>
+      <div class="pill-row">
+        <span class="pill"><b>국소 탐색</b> 짧은 스텝</span>
+        <span class="pill"><b>재배치</b> 긴 점프</span>
+        <span class="pill"><b>α</b> 꼬리 지수</span>
+        <span class="pill"><b>overshoot</b> 목표 건너뜀</span>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>꼬리 지수가 경로를 어떻게 바꾸는가</h2>
+      <p class="note">붉은 선은 상위 10% 길이의 점프다. α를 낮추면 긴 점프가 늘고, 경로가 더 과감하게 새 영역으로 이동한다.</p>
+      <div class="canvas-stack">
+        <canvas id="pathCanvas" width="940" height="480" aria-label="Lévy flight path visualization"></canvas>
+        <canvas id="histCanvas" width="940" height="180" aria-label="Step length histogram"></canvas>
+      </div>
+      <div class="legend">
+        <span><i class="dot path"></i>보통 스텝</span>
+        <span><i class="dot jump"></i>긴 점프</span>
+        <span><i class="dot end"></i>도착점</span>
+        <span><i class="dot brown"></i>브라운 비교 모드</span>
+      </div>
+      <div class="controls">
+        <div class="control">
+          <label>모드 <span id="modeVal">Lévy</span></label>
+          <select id="mode">
+            <option value="levy">Lévy flight</option>
+            <option value="brownian">Brownian walk</option>
+          </select>
+        </div>
+        <div class="control">
+          <label>α <span id="alphaVal">1.25</span></label>
+          <input id="alpha" type="range" min="0.75" max="2.00" step="0.05" value="1.25" />
+        </div>
+        <div class="control">
+          <label>스텝 수 <span id="stepsVal">220</span></label>
+          <input id="steps" type="range" min="60" max="520" step="20" value="220" />
+        </div>
+        <div class="control">
+          <label>기본 스케일 <span id="scaleVal">10</span></label>
+          <input id="scale" type="range" min="4" max="24" step="1" value="10" />
+        </div>
+        <div class="control">
+          <label>시드 <span id="seedVal">11</span></label>
+          <input id="seed" type="range" min="1" max="99" step="1" value="11" />
+        </div>
+      </div>
+      <div class="metrics">
+        <div class="metric"><strong id="maxJump">-</strong><span>최대 스텝 길이</span></div>
+        <div class="metric"><strong id="p90Jump">-</strong><span>상위 10% 기준</span></div>
+        <div class="metric"><strong id="displacement">-</strong><span>원점-도착점 거리</span></div>
+        <div class="metric"><strong id="spread">-</strong><span>방문 영역 폭</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="explain-grid">
+      <div class="explain">
+        <strong>짧은 이동은 주변을 판다</strong>
+        <small>짧은 스텝은 이미 유망한 지역을 촘촘히 살피는 exploitation 역할을 한다.</small>
+      </div>
+      <div class="explain">
+        <strong>긴 점프는 중복을 줄인다</strong>
+        <small>드문 장거리 이동은 이미 방문한 곳에서 벗어나 새 구역을 여는 exploration 역할을 한다.</small>
+      </div>
+      <div class="explain">
+        <strong>조건 없이는 최적이 아니다</strong>
+        <small>목표가 가까우면 긴 점프가 목표를 지나칠 수 있다. 최적의 α는 목표 밀도와 비용에 의존한다.</small>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+function reportHeight(){
+  try{
+    const height=Math.max(document.documentElement.scrollHeight,document.body.scrollHeight);
+    window.parent.postMessage({type:'thelogos-interactive-height',height},window.location.origin);
+  }catch(error){}
+}
+window.addEventListener('load',reportHeight);
+window.addEventListener('resize',reportHeight);
+window.addEventListener('message',function(event){
+  if(event.origin!==window.location.origin||event.data?.type!=='thelogos-interactive-theme')return;
+  document.documentElement.dataset.theme=event.data.theme;
+});
+if('ResizeObserver' in window){new ResizeObserver(reportHeight).observe(document.body)}
+setTimeout(reportHeight,80);
+
+function rng(seed){
+  let s=seed>>>0;
+  return function(){
+    s=(1664525*s+1013904223)>>>0;
+    return s/4294967296;
+  }
+}
+function normal(rand){
+  let u=0,v=0;
+  while(u===0)u=rand();
+  while(v===0)v=rand();
+  return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);
+}
+function fmt(value,digits=1){return Number(value).toFixed(digits)}
+function setText(id,value){document.getElementById(id).textContent=value}
+function percentile(values,p){
+  if(!values.length)return 0;
+  const sorted=[...values].sort((a,b)=>a-b);
+  const index=Math.min(sorted.length-1,Math.max(0,Math.floor((sorted.length-1)*p)));
+  return sorted[index];
+}
+function sampleLength(mode,alpha,scale,maxLen,rand){
+  if(mode==='brownian')return Math.min(maxLen,Math.abs(normal(rand))*scale+scale*.25);
+  const u=Math.max(1e-9,1-rand());
+  const length=scale*Math.pow(u,-1/alpha);
+  return Math.min(maxLen,length);
+}
+function buildPath(){
+  const mode=document.getElementById('mode').value;
+  const alpha=Number(document.getElementById('alpha').value);
+  const steps=Number(document.getElementById('steps').value);
+  const scale=Number(document.getElementById('scale').value);
+  const seed=Number(document.getElementById('seed').value);
+  const rand=rng(seed*10007+Math.round(alpha*1000)+steps*17+scale*31);
+  const maxLen=scale*42;
+  const points=[{x:0,y:0,len:0}];
+  const lengths=[];
+  let x=0,y=0;
+  for(let i=0;i<steps;i++){
+    const len=sampleLength(mode,alpha,scale,maxLen,rand);
+    const theta=rand()*Math.PI*2;
+    x+=Math.cos(theta)*len;
+    y+=Math.sin(theta)*len;
+    points.push({x,y,len});
+    lengths.push(len);
+  }
+  return {mode,alpha,steps,scale,seed,points,lengths};
+}
+function bounds(points){
+  let minX=Infinity,maxX=-Infinity,minY=Infinity,maxY=-Infinity;
+  points.forEach(p=>{
+    minX=Math.min(minX,p.x); maxX=Math.max(maxX,p.x);
+    minY=Math.min(minY,p.y); maxY=Math.max(maxY,p.y);
+  });
+  const pad=Math.max(30,(maxX-minX+maxY-minY)*.06);
+  return {minX:minX-pad,maxX:maxX+pad,minY:minY-pad,maxY:maxY+pad};
+}
+function project(p,b,w,h){
+  const sx=(w-42)/(b.maxX-b.minX||1);
+  const sy=(h-42)/(b.maxY-b.minY||1);
+  const s=Math.min(sx,sy);
+  const ox=(w-(b.maxX-b.minX)*s)/2;
+  const oy=(h-(b.maxY-b.minY)*s)/2;
+  return [ox+(p.x-b.minX)*s, h-(oy+(p.y-b.minY)*s)];
+}
+function drawGrid(ctx,w,h){
+  ctx.fillStyle='#080807';
+  ctx.fillRect(0,0,w,h);
+  ctx.strokeStyle='rgba(255,255,255,.06)';
+  ctx.lineWidth=1;
+  for(let x=40;x<w;x+=40){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke()}
+  for(let y=40;y<h;y+=40){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke()}
+}
+function drawPath(data){
+  const canvas=document.getElementById('pathCanvas');
+  const ctx=canvas.getContext('2d');
+  const w=canvas.width,h=canvas.height;
+  drawGrid(ctx,w,h);
+  const b=bounds(data.points);
+  const p90=percentile(data.lengths,.90);
+  const color=data.mode==='brownian'?'#b79cff':'#41d6c3';
+  ctx.lineCap='round';
+  ctx.lineJoin='round';
+  for(let i=1;i<data.points.length;i++){
+    const a=project(data.points[i-1],b,w,h);
+    const c=project(data.points[i],b,w,h);
+    const long=data.points[i].len>=p90 && data.mode==='levy';
+    ctx.strokeStyle=long?'rgba(255,122,102,.92)':color;
+    ctx.globalAlpha=long ? .95 : .58;
+    ctx.lineWidth=long?2.6:1.25;
+    ctx.beginPath();
+    ctx.moveTo(a[0],a[1]);
+    ctx.lineTo(c[0],c[1]);
+    ctx.stroke();
+  }
+  ctx.globalAlpha=1;
+  const start=project(data.points[0],b,w,h);
+  const end=project(data.points[data.points.length-1],b,w,h);
+  ctx.fillStyle='#41d6c3';
+  ctx.beginPath(); ctx.arc(start[0],start[1],5,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle='#f7c948';
+  ctx.beginPath(); ctx.arc(end[0],end[1],7,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle='rgba(244,241,232,.82)';
+  ctx.font='14px -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif';
+  ctx.fillText('start',start[0]+9,start[1]-8);
+  ctx.fillText('end',end[0]+10,end[1]-10);
+}
+function drawHistogram(data){
+  const canvas=document.getElementById('histCanvas');
+  const ctx=canvas.getContext('2d');
+  const w=canvas.width,h=canvas.height;
+  ctx.fillStyle='#080807';
+  ctx.fillRect(0,0,w,h);
+  const bins=24;
+  const max=Math.max(...data.lengths,1);
+  const counts=Array.from({length:bins},()=>0);
+  data.lengths.forEach(len=>{
+    const idx=Math.min(bins-1,Math.floor((len/max)*bins));
+    counts[idx]++;
+  });
+  const peak=Math.max(...counts,1);
+  const barW=(w-52)/bins;
+  const p90=percentile(data.lengths,.90);
+  for(let i=0;i<bins;i++){
+    const x=28+i*barW;
+    const bh=(h-42)*(counts[i]/peak);
+    const binMax=((i+1)/bins)*max;
+    ctx.fillStyle=binMax>=p90 && data.mode==='levy'?'rgba(255,122,102,.88)':'rgba(65,214,195,.82)';
+    if(data.mode==='brownian')ctx.fillStyle='rgba(183,156,255,.82)';
+    ctx.fillRect(x,h-24-bh,Math.max(2,barW-3),bh);
+  }
+  ctx.strokeStyle='rgba(255,255,255,.14)';
+  ctx.beginPath(); ctx.moveTo(24,h-24); ctx.lineTo(w-18,h-24); ctx.stroke();
+  ctx.fillStyle='rgba(244,241,232,.82)';
+  ctx.font='13px -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif';
+  ctx.fillText('step length distribution',28,22);
+}
+function render(){
+  const data=buildPath();
+  setText('modeVal',data.mode==='levy'?'Lévy':'Brownian');
+  setText('alphaVal',fmt(data.alpha,2));
+  setText('stepsVal',data.steps);
+  setText('scaleVal',data.scale);
+  setText('seedVal',data.seed);
+  drawPath(data);
+  drawHistogram(data);
+  const maxJump=Math.max(...data.lengths,0);
+  const p90=percentile(data.lengths,.90);
+  const end=data.points[data.points.length-1];
+  const displacement=Math.hypot(end.x,end.y);
+  const b=bounds(data.points);
+  const spread=Math.max(b.maxX-b.minX,b.maxY-b.minY);
+  setText('maxJump',fmt(maxJump));
+  setText('p90Jump',fmt(p90));
+  setText('displacement',fmt(displacement));
+  setText('spread',fmt(spread));
+  reportHeight();
+}
+['mode','alpha','steps','scale','seed'].forEach(id=>{
+  document.getElementById(id).addEventListener('input',render);
+  document.getElementById(id).addEventListener('change',render);
+});
+render();
+</script>
+</body>
+</html>
