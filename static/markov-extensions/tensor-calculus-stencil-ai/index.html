@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>텐서, 미적분, 스텐실 계산 · 인터랙티브 인포그래픽</title>
+  <meta name="description" content="텐서의 좌표 독립성, rank 구조, 공변 미분, 스텐실 계산, Tensor Core의 행렬 곱셈을 한 화면에서 연결해 보는 인터랙티브 인포그래픽." />
+  <style>
+    :root {
+      --bg: #f6f8fb;
+      --ink: #172026;
+      --muted: #62707d;
+      --panel: #ffffff;
+      --panel-2: #edf2f7;
+      --line: #d7e0e8;
+      --teal: #168f8b;
+      --coral: #d95f4c;
+      --violet: #6d5bd0;
+      --amber: #c98703;
+      --green: #2f8d55;
+      --blue: #2867b2;
+      --shadow: 0 18px 50px rgba(23, 32, 38, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", Roboto, Arial, sans-serif;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background:
+        linear-gradient(135deg, rgba(22, 143, 139, 0.10), transparent 36%),
+        linear-gradient(225deg, rgba(217, 95, 76, 0.10), transparent 35%),
+        var(--bg);
+      color: var(--ink);
+      line-height: 1.62;
+      overflow-x: hidden;
+    }
+
+    .wrap {
+      width: min(1140px, calc(100% - 28px));
+      margin: 0 auto;
+    }
+
+    .hero {
+      padding: 34px 0 18px;
+    }
+
+    .eyebrow {
+      color: var(--teal);
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    h1 {
+      margin: 0;
+      max-width: 900px;
+      font-size: clamp(30px, 4.8vw, 56px);
+      line-height: 1.08;
+      letter-spacing: 0;
+    }
+
+    .lead {
+      max-width: 860px;
+      margin: 14px 0 0;
+      color: var(--muted);
+      font-size: clamp(16px, 2.2vw, 19px);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(330px, 0.9fr);
+      gap: 18px;
+      align-items: start;
+      padding: 18px 0 26px;
+    }
+
+    .panel {
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      padding: 20px;
+    }
+
+    .panel.compact {
+      box-shadow: none;
+    }
+
+    h2 {
+      margin: 0 0 10px;
+      font-size: clamp(22px, 3vw, 30px);
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    h3 {
+      margin: 0 0 8px;
+      font-size: 18px;
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+
+    p {
+      margin: 0 0 12px;
+      color: var(--muted);
+    }
+
+    b {
+      color: var(--ink);
+    }
+
+    .canvas-shell {
+      background: #f9fbfd;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .control-row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .control {
+      min-width: 0;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--panel-2);
+    }
+
+    .control label {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      color: var(--ink);
+      font-size: 14px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--teal);
+    }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .metric {
+      min-width: 0;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fff;
+      padding: 12px;
+    }
+
+    .metric strong {
+      display: block;
+      color: var(--teal);
+      font-size: clamp(18px, 2.4vw, 24px);
+      line-height: 1.1;
+      overflow-wrap: anywhere;
+    }
+
+    .metric span {
+      display: block;
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 5px;
+    }
+
+    .tabs {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 8px;
+      margin: 12px 0;
+    }
+
+    .rank-btn {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+      color: var(--ink);
+      font: inherit;
+      font-size: 13px;
+      font-weight: 850;
+      min-height: 42px;
+      padding: 8px 6px;
+      cursor: pointer;
+    }
+
+    .rank-btn[aria-pressed="true"] {
+      border-color: rgba(22, 143, 139, 0.45);
+      background: rgba(22, 143, 139, 0.12);
+      color: #0b6d69;
+    }
+
+    .rank-view {
+      display: grid;
+      grid-template-columns: 180px minmax(0, 1fr);
+      gap: 16px;
+      align-items: center;
+      min-height: 200px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #fbfcfe;
+      padding: 16px;
+    }
+
+    .rank-visual {
+      display: grid;
+      place-items: center;
+      min-height: 156px;
+      border-radius: 14px;
+      background: #eef3f7;
+      overflow: hidden;
+    }
+
+    .rank-description strong {
+      display: block;
+      font-size: 23px;
+      margin-bottom: 6px;
+    }
+
+    .shape {
+      display: inline-block;
+      margin-top: 8px;
+      color: #fff;
+      background: var(--violet);
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+      font-size: 13px;
+      overflow-wrap: anywhere;
+    }
+
+    .stencil-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(62px, 1fr));
+      gap: 8px;
+      margin: 12px 0;
+    }
+
+    .cell {
+      min-height: 62px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #f8fafc;
+      color: var(--muted);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+      font-weight: 800;
+    }
+
+    .cell.weight {
+      background: rgba(40, 103, 178, 0.10);
+      border-color: rgba(40, 103, 178, 0.32);
+      color: var(--blue);
+    }
+
+    .cell.center {
+      background: rgba(217, 95, 76, 0.12);
+      border-color: rgba(217, 95, 76, 0.35);
+      color: var(--coral);
+      font-size: 20px;
+    }
+
+    .formula {
+      margin: 12px 0 0;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #172026;
+      color: #f4f8fb;
+      padding: 14px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+      font-size: clamp(13px, 1.6vw, 16px);
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .flow-step {
+      min-height: 130px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #fff;
+      padding: 13px;
+      position: relative;
+    }
+
+    .flow-step::after {
+      content: "";
+      position: absolute;
+      right: -8px;
+      top: 50%;
+      width: 14px;
+      height: 14px;
+      border-top: 2px solid var(--line);
+      border-right: 2px solid var(--line);
+      transform: translateY(-50%) rotate(45deg);
+      background: var(--bg);
+    }
+
+    .flow-step:last-child::after {
+      display: none;
+    }
+
+    .flow-step strong {
+      display: block;
+      margin-bottom: 7px;
+      color: var(--ink);
+      font-size: 15px;
+    }
+
+    .flow-step small {
+      display: block;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .tag {
+      display: inline-block;
+      margin-bottom: 8px;
+      border-radius: 999px;
+      padding: 5px 9px;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 850;
+    }
+
+    .tag.teal { background: var(--teal); }
+    .tag.violet { background: var(--violet); }
+    .tag.coral { background: var(--coral); }
+    .tag.amber { background: var(--amber); }
+    .tag.green { background: var(--green); }
+
+    .key {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .key-item {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.82);
+      padding: 14px;
+    }
+
+    .key-item strong {
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .key-item small {
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    @media (max-width: 940px) {
+      .layout,
+      .rank-view,
+      .flow,
+      .key {
+        grid-template-columns: 1fr;
+      }
+
+      .flow-step {
+        min-height: auto;
+      }
+
+      .flow-step::after {
+        display: none;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .wrap {
+        width: min(100% - 18px, 1140px);
+      }
+
+      .hero {
+        padding-top: 24px;
+      }
+
+      .panel {
+        padding: 15px;
+        border-radius: 14px;
+      }
+
+      .control-row,
+      .metric-grid,
+      .tabs {
+        grid-template-columns: 1fr;
+      }
+
+      .rank-visual {
+        min-height: 130px;
+      }
+
+      .stencil-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 6px;
+      }
+
+      .cell {
+        min-height: 54px;
+        font-size: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="wrap">
+      <div class="eyebrow">Tensor map</div>
+      <h1>성분은 바뀌어도 구조는 남는다</h1>
+      <p class="lead">텐서는 좌표계가 바뀔 때 숫자 성분이 어떻게 변해야 같은 대상을 계속 표현하는지 알려준다. 그 언어는 공변 미분, 스텐실 계산, 딥러닝의 행렬 곱셈까지 이어진다.</p>
+    </div>
+  </header>
+
+  <main>
+    <section class="wrap layout" aria-label="좌표 독립성과 텐서 rank">
+      <div class="panel">
+        <h2>좌표축을 돌려도 화살표는 그대로다</h2>
+        <p>실제 벡터는 고정되어 있지만, 관찰자가 쓰는 좌표축이 회전하면 성분값은 달라진다. 텐서는 이 성분 변화 규칙까지 포함하는 대상이다.</p>
+        <div class="canvas-shell">
+          <canvas id="coordinateCanvas" width="860" height="470"></canvas>
+        </div>
+        <div class="control-row">
+          <div class="control">
+            <label for="angle">좌표축 회전 <span id="angleValue">35°</span></label>
+            <input id="angle" type="range" min="-75" max="75" value="35" step="1" />
+          </div>
+          <div class="control">
+            <label for="scale">벡터 크기 <span id="scaleValue">1.00x</span></label>
+            <input id="scale" type="range" min="70" max="140" value="100" step="5" />
+          </div>
+        </div>
+        <div class="metric-grid">
+          <div class="metric"><strong id="baseComponents">(3.00, 2.00)</strong><span>원래 좌표계의 성분</span></div>
+          <div class="metric"><strong id="rotComponents">-</strong><span>회전 좌표계의 성분</span></div>
+          <div class="metric"><strong id="vectorLength">3.61</strong><span>좌표와 무관한 길이</span></div>
+          <div class="metric"><strong id="angleInvariant">불변</strong><span>실제 기하학적 대상</span></div>
+        </div>
+      </div>
+
+      <aside class="panel compact">
+        <h2>Rank는 축의 개수다</h2>
+        <p>컴퓨터 과학에서 rank는 보통 배열의 축 개수를 뜻한다. 물리학에서는 이 숫자와 함께 좌표 변환 규칙이 중요하다.</p>
+        <div class="tabs" role="group" aria-label="텐서 rank 선택">
+          <button class="rank-btn" type="button" data-rank="0" aria-pressed="false">0</button>
+          <button class="rank-btn" type="button" data-rank="1" aria-pressed="false">1</button>
+          <button class="rank-btn" type="button" data-rank="2" aria-pressed="true">2</button>
+          <button class="rank-btn" type="button" data-rank="3" aria-pressed="false">3</button>
+          <button class="rank-btn" type="button" data-rank="n" aria-pressed="false">n</button>
+        </div>
+        <div class="rank-view">
+          <div class="rank-visual" id="rankVisual" aria-hidden="true"></div>
+          <div class="rank-description">
+            <strong id="rankTitle">Rank-2: 행렬</strong>
+            <p id="rankText">두 축을 가진 배열이다. 선형 변환, 응력 텐서, attention score처럼 두 방향의 관계를 담는다.</p>
+            <span class="shape" id="rankShape">rows x columns</span>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="wrap layout" aria-label="스텐실 계산">
+      <div class="panel">
+        <h2>스텐실은 미분을 이웃 격자 계산으로 바꾼다</h2>
+        <p>연속 공간의 라플라시안은 컴퓨터 안에서 중앙값과 상하좌우 이웃값의 가중합으로 근사된다. 격자 간격이 작아질수록 테일러 급수에서 버린 항의 영향이 줄어든다.</p>
+        <div class="stencil-grid" aria-label="5점 스텐실 가중치">
+          <div class="cell"></div>
+          <div class="cell weight">+1</div>
+          <div class="cell"></div>
+          <div class="cell weight">+1</div>
+          <div class="cell center">-4</div>
+          <div class="cell weight">+1</div>
+          <div class="cell"></div>
+          <div class="cell weight">+1</div>
+          <div class="cell"></div>
+        </div>
+        <div class="formula">∇²uᵢⱼ ≈ (uᵢ₊₁,ⱼ + uᵢ₋₁,ⱼ + uᵢ,ⱼ₊₁ + uᵢ,ⱼ₋₁ - 4uᵢⱼ) / h²</div>
+        <div class="control-row">
+          <div class="control">
+            <label for="spacing">격자 간격 h <span id="spacingValue">0.50</span></label>
+            <input id="spacing" type="range" min="10" max="150" value="50" step="5" />
+          </div>
+          <div class="control">
+            <label for="curvature">곡률 강도 <span id="curvatureValue">1.00x</span></label>
+            <input id="curvature" type="range" min="60" max="160" value="100" step="5" />
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>근사 오차를 숫자로 보기</h2>
+        <p>예시 함수 `u(x,y)=sin(ax)+cos(by)`에서 5점 스텐실로 라플라시안을 계산한다. 연속 수식의 값과 격자 근사의 차이를 비교한다.</p>
+        <div class="metric-grid">
+          <div class="metric"><strong id="trueLap">-</strong><span>연속 라플라시안</span></div>
+          <div class="metric"><strong id="approxLap">-</strong><span>스텐실 근사값</span></div>
+          <div class="metric"><strong id="lapError">-</strong><span>절대 오차</span></div>
+          <div class="metric"><strong id="stencilRead">5개</strong><span>읽는 격자점 수</span></div>
+        </div>
+        <div class="formula" id="stencilValues">uE + uW + uN + uS - 4uC = -</div>
+      </div>
+    </section>
+
+    <section class="wrap panel" aria-label="계산 흐름">
+      <h2>연속 법칙에서 GPU까지 이어지는 계산 흐름</h2>
+      <p>텐서는 "무엇을 보존해야 하는가"를 정하고, 스텐실은 "컴퓨터가 어떻게 계산할 것인가"를 정한다. 현대 AI에서는 이 계산이 거대한 행렬 곱셈으로 압축된다.</p>
+      <div class="flow">
+        <div class="flow-step">
+          <span class="tag teal">01</span>
+          <strong>기하학적 대상</strong>
+          <small>스칼라, 벡터, 행렬, 고차원 텐서로 물리량이나 데이터를 표현한다.</small>
+        </div>
+        <div class="flow-step">
+          <span class="tag violet">02</span>
+          <strong>좌표 변환</strong>
+          <small>성분값은 바뀌지만 길이, 관계, 법칙의 구조는 유지되어야 한다.</small>
+        </div>
+        <div class="flow-step">
+          <span class="tag coral">03</span>
+          <strong>공변 미분</strong>
+          <small>휘어진 공간이나 변하는 좌표계에서 기준축 변화까지 보정한다.</small>
+        </div>
+        <div class="flow-step">
+          <span class="tag amber">04</span>
+          <strong>스텐실 이산화</strong>
+          <small>연속 미분을 격자 이웃값의 국소 가중합으로 바꾼다.</small>
+        </div>
+        <div class="flow-step">
+          <span class="tag green">05</span>
+          <strong>행렬 곱셈</strong>
+          <small>딥러닝과 시뮬레이션의 큰 계산은 GPU와 Tensor Core에서 반복된다.</small>
+        </div>
+      </div>
+      <div class="key">
+        <div class="key-item"><strong>물리학의 질문</strong><small>좌표계가 바뀌어도 법칙은 같은 형태로 남는가?</small></div>
+        <div class="key-item"><strong>수치해석의 질문</strong><small>연속 미분을 유한한 격자 계산으로 얼마나 정확히 바꿀 수 있는가?</small></div>
+        <div class="key-item"><strong>AI 하드웨어의 질문</strong><small>고차원 배열 연산을 얼마나 빠르게 곱하고 누적할 수 있는가?</small></div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    function reportHeight() {
+      try {
+        const height = Math.max(document.documentElement.scrollHeight, document.body.scrollHeight);
+        window.parent.postMessage({ type: "thelogos-interactive-height", height }, window.location.origin);
+      } catch (error) {}
+    }
+
+    window.addEventListener("load", reportHeight);
+    window.addEventListener("resize", reportHeight);
+    window.addEventListener("message", function (event) {
+      if (event.origin !== window.location.origin || event.data?.type !== "thelogos-interactive-theme") return;
+      document.documentElement.dataset.theme = event.data.theme;
+    });
+    if ("ResizeObserver" in window) new ResizeObserver(reportHeight).observe(document.body);
+
+    const angleInput = document.getElementById("angle");
+    const scaleInput = document.getElementById("scale");
+    const coordinateCanvas = document.getElementById("coordinateCanvas");
+    const coordinateCtx = coordinateCanvas.getContext("2d");
+
+    function fmt(value, digits) {
+      return Number(value).toFixed(digits);
+    }
+
+    function setText(id, value) {
+      document.getElementById(id).textContent = value;
+    }
+
+    function drawArrow(ctx, x1, y1, x2, y2, color, width) {
+      const angle = Math.atan2(y2 - y1, x2 - x1);
+      const head = 13;
+      ctx.save();
+      ctx.strokeStyle = color;
+      ctx.fillStyle = color;
+      ctx.lineWidth = width;
+      ctx.lineCap = "round";
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(x2, y2);
+      ctx.lineTo(x2 - head * Math.cos(angle - Math.PI / 6), y2 - head * Math.sin(angle - Math.PI / 6));
+      ctx.lineTo(x2 - head * Math.cos(angle + Math.PI / 6), y2 - head * Math.sin(angle + Math.PI / 6));
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function drawCoordinate() {
+      const ctx = coordinateCtx;
+      const w = coordinateCanvas.width;
+      const h = coordinateCanvas.height;
+      const cx = w * 0.48;
+      const cy = h * 0.55;
+      const unit = 72;
+      const theta = Number(angleInput.value) * Math.PI / 180;
+      const size = Number(scaleInput.value) / 100;
+      const vx = 3 * size;
+      const vy = 2 * size;
+      const len = Math.hypot(vx, vy);
+      const e1 = { x: Math.cos(theta), y: Math.sin(theta) };
+      const e2 = { x: -Math.sin(theta), y: Math.cos(theta) };
+      const r1 = vx * e1.x + vy * e1.y;
+      const r2 = vx * e2.x + vy * e2.y;
+
+      ctx.clearRect(0, 0, w, h);
+      ctx.fillStyle = "#f9fbfd";
+      ctx.fillRect(0, 0, w, h);
+
+      ctx.strokeStyle = "rgba(23,32,38,0.08)";
+      ctx.lineWidth = 1;
+      for (let x = 40; x < w; x += unit) {
+        ctx.beginPath();
+        ctx.moveTo(x, 24);
+        ctx.lineTo(x, h - 24);
+        ctx.stroke();
+      }
+      for (let y = 38; y < h; y += unit) {
+        ctx.beginPath();
+        ctx.moveTo(24, y);
+        ctx.lineTo(w - 24, y);
+        ctx.stroke();
+      }
+
+      drawArrow(ctx, 54, cy, w - 54, cy, "#9aa8b5", 2);
+      drawArrow(ctx, cx, h - 44, cx, 44, "#9aa8b5", 2);
+
+      const axisLen = 250;
+      drawArrow(ctx, cx - e1.x * axisLen, cy + e1.y * axisLen, cx + e1.x * axisLen, cy - e1.y * axisLen, "#168f8b", 3);
+      drawArrow(ctx, cx - e2.x * axisLen, cy + e2.y * axisLen, cx + e2.x * axisLen, cy - e2.y * axisLen, "#6d5bd0", 3);
+
+      const xEnd = cx + vx * unit;
+      const yEnd = cy - vy * unit;
+      drawArrow(ctx, cx, cy, xEnd, yEnd, "#d95f4c", 5);
+
+      const p1x = cx + r1 * e1.x * unit;
+      const p1y = cy - r1 * e1.y * unit;
+      ctx.save();
+      ctx.setLineDash([7, 7]);
+      ctx.strokeStyle = "rgba(217,95,76,0.60)";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(p1x, p1y);
+      ctx.lineTo(xEnd, yEnd);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.strokeStyle = "rgba(22,143,139,0.75)";
+      ctx.lineWidth = 5;
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.lineTo(p1x, p1y);
+      ctx.stroke();
+      ctx.strokeStyle = "rgba(109,91,208,0.75)";
+      ctx.beginPath();
+      ctx.moveTo(p1x, p1y);
+      ctx.lineTo(xEnd, yEnd);
+      ctx.stroke();
+      ctx.restore();
+
+      ctx.fillStyle = "#172026";
+      ctx.font = "800 15px -apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans KR',Roboto,Arial,sans-serif";
+      ctx.fillText("고정된 벡터 V", xEnd + 12, yEnd - 8);
+      ctx.fillStyle = "#168f8b";
+      ctx.fillText("회전 x′축", cx + e1.x * 170 + 8, cy - e1.y * 170);
+      ctx.fillStyle = "#6d5bd0";
+      ctx.fillText("회전 y′축", cx + e2.x * 155 + 8, cy - e2.y * 155);
+
+      setText("angleValue", `${angleInput.value}°`);
+      setText("scaleValue", `${fmt(size, 2)}x`);
+      setText("baseComponents", `(${fmt(vx, 2)}, ${fmt(vy, 2)})`);
+      setText("rotComponents", `(${fmt(r1, 2)}, ${fmt(r2, 2)})`);
+      setText("vectorLength", fmt(len, 2));
+      reportHeight();
+    }
+
+    const rankData = {
+      "0": {
+        title: "Rank-0: 스칼라",
+        text: "축이 없는 하나의 값이다. 온도, 질량, 손실값처럼 좌표계와 무관하게 같은 수로 남는다.",
+        shape: "scalar",
+        visual: "scalar"
+      },
+      "1": {
+        title: "Rank-1: 벡터",
+        text: "하나의 축을 가진 성분 묶음이다. 성분은 좌표계에 따라 바뀌지만 실제 방향과 크기는 유지된다.",
+        shape: "n",
+        visual: "vector"
+      },
+      "2": {
+        title: "Rank-2: 행렬",
+        text: "두 축을 가진 배열이다. 선형 변환, 응력 텐서, attention score처럼 두 방향의 관계를 담는다.",
+        shape: "rows x columns",
+        visual: "matrix"
+      },
+      "3": {
+        title: "Rank-3: 데이터 큐브",
+        text: "세 축을 가진 구조다. 색상 이미지, sequence x token x feature 같은 데이터가 여기에 가깝다.",
+        shape: "height x width x channels",
+        visual: "cube"
+      },
+      "n": {
+        title: "Rank-n: 고차원 텐서",
+        text: "여러 축이 겹친 구조다. 배치, 시간, 공간, head, feature 축을 함께 담아 현대 AI 계산의 기본 단위가 된다.",
+        shape: "batch x heads x seq x feature ...",
+        visual: "high"
+      }
+    };
+
+    function renderRankVisual(type) {
+      const el = document.getElementById("rankVisual");
+      if (type === "scalar") {
+        el.innerHTML = '<div style="width:92px;height:92px;border-radius:50%;background:#d95f4c;display:grid;place-items:center;color:white;font-size:28px;font-weight:900;">7</div>';
+      } else if (type === "vector") {
+        el.innerHTML = '<div style="display:flex;gap:8px;align-items:end;">' +
+          [42, 72, 112, 86, 58].map((h, i) => `<span style="width:22px;height:${h}px;border-radius:7px;background:${i % 2 ? "#168f8b" : "#2867b2"};"></span>`).join("") +
+          '</div>';
+      } else if (type === "matrix") {
+        el.innerHTML = '<div style="display:grid;grid-template-columns:repeat(4,32px);gap:7px;">' +
+          Array.from({ length: 16 }, (_, i) => `<span style="height:32px;border-radius:8px;background:${i % 3 === 0 ? "#6d5bd0" : i % 3 === 1 ? "#168f8b" : "#d95f4c"};opacity:${0.62 + (i % 4) * 0.09};"></span>`).join("") +
+          '</div>';
+      } else if (type === "cube") {
+        el.innerHTML = '<div style="position:relative;width:132px;height:112px;">' +
+          [0, 1, 2].map((layer) => `<div style="position:absolute;left:${layer * 18}px;top:${34 - layer * 14}px;display:grid;grid-template-columns:repeat(3,26px);gap:5px;padding:8px;border:1px solid rgba(23,32,38,.18);border-radius:10px;background:rgba(${layer === 0 ? "40,103,178" : layer === 1 ? "22,143,139" : "217,95,76"},.18);">${Array.from({ length: 9 }, () => '<span style="height:22px;border-radius:6px;background:rgba(255,255,255,.82);"></span>').join("")}</div>`).join("") +
+          '</div>';
+      } else {
+        el.innerHTML = '<div style="display:grid;grid-template-columns:repeat(5,24px);gap:8px;transform:rotate(-8deg);">' +
+          Array.from({ length: 25 }, (_, i) => `<span style="height:${18 + (i % 5) * 6}px;border-radius:7px;background:${["#168f8b", "#d95f4c", "#6d5bd0", "#c98703", "#2f8d55"][i % 5]};opacity:${0.5 + (i % 4) * 0.1};"></span>`).join("") +
+          '</div>';
+      }
+    }
+
+    function selectRank(rank) {
+      const data = rankData[rank];
+      document.querySelectorAll(".rank-btn").forEach((btn) => btn.setAttribute("aria-pressed", String(btn.dataset.rank === rank)));
+      setText("rankTitle", data.title);
+      setText("rankText", data.text);
+      setText("rankShape", data.shape);
+      renderRankVisual(data.visual);
+      reportHeight();
+    }
+
+    const spacingInput = document.getElementById("spacing");
+    const curvatureInput = document.getElementById("curvature");
+
+    function u(x, y, a, b) {
+      return Math.sin(a * x) + Math.cos(b * y);
+    }
+
+    function updateStencil() {
+      const h = Number(spacingInput.value) / 100;
+      const curve = Number(curvatureInput.value) / 100;
+      const a = 1.2 * curve;
+      const b = 0.9 * curve;
+      const x = 0.5;
+      const y = -0.2;
+      const c = u(x, y, a, b);
+      const e = u(x + h, y, a, b);
+      const w = u(x - h, y, a, b);
+      const n = u(x, y + h, a, b);
+      const s = u(x, y - h, a, b);
+      const approx = (e + w + n + s - 4 * c) / (h * h);
+      const exact = -a * a * Math.sin(a * x) - b * b * Math.cos(b * y);
+      const error = Math.abs(approx - exact);
+
+      setText("spacingValue", fmt(h, 2));
+      setText("curvatureValue", `${fmt(curve, 2)}x`);
+      setText("trueLap", fmt(exact, 4));
+      setText("approxLap", fmt(approx, 4));
+      setText("lapError", fmt(error, 4));
+      setText("stencilValues", `(${fmt(e, 3)} + ${fmt(w, 3)} + ${fmt(n, 3)} + ${fmt(s, 3)} - 4 x ${fmt(c, 3)}) / ${fmt(h, 2)}²`);
+      reportHeight();
+    }
+
+    angleInput.addEventListener("input", drawCoordinate);
+    scaleInput.addEventListener("input", drawCoordinate);
+    spacingInput.addEventListener("input", updateStencil);
+    curvatureInput.addEventListener("input", updateStencil);
+    document.querySelectorAll(".rank-btn").forEach((btn) => btn.addEventListener("click", () => selectRank(btn.dataset.rank)));
+
+    drawCoordinate();
+    selectRank("2");
+    updateStencil();
+    setTimeout(reportHeight, 100);
+  </script>
+</body>
+</html>
