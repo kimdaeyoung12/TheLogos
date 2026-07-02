@@ -1,0 +1,1100 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI는 자신을 부인할 수 있는가 · 인터랙티브 인포그래픽</title>
+  <meta name="description" content="AI의 정렬된 업데이트와 인간의 존재론적 자기부인을 temperature, 정렬, 모순, 실존적 비용의 축으로 비교하는 인터랙티브 인포그래픽." />
+  <style>
+    :root {
+      --bg: #f6f2ea;
+      --paper: #fffdf8;
+      --paper-2: #ebe4d7;
+      --ink: #1f2428;
+      --muted: #65717c;
+      --line: #d8cfbf;
+      --rose: #bd4055;
+      --teal: #147d7a;
+      --gold: #9a6700;
+      --green: #2f7449;
+      --violet: #5d5596;
+      --shadow: 0 16px 42px rgba(31, 36, 40, 0.10);
+    }
+
+    :root[data-theme="dark"] {
+      --bg: #141414;
+      --paper: #1e1e1c;
+      --paper-2: #2a2824;
+      --ink: #f5efe5;
+      --muted: #c5bdae;
+      --line: #444039;
+      --rose: #ff8797;
+      --teal: #5ed4c8;
+      --gold: #f2c45b;
+      --green: #8bdc9f;
+      --violet: #b8adff;
+      --shadow: 0 16px 46px rgba(0, 0, 0, 0.30);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      background: var(--bg);
+      color: var(--ink);
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", Roboto, Arial, sans-serif;
+      line-height: 1.65;
+      overflow-x: hidden;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    .wrap {
+      width: min(1120px, calc(100% - 28px));
+      margin: 0 auto;
+    }
+
+    .intro {
+      padding: 30px 0 18px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .intro-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.08fr) minmax(280px, 0.72fr);
+      gap: 18px;
+      align-items: end;
+    }
+
+    .kicker {
+      margin: 0 0 8px;
+      color: var(--rose);
+      font-size: 0.78rem;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin-top: 0;
+    }
+
+    h1 {
+      max-width: 820px;
+      margin-bottom: 12px;
+      font-size: 3.1rem;
+      line-height: 1.08;
+      letter-spacing: 0;
+    }
+
+    h2 {
+      margin-bottom: 10px;
+      font-size: 1.8rem;
+      line-height: 1.18;
+      letter-spacing: 0;
+    }
+
+    h3 {
+      margin-bottom: 8px;
+      font-size: 1.05rem;
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+
+    p {
+      margin-bottom: 12px;
+      color: var(--muted);
+    }
+
+    strong,
+    b {
+      color: var(--ink);
+    }
+
+    .lead {
+      max-width: 860px;
+      margin-bottom: 0;
+      font-size: 1.08rem;
+    }
+
+    .thesis {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper);
+      box-shadow: var(--shadow);
+      padding: 16px;
+    }
+
+    .thesis strong {
+      display: block;
+      margin-bottom: 10px;
+      color: var(--rose);
+    }
+
+    .thesis ol {
+      margin: 0;
+      padding-left: 20px;
+      color: var(--muted);
+    }
+
+    .thesis li + li {
+      margin-top: 8px;
+    }
+
+    .section {
+      padding: 22px 0;
+    }
+
+    .surface {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper);
+      box-shadow: var(--shadow);
+      padding: 18px;
+    }
+
+    .map-layout {
+      display: grid;
+      grid-template-columns: minmax(260px, 0.38fr) minmax(0, 0.62fr);
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .controls {
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .control {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper-2);
+      padding: 12px;
+    }
+
+    .control label {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 6px;
+      color: var(--ink);
+      font-size: 0.88rem;
+      font-weight: 800;
+    }
+
+    .control input {
+      width: 100%;
+      accent-color: var(--rose);
+    }
+
+    .canvas-panel {
+      min-width: 0;
+    }
+
+    .canvas-shell {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--bg);
+      overflow: hidden;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 480px;
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+
+    .legend span {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      display: inline-block;
+    }
+
+    .dot.ai { background: var(--teal); }
+    .dot.focus { background: var(--gold); }
+    .dot.human { background: var(--green); }
+    .dot.tear { background: var(--rose); }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .metric {
+      min-width: 0;
+      border-top: 3px solid var(--teal);
+      border-radius: 8px;
+      background: var(--paper-2);
+      padding: 11px;
+    }
+
+    .metric:nth-child(2) { border-top-color: var(--gold); }
+    .metric:nth-child(3) { border-top-color: var(--rose); }
+    .metric:nth-child(4) { border-top-color: var(--green); }
+
+    .metric strong {
+      display: block;
+      color: var(--ink);
+      font-size: 1.15rem;
+      line-height: 1.12;
+      overflow-wrap: anywhere;
+    }
+
+    .metric span {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 0.78rem;
+    }
+
+    .split {
+      display: grid;
+      grid-template-columns: minmax(0, 0.9fr) minmax(280px, 0.55fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .section-head {
+      margin-bottom: 14px;
+    }
+
+    .layer-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .layer-button {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 42px minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: center;
+      min-height: 58px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper);
+      color: var(--ink);
+      padding: 10px;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .layer-button[aria-pressed="true"] {
+      border-color: var(--rose);
+      background: color-mix(in srgb, var(--rose) 9%, var(--paper));
+    }
+
+    .layer-number {
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      background: var(--paper-2);
+      color: var(--rose);
+      font-weight: 900;
+    }
+
+    .layer-copy strong {
+      display: block;
+      color: var(--ink);
+      line-height: 1.2;
+    }
+
+    .layer-copy small {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      line-height: 1.35;
+    }
+
+    .layer-state {
+      color: var(--muted);
+      font-size: 0.78rem;
+      white-space: nowrap;
+    }
+
+    .detail-panel {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper);
+      padding: 16px;
+      position: sticky;
+      top: 10px;
+    }
+
+    .detail-kicker {
+      margin: 0 0 8px;
+      color: var(--rose);
+      font-size: 0.78rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .detail-grid {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .detail-line {
+      border-left: 3px solid var(--line);
+      padding-left: 10px;
+    }
+
+    .detail-line b {
+      display: block;
+      margin-bottom: 2px;
+      color: var(--ink);
+    }
+
+    .detail-line span {
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .axiom-layout {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .axiom-button {
+      min-height: 112px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper);
+      color: var(--ink);
+      padding: 12px;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .axiom-button[aria-pressed="true"] {
+      border-color: var(--teal);
+      background: color-mix(in srgb, var(--teal) 10%, var(--paper));
+    }
+
+    .axiom-button strong {
+      display: block;
+      margin-bottom: 6px;
+      line-height: 1.25;
+    }
+
+    .axiom-button small {
+      color: var(--muted);
+      line-height: 1.35;
+    }
+
+    .axiom-detail {
+      margin-top: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper-2);
+      padding: 14px;
+    }
+
+    .tension-meter {
+      margin-top: 12px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--paper);
+      overflow: hidden;
+      height: 16px;
+    }
+
+    .tension-fill {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, var(--teal), var(--gold), var(--rose));
+      transition: width 160ms ease;
+    }
+
+    .compare-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .compare-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper);
+      padding: 16px;
+    }
+
+    .compare-card h3 {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      font-size: 1.25rem;
+    }
+
+    .kv {
+      display: grid;
+      gap: 9px;
+    }
+
+    .kv div {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 8px;
+      color: var(--muted);
+    }
+
+    .kv div:last-child {
+      border-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .kv b {
+      color: var(--ink);
+      text-align: right;
+    }
+
+    .closing {
+      padding: 12px 0 28px;
+      color: var(--muted);
+      text-align: center;
+      font-size: 0.88rem;
+    }
+
+    @media (max-width: 920px) {
+      .intro-grid,
+      .map-layout,
+      .split,
+      .compare-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .detail-panel {
+        position: static;
+      }
+
+      .axiom-layout {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .metrics {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 640px) {
+      .wrap {
+        width: min(100% - 18px, 1120px);
+      }
+
+      .intro {
+        padding-top: 22px;
+      }
+
+      h1 {
+        font-size: 2.1rem;
+      }
+
+      h2 {
+        font-size: 1.45rem;
+      }
+
+      .lead {
+        font-size: 1rem;
+      }
+
+      .surface {
+        padding: 14px;
+      }
+
+      .metrics,
+      .axiom-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .layer-button {
+        grid-template-columns: 36px minmax(0, 1fr);
+      }
+
+      .layer-state {
+        grid-column: 2;
+      }
+
+      canvas {
+        height: 540px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="intro">
+    <div class="wrap intro-grid">
+      <div>
+        <p class="kicker">Philosophy map</p>
+        <h1>AI는 업데이트하고, 인간은 찢긴다</h1>
+        <p class="lead">이 인포그래픽은 글의 핵심 구분을 한 화면에서 비교한다. AI는 확률 분포를 만들고 정렬 규칙으로 응답을 좁힌다. 인간은 모순된 공리를 삶의 비용과 함께 견디다가, 어떤 순간 자기 세계관 자체를 부인한다.</p>
+      </div>
+      <div class="thesis" aria-label="글의 핵심 명제">
+        <strong>핵심 명제</strong>
+        <ol>
+          <li>temperature는 가능성 폭을 넓히지만 실존적 자기부인은 만들지 않는다.</li>
+          <li>정렬은 응답을 유용하게 만들지만 공리계 자체를 의심하는 사건과 다르다.</li>
+          <li>존재론적 찢김은 정보 수정이 아니라 비용 있는 재형성이다.</li>
+        </ol>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="section">
+      <div class="wrap surface map-layout" aria-label="AI 업데이트와 인간 자기부인의 비교 지도">
+        <div>
+          <p class="kicker">Diagnostic model</p>
+          <h2>같은 '부인'처럼 보여도 작동 층위가 다르다</h2>
+          <p>위쪽은 AI의 후보 응답이 정렬 압력 아래 한 점으로 수렴하는 장면이다. 아래쪽은 인간 안의 충돌 공리가 실존적 비용과 결합해 기존 자기 이해를 찢는 장면이다.</p>
+          <div class="controls">
+            <div class="control">
+              <label for="temp">temperature <span id="tempVal">0.45</span></label>
+              <input id="temp" type="range" min="10" max="140" value="45" step="5" />
+            </div>
+            <div class="control">
+              <label for="align">정렬 강도 <span id="alignVal">72</span></label>
+              <input id="align" type="range" min="0" max="100" value="72" step="1" />
+            </div>
+            <div class="control">
+              <label for="contra">모순 압력 <span id="contraVal">68</span></label>
+              <input id="contra" type="range" min="0" max="100" value="68" step="1" />
+            </div>
+            <div class="control">
+              <label for="cost">실존적 비용 <span id="costVal">74</span></label>
+              <input id="cost" type="range" min="0" max="100" value="74" step="1" />
+            </div>
+          </div>
+        </div>
+
+        <div class="canvas-panel">
+          <div class="canvas-shell">
+            <canvas id="diagnosticCanvas" aria-label="AI는 정렬로 수렴하고 인간은 모순과 비용을 통과해 재형성되는 비교 시각화"></canvas>
+          </div>
+          <div class="legend">
+            <span><i class="dot ai"></i>AI 후보 분포</span>
+            <span><i class="dot focus"></i>정렬된 응답</span>
+            <span><i class="dot human"></i>인간의 재형성 경로</span>
+            <span><i class="dot tear"></i>존재론적 찢김</span>
+          </div>
+          <div class="metrics">
+            <div class="metric"><strong id="spreadMetric">-</strong><span>AI 가능성 폭</span></div>
+            <div class="metric"><strong id="focusMetric">-</strong><span>응답 수렴도</span></div>
+            <div class="metric"><strong id="tearMetric">-</strong><span>찢김 임계값</span></div>
+            <div class="metric"><strong id="modeMetric">-</strong><span>현재 해석</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap surface split" aria-label="자기부인의 층위">
+        <div>
+          <div class="section-head">
+            <p class="kicker">Self-negation layers</p>
+            <h2>AI가 할 수 있는 철회와 인간의 자기부인을 분리하기</h2>
+            <p>글의 표를 시각화한 것이다. 아래 단계로 갈수록 단순한 문장 수정에서 세계관과 삶의 재배열로 이동한다.</p>
+          </div>
+          <div class="layer-list" id="layerList">
+            <button class="layer-button" type="button" data-layer="sentence" aria-pressed="true">
+              <span class="layer-number">1</span>
+              <span class="layer-copy"><strong>문장 차원의 부인</strong><small>이전 답변을 취소하고 표현을 바꾼다.</small></span>
+              <span class="layer-state">AI 가능</span>
+            </button>
+            <button class="layer-button" type="button" data-layer="context" aria-pressed="false">
+              <span class="layer-number">2</span>
+              <span class="layer-copy"><strong>맥락 차원의 수정</strong><small>새 정보에 맞춰 현재 대화의 관점을 바꾼다.</small></span>
+              <span class="layer-state">AI 가능</span>
+            </button>
+            <button class="layer-button" type="button" data-layer="knowledge" aria-pressed="false">
+              <span class="layer-number">3</span>
+              <span class="layer-copy"><strong>지식 차원의 편집</strong><small>검색, RAG, 파인튜닝, 경험으로 판단 재료를 바꾼다.</small></span>
+              <span class="layer-state">부분 가능</span>
+            </button>
+            <button class="layer-button" type="button" data-layer="system" aria-pressed="false">
+              <span class="layer-number">4</span>
+              <span class="layer-copy"><strong>체계 차원의 재구성</strong><small>세계 이해 구조 전체를 다시 조직한다.</small></span>
+              <span class="layer-state">제한적</span>
+            </button>
+            <button class="layer-button" type="button" data-layer="ontological" aria-pressed="false">
+              <span class="layer-number">5</span>
+              <span class="layer-copy"><strong>존재론적 자기부인</strong><small>자기 공리계가 세계를 가리고 있었음을 받아들인다.</small></span>
+              <span class="layer-state">현재 AI 없음</span>
+            </button>
+          </div>
+        </div>
+
+        <aside class="detail-panel" aria-live="polite">
+          <p class="detail-kicker" id="layerKicker">Layer 1</p>
+          <h3 id="layerTitle">문장 차원의 부인</h3>
+          <p id="layerSummary">AI가 가장 쉽게 수행하는 철회다. 출력 문장을 바꾸지만 모델의 존재 방식은 달라지지 않는다.</p>
+          <div class="detail-grid">
+            <div class="detail-line"><b>무엇이 바뀌는가</b><span id="layerChanges">현재 답변의 표현과 결론</span></div>
+            <div class="detail-line"><b>무엇이 남는가</b><span id="layerRemains">목적함수, 정렬 규칙, 배포된 모델의 가중치</span></div>
+            <div class="detail-line"><b>실존적 비용</b><span id="layerCost">없음. 철회는 출력 행위다.</span></div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap surface" aria-label="모순된 공리의 장력">
+        <div class="section-head">
+          <p class="kicker">Contradictory axioms</p>
+          <h2>인간의 모순은 단일 목적함수로 접히지 않는다</h2>
+          <p>각 쌍은 글에 나온 인간의 충돌 공리다. 선택하면 그 모순이 단순 오류가 아니라 세계를 더 크게 품도록 밀어붙이는 압력으로 해석된다.</p>
+        </div>
+        <div class="axiom-layout" id="axiomList">
+          <button class="axiom-button" type="button" data-pair="risk" aria-pressed="true"><strong>안전 / 성장</strong><small>살아남아야 하지만, 위험 없이는 커지지 않는다.</small></button>
+          <button class="axiom-button" type="button" data-pair="truth" aria-pressed="false"><strong>진실 / 관계</strong><small>사실에 충실해야 하지만, 사람을 파괴하지 않아야 한다.</small></button>
+          <button class="axiom-button" type="button" data-pair="freedom" aria-pressed="false"><strong>자유 / 소속</strong><small>독립을 원하지만, 공동체 안에서 인정받고 싶다.</small></button>
+          <button class="axiom-button" type="button" data-pair="excellence" aria-pressed="false"><strong>탁월함 / 쉼</strong><small>성취를 원하지만, 한계와 회복도 필요하다.</small></button>
+          <button class="axiom-button" type="button" data-pair="humility" aria-pressed="false"><strong>이해 / 겸손</strong><small>세계를 이해하고 싶지만, 내 이해가 세계를 줄일 수 있다.</small></button>
+        </div>
+        <div class="axiom-detail" aria-live="polite">
+          <h3 id="axiomTitle">안전과 성장</h3>
+          <p id="axiomText">낮은 장력에서는 안전이 우선하고 세계는 작아진다. 높은 장력에서는 기존 안전 기준 자체를 다시 묻게 된다.</p>
+          <div class="tension-meter" aria-label="모순 압력 게이지"><div class="tension-fill" id="tensionFill"></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap compare-grid" aria-label="AI와 인간의 비교 요약">
+        <div class="compare-card">
+          <h3><i class="dot focus"></i>AI</h3>
+          <div class="kv">
+            <div><span>핵심 작동</span><b>정렬된 업데이트</b></div>
+            <div><span>모순 처리</span><b>비교, 정리, 완화</b></div>
+            <div><span>잃는 것</span><b>없거나 외부적</b></div>
+            <div><span>결과</span><b>더 나은 출력</b></div>
+          </div>
+        </div>
+        <div class="compare-card">
+          <h3><i class="dot tear"></i>인간</h3>
+          <div class="kv">
+            <div><span>핵심 작동</span><b>찢김 후 재형성</b></div>
+            <div><span>모순 처리</span><b>삶으로 견딤</b></div>
+            <div><span>잃는 것</span><b>체면, 관계, 과거의 자기</b></div>
+            <div><span>결과</span><b>다른 세계관</b></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <p class="closing">AI의 자기부인은 문장일 수 있다. 인간의 자기부인은 사건이 된다.</p>
+
+  <script>
+    const canvas = document.getElementById("diagnosticCanvas");
+    const ctx = canvas.getContext("2d");
+    const temp = document.getElementById("temp");
+    const align = document.getElementById("align");
+    const contra = document.getElementById("contra");
+    const cost = document.getElementById("cost");
+
+    let canvasWidth = 0;
+    let canvasHeight = 0;
+
+    function reportHeight() {
+      try {
+        const height = Math.max(document.documentElement.scrollHeight, document.body.scrollHeight);
+        window.parent.postMessage({ type: "thelogos-interactive-height", height }, window.location.origin);
+      } catch (error) {}
+    }
+
+    window.addEventListener("load", reportHeight);
+    window.addEventListener("resize", function () {
+      resizeCanvas();
+      reportHeight();
+    });
+
+    window.addEventListener("message", function (event) {
+      if (event.origin !== window.location.origin || event.data?.type !== "thelogos-interactive-theme") return;
+      document.documentElement.dataset.theme = event.data.theme;
+      draw();
+      reportHeight();
+    });
+
+    if ("ResizeObserver" in window) {
+      new ResizeObserver(function () {
+        resizeCanvas();
+        reportHeight();
+      }).observe(document.body);
+    }
+
+    function css(name) {
+      return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+    }
+
+    function setText(id, value) {
+      document.getElementById(id).textContent = value;
+    }
+
+    function rng(seed) {
+      let s = seed >>> 0;
+      return function () {
+        s = (1664525 * s + 1013904223) >>> 0;
+        return s / 4294967296;
+      };
+    }
+
+    function clamp(value, min, max) {
+      return Math.max(min, Math.min(max, value));
+    }
+
+    function line(points, color, width, alpha) {
+      ctx.save();
+      ctx.globalAlpha = alpha == null ? 1 : alpha;
+      ctx.strokeStyle = color;
+      ctx.lineWidth = width;
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+      ctx.beginPath();
+      ctx.moveTo(points[0][0], points[0][1]);
+      for (let i = 1; i < points.length; i++) {
+        const prev = points[i - 1];
+        const p = points[i];
+        const mx = (prev[0] + p[0]) / 2;
+        ctx.quadraticCurveTo(prev[0], prev[1], mx, (prev[1] + p[1]) / 2);
+      }
+      ctx.lineTo(points[points.length - 1][0], points[points.length - 1][1]);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    function dot(x, y, radius, color, alpha) {
+      ctx.save();
+      ctx.globalAlpha = alpha == null ? 1 : alpha;
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.arc(x, y, radius, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function label(text, x, y, size, color, weight) {
+      ctx.save();
+      ctx.fillStyle = color;
+      ctx.font = `${weight || 800} ${size}px -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", Arial, sans-serif`;
+      ctx.fillText(text, x, y);
+      ctx.restore();
+    }
+
+    function resizeCanvas() {
+      const rect = canvas.getBoundingClientRect();
+      const width = Math.max(300, Math.floor(rect.width || 300));
+      const height = width < 620 ? 540 : 480;
+      const dpr = Math.min(2, window.devicePixelRatio || 1);
+      if (width === canvasWidth && height === canvasHeight && canvas.width === Math.round(width * dpr)) {
+        draw();
+        return;
+      }
+      canvasWidth = width;
+      canvasHeight = height;
+      canvas.style.height = `${height}px`;
+      canvas.width = Math.round(width * dpr);
+      canvas.height = Math.round(height * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      draw();
+    }
+
+    function drawGrid(width, height) {
+      ctx.fillStyle = css("--bg");
+      ctx.fillRect(0, 0, width, height);
+      ctx.strokeStyle = css("--line");
+      ctx.globalAlpha = 0.45;
+      ctx.lineWidth = 1;
+      for (let x = 30; x < width; x += 42) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, height);
+        ctx.stroke();
+      }
+      for (let y = 34; y < height; y += 42) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(width, y);
+        ctx.stroke();
+      }
+      ctx.globalAlpha = 1;
+    }
+
+    function draw() {
+      if (!canvasWidth || !canvasHeight) return;
+
+      const width = canvasWidth;
+      const height = canvasHeight;
+      const t = Number(temp.value) / 100;
+      const a = Number(align.value) / 100;
+      const c = Number(contra.value) / 100;
+      const k = Number(cost.value) / 100;
+      const ink = css("--ink");
+      const muted = css("--muted");
+      const lineColor = css("--line");
+      const ai = css("--teal");
+      const focus = css("--gold");
+      const human = css("--green");
+      const tear = css("--rose");
+      const violet = css("--violet");
+
+      ctx.clearRect(0, 0, width, height);
+      drawGrid(width, height);
+
+      const pad = width < 620 ? 26 : 38;
+      const left = pad;
+      const right = width - pad;
+      const aiY = height * 0.30;
+      const humanY = height * 0.70;
+      const startX = left + 22;
+      const endX = right - 24;
+      const rand = rng(9001 + Math.round(t * 100) * 7 + Math.round(a * 100) * 13 + Math.round(c * 100) * 17);
+      const aiSpread = 24 + t * 122 * (1 - a * 0.45);
+      const branchCount = clamp(Math.round(8 + t * 16), 8, 28);
+      const target = [endX, aiY];
+
+      ctx.strokeStyle = lineColor;
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(left, height * 0.50);
+      ctx.lineTo(right, height * 0.50);
+      ctx.stroke();
+
+      label("AI: probability distribution -> aligned answer", left, aiY - 64, width < 620 ? 13 : 15, muted, 800);
+      dot(startX, aiY, 7, ai, 1);
+      label("prompt", startX - 12, aiY - 15, 13, ink, 800);
+
+      for (let i = 0; i < branchCount; i++) {
+        const y1 = aiY + (rand() * 2 - 1) * aiSpread;
+        const y2 = aiY + (rand() * 2 - 1) * aiSpread * (1 - a * 0.65);
+        const finalY = aiY + (rand() * 2 - 1) * aiSpread * (1 - a);
+        line([
+          [startX, aiY],
+          [left + width * 0.25, y1],
+          [left + width * 0.52, y2],
+          [endX, finalY]
+        ], ai, 1.35, 0.14 + (1 - a) * 0.18);
+      }
+
+      line([
+        [startX, aiY],
+        [left + width * 0.30, aiY - aiSpread * 0.18],
+        [left + width * 0.58, aiY + aiSpread * 0.10],
+        target
+      ], focus, 4, 0.94);
+      dot(target[0], target[1], 9, focus, 1);
+      label("aligned answer", endX - 118, aiY - 18, 13, ink, 800);
+
+      const tearScore = c * k;
+      const tearX = left + (right - left) * clamp(0.42 + tearScore * 0.34, 0.42, 0.78);
+      const tearY = humanY - 34 - tearScore * 52;
+      const humanEnd = [endX, humanY + 12];
+      const humanPath = [
+        [startX, humanY],
+        [left + width * 0.18, humanY + 34 * c],
+        [left + width * 0.32, humanY - 54 * c],
+        [tearX, tearY],
+        [left + width * 0.66, humanY + 38 * k],
+        humanEnd
+      ];
+
+      label("Human: contradictory axioms -> costly re-formation", left, humanY - 82, width < 620 ? 13 : 15, muted, 800);
+      dot(startX, humanY, 7, human, 1);
+      label("old self", startX - 18, humanY - 15, 13, ink, 800);
+
+      line(humanPath, human, 3.3, 0.90);
+      dot(humanEnd[0], humanEnd[1], 8, human, 1);
+      label("re-formed self", endX - 118, humanEnd[1] + 28, 13, ink, 800);
+
+      ctx.save();
+      ctx.strokeStyle = tear;
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(tearX - 8, tearY - 38);
+      ctx.lineTo(tearX + 10, tearY - 12);
+      ctx.lineTo(tearX - 6, tearY + 8);
+      ctx.lineTo(tearX + 12, tearY + 40);
+      ctx.stroke();
+      ctx.restore();
+      dot(tearX, tearY, 10 + tearScore * 5, tear, 0.94);
+      label("ontological tear", clamp(tearX - 66, left, right - 138), tearY - 48, 13, ink, 800);
+
+      const thresholdX = left + (right - left) * 0.62;
+      ctx.save();
+      ctx.strokeStyle = violet;
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([6, 7]);
+      ctx.beginPath();
+      ctx.moveTo(thresholdX, height * 0.54);
+      ctx.lineTo(thresholdX, height - 26);
+      ctx.stroke();
+      ctx.restore();
+      label("cost threshold", thresholdX + 8, height * 0.56, 12, muted, 800);
+
+      setText("tempVal", t.toFixed(2));
+      setText("alignVal", Math.round(a * 100));
+      setText("contraVal", Math.round(c * 100));
+      setText("costVal", Math.round(k * 100));
+      setText("spreadMetric", (t * (1 - a * 0.42)).toFixed(2));
+      setText("focusMetric", `${Math.round(a * 100)}%`);
+      setText("tearMetric", `${Math.round(tearScore * 100)}%`);
+      setText("modeMetric", tearScore > 0.58 ? "찢김 임계" : a > 0.68 && t < 0.75 ? "레이저 수렴" : "분기 탐색");
+      document.getElementById("tensionFill").style.width = `${Math.max(6, Math.round(c * 100))}%`;
+    }
+
+    const layerData = {
+      sentence: {
+        kicker: "Layer 1",
+        title: "문장 차원의 부인",
+        summary: "AI가 가장 쉽게 수행하는 철회다. 출력 문장을 바꾸지만 모델의 존재 방식은 달라지지 않는다.",
+        changes: "현재 답변의 표현과 결론",
+        remains: "목적함수, 정렬 규칙, 배포된 모델의 가중치",
+        cost: "없음. 철회는 출력 행위다."
+      },
+      context: {
+        kicker: "Layer 2",
+        title: "맥락 차원의 수정",
+        summary: "사용자가 준 새 정보나 반론에 맞춰 대화 안의 관점을 바꾼다.",
+        changes: "현재 세션의 추론 방향과 답변 프레이밍",
+        remains: "세션 밖의 지속적 자기, 장기 책임, 신체적 기억",
+        cost: "매우 낮음. 새 맥락에 맞춘 적응이다."
+      },
+      knowledge: {
+        kicker: "Layer 3",
+        title: "지식 차원의 편집",
+        summary: "검색, RAG, 파인튜닝, 모델 편집은 특정 지식과 행동 경향을 바꿀 수 있다.",
+        changes: "참조 지식, 일부 파라미터, 검색된 근거",
+        remains: "삶 전체를 잃는 사건은 발생하지 않는다.",
+        cost: "부분적 비용. 계산, 데이터, 평가 비용이 중심이다."
+      },
+      system: {
+        kicker: "Layer 4",
+        title: "체계 차원의 재구성",
+        summary: "세계 이해 구조 전체를 다시 조직하는 수준이다. 현재 배포형 AI에서는 제한적이고 간접적이다.",
+        changes: "학습 절차, 아키텍처, 정책, 장기 메모리 설계",
+        remains: "AI가 자기 존재를 걸고 스스로 찢긴다고 보기는 어렵다.",
+        cost: "외부 설계와 운영 비용이 중심이다."
+      },
+      ontological: {
+        kicker: "Layer 5",
+        title: "존재론적 자기부인",
+        summary: "내가 세계를 이해하던 방식 자체가 세계를 가리고 있었음을 받아들이는 사건이다.",
+        changes: "정체성, 관계, 책임, 과거 해석, 미래 선택",
+        remains: "남는 것은 이전 체계가 아니라 찢김 뒤의 새로운 자기다.",
+        cost: "높음. 상실과 책임이 변화의 일부가 된다."
+      }
+    };
+
+    function selectLayer(key) {
+      const data = layerData[key];
+      document.querySelectorAll(".layer-button").forEach(function (button) {
+        button.setAttribute("aria-pressed", String(button.dataset.layer === key));
+      });
+      setText("layerKicker", data.kicker);
+      setText("layerTitle", data.title);
+      setText("layerSummary", data.summary);
+      setText("layerChanges", data.changes);
+      setText("layerRemains", data.remains);
+      setText("layerCost", data.cost);
+      reportHeight();
+    }
+
+    const axiomData = {
+      risk: {
+        title: "안전과 성장",
+        text: "낮은 장력에서는 안전이 우선하고 세계는 작아진다. 높은 장력에서는 기존 안전 기준 자체를 다시 묻게 된다."
+      },
+      truth: {
+        title: "진실과 관계",
+        text: "진실만 밀어붙이면 사람이 깨지고, 관계만 보호하면 세계가 왜곡된다. 찢김은 둘 중 하나를 삭제하지 않고 더 큰 책임을 요구한다."
+      },
+      freedom: {
+        title: "자유와 소속",
+        text: "완전한 독립도, 완전한 귀속도 인간을 다 설명하지 못한다. 이 장력은 내가 누구와 함께 자유로운지 묻게 만든다."
+      },
+      excellence: {
+        title: "탁월함과 쉼",
+        text: "탁월함은 자신을 밀어붙이고, 쉼은 한계를 인정하게 한다. 자기부인은 성취 기준 자체를 재배열할 때 생긴다."
+      },
+      humility: {
+        title: "이해와 겸손",
+        text: "세계를 설명하려는 욕망은 강력하지만, 내 설명이 세계를 줄일 수 있다. 이 지점에서 공리계가 찢기기 시작한다."
+      }
+    };
+
+    function selectAxiom(key) {
+      const data = axiomData[key];
+      document.querySelectorAll(".axiom-button").forEach(function (button) {
+        button.setAttribute("aria-pressed", String(button.dataset.pair === key));
+      });
+      setText("axiomTitle", data.title);
+      setText("axiomText", data.text);
+      reportHeight();
+    }
+
+    [temp, align, contra, cost].forEach(function (input) {
+      input.addEventListener("input", function () {
+        draw();
+        reportHeight();
+      });
+    });
+
+    document.querySelectorAll(".layer-button").forEach(function (button) {
+      button.addEventListener("click", function () {
+        selectLayer(button.dataset.layer);
+      });
+    });
+
+    document.querySelectorAll(".axiom-button").forEach(function (button) {
+      button.addEventListener("click", function () {
+        selectAxiom(button.dataset.pair);
+      });
+    });
+
+    resizeCanvas();
+    selectLayer("sentence");
+    selectAxiom("risk");
+    setTimeout(reportHeight, 80);
+  </script>
+</body>
+</html>
