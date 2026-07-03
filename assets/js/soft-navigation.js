@@ -30,6 +30,15 @@
             // Only same-origin navigations use soft nav
             if (url.origin !== window.location.origin) return false;
 
+            // Same-document anchors must keep native/hash scrolling behavior.
+            if (
+                url.pathname === window.location.pathname &&
+                url.search === window.location.search &&
+                url.hash
+            ) {
+                return false;
+            }
+
             // Skip if it has a file extension that isn't HTML (e.g., .pdf, .zip)
             const path = url.pathname;
             const nonHtmlExtensions = /\.(pdf|zip|png|jpg|jpeg|gif|svg|mp3|mp4|doc|docx|xls|xlsx)$/i;

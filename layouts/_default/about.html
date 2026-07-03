@@ -16,7 +16,7 @@
         <div class="header-container">
             <div class="article-category">
                 <span class="category-badge">The Logos</span>
-                <span class="category-line">Faith, reason, systems, and prose in one connected archive.</span>
+                <span class="category-line">말씀이신 로고스에서 출발해 신앙, 사유, 기술, 문장을 함께 읽습니다.</span>
             </div>
             <h1 class="article-title">{{ .Title }}</h1>
             {{- with .Params.description }}
@@ -48,4 +48,6 @@
 <link rel="stylesheet" href="/css/about-3d.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="/js/about-3d.js"></script>
+{{- $single_js := resources.Get "js/single.js" | minify | fingerprint -}}
+<script src="{{ $single_js.Permalink }}" integrity="{{ $single_js.Data.Integrity }}"></script>
 {{ end }}

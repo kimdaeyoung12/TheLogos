@@ -166,17 +166,17 @@
             color: 0x8aa4c8,  // Elegant muted blue
             wireframe: true,
             transparent: true,
-            opacity: 0.5
+            opacity: 0.68
         });
         const logosOuter = new THREE.Mesh(outerGeo, outerMat);
-        logosOuter.position.set(25, 5, 20);
+        logosOuter.position.set(16, 5, 18);
         scene.add(logosOuter);
 
         const innerGeo = new THREE.IcosahedronGeometry(4, 0);
         const innerMat = new THREE.MeshStandardMaterial({
             color: 0x7a9abb,  // Refined blue core
             emissive: 0x5c7a9e,  // Muted indigo glow
-            emissiveIntensity: 1.5,
+            emissiveIntensity: 1.8,
             roughness: 0.1,
             metalness: 0.8
         });

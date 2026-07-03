@@ -35,20 +35,20 @@
 ## Visual language
 - Color: shared pages use neutral paper/charcoal surfaces with teal, ember, gold, cobalt, and category-specific accents; restrained high-contrast dark explainers are acceptable inside interactive frames.
 - Typography: reuse system and site typography; use serif display type for brand moments; avoid viewport-scaled body text and negative tracking.
-- Spacing/layout rhythm: dense but breathable article flow; homepage and archive use bento/grid scanning without nesting cards inside cards.
-- Shape/radius/elevation: cards, forms, and frames should stay moderate and functional, with 8px radius on new homepage UI.
+- Spacing/layout rhythm: dense but breathable article flow; homepage and archive use bento/grid scanning without nesting cards inside cards; page intro areas should read as open bands integrated with the page background, not as isolated rectangular panels.
+- Shape/radius/elevation: cards, forms, and frames should stay moderate and functional, with 8px radius on new homepage UI; when a page has a 3D/canvas identity layer, glass panels must stay translucent enough to reveal motion and depth instead of becoming opaque slabs, and the canvas background should belong to the page backdrop rather than a visible bounded rectangle.
 - Motion: preserve existing 3D identity layers on pages that already use them, especially the About universe canvas, but keep them visible behind thin readable glass surfaces rather than large opaque slabs; use short opacity/transform reveals only when they clarify hierarchy; honor reduced-motion preferences.
 - Imagery/iconography: homepage uses local brand imagery; technical content uses real charts, simulated paths, grids, and distributions rather than generic decorative images.
 
 ## Components
-- Existing components to reuse: `ai_summary` shortcode, `interactiveframe` shortcode, article layout, related-post logic, header/footer partials.
+- Existing components to reuse: `ai_summary` shortcode, `interactiveframe` shortcode, article layout with working hash-driven TOC links, related-post logic, header/footer partials.
 - New/changed components: homepage atlas hero/search, archive signal chips, discipline bento cards, archive filters/cards/search, article field-note header, related-reading cards, network graph controls, about page reading shell, footer discovery links.
 - Variants and states: iframe fallback link, responsive frame height, dark/light theme notification, homepage/archive/article light/dark states, archive empty search state, network node panel, subscription success/error states.
 - Token/component ownership: keep global site variables in `assets/css/main.css`; keep homepage-specific styling in `assets/css/home.css`; keep archive-specific styling in `assets/css/archive.css`; keep article/informational page styling in `assets/css/single.css`; keep explainer-specific styling inside static explainer HTML.
 
 ## Accessibility
 - Target standard: semantic articles with keyboard-readable controls and visible labels.
-- Keyboard/focus behavior: native range inputs, links, forms, and buttons remain focusable.
+- Keyboard/focus behavior: native range inputs, links, forms, buttons, and article TOC anchors remain focusable and visibly interactive.
 - Contrast/readability: homepage and explainer text must remain readable in light and dark modes; chart labels must meet high-contrast dark UI expectations.
 - Screen-reader semantics: parent article text must explain the visual model.
 - Reduced motion and sensory considerations: avoid continuous animation by default; redraw only after input or explicit button action; homepage decorative transitions must collapse under `prefers-reduced-motion`.
@@ -67,8 +67,8 @@
 - Offline/slow network, if applicable: explainers must not depend on external JavaScript.
 
 ## Content voice
-- Tone: direct, explanatory, careful about limits and assumptions.
-- Terminology: keep Korean terms with English technical terms where useful.
+- Tone: direct, explanatory, careful about limits and assumptions; About copy should preserve the author's aphoristic Korean voice around entropy, order, suffering, gratitude, and Logos rather than flattening it into generic site marketing.
+- Terminology: keep Korean terms with English technical terms where useful; preserve the biblical Logos / 말씀 framing on About and do not remove the John 1:1 explanation unless explicitly requested.
 - Microcopy rules: label controls by the parameter and say what increasing it means; avoid mojibake or placeholder English/Korean hybrids in user-facing labels.
 
 ## Implementation constraints

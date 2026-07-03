@@ -47,7 +47,7 @@
     position: absolute;
     inset: 0;
     /* Cosmic Dark Background - Matching Hero */
-    background: rgba(15, 23, 42, 0.6);
+    background: rgba(15, 23, 42, 0.46);
     backdrop-filter: blur(12px);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 4px;
@@ -159,7 +159,7 @@
 
 /* Post Card Styles */
 .post-card-3d {
-    background: rgba(30, 41, 59, 0.4);
+    background: rgba(30, 41, 59, 0.32);
     border: 1px solid rgba(255, 255, 255, 0.05);
     border-radius: 6px;
     padding: 20px;
@@ -174,7 +174,7 @@
 }
 
 .post-card-3d:hover {
-    background: rgba(30, 41, 59, 0.6);
+    background: rgba(30, 41, 59, 0.48);
     border-color: var(--accent-color);
     transform: translateY(-3px) translateZ(5px);
     box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.2);
@@ -214,7 +214,7 @@
 
 /* View More Card Special Styles */
 .view-more-card {
-    background: rgba(30, 41, 59, 0.2);
+    background: rgba(30, 41, 59, 0.18);
     border: 1px dashed rgba(255, 255, 255, 0.1);
     justify-content: center;
     align-items: center;
@@ -222,7 +222,7 @@
 }
 
 .view-more-card:hover {
-    background: rgba(30, 41, 59, 0.4);
+    background: rgba(30, 41, 59, 0.32);
     border-color: var(--accent-color);
     border-style: solid;
 }
