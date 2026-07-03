@@ -16,7 +16,7 @@
 /* 2. Glass Cards for Timeline Items */
 /* Override existing timeline item styles to be translucent */
 .timeline-item {
-    background: rgba(255, 255, 255, 0.85);
+    background: rgba(255, 255, 255, 0.72);
     /* Light Mode: Bright Glass */
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
@@ -30,7 +30,7 @@
 
 /* Dark Mode Adaptation */
 body.dark .timeline-item {
-    background: rgba(15, 23, 42, 0.6);
+    background: rgba(15, 23, 42, 0.48);
     /* Dark Mode: Darker Glass */
     border: 1px solid rgba(255, 255, 255, 0.1);
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
@@ -43,7 +43,7 @@ body.dark .timeline-item {
 
 body.dark .timeline-item:hover {
     box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
-    background: rgba(30, 41, 59, 0.8);
+    background: rgba(30, 41, 59, 0.62);
 }
 
 /* 3. Header & Filter Styles */
@@ -59,24 +59,24 @@ body.dark .timeline-item:hover {
 
 /* Filter buttons need to pop */
 .filter-btn {
-    background: rgba(255, 255, 255, 0.8);
+    background: rgba(255, 255, 255, 0.68);
     backdrop-filter: blur(8px);
     border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 body.dark .filter-btn {
-    background: rgba(30, 41, 59, 0.6);
+    background: rgba(30, 41, 59, 0.48);
     border: 1px solid rgba(255, 255, 255, 0.1);
     color: #fff;
 }
 
 .filter-btn.active {
-    background: #fff;
+    background: rgba(255, 255, 255, 0.86);
     box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
 }
 
 body.dark .filter-btn.active {
-    background: #1e293b;
+    background: rgba(30, 41, 59, 0.72);
     box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
 }
 

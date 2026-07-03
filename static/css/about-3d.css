@@ -2,7 +2,7 @@
 
 :root {
     /* Light Mode Variables (Default) */
-    --glass-bg: rgba(255, 255, 255, 0.85);
+    --glass-bg: rgba(255, 255, 255, 0.72);
     /* Bright frosted glass */
     --glass-border: rgba(0, 0, 0, 0.1);
     --glass-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
@@ -20,7 +20,7 @@
 
 body.dark {
     /* Dark Mode Variables (Override) */
-    --glass-bg: rgba(10, 10, 15, 0.85);
+    --glass-bg: rgba(10, 10, 15, 0.62);
     /* Dark frosted glass */
     --glass-border: rgba(255, 255, 255, 0.15);
     --glass-shadow: 0 4px 60px rgba(0, 0, 0, 0.6);
@@ -38,21 +38,21 @@ body.dark {
 /* Background canvas fixed */
 #three-canvas-container {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100vh;
+    inset: 0;
+    width: auto;
+    height: auto;
     z-index: 0;
     pointer-events: none;
-    /* Deep space gradient is consistent for both modes to keep "Universe" feel, 
-       but panel will adapt on top of it. */
-    background: radial-gradient(circle at 50% 50%, #1e293b 0%, #0f172a 100%);
+    background: transparent;
     overflow: hidden;
 }
 
 /* Override body background when on About page (which has #three-canvas-container) */
 body:has(#three-canvas-container) {
-    background: transparent !important;
+    background:
+        radial-gradient(circle at 72% 26%, rgba(91, 128, 184, 0.24), transparent 34rem),
+        radial-gradient(circle at 18% 80%, rgba(15, 107, 95, 0.12), transparent 28rem),
+        #0f172a !important;
 }
 
 /* Fallback for browsers without :has() support */
@@ -86,8 +86,8 @@ body:has(#three-canvas-container) {
     box-sizing: border-box;
     /* Fix padding issue */
     background: var(--glass-bg);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
     border: 1px solid var(--glass-border);
     border-radius: 24px;
     padding: 60px 50px;
@@ -210,9 +210,9 @@ blockquote.scroll-reveal.visible {
         max-width: 100%;
         border-radius: 20px;
         /* Slightly softer corners */
-        backdrop-filter: blur(25px);
-        /* Stronger blur for legibility */
-        -webkit-backdrop-filter: blur(25px);
+        backdrop-filter: blur(16px);
+        /* Light blur keeps the universe visible while preserving legibility */
+        -webkit-backdrop-filter: blur(16px);
     }
 
     .about-title {
