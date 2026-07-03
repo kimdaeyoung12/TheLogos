@@ -46,10 +46,10 @@
             });
         }, observerOptions);
 
-        const header = document.querySelector('.about-header');
+        const header = document.querySelector('.about-header, .article--about .article-header');
         if (header) { header.classList.add('scroll-reveal'); observer.observe(header); }
 
-        const contentBlocks = document.querySelectorAll('.about-content > *');
+        const contentBlocks = document.querySelectorAll('.about-content > *, .article--about .article-content > *');
         contentBlocks.forEach((block, index) => {
             block.classList.add('scroll-reveal');
             block.style.transitionDelay = `${(index % 5) * 0.05}s`; // Faster stagger

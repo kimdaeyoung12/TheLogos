@@ -65,8 +65,12 @@ window.TiltEffect = TiltEffect;
 
 // Initialize function
 function initTiltEffects() {
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        return;
+    }
+
     // Apply to Featured Post and Post Cards
-    const cards = document.querySelectorAll('.featured-post, .post-card');
+    const cards = document.querySelectorAll('.featured-post, .post-card, .home-route, .archive-card');
     cards.forEach(card => {
         if (!card._tiltInitialized) {
             new TiltEffect(card);

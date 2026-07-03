@@ -1,23 +1,29 @@
 {{ define "main" }}
-{{- /* CORE VARIABLES (Moved to Top) */ -}}
 {{- $publishDate := .PublishDate | default .Date -}}
 {{- $lastmod := .Lastmod | default $publishDate -}}
 {{- $authorName := .Params.author | default (.Site.Params.author | default "DaeYoung Kim") -}}
 {{- $description := .Params.description | default (.Summary | plainify) -}}
 
-{{- /* CATEGORY DETECTION (Improved Priority) */ -}}
 {{- $category := "other" -}}
-{{- if .Params.categories -}}
-{{- range .Params.categories -}}
-{{- $c := . | lower -}}
-{{- if or (eq $c "religion") (eq $c "종교") -}} {{- $category = "religion" -}} {{- end -}}
-{{- if or (eq $c "philosophy") (eq $c "철학") -}} {{- $category = "philosophy" -}} {{- end -}}
-{{- if or (eq $c "engineering") (eq $c "공학") -}} {{- $category = "engineering" -}} {{- end -}}
-{{- if or (eq $c "writing") (eq $c "글쓰기") -}} {{- $category = "writing" -}} {{- end -}}
-{{- end -}}
+{{- with .Params.categories -}}
+{{- $category = index . 0 | lower -}}
 {{- end -}}
 
-{{- /* SCHEMA & SEO */ -}}
+{{- $categoryDetails := dict
+    "religion" (dict "line" "Truth, authority, scripture, and Christian community." "note" "진리와 권위가 오늘의 공동체 안에서 어떻게 해석되는지 묻습니다.")
+    "philosophy" (dict "line" "Being, contradiction, perception, and the limits of reason." "note" "존재, 모순, 시간, 인식의 경계에서 사유의 구조를 추적합니다.")
+    "engineering" (dict "line" "AI, probability, systems, control, and model behavior." "note" "모델, 확률, 제어, 시스템을 통해 보이지 않는 구조를 설명합니다.")
+    "writing" (dict "line" "Short prose that turns ordinary life into conceptual traces." "note" "일상의 장면을 관계, 기억, 믿음, 실패 같은 개념으로 남깁니다.")
+-}}
+{{- $categoryData := index .Site.Data.categories $category -}}
+{{- $categoryName := $category | humanize -}}
+{{- $categoryColor := "#7d8794" -}}
+{{- if $categoryData -}}
+{{- $categoryName = $categoryData.name -}}
+{{- $categoryColor = $categoryData.color -}}
+{{- end -}}
+{{- $categoryDetail := index $categoryDetails $category -}}
+
 {{- $scratch := newScratch -}}
 {{- $schema := dict
 "@context" "https://schema.org"
@@ -38,7 +44,7 @@
 {{- if $description -}}
 {{- $scratch.Set "schema" (merge ($scratch.Get "schema") (dict "description" $description)) -}}
 {{- end -}}
-{{- $publisherLogo := "/images/avatar.png" | absURL -}}
+{{- $publisherLogo := "/images/og-default.png" | absURL -}}
 {{- with .Site.Params.publisherLogo -}}
 {{- $publisherLogo = . | absURL -}}
 {{- end -}}
@@ -69,103 +75,91 @@
 {{- with .Params.mentions -}}
 {{- $mentionsList := slice -}}
 {{- range . -}}
-{{- $mention := dict "@type" "Thing" "name" . -}}
-{{- $mentionsList = $mentionsList | append $mention -}}
+{{- $mentionsList = $mentionsList | append (dict "@type" "Thing" "name" .) -}}
 {{- end -}}
 {{- $scratch.Set "schema" (merge ($scratch.Get "schema") (dict "mentions" $mentionsList)) -}}
 {{- end -}}
 <script type="application/ld+json">
-{{ ($scratch.Get "schema") | jsonify }}
+{{ ($scratch.Get "schema") | jsonify | safeJS }}
 </script>
-{{- /* BreadcrumbList Schema for site hierarchy */ -}}
+
 {{- $breadcrumbItems := slice -}}
-{{- $breadcrumbItems = $breadcrumbItems | append (dict "@type" "ListItem" "position" 1 "name" "Home" "item"
-(.Site.BaseURL | default "https://thelogos.dev/")) -}}
+{{- $breadcrumbItems = $breadcrumbItems | append (dict "@type" "ListItem" "position" 1 "name" "Home" "item" (.Site.BaseURL | default "https://thelogos.dev/")) -}}
 {{- with .CurrentSection -}}
 {{- if ne .Title .Site.Title -}}
-{{- $breadcrumbItems = $breadcrumbItems | append (dict "@type" "ListItem" "position" 2 "name" .Title "item" .Permalink)
--}}
+{{- $breadcrumbItems = $breadcrumbItems | append (dict "@type" "ListItem" "position" 2 "name" .Title "item" .Permalink) -}}
 {{- end -}}
 {{- end -}}
-{{- $breadcrumbItems = $breadcrumbItems | append (dict "@type" "ListItem" "position" (add (len $breadcrumbItems) 1)
-"name" .Title "item" .Permalink) -}}
+{{- $breadcrumbItems = $breadcrumbItems | append (dict "@type" "ListItem" "position" (add (len $breadcrumbItems) 1) "name" .Title "item" .Permalink) -}}
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
-  "itemListElement": {{ $breadcrumbItems | jsonify }}
+  "itemListElement": {{ $breadcrumbItems | jsonify | safeJS }}
 }
 </script>
-<article class="article" itemscope itemtype="https://schema.org/BlogPosting">
-    <!-- Article Header -->
+
+<article class="article article--post category-{{ $category }}" itemscope itemtype="https://schema.org/BlogPosting"
+    style="--cat-color: {{ $categoryColor }};">
     <header class="article-header">
         <nav class="breadcrumb" aria-label="Breadcrumb">
             <ol class="breadcrumb-list">
+                <li class="breadcrumb-item"><a href="{{ "/" | absURL }}">Home</a></li>
                 <li class="breadcrumb-item">
-                    <a href="{{ "/" | absURL }}">홈</a>
+                    <span class="breadcrumb-separator">/</span>
+                    <a href="{{ "posts/" | absURL }}">Articles</a>
                 </li>
-                {{- with .CurrentSection -}}
-                {{- if ne .Title $.Site.Title -}}
-                <li class="breadcrumb-item">
-                    <span class="breadcrumb-separator">›</span>
-                    <a href="{{ .Permalink }}">{{ .Title }}</a>
-                </li>
-                {{- end -}}
-                {{- end -}}
                 <li class="breadcrumb-item current">
-                    <span class="breadcrumb-separator">›</span>
+                    <span class="breadcrumb-separator">/</span>
                     <span>{{ .Title }}</span>
                 </li>
             </ol>
         </nav>
+
         <div class="header-container">
-            <!-- Category Logic - REUSING VARIABLE -->
-            {{ $categoryData := index .Site.Data.categories $category }}
-            {{ if not $categoryData }}
-            {{ $categoryData = index .Site.Data.categories "other" }}
-            {{ end }}
-
-            {{ $catName := $categoryData.name | default "기타" }}
-            {{ $catColor := $categoryData.color | default "#9ca3af" }}
-
             <div class="article-category">
-                <span class="category-badge"
-                    style="background-color: {{ $catColor }}; color: #ffffff; padding: 6px 14px; border-radius: 6px; display: inline-block; font-weight: 700; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">
-                    {{ $catName }}
-                </span>
+                <span class="category-badge">{{ $categoryName }}</span>
+                {{- with $categoryDetail -}}
+                <span class="category-line">{{ .line }}</span>
+                {{- end }}
             </div>
 
-            <!-- Title -->
             <h1 class="article-title" itemprop="headline">{{ .Title }}</h1>
 
-            <!-- Meta Info -->
+            {{- if $description -}}
+            <p class="article-dek">{{ $description }}</p>
+            {{- end }}
+
             <div class="article-meta">
                 <div class="author-info">
-                    <img src="/images/avatar.png" alt="Author" class="author-avatar"
-                        onerror="this.style.display='none'">
-                    <span class="author-name">{{ .Site.Params.author | default "DaeYoung Kim" }}</span>
+                    <span class="author-avatar" aria-hidden="true">L</span>
+                    <span class="author-name">{{ $authorName }}</span>
                 </div>
-                <div class="meta-divider">·</div>
-                <time datetime="{{ .Date.Format " 2006-01-02" }}">{{ .Date.Format "2006년 1월 2일" }}</time>
-                <div class="meta-divider">·</div>
-                <span class="reading-time">{{ .ReadingTime }}분 읽기</span>
-                <div class="meta-divider">·</div>
-                <span class="word-count">{{ .WordCount }}자</span>
+                <span class="meta-divider">/</span>
+                <time datetime="{{ $publishDate.Format "2006-01-02" }}">{{ $publishDate.Format "2006.01.02" }}</time>
+                <span class="meta-divider">/</span>
+                <span class="reading-time">{{ .ReadingTime }} min read</span>
+                <span class="meta-divider">/</span>
+                <span class="word-count">{{ .WordCount }} words</span>
+            </div>
+
+            <div class="article-signals" aria-label="Article signals">
+                {{- if in .RawContent "ai_summary" -}}<span>AI Summary</span>{{- end -}}
+                {{- if in .RawContent "interactiveframe" -}}<span>Interactive Explainer</span>{{- end -}}
+                {{- with $categoryDetail -}}<span>{{ .note }}</span>{{- end -}}
             </div>
         </div>
     </header>
 
-    <!-- Main Content with TOC Sidebar -->
     <div class="article-container">
         <div class="article-content" itemprop="articleBody">
             {{ .Content }}
         </div>
 
-        <!-- Task 1: Sticky TOC Sidebar - Only show if has actual headers -->
         {{- if .TableOfContents -}}
-        <aside class="toc-container">
+        <aside class="toc-container" aria-label="Table of contents">
             <div class="toc-wrapper">
-                <h3 class="toc-title">목차</h3>
+                <h2 class="toc-title">On This Page</h2>
                 <nav class="toc-nav">
                     {{ .TableOfContents }}
                 </nav>
@@ -174,20 +168,19 @@
         {{- end -}}
     </div>
 
-    <!-- Task 5: Related Posts Section -->
     {{- $related := .Site.RegularPages.Related . | first 3 -}}
     {{- with $related -}}
-    <section class="related-posts">
-        <h3 class="related-posts-title">이 카테고리의 다른 글</h3>
+    <section class="related-posts" aria-labelledby="related-posts-title">
+        <h2 id="related-posts-title" class="related-posts-title">Related Reading</h2>
         <div class="related-posts-grid">
             {{- range . -}}
             <a href="{{ .RelPermalink }}" class="related-post-card">
                 <span class="related-post-date">{{ .Date.Format "2006.01.02" }}</span>
-                <h4 class="related-post-title">{{ .Title }}</h4>
+                <h3 class="related-post-title">{{ .Title }}</h3>
                 {{- with .Description -}}
-                <p class="related-post-excerpt">{{ . | truncate 80 }}</p>
+                <p class="related-post-excerpt">{{ . | truncate 90 }}</p>
                 {{- else -}}
-                <p class="related-post-excerpt">{{ .Summary | plainify | truncate 80 }}</p>
+                <p class="related-post-excerpt">{{ .Summary | plainify | truncate 90 }}</p>
                 {{- end -}}
             </a>
             {{- end -}}
@@ -195,62 +188,55 @@
     </section>
     {{- end -}}
 
-    <!-- Article Footer -->
     <footer class="article-footer">
-        <!-- Tags -->
         {{ with .Params.tags }}
-        <div class="article-tags">
-            <h3 class="section-title">태그</h3>
+        <section class="article-tags" aria-labelledby="article-tags-title">
+            <h2 id="article-tags-title" class="section-title">Tags</h2>
             <div class="tag-list">
                 {{ range . }}
-                <a href="{{ " tags/" | absURL }}{{ . | urlize }}" class="tag-item">#{{ . }}</a>
+                <a href="{{ "tags/" | absURL }}{{ . | urlize }}" class="tag-item">#{{ . }}</a>
                 {{ end }}
             </div>
-        </div>
+        </section>
         {{ end }}
 
-        <!-- Share Section -->
-        <div class="share-section">
-            <h3 class="section-title">공유하기</h3>
+        <section class="share-section" aria-labelledby="share-title">
+            <h2 id="share-title" class="section-title">Share</h2>
             <div class="share-buttons">
-                <!-- Share Buttons (Preserved) -->
-                <button class="share-btn" data-share="twitter" title="Twitter로 공유">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                        <path
-                            d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z" />
+                <button class="share-btn" type="button" data-share="twitter" title="Share on Twitter">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                        <path d="M23.953 4.57a10 10 0 0 1-2.825.775 4.958 4.958 0 0 0 2.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 0 0-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 0 0-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 0 1-2.228-.616v.06a4.923 4.923 0 0 0 3.946 4.827 4.996 4.996 0 0 1-2.212.085 4.936 4.936 0 0 0 4.604 3.417 9.867 9.867 0 0 1-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 0 0 7.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0 0 24 4.59z" />
                     </svg>
                     <span>Twitter</span>
                 </button>
-                <button class="share-btn" data-share="facebook" title="Facebook으로 공유">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                        <path
-                            d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                <button class="share-btn" type="button" data-share="facebook" title="Share on Facebook">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
                     </svg>
                     <span>Facebook</span>
                 </button>
-                <button class="share-btn" data-share="link" title="링크 복사">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <button class="share-btn" type="button" data-share="link" title="Copy link">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                         <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
                         <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
                     </svg>
-                    <span>링크 복사</span>
+                    <span>Copy Link</span>
                 </button>
             </div>
-        </div>
+        </section>
 
-        <!-- Post Navigation -->
         {{ if or .NextInSection .PrevInSection }}
-        <nav class="post-nav">
+        <nav class="post-nav" aria-label="Post navigation">
             {{ with .PrevInSection }}
             <a href="{{ .RelPermalink }}" class="nav-item prev">
-                <span class="nav-label">이전 글</span>
+                <span class="nav-label">Previous</span>
                 <span class="nav-title">{{ .Title }}</span>
             </a>
             {{ end }}
 
             {{ with .NextInSection }}
             <a href="{{ .RelPermalink }}" class="nav-item next">
-                <span class="nav-label">다음 글</span>
+                <span class="nav-label">Next</span>
                 <span class="nav-title">{{ .Title }}</span>
             </a>
             {{ end }}
@@ -259,11 +245,9 @@
     </footer>
 </article>
 
-{{- /* Include Single Post CSS/JS */ -}}
 {{- $single_css := resources.Get "css/single.css" | minify | fingerprint -}}
 <link rel="stylesheet" href="{{ $single_css.Permalink }}" integrity="{{ $single_css.Data.Integrity }}">
 
 {{- $single_js := resources.Get "js/single.js" | minify | fingerprint -}}
 <script src="{{ $single_js.Permalink }}" integrity="{{ $single_js.Data.Integrity }}"></script>
-
 {{ end }}

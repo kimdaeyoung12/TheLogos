@@ -8,7 +8,31 @@
     --light-bg: #f8fafc;
     --dark-bg: #0f172a;
     --primary: #135bec;
+    --primary-color: #0f6b5f;
+    --primary-color-rgb: 15, 107, 95;
+    --bg-primary: #f5f7fb;
+    --bg-secondary: #ffffff;
+    --text-primary: #171717;
+    --text-secondary: #5c6675;
+    --text-tertiary: #7d8794;
+    --border-color: rgba(23, 23, 23, 0.12);
+    --dark-border: rgba(255, 255, 255, 0.14);
+    --content-width: 760px;
+    --shadow-md: 0 18px 48px rgba(15, 23, 42, 0.12);
     --radius-md: 12px;
+}
+
+html.dark,
+body.dark {
+    --primary-color: #5dd4c2;
+    --primary-color-rgb: 93, 212, 194;
+    --bg-primary: #0d0f12;
+    --bg-secondary: #171a1f;
+    --text-primary: #f4f0e8;
+    --text-secondary: #b4bbc8;
+    --text-tertiary: #818b9d;
+    --border-color: rgba(244, 240, 232, 0.14);
+    --shadow-md: 0 18px 52px rgba(0, 0, 0, 0.35);
 }
 
 /* Base Styles */

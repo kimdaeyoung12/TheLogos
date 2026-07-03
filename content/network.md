@@ -1,7 +1,7 @@
 ---
-title: "Neural Network"
+title: "Knowledge Network"
 layout: "network"
-description: "Exploring the connections between ideas in The Logos."
+description: "A live map of articles, categories, and recurring ideas across faith, philosophy, engineering, and prose."
 menu:
   main:
     weight: 10

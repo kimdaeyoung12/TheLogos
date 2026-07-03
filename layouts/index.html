@@ -1,328 +1,305 @@
 {{ define "main" }}
-<!-- Background Elements -->
-<div class="fixed inset-0 z-[-1] pointer-events-none overflow-hidden perspective-container">
-    <div
-        class="absolute inset-0 bg-gradient-to-b from-gray-200 via-gray-100 to-white dark:from-[#080b12] dark:via-[#101622] dark:to-[#080b12]">
-    </div>
+{{ $posts := where .Site.RegularPages "Section" "posts" }}
+{{ $religionPosts := where $posts "Params.categories" "intersect" (slice "religion") }}
+{{ $philosophyPosts := where $posts "Params.categories" "intersect" (slice "philosophy") }}
+{{ $engineeringPosts := where $posts "Params.categories" "intersect" (slice "engineering") }}
+{{ $writingPosts := where $posts "Params.categories" "intersect" (slice "writing") }}
+{{ $latestPosts := first 4 $posts }}
+{{ $religionData := index .Site.Data.categories "religion" }}
+{{ $philosophyData := index .Site.Data.categories "philosophy" }}
+{{ $engineeringData := index .Site.Data.categories "engineering" }}
+{{ $writingData := index .Site.Data.categories "writing" }}
 
-    <!-- Floating Shape 1 -->
-    <div class="floating-shape top-[10%] left-[5%] w-32 h-32 animate-float-slow text-design-primary">
-        <svg class="w-full h-full" fill="none" stroke="currentColor" stroke-width="0.5" viewBox="0 0 24 24">
-            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 7v10l10 5 10-5V7l-10 5-10-5z"></path>
-        </svg>
-    </div>
+<div class="home-page">
+    <section class="home-hero" aria-labelledby="home-title">
+        <div class="home-hero__inner">
+            <div class="home-hero__copy">
+                <p class="home-kicker">Faith / Reason / Cosmos</p>
+                <h1 id="home-title">THE LOGOS</h1>
+                <p class="home-hero__lead">
+                    신학, 철학, 과학, 공학을 한 화면에서 연결해 읽는 지식의 허브입니다.
+                    긴 글은 깊게, 개념은 선명하게, 연결은 빠르게 탐색할 수 있게 정리합니다.
+                </p>
 
-    <!-- Floating Shape 2 -->
-    <div
-        class="floating-shape top-[40%] right-[8%] w-48 h-48 animate-spin-slow opacity-10 dark:text-gray-400 text-gray-800">
-        <svg class="w-full h-full" fill="none" stroke="currentColor" stroke-width="0.3" viewBox="0 0 24 24">
-            <path
-                d="M21 16.5c0 .38-.21.71-.53.88l-7.9 4.44c-.16.12-.36.18-.57.18-.21 0-.41-.06-.57-.18l-7.9-4.44A.991.991 0 0 1 3 16.5v-9c0-.38.21-.71.53-.88l7.9-4.44A.99.99 0 0 1 12 2.1c.21 0 .41.06.57.18l7.9 4.44c.32.17.53.5.53.88v9zM12 4.15L6.04 7.5 12 10.85l5.96-3.35L12 4.15zM5 15.91l6 3.38v-6.71L5 9.21v6.7zM13 19.29l6-3.38V9.21l-6 3.38v6.7z">
-            </path>
-        </svg>
-    </div>
-
-    <!-- Floating Shape 3 -->
-    <div class="floating-shape bottom-[15%] left-[15%] w-24 h-24 animate-float-reverse text-design-primary/50">
-        <svg class="w-full h-full" fill="none" stroke="currentColor" stroke-width="0.5" viewBox="0 0 24 24">
-            <path d="M12 2L2 22h20L12 2zm0 4l6.5 13h-13L12 6z"></path>
-            <path d="M12 6v13"></path>
-        </svg>
-    </div>
-
-    <div
-        class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-design-primary/10 blur-[100px] rounded-full animate-pulse">
-    </div>
-</div>
-
-<div class="relative min-h-screen flex flex-col z-10">
-    <!-- Hero Section -->
-    <section
-        class="relative w-full flex flex-col items-center justify-center py-20 px-4 md:py-32 overflow-hidden perspective-container">
-        <div class="relative z-10 w-full max-w-[800px] flex flex-col items-center text-center gap-6">
-            <h1
-                class="title-3d text-5xl md:text-8xl font-black tracking-tighter pb-4 bg-clip-text text-transparent bg-gradient-to-b from-gray-800 via-gray-600 to-gray-400 dark:from-white dark:via-gray-200 dark:to-gray-500">
-                THE LOGOS
-            </h1>
-            <p
-                class="text-lg md:text-xl text-gray-600 dark:text-design-text-subtle max-w-xl leading-relaxed drop-shadow-md">
-                Exploring the intersections of faith, reason, and the cosmos through an academic lens.
-            </p>
-            <form id="hero-search-form" class="w-full max-w-md mt-8 relative group" action="/posts/" method="get">
-                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-20">
-                    <span class="material-symbols-outlined text-gray-400">search</span>
+                <div class="home-hero__signals" aria-label="Archive summary">
+                    <span><strong>{{ len $posts }}</strong> essays</span>
+                    <span><strong>4</strong> lenses</span>
+                    <span><strong>{{ len $engineeringPosts }}</strong> technical notes</span>
                 </div>
-                <input id="hero-search-input" name="q"
-                    class="block w-full pl-12 pr-4 py-4 rounded-xl text-sm text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-design-primary/50 transition-all neu-pressed bg-transparent"
-                    placeholder="Search topics, authors, or ideas..." type="text" />
-                <div class="absolute inset-y-2 right-2">
-                    <button type="submit"
-                        class="h-full px-6 text-white bg-design-primary rounded-lg text-sm font-bold transition-all neu-flat border-none active:scale-95 hover:text-white">
+
+                <form id="hero-search-form" class="home-search" action="/posts/" method="get" role="search">
+                    <label class="sr-only" for="hero-search-input">Search articles</label>
+                    <span class="material-symbols-outlined" aria-hidden="true">search</span>
+                    <input id="hero-search-input" name="q" placeholder="Search theology, AI, entropy, philosophy..."
+                        type="text" autocomplete="off" />
+                    <button type="submit">
+                        <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
                         Search
                     </button>
+                </form>
+
+                <div class="home-hero__actions" aria-label="Primary links">
+                    <a class="home-button home-button--primary" href="/posts/">
+                        <span class="material-symbols-outlined" aria-hidden="true">library_books</span>
+                        Articles
+                    </a>
+                    <a class="home-button" href="/network/">
+                        <span class="material-symbols-outlined" aria-hidden="true">hub</span>
+                        Network
+                    </a>
+                    <a class="home-button" href="https://www.youtube.com/@thelogos_dev" target="_blank"
+                        rel="noopener noreferrer">
+                        <span class="material-symbols-outlined" aria-hidden="true">smart_display</span>
+                        YouTube
+                    </a>
                 </div>
-            </form>
-            <a class="inline-flex items-center justify-center gap-2 rounded-full border border-red-500/30 bg-red-600/10 px-5 py-2.5 text-sm font-semibold text-red-700 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-red-500/60 hover:bg-red-600 hover:text-white dark:text-red-200 dark:hover:text-white"
-                href="https://www.youtube.com/@thelogos_dev" target="_blank" rel="noopener noreferrer"
-                aria-label="Open The Logos YouTube channel in a new tab">
-                <span class="material-symbols-outlined text-base">smart_display</span>
-                YouTube Channel
-                <span class="material-symbols-outlined text-base">open_in_new</span>
+            </div>
+
+            <div class="home-hero__media" aria-label="The Logos visual identity">
+                <img src="/images/og-default.png" alt="The Logos emblem with knowledge geometry" decoding="async"
+                    fetchpriority="high" />
+                <div class="home-hero__frame-label">Knowledge atlas</div>
+                <div class="home-hero__lenses" aria-label="Reading lenses">
+                    <span class="home-hero__lens" style="--lens-color: {{ $religionData.color | default "#5dd4c2" }};">
+                        <span class="material-symbols-outlined" aria-hidden="true">church</span>
+                        <b>Religion</b>
+                        <em>{{ len $religionPosts }}</em>
+                    </span>
+                    <span class="home-hero__lens" style="--lens-color: {{ $philosophyData.color | default "#8fb4ff" }};">
+                        <span class="material-symbols-outlined" aria-hidden="true">psychology</span>
+                        <b>Philosophy</b>
+                        <em>{{ len $philosophyPosts }}</em>
+                    </span>
+                    <span class="home-hero__lens" style="--lens-color: {{ $engineeringData.color | default "#f4b95a" }};">
+                        <span class="material-symbols-outlined" aria-hidden="true">memory</span>
+                        <b>Engineering</b>
+                        <em>{{ len $engineeringPosts }}</em>
+                    </span>
+                    <span class="home-hero__lens" style="--lens-color: {{ $writingData.color | default "#f38ba8" }};">
+                        <span class="material-symbols-outlined" aria-hidden="true">edit_note</span>
+                        <b>Writing</b>
+                        <em>{{ len $writingPosts }}</em>
+                    </span>
+                </div>
+                <div class="home-hero__stat">
+                    <span class="material-symbols-outlined" aria-hidden="true">auto_stories</span>
+                    <strong>{{ len $posts }}</strong>
+                    <span>published notes</span>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            (function () {
+                const form = document.getElementById('hero-search-form');
+                if (!form || form.dataset.bound === 'true') return;
+                form.dataset.bound = 'true';
+                form.addEventListener('submit', function (event) {
+                    event.preventDefault();
+                    const input = document.getElementById('hero-search-input');
+                    const query = (input?.value || '').trim();
+                    const url = query ? '/posts/?q=' + encodeURIComponent(query) : '/posts/';
+                    if (typeof window.softNavigate === 'function') {
+                        window.softNavigate(url);
+                    } else {
+                        window.location.href = url;
+                    }
+                });
+            })();
+        </script>
+    </section>
+
+    <section class="home-section home-section--routes" aria-labelledby="routes-title">
+        <div class="home-section__heading">
+            <div>
+                <p class="home-section__eyebrow">Reading routes</p>
+                <h2 id="routes-title">Explore Disciplines</h2>
+            </div>
+            <a class="home-link" href="/posts/">
+                View all
+                <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
             </a>
-            <script>
-                (function () {
-                    const form = document.getElementById('hero-search-form');
-                    if (!form || form.dataset.bound === 'true') return;
-                    form.dataset.bound = 'true';
-                    form.addEventListener('submit', function (event) {
-                        event.preventDefault();
-                        const input = document.getElementById('hero-search-input');
-                        const query = (input?.value || '').trim();
-                        const url = query ? '/posts/?q=' + encodeURIComponent(query) : '/posts/';
-                        if (typeof window.softNavigate === 'function') {
-                            window.softNavigate(url);
-                        } else {
-                            window.location.href = url;
-                        }
-                    });
-                })();
-            </script>
+        </div>
+
+        <div class="home-bento">
+            <article class="home-route home-route--wide">
+                <div class="home-route__meta">
+                    <span class="material-symbols-outlined" aria-hidden="true">church</span>
+                    Religion
+                    <small>{{ len $religionPosts }} articles</small>
+                </div>
+                {{ range first 1 $religionPosts }}
+                <h3>{{ .Title }}</h3>
+                <p>{{ .Summary | plainify | truncate 180 }}</p>
+                <a href="{{ .RelPermalink }}">
+                    Read article
+                    <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
+                </a>
+                {{ else }}
+                <h3>Divine and Sacred Texts</h3>
+                <p>Scripture, community, authority, and the questions that shape belief.</p>
+                <a href="/posts/?category=religion">
+                    Browse religion
+                    <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
+                </a>
+                {{ end }}
+            </article>
+
+            <article class="home-route home-route--tall">
+                <div class="home-route__meta">
+                    <span class="material-symbols-outlined" aria-hidden="true">psychology</span>
+                    Philosophy
+                    <small>{{ len $philosophyPosts }} articles</small>
+                </div>
+                {{ range first 1 $philosophyPosts }}
+                <h3>{{ .Title }}</h3>
+                <p>{{ .Summary | plainify | truncate 210 }}</p>
+                <a href="{{ .RelPermalink }}">
+                    Read article
+                    <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
+                </a>
+                {{ else }}
+                <h3>The Nature of Existence</h3>
+                <p>Reality, knowledge, ethics, and the structures behind ordinary thought.</p>
+                <a href="/posts/?category=philosophy">
+                    Browse philosophy
+                    <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
+                </a>
+                {{ end }}
+            </article>
+
+            <article class="home-route">
+                <div class="home-route__meta">
+                    <span class="material-symbols-outlined" aria-hidden="true">memory</span>
+                    Engineering
+                    <small>{{ len $engineeringPosts }} articles</small>
+                </div>
+                {{ range first 1 $engineeringPosts }}
+                <h3>{{ .Title }}</h3>
+                <p>{{ .Summary | plainify | truncate 130 }}</p>
+                <a href="{{ .RelPermalink }}">
+                    Read article
+                    <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
+                </a>
+                {{ else }}
+                <h3>Systems and Models</h3>
+                <p>AI, entropy, control, simulations, and technical responsibility.</p>
+                <a href="/posts/?category=engineering">
+                    Browse engineering
+                    <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
+                </a>
+                {{ end }}
+            </article>
+
+            <article class="home-route">
+                <div class="home-route__meta">
+                    <span class="material-symbols-outlined" aria-hidden="true">edit_note</span>
+                    Writing
+                    <small>{{ len $writingPosts }} articles</small>
+                </div>
+                {{ range first 1 $writingPosts }}
+                <h3>{{ .Title }}</h3>
+                <p>{{ .Summary | plainify | truncate 130 }}</p>
+                <a href="{{ .RelPermalink }}">
+                    Read article
+                    <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
+                </a>
+                {{ else }}
+                <h3>Essays and Fragments</h3>
+                <p>Short observations that turn ordinary life into a field of inquiry.</p>
+                <a href="/posts/?category=writing">
+                    Browse writing
+                    <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
+                </a>
+                {{ end }}
+            </article>
         </div>
     </section>
 
-    <!-- Main Content Area -->
-    <div class="w-full max-w-[1280px] mx-auto px-6 py-12 flex-1 relative z-10">
-        <!-- Explore Header -->
-        <div class="flex items-center justify-between mb-8 border-b border-gray-200 dark:border-white/10 pb-4">
-            <h2 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white drop-shadow-sm">Explore
-                Disciplines</h2>
-            <a class="text-sm font-medium text-design-primary hover:text-design-primary/80 flex items-center gap-1"
-                href="/posts/">
-                View all <span class="material-symbols-outlined text-sm">arrow_forward</span>
-            </a>
+    <section class="home-section home-section--latest" aria-labelledby="latest-title">
+        <div class="home-section__heading">
+            <div>
+                <p class="home-section__eyebrow">Recently updated</p>
+                <h2 id="latest-title">Latest Signals</h2>
+            </div>
         </div>
 
-        <!-- Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 perspective-container">
-
-            <!-- Card 1: Religion (Large) -->
-            <div class="md:col-span-2 group relative overflow-hidden rounded-2xl glass-card" data-tilt>
-                <div class="flex flex-col md:flex-row h-full">
-                    <div class="w-full md:w-1/2 h-64 md:h-auto bg-cover bg-center relative"
-                        style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDvVXmyNVJc4ZG-TfDfcxXgD7E4KikCUr0Qa51RCIXH5jYEdnQ1Lj_9rc4VWD88ZF9PT8wYKyIUHcO82Rs3msDOvcxzpQcumotCtq9jOVCgLWclPE8F3XQRo-WBuzdIWuDuXFcbC9pJl3pEoK-czWsKBj8yJgxOepGYJHtwnUZ2GCOKhjijgReGgPnYSYEI95rv6edJA4S-dBnjiEFGPRklGoDTQgYolHxI9Qfj2Acwn0mITpZC1L4l6IP2cAdkx6du7k5Mtx-pwq_N');">
-                        <div
-                            class="absolute inset-0 bg-gradient-to-r from-transparent to-white/80 dark:to-[#1c1f27]/80 md:to-transparent">
-                        </div>
-                    </div>
-                    <div class="p-6 md:p-8 flex flex-col justify-center flex-1 relative">
-                        <div
-                            class="flex items-center gap-2 mb-3 text-xs font-bold uppercase tracking-wider text-design-primary">
-                            <span class="material-symbols-outlined text-sm">church</span> Religion
-                        </div>
-                        {{ $religion := first 1 (where .Site.RegularPages "Params.categories" "intersect" (slice
-                        "religion")) }}
-                        {{ range $religion }}
-                        <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-3">{{ .Title }}</h3>
-                        <p class="text-gray-600 dark:text-gray-300 mb-6 line-clamp-3">
-                            {{ if in .RawContent "ai_summary" }}<span
-                                class="inline-flex items-center rounded-md bg-indigo-50 px-1.5 py-0.5 text-xs font-medium text-indigo-700 ring-1 ring-inset ring-indigo-700/10 dark:bg-indigo-400/10 dark:text-indigo-400 dark:ring-indigo-400/20 mr-1.5 align-text-bottom mb-0.5">AI
-                                요약</span>{{ end }}{{ .Summary | plainify | truncate 150 }}
-                        </p>
-                        <div class="mt-auto">
-                            <a class="inline-flex items-center text-sm font-semibold text-gray-900 dark:text-white hover:text-design-primary dark:hover:text-design-primary transition-colors"
-                                href="{{ .RelPermalink }}">
-                                Read Article <span class="material-symbols-outlined ml-1 text-sm">arrow_forward</span>
-                            </a>
-                        </div>
-                        {{ else }}
-                        <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-3">Divine & Sacred Texts</h3>
-                        <p class="text-gray-600 dark:text-gray-300 mb-6 line-clamp-3">
-                            Examining the historical context of scripture through a modern lens.
-                        </p>
-                        <div class="mt-auto">
-                            <a class="inline-flex items-center text-sm font-semibold text-gray-900 dark:text-white hover:text-design-primary dark:hover:text-design-primary transition-colors"
-                                href="/posts/?category=religion">
-                                Read Article <span class="material-symbols-outlined ml-1 text-sm">arrow_forward</span>
-                            </a>
-                        </div>
-                        {{ end }}
-                    </div>
+        <div class="home-latest">
+            {{ range $latestPosts }}
+            <article class="home-latest__item">
+                <div>
+                    <p>{{ with .Params.categories }}{{ delimit . " / " }}{{ else }}Article{{ end }}</p>
+                    <h3><a href="{{ .RelPermalink }}">{{ .Title }}</a></h3>
+                    <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "Jan 2, 2006" }}</time>
                 </div>
-            </div>
-
-            <!-- Card 2: Philosophy (Tall) -->
-            <div class="md:col-span-1 md:row-span-2 group relative overflow-hidden rounded-2xl glass-card flex flex-col"
-                data-tilt>
-                <div class="h-64 bg-cover bg-center relative"
-                    style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBGXZJsRbg-lMxK94hZgAGqhIpadVbtCpur8q64ihuFlldzx-pRzQP0rU0ycZ8dPTYGcVHApdQLpFnQ2kBX6OUbJiQtbH0U_vy_ISLhT8QmNULGhXQsexSDbCnwe1MJRhA7Kx4RQ2vxHrW6snBhPcL_7tu3dA5vOmViw9M88B1uTF0Ip95TJCI5ZvrqUuQeNN8TlSEWIvnw0rNDvLhpRixXQf8wohX9azweWGRN9Y2bu6JKTrK3rDoWX43ji6Z-Pds5UweCekR_ShOx');">
-                    <div
-                        class="absolute inset-0 bg-gradient-to-t from-white dark:from-[#1c1f27] via-transparent to-transparent opacity-90">
-                    </div>
-                </div>
-                <div class="p-6 flex flex-col flex-1 relative">
-                    <div
-                        class="flex items-center gap-2 mb-3 text-xs font-bold uppercase tracking-wider text-design-primary">
-                        <span class="material-symbols-outlined text-sm">psychology</span> Philosophy
-                    </div>
-                    {{ $philosophy := first 1 (where .Site.RegularPages "Params.categories" "intersect" (slice
-                    "philosophy")) }}
-                    {{ range $philosophy }}
-                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3">{{ .Title }}</h3>
-                    <p class="text-gray-600 dark:text-gray-300 mb-6 flex-1">
-                        {{ if in .RawContent "ai_summary" }}<span
-                            class="inline-flex items-center rounded-md bg-indigo-50 px-1.5 py-0.5 text-xs font-medium text-indigo-700 ring-1 ring-inset ring-indigo-700/10 dark:bg-indigo-400/10 dark:text-indigo-400 dark:ring-indigo-400/20 mr-1.5 align-text-bottom mb-0.5">AI
-                            요약</span>{{ end }}{{ .Summary | plainify | truncate 200 }}
-                    </p>
-                    <div class="mt-auto pt-4 border-t border-gray-200/50 dark:border-white/10">
-                        <div class="flex items-center justify-between">
-                            <span class="text-xs text-gray-500">{{ .Date.Format "Jan 2, 2006" }}</span>
-                            <a href="{{ .RelPermalink }}"
-                                class="bg-gray-100 dark:bg-black/30 p-2 rounded-full hover:bg-design-primary hover:text-white transition-colors neu-flat border-none">
-                                <span class="material-symbols-outlined text-sm">arrow_forward</span>
-                            </a>
-                        </div>
-                    </div>
-                    {{ else }}
-                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3">The Nature of Existence</h3>
-                    <p class="text-gray-600 dark:text-gray-300 mb-6 flex-1">
-                        Questioning reality, knowledge, and ethical frameworks.
-                    </p>
-                    <div class="mt-auto pt-4 border-t border-gray-200/50 dark:border-white/10">
-                        <div class="flex items-center justify-between">
-                            <span class="text-xs text-gray-500">Read more</span>
-                            <a href="/posts/?category=philosophy"
-                                class="bg-gray-100 dark:bg-black/30 p-2 rounded-full hover:bg-design-primary hover:text-white transition-colors neu-flat border-none">
-                                <span class="material-symbols-outlined text-sm">arrow_forward</span>
-                            </a>
-                        </div>
-                    </div>
-                    {{ end }}
-                </div>
-            </div>
-
-            <!-- Card 3: Engineering (Science in Design) -->
-            <div class="group relative overflow-hidden rounded-2xl glass-card flex flex-col" data-tilt>
-                <div class="h-48 bg-cover bg-center"
-                    style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuD0UQUs18uLNmrT5I4OKrWOPoVyj6K5e9vNGK8q9sqjRlKGLFa08vZvYhZC2rg8z1dPzrzoZfoxbiO-aV3wjSC3-ZXoOQtI7Ggq5hBGHsMb0uFU-4-apUAOzr3M9NVrJKkAItOXgLSZaAKGAtKqlX773tgQSTLFqDEz0rz_oOc3BmGZXxmvDU8cqdc8KTol-wlf8ry1b_ZC7KZAztTOOsD3frUrvpDS2gqauBtKM7xLjAd4zf1ixQ1ejZoMtmIP83K3Qi7sXn37zRxY');">
-                </div>
-                <div class="p-6">
-                    <div
-                        class="flex items-center gap-2 mb-3 text-xs font-bold uppercase tracking-wider text-design-primary">
-                        <span class="material-symbols-outlined text-sm">science</span> Engineering
-                    </div>
-                    {{ $engineering := first 1 (where .Site.RegularPages "Params.categories" "intersect" (slice
-                    "engineering")) }}
-                    {{ range $engineering }}
-                    <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">{{ .Title }}</h3>
-                    <p class="text-sm text-gray-600 dark:text-gray-300 mb-4 line-clamp-2">
-                        {{ if in .RawContent "ai_summary" }}<span
-                            class="inline-flex items-center rounded bg-indigo-50 px-1 py-0.5 text-[10px] sm:text-xs font-medium text-indigo-700 ring-1 ring-inset ring-indigo-700/10 dark:bg-indigo-400/10 dark:text-indigo-400 dark:ring-indigo-400/20 mr-1.5 align-text-bottom mb-0.5">AI
-                            요약</span>{{ end }}{{ .Summary | plainify }}
-                    </p>
-                    <a class="text-sm font-medium text-design-primary hover:underline" href="{{ .RelPermalink }}">Read
-                        more</a>
-                    {{ else }}
-                    <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Cosmic Origins</h3>
-                    <p class="text-sm text-gray-600 dark:text-gray-300 mb-4">
-                        Understanding the fabric of our universe.
-                    </p>
-                    <a class="text-sm font-medium text-design-primary hover:underline"
-                        href="/posts/?category=engineering">Read more</a>
-                    {{ end }}
-                </div>
-            </div>
-
-            <!-- Card 4: Writing (Ethics in Design) -->
-            <div class="group relative overflow-hidden rounded-2xl glass-card flex flex-col" data-tilt>
-                <div class="h-48 bg-cover bg-center"
-                    style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuB1ElOysd4LJhukNhurCI_5bu1GHsdBqBWMhdY9l-0s-5xWMXxm1ckiOlFJ2VuwHYoZ8oY6UxohiDSu8iMCR59fcXRUylkiND9bvGDVW8SDDtNGMI1_V2zo6IAhCkGuc9nGyRK39_lfMeH0acZ0UiMenK1N3EWGl09UTi_bTR1wOPkf6MNoK-OZj6HzVx863keZ3YUGIkeJu5vj7yxff0GE3DTb-25DJx72GZfvSWTDGCN97AyRMnN030Z_90m0hHxvFbWluZudy7C9');">
-                </div>
-                <div class="p-6">
-                    <div
-                        class="flex items-center gap-2 mb-3 text-xs font-bold uppercase tracking-wider text-design-primary">
-                        <span class="material-symbols-outlined text-sm">balance</span> Writing
-                    </div>
-                    {{ $writing := first 1 (where .Site.RegularPages "Params.categories" "intersect" (slice "writing"))
-                    }}
-                    {{ range $writing }}
-                    <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">{{ .Title }}</h3>
-                    <p class="text-sm text-gray-600 dark:text-gray-300 mb-4 line-clamp-2">
-                        {{ if in .RawContent "ai_summary" }}<span
-                            class="inline-flex items-center rounded bg-indigo-50 px-1 py-0.5 text-[10px] sm:text-xs font-medium text-indigo-700 ring-1 ring-inset ring-indigo-700/10 dark:bg-indigo-400/10 dark:text-indigo-400 dark:ring-indigo-400/20 mr-1.5 align-text-bottom mb-0.5">AI
-                            요약</span>{{ end }}{{ .Summary | plainify }}
-                    </p>
-                    <a class="text-sm font-medium text-design-primary hover:underline" href="{{ .RelPermalink }}">Read
-                        more</a>
-                    {{ else }}
-                    <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Moral Dilemmas</h3>
-                    <p class="text-sm text-gray-600 dark:text-gray-300 mb-4">
-                        Navigating the complex landscape of right and wrong.
-                    </p>
-                    <a class="text-sm font-medium text-design-primary hover:underline"
-                        href="/posts/?category=writing">Read more</a>
-                    {{ end }}
-                </div>
-            </div>
-
+                <a class="home-latest__arrow" href="{{ .RelPermalink }}" aria-label="Read {{ .Title }}">
+                    <span class="material-symbols-outlined" aria-hidden="true">north_east</span>
+                </a>
+            </article>
+            {{ end }}
         </div>
+    </section>
 
-        <!-- Subscribe Section -->
-        <div id="subscribe"
-            class="mt-16 rounded-2xl p-8 md:p-12 text-center relative overflow-hidden glass-card border-none">
-            <div class="absolute inset-0 bg-gradient-to-r from-design-background-dark/80 to-[#1c1f27]/90 -z-10"></div>
-            <div class="absolute top-0 right-0 p-12 opacity-10">
-                <span class="material-symbols-outlined text-9xl text-white">mail</span>
-            </div>
-            <div class="relative z-10 max-w-2xl mx-auto">
-                <h3 class="text-2xl font-bold text-white mb-4 drop-shadow-lg">Join the Intellectual Pursuit</h3>
-                <p class="text-gray-300 mb-8">Get weekly insights on philosophy, theology, and science delivered
-                    directly to your inbox.</p>
-                <form id="kit-form" class="flex flex-col sm:flex-row gap-4"
-                    action="https://app.kit.com/forms/9062318/subscriptions" method="post" data-sv-form="9062318"
-                    data-uid="5ede2cf68e">
-                    <input name="email_address" type="email" required
-                        class="flex-1 rounded-xl px-4 py-3 outline-none text-white placeholder:text-gray-500 transition-all neu-pressed bg-transparent border border-white/10 focus:ring-2 focus:ring-design-primary/50 focus:border-transparent"
-                        placeholder="Enter your email address" />
-                    <button type="submit"
-                        class="bg-design-primary hover:bg-design-primary/90 text-white font-bold py-3 px-8 rounded-xl transition-all shadow-lg shadow-design-primary/25 active:scale-95 neu-flat border-none cursor-pointer">
-                        Subscribe
-                    </button>
-                </form>
-                <p id="kit-success" class="text-green-400 font-medium mt-4 hidden">✓ 구독해주셔서 감사합니다!</p>
-                <p id="kit-error" class="text-red-400 font-medium mt-4 hidden">구독 중 오류가 발생했습니다. 다시 시도해주세요.</p>
-                <script>
-                    document.getElementById('kit-form')?.addEventListener('submit', async function (e) {
-                        e.preventDefault();
-                        const form = e.target;
-                        const email = form.email_address.value;
-                        const btn = form.querySelector('button');
-                        const origText = btn.textContent;
-                        btn.textContent = '...';
-                        btn.disabled = true;
-                        try {
-                            const resp = await fetch(form.action, {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                                body: JSON.stringify({ email_address: email })
-                            });
-                            if (resp.ok) {
-                                document.getElementById('kit-success').classList.remove('hidden');
-                                document.getElementById('kit-error').classList.add('hidden');
-                                form.classList.add('hidden');
-                            } else { throw new Error('fail'); }
-                        } catch (err) {
-                            document.getElementById('kit-error').classList.remove('hidden');
-                            btn.textContent = origText;
-                            btn.disabled = false;
-                        }
+    <section class="home-band" aria-labelledby="network-title">
+        <div>
+            <p class="home-section__eyebrow">Knowledge graph</p>
+            <h2 id="network-title">Read ideas as a connected map, not a flat archive.</h2>
+            <p>
+                The network view turns posts into a navigable graph, making repeated themes across theology,
+                philosophy, engineering, and writing easier to follow.
+            </p>
+        </div>
+        <a class="home-button home-button--primary" href="/network/">
+            <span class="material-symbols-outlined" aria-hidden="true">hub</span>
+            Open Network
+        </a>
+    </section>
+
+    <section id="subscribe" class="home-subscribe" aria-labelledby="subscribe-title">
+        <div class="home-subscribe__icon" aria-hidden="true">
+            <span class="material-symbols-outlined">mail</span>
+        </div>
+        <div>
+            <p class="home-section__eyebrow">Newsletter</p>
+            <h2 id="subscribe-title">Join the Intellectual Pursuit</h2>
+            <p>Get new essays on philosophy, theology, science, and technical reasoning in your inbox.</p>
+        </div>
+        <form id="kit-form" class="home-subscribe__form" action="https://app.kit.com/forms/9062318/subscriptions"
+            method="post" data-sv-form="9062318" data-uid="5ede2cf68e">
+            <label class="sr-only" for="kit-email">Email address</label>
+            <input id="kit-email" name="email_address" type="email" required placeholder="you@example.com" />
+            <button type="submit">
+                <span class="material-symbols-outlined" aria-hidden="true">send</span>
+                Subscribe
+            </button>
+        </form>
+        <p id="kit-success" class="home-form-message home-form-message--success hidden">구독해주셔서 감사합니다.</p>
+        <p id="kit-error" class="home-form-message home-form-message--error hidden">구독 중 오류가 발생했습니다. 다시 시도해주세요.</p>
+        <script>
+            document.getElementById('kit-form')?.addEventListener('submit', async function (event) {
+                event.preventDefault();
+                const form = event.target;
+                const button = form.querySelector('button');
+                const originalText = button.textContent;
+                button.textContent = 'Submitting...';
+                button.disabled = true;
+                try {
+                    const response = await fetch(form.action, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                        body: JSON.stringify({ email_address: form.email_address.value })
                     });
-                </script>
-            </div>
-        </div>
-    </div>
-
-    <!-- Footer Removed -->
-    <!-- Lorenz Script -->
-    <script src="/js/lorenz.js"></script>
+                    if (!response.ok) throw new Error('Subscription failed');
+                    document.getElementById('kit-success').classList.remove('hidden');
+                    document.getElementById('kit-error').classList.add('hidden');
+                    form.classList.add('hidden');
+                } catch (error) {
+                    document.getElementById('kit-error').classList.remove('hidden');
+                    button.textContent = originalText;
+                    button.disabled = false;
+                }
+            });
+        </script>
+    </section>
 </div>
 {{ end }}
