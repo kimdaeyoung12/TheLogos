@@ -1,26 +1,47 @@
-document.addEventListener('DOMContentLoaded', function () {
-    // Share functionality
-    const shareButtons = document.querySelectorAll('.share-btn');
-    const pageUrl = window.location.href;
-    const pageTitle = document.querySelector('.article-title').textContent;
+(function () {
+    function initArticleSharing() {
+        const shareButtons = document.querySelectorAll('.share-btn');
+        const titleEl = document.querySelector('.article-title');
+        if (!shareButtons.length || !titleEl) return;
 
-    shareButtons.forEach(btn => {
-        btn.addEventListener('click', function () {
-            const shareType = this.dataset.share;
+        const pageUrl = window.location.href;
+        const pageTitle = titleEl.textContent.trim();
 
-            if (shareType === 'twitter') {
-                window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(pageTitle)}&url=${encodeURIComponent(pageUrl)}`, '_blank');
-            } else if (shareType === 'facebook') {
-                window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(pageUrl)}`, '_blank');
-            } else if (shareType === 'link') {
-                navigator.clipboard.writeText(pageUrl).then(() => {
-                    const originalText = this.querySelector('span').textContent;
-                    this.querySelector('span').textContent = '복사됨!';
-                    setTimeout(() => {
-                        this.querySelector('span').textContent = originalText;
-                    }, 2000);
-                });
-            }
+        shareButtons.forEach((btn) => {
+            if (btn.dataset.shareReady === 'true') return;
+            btn.dataset.shareReady = 'true';
+
+            btn.addEventListener('click', function () {
+                const shareType = this.dataset.share;
+
+                if (shareType === 'twitter') {
+                    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(pageTitle)}&url=${encodeURIComponent(pageUrl)}`, '_blank', 'noopener,noreferrer');
+                    return;
+                }
+
+                if (shareType === 'facebook') {
+                    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(pageUrl)}`, '_blank', 'noopener,noreferrer');
+                    return;
+                }
+
+                if (shareType === 'link') {
+                    const label = this.querySelector('span');
+                    const originalText = label ? label.textContent : '';
+                    navigator.clipboard.writeText(pageUrl).then(() => {
+                        if (!label) return;
+                        label.textContent = 'Copied';
+                        setTimeout(() => {
+                            label.textContent = originalText || 'Copy Link';
+                        }, 1800);
+                    });
+                }
+            });
         });
-    });
-});
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initArticleSharing, { once: true });
+    } else {
+        initArticleSharing();
+    }
+})();

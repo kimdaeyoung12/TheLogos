@@ -1,22 +1,51 @@
 {{ define "main" }}
-<div id="three-canvas-container"></div>
+<div id="three-canvas-container" aria-hidden="true"></div>
 
-<article class="about-article">
-    <div class="glass-panel">
-        <header class="about-header" data-scroll>
-            <h1 class="about-title">{{ .Title }}</h1>
-            <p class="about-subtitle">{{ .Params.description }}</p>
-        </header>
+<article class="article article--about" style="--cat-color: #0f6b5f;">
+    <header class="article-header">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+            <ol class="breadcrumb-list">
+                <li class="breadcrumb-item"><a href="{{ "/" | absURL }}">Home</a></li>
+                <li class="breadcrumb-item current">
+                    <span class="breadcrumb-separator">/</span>
+                    <span>{{ .Title }}</span>
+                </li>
+            </ol>
+        </nav>
 
-        <div class="about-content">
+        <div class="header-container">
+            <div class="article-category">
+                <span class="category-badge">The Logos</span>
+                <span class="category-line">Faith, reason, systems, and prose in one connected archive.</span>
+            </div>
+            <h1 class="article-title">{{ .Title }}</h1>
+            {{- with .Params.description }}
+            <p class="article-dek">{{ . }}</p>
+            {{- end }}
+        </div>
+    </header>
 
-            {{ .Content }}</div>
+    <div class="article-container">
+        <div class="article-content">
+            {{ .Content }}
+        </div>
+
+        {{- if .TableOfContents -}}
+        <aside class="toc-container" aria-label="Table of contents">
+            <div class="toc-wrapper">
+                <h2 class="toc-title">On This Page</h2>
+                <nav class="toc-nav">
+                    {{ .TableOfContents }}
+                </nav>
+            </div>
+        </aside>
+        {{- end -}}
     </div>
 </article>
 
-<!-- Three.js from CDN -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<!-- Scripts -->
-<script src="/js/about-3d.js"></script>
+{{- $single_css := resources.Get "css/single.css" | minify | fingerprint -}}
+<link rel="stylesheet" href="{{ $single_css.Permalink }}" integrity="{{ $single_css.Data.Integrity }}">
 <link rel="stylesheet" href="/css/about-3d.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="/js/about-3d.js"></script>
 {{ end }}

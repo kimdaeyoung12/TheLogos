@@ -9,7 +9,7 @@
     margin: 36px 0 56px;
     overflow: hidden;
     border: 1px solid rgba(15, 23, 42, 0.16);
-    border-radius: 18px;
+    border-radius: 8px;
     background: #07111f;
     box-shadow: 0 24px 60px rgba(15, 23, 42, 0.16);
   }
@@ -39,7 +39,7 @@
     .thelogos-interactive-frame-shell {
       margin-top: 28px;
       margin-bottom: 44px;
-      border-radius: 14px;
+      border-radius: 8px;
     }
 
     .thelogos-interactive-frame-shell iframe {
@@ -52,8 +52,8 @@
   <iframe src="{{ $src }}" title="{{ $title }}" loading="lazy" scrolling="no"></iframe>
   <noscript>
     <p class="thelogos-interactive-frame-fallback">
-      자바스크립트가 꺼져 있으면 인터랙티브 인포그래픽이 표시되지 않을 수 있다.
-      <a href="{{ $src }}">인포그래픽 페이지를 직접 열기</a>
+      JavaScript is required to display this interactive explainer.
+      <a href="{{ $src }}">Open the explainer directly</a>.
     </p>
   </noscript>
 </div>

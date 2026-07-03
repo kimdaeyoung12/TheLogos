@@ -13,7 +13,7 @@
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 18px;
+    border-radius: 8px;
     box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5);
 
     display: flex;
@@ -154,7 +154,7 @@
     background: rgba(20, 20, 20, 0.98);
     backdrop-filter: blur(16px);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 16px;
+    border-radius: 8px;
     padding: 16px;
     overflow-y: auto;
     z-index: 10000;
@@ -163,18 +163,107 @@
 
 .bar-playlist-popup.hidden { display: none; }
 
+.playlist-header {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    font-weight: 800;
+    margin-bottom: 12px;
+}
+
+.close-btn-mini {
+    align-items: center;
+    background: transparent;
+    border: 0;
+    color: rgba(255, 255, 255, 0.72);
+    cursor: pointer;
+    display: flex;
+    font-size: 1.2rem;
+    height: 28px;
+    justify-content: center;
+    line-height: 1;
+    padding: 0;
+    width: 28px;
+}
+
+.close-btn-mini:hover {
+    color: #fff;
+}
+
+#playlist-list {
+    display: grid;
+    gap: 6px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+#playlist-list li {
+    border-radius: 8px;
+    color: rgba(255, 255, 255, 0.78);
+    cursor: pointer;
+    font-size: 0.86rem;
+    overflow: hidden;
+    padding: 9px 10px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+#playlist-list li:hover,
+#playlist-list li.active {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+}
+
 /* Mobile */
 @media (max-width: 768px) {
     .music-player-bar {
-        left: 16px;
-        right: 16px;
-        width: auto;
-        max-width: none;
-        bottom: 16px;
-        height: 64px;
+        bottom: 14px;
+        gap: 10px;
+        height: 58px;
+        left: auto;
+        max-width: calc(100% - 28px);
+        min-width: 0;
+        overflow: hidden;
+        padding: 0 9px;
+        right: 14px;
+        width: 58px;
     }
+
+    .music-player-bar:focus,
+    .music-player-bar:focus-within,
+    .music-player-bar.playing {
+        left: 14px;
+        max-width: none;
+        overflow: visible;
+        padding: 0 12px;
+        right: 14px;
+        width: auto;
+    }
+
+    .music-player-bar:not(:focus):not(:focus-within):not(.playing) .bar-info,
+    .music-player-bar:not(:focus):not(:focus-within):not(.playing) .bar-controls {
+        display: none;
+    }
+
+    .music-player-bar:focus {
+        outline: 2px solid rgba(93, 212, 194, 0.55);
+        outline-offset: 3px;
+    }
+
     .mobile-hidden { display: none; }
     .bar-seek-container, .bar-volume-container { display: none; }
+}
+
+body {
+    padding-bottom: 112px;
+}
+
+@media (max-width: 768px) {
+    body {
+        padding-bottom: 96px;
+    }
 }
 
 /* Awaiting interaction */
@@ -183,4 +272,13 @@
 @keyframes pulse-glow {
     0%, 100% { box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4); }
     50% { box-shadow: 0 8px 32px rgba(255, 255, 255, 0.15), 0 0 16px rgba(255, 255, 255, 0.1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .music-player-bar,
+    .music-player-bar.awaiting-interaction,
+    .music-player-bar.playing .playing-indicator .bar {
+        animation: none;
+        transition: none;
+    }
 }

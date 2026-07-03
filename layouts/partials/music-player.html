@@ -3,16 +3,14 @@
 
 {{ range where .Site.RegularPages "Params.audio" "!=" nil }}
 {{ $audioPath := .Params.audio }}
-{{/* Extract song title from audio path (remove /audio/ prefix and .mp3/.wav suffix) */}}
 {{ $songTitle := $audioPath | replaceRE "^/?(audio/)?" "" | replaceRE "\\.(mp3|wav)$" "" }}
 {{ $playlist = $playlist | append (dict "title" $songTitle "audio" $audioPath "link" .RelPermalink) }}
 {{ end }}
 
-{{/* Render the Player Div - Always Visible */}}
-<div id="music-player" class="music-player-bar glass-bar" data-playlist='{{ $playlist | jsonify }}' {{ if .Params.audio
+<div id="music-player" class="music-player-bar glass-bar" tabindex="0" aria-label="Music player"
+    data-playlist='{{ $playlist | jsonify }}' {{ if .Params.audio
     }}data-initial-audio="{{ .Params.audio }}" {{ end }}>
 
-    <!-- Album Art / Icon -->
     <div class="player-icon">
         <div class="playing-indicator">
             <span class="bar"></span>
@@ -22,63 +20,58 @@
         </div>
     </div>
 
-    <!-- Info Section (Left) -->
     <div class="bar-info">
         <span id="current-song-title" class="bar-song-title">Select a song...</span>
         <a id="song-post-link" href="#" class="bar-post-link" title="Read associated post">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                aria-hidden="true">
                 <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
                 <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
             </svg>
-            이 글 읽기
+            Read post
         </a>
     </div>
 
-    <!-- Controls Section (Center/Right) -->
     <div class="bar-controls">
-        <!-- Previous Button -->
         <button id="music-prev" class="bar-control-btn skip-btn" aria-label="Previous">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="none" aria-hidden="true">
                 <polygon points="19 20 9 12 19 4 19 20"></polygon>
                 <line x1="5" y1="19" x2="5" y2="5" stroke="currentColor" stroke-width="3"></line>
             </svg>
         </button>
 
-        <!-- Play/Pause -->
         <button id="music-control" class="bar-control-btn play-btn" aria-label="Play/Pause">
-            <svg id="icon-play" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+            <svg id="icon-play" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none"
+                aria-hidden="true">
                 <polygon points="5 3 19 12 5 21 5 3"></polygon>
             </svg>
             <svg id="icon-pause" class="hidden" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"
-                stroke="none">
+                stroke="none" aria-hidden="true">
                 <rect x="6" y="4" width="4" height="16"></rect>
                 <rect x="14" y="4" width="4" height="16"></rect>
             </svg>
         </button>
 
-        <!-- Next Button -->
         <button id="music-next" class="bar-control-btn skip-btn" aria-label="Next">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="none" aria-hidden="true">
                 <polygon points="5 4 15 12 5 20 5 4"></polygon>
                 <line x1="19" y1="5" x2="19" y2="19" stroke="currentColor" stroke-width="3"></line>
             </svg>
         </button>
 
-        <!-- Seek Bar -->
         <div class="bar-seek-container">
             <input type="range" id="seek-slider" class="bar-slider" min="0" max="100" value="0" step="0.1"
                 aria-label="Seek">
         </div>
 
-        <!-- Volume (Desktop only often) -->
         <div class="bar-volume-container mobile-hidden">
             <input type="range" id="volume-slider" class="bar-slider volume-slider" min="0" max="1" step="0.01"
                 value="0.2" aria-label="Volume">
         </div>
 
-        <!-- Playlist Toggle - Always available -->
         <button id="playlist-toggle" class="bar-control-btn list-btn" aria-label="Playlist">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                aria-hidden="true">
                 <line x1="8" y1="6" x2="21" y2="6"></line>
                 <line x1="8" y1="12" x2="21" y2="12"></line>
                 <line x1="8" y1="18" x2="21" y2="18"></line>
@@ -89,15 +82,12 @@
         </button>
     </div>
 
-    <!-- Playlist Popup -->
     <div id="playlist-container" class="bar-playlist-popup hidden">
         <div class="playlist-header">
             <span>Playlist</span>
-            <button id="close-playlist-btn" class="close-btn-mini">×</button>
+            <button id="close-playlist-btn" class="close-btn-mini" aria-label="Close playlist">&times;</button>
         </div>
-        <ul id="playlist-list">
-            <!-- Items injected by JS -->
-        </ul>
+        <ul id="playlist-list"></ul>
     </div>
 
     <audio id="bgm-audio" preload="auto" loop>
@@ -105,7 +95,6 @@
     </audio>
 </div>
 
-{{/* Load Music Player CSS & JS */}}
 {{ $music_css := resources.Get "css/music-player.css" | minify | fingerprint }}
 <link rel="stylesheet" href="{{ $music_css.Permalink }}" integrity="{{ $music_css.Data.Integrity }}">
 

@@ -224,6 +224,10 @@
     {{- /* Core Design System CSS */}}
     {{- $main_css := resources.Get "css/main.css" | minify | fingerprint }}
     <link rel="stylesheet" href="{{ $main_css.Permalink }}" integrity="{{ $main_css.Data.Integrity }}">
+    {{- if .IsHome }}
+    {{- $home_css := resources.Get "css/home.css" | minify | fingerprint }}
+    <link rel="stylesheet" href="{{ $home_css.Permalink }}" integrity="{{ $home_css.Data.Integrity }}">
+    {{- end }}
 
     <script src="/js/restore-nav.js" defer></script>
 </head>

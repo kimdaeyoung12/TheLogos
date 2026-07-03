@@ -146,7 +146,7 @@
         const container = state.container || document.getElementById('knowledge-graph-container');
         if (container) {
             container.dataset.graphInitialized = 'false';
-            container.innerHTML = '<div class="network-graph-status">Loading network...</div>';
+            container.innerHTML = '<div class="network-graph-status">Loading knowledge graph...</div>';
         }
 
         state.graph = null;
@@ -169,7 +169,7 @@
         const seq = state.initSeq + 1;
         state.initSeq = seq;
         state.container = container;
-        setStatus(container, 'Loading network...');
+        setStatus(container, 'Loading knowledge graph...');
 
         try {
             const { width, height } = await waitForContainerSize(container, seq);
@@ -188,10 +188,10 @@
                 .nodeColor(node => {
                     if (node.group === 'category') {
                         const name = node.name.toLowerCase();
-                        if (name.includes('religion') || name.includes('종교')) return '#f59e0b';
-                        if (name.includes('philosophy') || name.includes('철학')) return '#c084fc';
-                        if (name.includes('engineering') || name.includes('공학') || name.includes('dev')) return '#ef4444';
-                        if (name.includes('writing') || name.includes('글') || name.includes('essay')) return '#10b981';
+                        if (name.includes('religion')) return '#f59e0b';
+                        if (name.includes('philosophy')) return '#c084fc';
+                        if (name.includes('engineering') || name.includes('dev')) return '#ef4444';
+                        if (name.includes('writing') || name.includes('essay')) return '#10b981';
                         return '#fbbf24';
                     }
                     if (node.group === 'post') return '#e2e8f0';
