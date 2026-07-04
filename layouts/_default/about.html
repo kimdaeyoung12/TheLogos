@@ -1,4 +1,7 @@
 {{ define "main" }}
+{{- $hideToc := or .Params.hide_toc .Params.hideToc (eq .Params.toc false) -}}
+{{- $toc := .TableOfContents -}}
+{{- $hasToc := and (not $hideToc) (in $toc "<a ") -}}
 <div id="three-canvas-container" aria-hidden="true"></div>
 
 <article class="article article--about" style="--cat-color: #0f6b5f;">
@@ -25,21 +28,20 @@
         </div>
     </header>
 
-    <div class="article-container">
-        <div class="article-content">
-            {{ .Content }}
-        </div>
-
-        {{- if .TableOfContents -}}
-        <aside class="toc-container" aria-label="Table of contents">
+    <div class="article-container{{ if $hasToc }} article-container--with-toc{{ else }} article-container--no-toc{{ end }}">
+        {{- if $hasToc -}}
+        <aside class="article-toc-band" aria-label="Table of contents">
             <div class="toc-wrapper">
                 <h2 class="toc-title">On This Page</h2>
                 <nav class="toc-nav">
-                    {{ .TableOfContents }}
+                    {{ $toc }}
                 </nav>
             </div>
         </aside>
         {{- end -}}
+        <div class="article-content">
+            {{ .Content }}
+        </div>
     </div>
 </article>
 

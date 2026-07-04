@@ -99,7 +99,7 @@
       line-height: 1.18;
       letter-spacing: -0.04em;
     }
-    .infographic-grid { display: grid; grid-template-columns: 1.1fr .9fr; gap: 22px; align-items: start; }
+    .infographic-grid { display: grid; grid-template-columns: 1fr; gap: 18px; align-items: start; }
     .flow-strip {
       display: grid; grid-template-columns: repeat(5, minmax(120px, 1fr)); gap: 10px;
       margin: 18px 0 20px;
@@ -127,17 +127,17 @@
     .filters button:hover, .copy-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 18px rgba(18,38,63,.08); }
     .filters button.active { background: var(--blue-dark); color: #fff; border-color: var(--blue-dark); }
     .timeline-rail {
-      display: flex; gap: 12px; overflow-x: auto; padding: 24px 4px 18px;
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(145px, 1fr)); gap: 12px; padding: 18px;
       border: 1px solid var(--line); border-radius: 18px; background: linear-gradient(180deg, #fff, #f9fbff);
     }
     .timeline-node {
-      flex: 0 0 158px; position: relative; text-align: left;
+      min-height: 126px; position: relative; text-align: left;
       border: 1px solid var(--line); background: #fff; border-radius: 16px;
       padding: 14px 13px 13px; cursor: pointer;
       transition: transform .13s ease, box-shadow .13s ease, border-color .13s ease;
     }
     .timeline-node::before {
-      content: ""; position: absolute; top: -16px; left: 20px; width: 18px; height: 18px;
+      content: ""; position: absolute; top: 12px; right: 12px; width: 12px; height: 12px;
       border-radius: 50%; background: var(--blue); border: 4px solid #d9effc;
     }
     .timeline-node[data-phase="medieval"]::before { background: var(--green); border-color: #e0f0e4; }
@@ -147,7 +147,7 @@
     .timeline-node .year { display: block; color: var(--blue-dark); font-size: 13px; font-weight: 900; line-height: 1.3; }
     .timeline-node .title { display: block; margin-top: 6px; font-weight: 900; line-height: 1.35; letter-spacing: -0.02em; }
     .timeline-node .type { display: inline-flex; margin-top: 10px; color: var(--muted); font-size: 12px; border-top: 1px solid var(--line); padding-top: 7px; }
-    .detail-card { padding: 22px; border-radius: 18px; background: #101827; color: #f7fbff; min-height: 415px; }
+    .detail-card { padding: 22px; border-radius: 18px; background: #101827; color: #f7fbff; min-height: auto; }
     .detail-card .detail-year { display: inline-flex; padding: 5px 10px; border-radius: 999px; background: rgba(255,255,255,.12); font-weight: 900; font-size: 13px; }
     .detail-card h3 { margin: 14px 0 8px; font-size: 27px; line-height: 1.2; letter-spacing: -0.035em; }
     .detail-card p { color: rgba(247,251,255,.86); margin: 10px 0; }
@@ -205,7 +205,7 @@
       body { background: #fff; }
       .toc, .filters, .copy-zone { display: none; }
       .panel { box-shadow: none; }
-      .timeline-rail { overflow: visible; display: block; }
+      .timeline-rail { display: block; }
       .timeline-node { display: inline-block; width: 30%; margin: 6px; }
     }
   </style>
@@ -658,6 +658,16 @@
       return String(value).replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[char]));
     }
 
+    function postFrameHeight() {
+      const height = Math.max(
+        document.body.scrollHeight,
+        document.documentElement.scrollHeight,
+        document.body.offsetHeight,
+        document.documentElement.offsetHeight
+      );
+      window.parent?.postMessage({ type: 'thelogos-interactive-height', height }, '*');
+    }
+
     function renderRail() {
       const items = timelineData.filter(item => activeFilter === 'all' || item.phase === activeFilter);
       if (!items.some(item => item.id === selectedId)) selectedId = items[0]?.id || timelineData[0].id;
@@ -675,6 +685,7 @@
           renderDetail();
         });
       });
+      postFrameHeight();
     }
 
     function renderDetail() {
@@ -690,6 +701,7 @@
           <div><dt>서양 철학·과학사 보조 맥락</dt><dd>${escapeHTML(item.west)}</dd></div>
         </dl>
       `;
+      postFrameHeight();
     }
 
     filterButtons.forEach(button => {
@@ -722,6 +734,16 @@
 
     renderRail();
     renderDetail();
+    window.addEventListener('message', event => {
+      if (event.data?.type === 'thelogos-interactive-height-request') {
+        postFrameHeight();
+      }
+    });
+    window.addEventListener('load', postFrameHeight);
+    window.addEventListener('resize', postFrameHeight);
+    if ('ResizeObserver' in window) {
+      new ResizeObserver(postFrameHeight).observe(document.body);
+    }
   </script>
 </body>
 </html>

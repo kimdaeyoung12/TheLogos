@@ -1,0 +1,54 @@
+{{- $source := readFile "static/markov-extensions/christian-history/index.html" -}}
+{{- $style := replaceRE `(?s)^.*?<style>(.*?)</style>.*$` "$1" $source -}}
+{{- $body := replaceRE `(?s)^.*?<body>(.*?)</body>.*$` "$1" $source -}}
+{{- $script := replaceRE `(?s)^.*?<script>(.*?)</script>.*$` "$1" $source -}}
+{{- $body = replaceRE `(?s)<script>.*?</script>` "" $body -}}
+{{- $id := printf "christian-history-inline-%d" .Ordinal -}}
+
+<div class="christian-history-inline-shell">
+  <template id="{{ $id }}-template">
+    <style>{{ $style | safeCSS }}</style>
+    {{ $body | safeHTML }}
+  </template>
+  <script type="text/plain" id="{{ $id }}-script">{{ $script | safeHTML }}</script>
+  <christian-history-inline data-template="{{ $id }}-template" data-script="{{ $id }}-script"></christian-history-inline>
+</div>
+
+<script>
+  (function () {
+    const shell = document.currentScript.previousElementSibling;
+    const host = shell && shell.querySelector('christian-history-inline');
+    if (!host || host.shadowRoot) return;
+
+    const template = document.getElementById(host.dataset.template);
+    const source = document.getElementById(host.dataset.script);
+    if (!template || !source) return;
+
+    const root = host.attachShadow({ mode: 'open' });
+    root.appendChild(template.content.cloneNode(true));
+
+    const style = root.querySelector('style');
+    if (style) {
+      style.textContent = style.textContent
+        .replace(/:root/g, ':host')
+        .replace(/(^|})\s*html\s*\{[^}]*\}/g, '$1')
+        .replace(/(^|})\s*body\s*\{/g, '$1 :host {')
+        + '\n:host{display:block;width:100%;max-width:100%;contain:layout style;}'
+        + '\n.timeline-rail{overflow:visible;}'
+        + '\n.timeline-node{min-width:0;}'
+        + '\n@media (max-width: 720px){.timeline-rail{grid-template-columns:1fr;}.timeline-node{min-height:auto;}}';
+    }
+
+    const scopedScript = source.textContent
+      .replaceAll('document.getElementById', 'root.getElementById')
+      .replaceAll('document.querySelectorAll', 'root.querySelectorAll')
+      .replaceAll('document.body', 'root.host')
+      .replaceAll('document.documentElement', 'root.host');
+
+    try {
+      new Function('root', scopedScript)(root);
+    } catch (error) {
+      console.error('Christian history inline explorer failed to initialize', error);
+    }
+  }());
+</script>

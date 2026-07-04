@@ -4,6 +4,10 @@
 {{- $authorName := .Params.author | default (.Site.Params.author | default "DaeYoung Kim") -}}
 {{- $description := .Params.description | default (.Summary | plainify) -}}
 {{- $isPost := eq .Section "posts" -}}
+{{- $hideToc := or .Params.hide_toc .Params.hideToc (eq .Params.toc false) -}}
+{{- $toc := .TableOfContents -}}
+{{- $hasToc := and (not $hideToc) (in $toc "<a ") -}}
+{{- $wideContent := or .Params.wide_content .Params.wideContent -}}
 
 {{- $category := "page" -}}
 {{- if $isPost -}}
@@ -67,7 +71,7 @@
 {{ ($scratch.Get "schema") | jsonify | safeJS }}
 </script>
 
-<article class="article article--page category-{{ $category }}" itemscope itemtype="https://schema.org/{{ $schemaType }}"
+<article class="article article--page category-{{ $category }}{{ if $wideContent }} article--wide-content{{ end }}" itemscope itemtype="https://schema.org/{{ $schemaType }}"
     style="--cat-color: {{ $categoryColor }};">
     <header class="article-header">
         <nav class="breadcrumb" aria-label="Breadcrumb">
@@ -121,22 +125,21 @@
         </div>
     </header>
 
-    <div class="article-container">
-        <div class="article-content" itemprop="text">
-            {{ .Content }}
-            {{ partial "verification_badge.html" . }}
-        </div>
-
-        {{- if .TableOfContents -}}
-        <aside class="toc-container" aria-label="Table of contents">
+    <div class="article-container{{ if $hasToc }} article-container--with-toc{{ else }} article-container--no-toc{{ end }}">
+        {{- if $hasToc -}}
+        <aside class="article-toc-band" aria-label="Table of contents">
             <div class="toc-wrapper">
                 <h2 class="toc-title">On This Page</h2>
                 <nav class="toc-nav">
-                    {{ .TableOfContents }}
+                    {{ $toc }}
                 </nav>
             </div>
         </aside>
         {{- end -}}
+        <div class="article-content" itemprop="text">
+            {{ .Content }}
+            {{ partial "verification_badge.html" . }}
+        </div>
     </div>
 
     {{- if $isPost -}}

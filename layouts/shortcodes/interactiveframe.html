@@ -1,5 +1,6 @@
 {{- $src := .Get "src" -}}
 {{- $title := .Get "title" | default "Interactive explainer" -}}
+{{- $minHeight := .Get "minheight" | default (.Get "minHeight" | default "680") -}}
 {{- if $src -}}
 <style>
   .thelogos-interactive-frame-shell {
@@ -49,7 +50,7 @@
 </style>
 
 <div class="thelogos-interactive-frame-shell">
-  <iframe src="{{ $src }}" title="{{ $title }}" loading="lazy" scrolling="no"></iframe>
+  <iframe src="{{ $src }}" title="{{ $title }}" loading="lazy" scrolling="no" style="height: {{ $minHeight }}px;" data-min-height="{{ $minHeight }}"></iframe>
   <noscript>
     <p class="thelogos-interactive-frame-fallback">
       JavaScript is required to display this interactive explainer.
@@ -75,17 +76,30 @@
       }, window.location.origin);
     }
 
+    function requestFrameHeight() {
+      iframe.contentWindow?.postMessage({
+        type: 'thelogos-interactive-height-request'
+      }, window.location.origin);
+    }
+
     window.addEventListener('message', function (event) {
       if (event.origin !== window.location.origin || event.source !== iframe.contentWindow || event.data?.type !== 'thelogos-interactive-height') return;
-      const nextHeight = Math.max(680, Math.ceil(Number(event.data.height) || 0));
+      const minHeight = Math.max(680, Math.ceil(Number(iframe.dataset.minHeight) || 0));
+      const nextHeight = Math.max(minHeight, Math.ceil(Number(event.data.height) || 0));
       iframe.style.height = nextHeight + 'px';
     });
 
-    iframe.addEventListener('load', syncTheme);
+    iframe.addEventListener('load', function () {
+      syncTheme();
+      requestFrameHeight();
+    });
     const observer = new MutationObserver(syncTheme);
     observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
     observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
     syncTheme();
+    requestFrameHeight();
+    setTimeout(requestFrameHeight, 250);
+    setTimeout(requestFrameHeight, 1000);
   }());
 </script>
 {{- end -}}

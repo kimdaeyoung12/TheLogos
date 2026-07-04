@@ -2,7 +2,7 @@
 
 ## Source of truth
 - Status: Active
-- Last refreshed: 2026-07-03
+- Last refreshed: 2026-07-04
 - Primary product surfaces: Hugo homepage, article archive, individual article pages, informational pages, embedded interactive explainers, knowledge graph, footer/navigation.
 - Evidence reviewed: `layouts/index.html`, `layouts/_default/baseof.html`, `layouts/_default/list.html`, `layouts/posts/single.html`, `layouts/_default/single.html`, `layouts/_default/network.html`, `layouts/_default/about.html`, `layouts/shortcodes/interactiveframe.html`, `layouts/shortcodes/ai_summary.html`, `content/about.md`, `content/posts`, `assets/css/home.css`, `assets/css/archive.css`, `assets/css/main.css`, `assets/css/single.css`, `hugo.toml`, `static/images/og-default.png`.
 
@@ -24,7 +24,7 @@
 ## Information architecture
 - Primary navigation: Home, Articles, About, Network, Subscribe.
 - Core routes/screens: `/`, `/posts/`, `/posts/{slug}/`, `/about/`, `/network/`, legal/public pages, static interactive assets under purpose-specific paths.
-- Content hierarchy: homepage brand promise, archive signal row, search, primary routes, atlas-style discipline preview, discipline bento, latest posts, network CTA, newsletter; archive pages expose four discipline filters and article signals; article pages keep discipline, title, metadata, concise summary, optional interactive explainer, long-form body, references; informational pages use the same reading shell without pretending to be posts.
+- Content hierarchy: homepage brand promise, archive signal row, search, primary routes, atlas-style discipline preview, discipline bento, latest posts, network CTA, newsletter; archive pages expose four discipline filters and article signals; article pages keep discipline, title, metadata, concise summary, optional interactive explainer, long-form body, references; informational pages use the same reading shell without pretending to be posts; article table-of-contents UI should aid long-form reading as a secondary navigation surface, floating beside the reading column on wide desktop screens and collapsing to a compact top band on narrower screens.
 
 ## Design principles
 - Principle 1: Keep the article as the primary object; use interactive UI as evidence and intuition, not as a replacement for the post.
@@ -41,9 +41,9 @@
 - Imagery/iconography: homepage uses local brand imagery; technical content uses real charts, simulated paths, grids, and distributions rather than generic decorative images.
 
 ## Components
-- Existing components to reuse: `ai_summary` shortcode, `interactiveframe` shortcode, article layout with working hash-driven TOC links, related-post logic, header/footer partials.
+- Existing components to reuse: `ai_summary` shortcode, `interactiveframe` shortcode, article layout with responsive hash-driven TOC navigation, related-post logic, header/footer partials.
 - New/changed components: homepage atlas hero/search, archive signal chips, discipline bento cards, archive filters/cards/search, article field-note header, related-reading cards, network graph controls, about page reading shell, footer discovery links.
-- Variants and states: iframe fallback link, responsive frame height, dark/light theme notification, homepage/archive/article light/dark states, archive empty search state, network node panel, subscription success/error states.
+- Variants and states: iframe fallback link, responsive frame height with parent-child resize handshake, article TOC only when real section links exist, wide-screen floating TOC, narrow-screen compact TOC band, dark/light theme notification, homepage/archive/article light/dark states, archive empty search state, network node panel, subscription success/error states.
 - Token/component ownership: keep global site variables in `assets/css/main.css`; keep homepage-specific styling in `assets/css/home.css`; keep archive-specific styling in `assets/css/archive.css`; keep article/informational page styling in `assets/css/single.css`; keep explainer-specific styling inside static explainer HTML.
 
 ## Accessibility
@@ -55,7 +55,7 @@
 
 ## Responsive behavior
 - Supported breakpoints/devices: mobile article reading, tablet, desktop.
-- Layout adaptations: homepage hero and bento collapse to one column below tablet width; archive filters/cards collapse to two then one column; article TOC disappears below desktop; iframe content remains in-flow and full-width within the article column.
+- Layout adaptations: homepage hero and bento collapse to one column below tablet width; archive filters/cards collapse to two then one column; article TOC floats to the right of the reading column on wide desktop screens, then becomes a compact wrapping band above the article body on narrower screens; iframe content remains in-flow and full-width within the article column and must resize to its inner content instead of becoming a clipped internal viewport.
 - Touch/hover differences: controls must work without hover.
 
 ## Interaction states

@@ -3,6 +3,10 @@
 {{- $lastmod := .Lastmod | default $publishDate -}}
 {{- $authorName := .Params.author | default (.Site.Params.author | default "DaeYoung Kim") -}}
 {{- $description := .Params.description | default (.Summary | plainify) -}}
+{{- $hideToc := or .Params.hide_toc .Params.hideToc (eq .Params.toc false) -}}
+{{- $toc := .TableOfContents -}}
+{{- $hasToc := and (not $hideToc) (in $toc "<a ") -}}
+{{- $wideContent := or .Params.wide_content .Params.wideContent -}}
 
 {{- $category := "other" -}}
 {{- with .Params.categories -}}
@@ -99,7 +103,7 @@
 }
 </script>
 
-<article class="article article--post category-{{ $category }}" itemscope itemtype="https://schema.org/BlogPosting"
+<article class="article article--post category-{{ $category }}{{ if $wideContent }} article--wide-content{{ end }}" itemscope itemtype="https://schema.org/BlogPosting"
     style="--cat-color: {{ $categoryColor }};">
     <header class="article-header">
         <nav class="breadcrumb" aria-label="Breadcrumb">
@@ -151,21 +155,20 @@
         </div>
     </header>
 
-    <div class="article-container">
-        <div class="article-content" itemprop="articleBody">
-            {{ .Content }}
-        </div>
-
-        {{- if .TableOfContents -}}
-        <aside class="toc-container" aria-label="Table of contents">
+    <div class="article-container{{ if $hasToc }} article-container--with-toc{{ else }} article-container--no-toc{{ end }}">
+        {{- if $hasToc -}}
+        <aside class="article-toc-band" aria-label="Table of contents">
             <div class="toc-wrapper">
                 <h2 class="toc-title">On This Page</h2>
                 <nav class="toc-nav">
-                    {{ .TableOfContents }}
+                    {{ $toc }}
                 </nav>
             </div>
         </aside>
         {{- end -}}
+        <div class="article-content" itemprop="articleBody">
+            {{ .Content }}
+        </div>
     </div>
 
     {{- $related := .Site.RegularPages.Related . | first 3 -}}
