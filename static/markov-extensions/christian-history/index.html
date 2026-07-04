@@ -1,0 +1,727 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>기독교 역사 전체 흐름: 신앙고백으로 읽는 교회사와 서양 지성사</title>
+  <meta name="description" content="디다케에서 니케아 신경, 칼케돈 신조, 종교개혁 신앙고백, 현대 세계기독교까지 기독교 역사의 흐름을 인터랙티브 타임라인과 함께 정리한 글." />
+  <meta property="og:title" content="기독교 역사 전체 흐름: 신앙고백으로 읽는 교회사와 서양 지성사" />
+  <meta property="og:description" content="기독교 역사를 교회 형성, 교리 정식화, 중세 제도화, 종교개혁, 세계기독교화의 흐름으로 정리합니다." />
+  <meta property="og:type" content="article" />
+  <meta name="theme-color" content="#0f4c81" />
+  <style>
+    :root {
+      --bg: #f7f8fb;
+      --paper: #ffffff;
+      --ink: #172033;
+      --muted: #5f6b7a;
+      --line: #dbe2ec;
+      --blue: #0f72b8;
+      --blue-dark: #0f4c81;
+      --cyan: #23a6d5;
+      --gold: #c9942f;
+      --red: #b64b43;
+      --green: #477a54;
+      --purple: #6b5aa8;
+      --shadow: 0 18px 40px rgba(18, 38, 63, 0.10);
+      --radius: 20px;
+      --max: 1180px;
+      --serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+      --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", Arial, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 20% 0%, rgba(35,166,213,.14), transparent 32rem),
+        radial-gradient(circle at 80% 8%, rgba(201,148,47,.12), transparent 28rem),
+        var(--bg);
+      font-family: var(--sans);
+      line-height: 1.72;
+      word-break: keep-all;
+    }
+    a { color: var(--blue-dark); text-underline-offset: 3px; }
+    .wrap { max-width: var(--max); margin: 0 auto; padding: 0 22px; }
+    .hero { padding: 54px 0 28px; }
+    .eyebrow {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 7px 12px; border: 1px solid rgba(15,76,129,.18);
+      border-radius: 999px; background: rgba(255,255,255,.72);
+      color: var(--blue-dark); font-weight: 700; font-size: 13px;
+    }
+    .hero h1 {
+      margin: 20px 0 14px;
+      font-size: clamp(34px, 5vw, 64px);
+      line-height: 1.08;
+      letter-spacing: -0.045em;
+    }
+    .hero .lead {
+      max-width: 860px;
+      color: #3b4655;
+      font-size: clamp(17px, 2vw, 21px);
+      margin: 0 0 22px;
+    }
+    .meta-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+    .pill {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--paper); border: 1px solid var(--line); border-radius: 999px;
+      padding: 8px 13px; color: var(--muted); font-size: 14px;
+    }
+    .toc {
+      position: sticky; top: 0; z-index: 20;
+      background: rgba(247,248,251,.84); backdrop-filter: blur(12px);
+      border-top: 1px solid rgba(219,226,236,.65);
+      border-bottom: 1px solid rgba(219,226,236,.65);
+    }
+    .toc .wrap { display: flex; gap: 10px; overflow-x: auto; padding-top: 10px; padding-bottom: 10px; }
+    .toc a {
+      flex: 0 0 auto;
+      text-decoration: none; color: #384352; font-weight: 700; font-size: 14px;
+      padding: 8px 12px; border-radius: 999px;
+    }
+    .toc a:hover { background: #fff; box-shadow: 0 6px 18px rgba(18,38,63,.08); }
+    .panel {
+      background: rgba(255,255,255,.86);
+      border: 1px solid rgba(219,226,236,.9);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+    .infographic { padding: 26px; margin: 26px 0 46px; }
+    .section-label {
+      margin: 0 0 8px; color: var(--blue-dark); font-weight: 800; letter-spacing: -0.02em;
+      font-size: 15px; text-transform: uppercase;
+    }
+    .infographic h2, section h2 {
+      margin: 0 0 14px;
+      font-size: clamp(26px, 3.2vw, 40px);
+      line-height: 1.18;
+      letter-spacing: -0.04em;
+    }
+    .infographic-grid { display: grid; grid-template-columns: 1.1fr .9fr; gap: 22px; align-items: start; }
+    .flow-strip {
+      display: grid; grid-template-columns: repeat(5, minmax(120px, 1fr)); gap: 10px;
+      margin: 18px 0 20px;
+    }
+    .flow-step {
+      position: relative; min-height: 110px;
+      border: 1px solid var(--line); border-radius: 16px; background: #fff;
+      padding: 14px 14px 14px 16px; overflow: hidden;
+    }
+    .flow-step::before {
+      content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 6px; background: var(--blue);
+    }
+    .flow-step:nth-child(2)::before { background: var(--gold); }
+    .flow-step:nth-child(3)::before { background: var(--green); }
+    .flow-step:nth-child(4)::before { background: var(--red); }
+    .flow-step:nth-child(5)::before { background: var(--purple); }
+    .flow-step strong { display: block; font-size: 15px; letter-spacing: -0.02em; }
+    .flow-step span { display: block; margin-top: 5px; color: var(--muted); font-size: 13px; line-height: 1.55; }
+    .filters { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0; }
+    .filters button, .copy-btn {
+      border: 1px solid var(--line); background: #fff; border-radius: 999px;
+      padding: 9px 13px; font-weight: 800; color: #3b4655; cursor: pointer;
+      transition: transform .12s ease, box-shadow .12s ease, background .12s ease;
+    }
+    .filters button:hover, .copy-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 18px rgba(18,38,63,.08); }
+    .filters button.active { background: var(--blue-dark); color: #fff; border-color: var(--blue-dark); }
+    .timeline-rail {
+      display: flex; gap: 12px; overflow-x: auto; padding: 24px 4px 18px;
+      border: 1px solid var(--line); border-radius: 18px; background: linear-gradient(180deg, #fff, #f9fbff);
+    }
+    .timeline-node {
+      flex: 0 0 158px; position: relative; text-align: left;
+      border: 1px solid var(--line); background: #fff; border-radius: 16px;
+      padding: 14px 13px 13px; cursor: pointer;
+      transition: transform .13s ease, box-shadow .13s ease, border-color .13s ease;
+    }
+    .timeline-node::before {
+      content: ""; position: absolute; top: -16px; left: 20px; width: 18px; height: 18px;
+      border-radius: 50%; background: var(--blue); border: 4px solid #d9effc;
+    }
+    .timeline-node[data-phase="medieval"]::before { background: var(--green); border-color: #e0f0e4; }
+    .timeline-node[data-phase="reformation"]::before { background: var(--red); border-color: #f5dedb; }
+    .timeline-node[data-phase="modern"]::before { background: var(--purple); border-color: #e8e3fb; }
+    .timeline-node:hover, .timeline-node.active { transform: translateY(-2px); box-shadow: 0 14px 24px rgba(18,38,63,.12); border-color: rgba(15,76,129,.35); }
+    .timeline-node .year { display: block; color: var(--blue-dark); font-size: 13px; font-weight: 900; line-height: 1.3; }
+    .timeline-node .title { display: block; margin-top: 6px; font-weight: 900; line-height: 1.35; letter-spacing: -0.02em; }
+    .timeline-node .type { display: inline-flex; margin-top: 10px; color: var(--muted); font-size: 12px; border-top: 1px solid var(--line); padding-top: 7px; }
+    .detail-card { padding: 22px; border-radius: 18px; background: #101827; color: #f7fbff; min-height: 415px; }
+    .detail-card .detail-year { display: inline-flex; padding: 5px 10px; border-radius: 999px; background: rgba(255,255,255,.12); font-weight: 900; font-size: 13px; }
+    .detail-card h3 { margin: 14px 0 8px; font-size: 27px; line-height: 1.2; letter-spacing: -0.035em; }
+    .detail-card p { color: rgba(247,251,255,.86); margin: 10px 0; }
+    .detail-card dl { margin: 18px 0 0; display: grid; gap: 12px; }
+    .detail-card dt { font-weight: 900; color: #9fd3ff; font-size: 13px; }
+    .detail-card dd { margin: 3px 0 0; color: rgba(255,255,255,.86); font-size: 14px; }
+    .legend { display: flex; flex-wrap: wrap; gap: 10px; color: var(--muted); font-size: 13px; margin-top: 12px; }
+    .legend span { display: inline-flex; align-items: center; gap: 6px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; background: var(--blue); }
+    .dot.medieval { background: var(--green); } .dot.reformation { background: var(--red); } .dot.modern { background: var(--purple); }
+    main { padding-bottom: 80px; }
+    section { margin: 44px 0; }
+    section .section-head { margin-bottom: 18px; }
+    .article-card { padding: clamp(22px, 4vw, 36px); }
+    .article-card h3 { margin: 28px 0 8px; font-size: 24px; letter-spacing: -0.03em; }
+    .article-card h4 { margin: 22px 0 6px; font-size: 18px; color: var(--blue-dark); }
+    .article-card p { margin: 10px 0; }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 16px; }
+    .mini-card { border: 1px solid var(--line); border-radius: 18px; padding: 18px; background: #fff; }
+    .mini-card strong { display: block; margin-bottom: 5px; font-size: 17px; }
+    .mini-card p { color: var(--muted); font-size: 14px; margin: 0; }
+    .timeline-table { width: 100%; border-collapse: collapse; overflow: hidden; border-radius: 16px; font-size: 14px; }
+    .timeline-table th, .timeline-table td { border: 1px solid var(--line); padding: 12px 13px; vertical-align: top; }
+    .timeline-table th { background: #eef5fb; text-align: left; color: var(--blue-dark); }
+    .timeline-table tr:nth-child(even) td { background: #fbfcff; }
+    .period { border-left: 5px solid var(--blue); padding-left: 18px; margin: 30px 0; }
+    .period.medieval { border-left-color: var(--green); }
+    .period.reformation { border-left-color: var(--red); }
+    .period.modern { border-left-color: var(--purple); }
+    .period h3 { margin-top: 0; }
+    .callout {
+      border: 1px solid rgba(15,76,129,.2); border-left: 5px solid var(--blue-dark);
+      background: #f3f8fc; border-radius: 16px; padding: 18px 20px; margin: 20px 0;
+    }
+    .callout.warning { border-left-color: var(--gold); background: #fff9eb; }
+    .callout strong { color: var(--blue-dark); }
+    .badge {
+      display: inline-flex; align-items: center; border-radius: 999px;
+      padding: 3px 9px; background: #eef5fb; color: var(--blue-dark); font-weight: 900; font-size: 12px;
+      margin-right: 6px;
+    }
+    .source-list { columns: 2; column-gap: 32px; padding-left: 20px; }
+    .source-list li { break-inside: avoid; margin: 0 0 10px; font-size: 14px; color: #3b4655; }
+    .footnote { color: var(--muted); font-size: 13px; }
+    .copy-zone { display: flex; justify-content: space-between; gap: 14px; align-items: center; margin-top: 18px; padding: 16px; border: 1px dashed var(--line); border-radius: 16px; background: #fff; }
+    code { background: #eef2f7; padding: 2px 5px; border-radius: 6px; }
+    @media (max-width: 900px) {
+      .infographic-grid, .grid-2, .grid-3 { grid-template-columns: 1fr; }
+      .flow-strip { grid-template-columns: 1fr; }
+      .detail-card { min-height: auto; }
+      .source-list { columns: 1; }
+    }
+    @media print {
+      body { background: #fff; }
+      .toc, .filters, .copy-zone { display: none; }
+      .panel { box-shadow: none; }
+      .timeline-rail { overflow: visible; display: block; }
+      .timeline-node { display: inline-block; width: 30%; margin: 6px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="wrap">
+      <div class="eyebrow">thelogos.dev · 교회사 시각화 노트</div>
+      <h1>기독교 역사 전체 흐름<br />신앙고백으로 읽는 교회사와 서양 지성사</h1>
+      <p class="lead">디다케에서 니케아 신경, 칼케돈 신조, 종교개혁 신앙고백, 바르멘 선언과 로잔 언약까지. 기독교 역사는 단순한 사건 나열이 아니라 <strong>복음 공동체가 역사적 압력 속에서 무엇을 믿고, 어떻게 예배하며, 어떤 제도로 살아남았는지를 정리해 온 과정</strong>이다.</p>
+      <div class="meta-row">
+        <span class="pill">작성일: 2026-07-04</span>
+        <span class="pill">분류: 기독교 역사 · 신앙고백 · 서양 지성사</span>
+        <span class="pill">읽는 시간: 약 15–20분</span>
+      </div>
+    </div>
+  </header>
+
+  <nav class="toc" aria-label="본문 목차">
+    <div class="wrap">
+      <a href="#infographic">인포그래픽</a>
+      <a href="#map">읽는 법</a>
+      <a href="#periods">시대별 흐름</a>
+      <a href="#confessions">신앙고백 연표</a>
+      <a href="#west">서양 지성사 레이어</a>
+      <a href="#didache">디다케 확대</a>
+      <a href="#sources">참고자료</a>
+    </div>
+  </nav>
+
+  <main class="wrap">
+    <section id="infographic" class="panel infographic" aria-label="인터랙티브 인포그래픽">
+      <p class="section-label">Interactive overview</p>
+      <h2>한 화면으로 보는 기독교 역사</h2>
+      <p>아래 타임라인의 노드를 누르면 각 시대의 <strong>배경 · 기독교적 전개 · 대표 문서 · 서양 철학/과학사 맥락</strong>이 요약된다. 서양 지성사는 메인이 아니라, 기독교사가 놓인 문화적 배경으로만 배치했다.</p>
+
+      <div class="flow-strip" aria-label="기독교 역사 5단계">
+        <div class="flow-step"><strong>1. 교회 형성</strong><span>사도적 증언, 세례, 성찬, 공동체 윤리</span></div>
+        <div class="flow-step"><strong>2. 교리 정식화</strong><span>니케아·콘스탄티노폴리스·칼케돈</span></div>
+        <div class="flow-step"><strong>3. 중세 제도화</strong><span>수도원, 교황권, 대학, 스콜라 신학</span></div>
+        <div class="flow-step"><strong>4. 종교개혁과 고백화</strong><span>루터교·개혁파·성공회·가톨릭 개혁</span></div>
+        <div class="flow-step"><strong>5. 세계기독교화</strong><span>선교, 현대 신학 논쟁, 세계 남반구 교회</span></div>
+      </div>
+
+      <div class="infographic-grid">
+        <div>
+          <div class="filters" role="group" aria-label="시대 필터">
+            <button class="active" data-filter="all">전체</button>
+            <button data-filter="ancient">고대</button>
+            <button data-filter="medieval">중세</button>
+            <button data-filter="reformation">종교개혁</button>
+            <button data-filter="modern">근현대</button>
+          </div>
+          <div class="timeline-rail" id="timelineRail" aria-live="polite"></div>
+          <div class="legend">
+            <span><i class="dot"></i>고대</span>
+            <span><i class="dot medieval"></i>중세</span>
+            <span><i class="dot reformation"></i>종교개혁</span>
+            <span><i class="dot modern"></i>근현대</span>
+          </div>
+        </div>
+        <aside class="detail-card" id="eventDetail" aria-live="polite"></aside>
+      </div>
+
+      <div class="copy-zone">
+        <span>이 글의 핵심 요약을 마크다운으로 복사할 수 있다.</span>
+        <button class="copy-btn" id="copySummary" type="button">요약 복사</button>
+      </div>
+    </section>
+
+    <section id="map" class="panel article-card">
+      <div class="section-head">
+        <p class="section-label">Reading map</p>
+        <h2>이 글의 골조: 기독교 역사는 어떻게 흘러왔는가</h2>
+      </div>
+      <p>이 글은 기독교 역사를 하나의 직선적 승리 서사로 보지 않는다. 더 정확한 구조는 다음과 같다.</p>
+      <div class="grid-3">
+        <div class="mini-card"><strong>공동체의 형성</strong><p>예수 사건과 사도적 증언을 중심으로 교회가 세워지고, 디다케 같은 생활 규범이 등장한다.</p></div>
+        <div class="mini-card"><strong>교리의 정밀화</strong><p>예수 그리스도와 삼위일체를 둘러싼 논쟁이 니케아와 칼케돈으로 정리된다.</p></div>
+        <div class="mini-card"><strong>제도의 구축</strong><p>중세에는 교황권, 수도원, 대학, 스콜라 신학이 서방교회의 구조를 만든다.</p></div>
+        <div class="mini-card"><strong>개혁과 분화</strong><p>종교개혁은 성경 권위, 구원론, 성례, 교회 권위를 둘러싼 재정렬이었다.</p></div>
+        <div class="mini-card"><strong>고백화</strong><p>각 전통은 신앙고백과 요리문답으로 자신의 교리 경계를 문서화했다.</p></div>
+        <div class="mini-card"><strong>세계화와 현대성</strong><p>19세기 이후 기독교는 유럽 중심에서 세계기독교로 이동했고, 과학·역사비평·정치 이데올로기와 대면했다.</p></div>
+      </div>
+      <div class="callout warning">
+        <strong>주의.</strong> 이 시대구분은 서방교회 중심의 입문용 골조다. 동방정교회, 오리엔트 정교회, 시리아·콥트·아르메니아 전통, 아시아·아프리카 기독교의 독자 흐름은 별도 축으로 보완해야 한다.
+      </div>
+    </section>
+
+    <section id="periods" class="panel article-card">
+      <div class="section-head">
+        <p class="section-label">Main narrative</p>
+        <h2>시대별 기독교 역사 흐름</h2>
+      </div>
+
+      <div class="period ancient">
+        <h3>1. 사도시대와 사도후시대: 교회가 태어나다 <span class="badge">1–170</span></h3>
+        <p><strong>배경.</strong> 로마 제국의 도로망, 헬라어 문화권, 유대 디아스포라 회당은 복음 전파의 물리적·언어적 기반이 되었다. 동시에 예수를 주로 고백하는 공동체는 유대교 회당과 로마 제국 질서 사이에서 자신을 설명해야 했다.</p>
+        <p><strong>기독교사의 전개.</strong> 사도적 증언, 세례, 성찬, 주일 모임, 공동체 윤리가 형성되었다. 사도 이후에는 클레멘트 1서, 이그나티우스 서신, 디다케 같은 문서가 교회의 실제 문제를 다루었다.</p>
+        <p><strong>서양사 보조 맥락.</strong> 스토아 윤리, 중기 플라톤주의, 로마 시민질서, 유대 묵시문학이 같은 문화권 안에 있었다. 기독교는 이 세계의 언어를 사용했지만, 십자가와 부활을 중심으로 다른 질서를 제시했다.</p>
+      </div>
+
+      <div class="period ancient">
+        <h3>2. 니케아 전 시대: 정통과 이단의 경계가 생기다 <span class="badge">170–325</span></h3>
+        <p><strong>배경.</strong> 교회가 확장되면서 ‘무엇이 사도적 신앙인가’라는 질문이 더 날카로워졌다. 영지주의, 마르키온주의, 몬타누스 운동은 정경·교리·직분의 기준을 묻게 했다.</p>
+        <p><strong>기독교사의 전개.</strong> 이레니우스는 사도적 신앙과 창조의 선함을 변증했고, 터툴리안은 라틴 신학의 언어를 발전시켰으며, 오리게네스는 성경 해석과 조직적 신학 사고의 폭을 넓혔다. 무라토리 단편 같은 정경 목록도 이 맥락에서 중요하다.</p>
+        <p><strong>서양사 보조 맥락.</strong> 플로티노스의 신플라톤주의, 프톨레마이오스 천문학, 갈레노스 의학은 후기 고대 지성사의 중요한 배경이다. 기독교 변증가들은 이 철학적 언어를 수용하거나 비판하면서 신앙을 설명했다.</p>
+      </div>
+
+      <div class="period ancient">
+        <h3>3. 공의회 시대: 삼위일체와 기독론이 정식화되다 <span class="badge">325–590</span></h3>
+        <p><strong>배경.</strong> 콘스탄티누스 이후 기독교는 박해받는 소수 공동체에서 제국의 공적 종교로 이동했다. 이 변화는 교리 논쟁을 지역 논쟁이 아니라 공의회와 제국 질서의 문제로 만들었다.</p>
+        <p><strong>기독교사의 전개.</strong> 325년 니케아 신경은 성자가 성부와 동일본질이라는 기준을 세웠고, 381년 신경은 성령 고백을 보완했다. 431년 에베소와 451년 칼케돈은 그리스도의 인격과 본성을 둘러싼 논쟁을 정리했다. 아우구스티누스는 죄, 은혜, 의지, 역사 이해에서 서방 기독교에 깊은 영향을 남겼다.</p>
+        <p><strong>서양사 보조 맥락.</strong> 신플라톤주의와 후기 로마 행정 문화는 신학 언어에 간접적 배경이 되었다. 보에티우스는 고전 철학과 중세 라틴 세계를 연결하는 가교 역할을 했다.</p>
+      </div>
+
+      <div class="period medieval">
+        <h3>4. 중세 전환: 교회가 서유럽 질서의 중심이 되다 <span class="badge">590–800</span></h3>
+        <p><strong>배경.</strong> 서로마 제국 이후 서유럽은 정치적으로 분산되었고, 교회와 수도원은 문해력, 행정, 교육, 구제, 문화 보존의 핵심 기관이 되었다.</p>
+        <p><strong>기독교사의 전개.</strong> 그레고리 1세는 중세 교황권의 기초를 놓은 인물로 평가된다. 베네딕트 규칙서는 수도원 공동체의 기도와 노동 질서를 정리했고, 선교는 게르만·앵글로색슨 지역으로 확장되었다.</p>
+        <p><strong>서양사 보조 맥락.</strong> 고전 학문은 수도원과 교회 학교를 통해 보존되었다. 동시에 지중해권에서는 이슬람 문명이 부상하며 수학, 의학, 철학 전통을 발전시켰다.</p>
+      </div>
+
+      <div class="period medieval">
+        <h3>5. 로마교회 성장과 동서교회 분리 <span class="badge">800–1073</span></h3>
+        <p><strong>배경.</strong> 800년 샤를마뉴 대관은 서방 기독교 세계와 정치권력의 결합을 상징한다. 언어, 전례, 교황권, 필리오케 논쟁의 차이는 동방과 서방의 긴장을 누적시켰다.</p>
+        <p><strong>기독교사의 전개.</strong> 1054년은 동서교회 분리의 상징적 연도다. 실제 분리는 단일 사건이 아니라 오랜 정치·문화·신학적 거리두기의 결과로 보는 편이 정확하다.</p>
+        <p><strong>서양사 보조 맥락.</strong> 카롤링거 르네상스와 학교 제도 정비가 진행되었고, 아랍어권 철학·과학은 훗날 라틴 서방의 아리스토텔레스 수용에 큰 통로가 되었다.</p>
+      </div>
+
+      <div class="period medieval">
+        <h3>6. 중세 전성기: 교황권, 수도회, 대학, 스콜라 신학 <span class="badge">1073–1303</span></h3>
+        <p><strong>배경.</strong> 교회 개혁운동은 성직매매와 세속 권력의 교회 지배 문제를 다루었다. 동시에 도시와 대학이 성장하면서 신학은 더 체계적인 학문 형태를 갖추었다.</p>
+        <p><strong>기독교사의 전개.</strong> 안셀무스는 속죄론을 논리적으로 정리했고, 제4차 라테란 공의회는 중세 가톨릭의 성례와 제도를 정교화했다. 토마스 아퀴나스의 『신학대전』은 신앙과 이성, 자연과 은총, 아리스토텔레스 철학과 기독교 신학을 큰 체계 안에 놓았다.</p>
+        <p><strong>서양사 보조 맥락.</strong> 파리와 옥스퍼드 같은 대학, 아리스토텔레스 라틴 번역, 스콜라적 논쟁 방식은 서양 학문 제도의 중요한 토대가 되었다.</p>
+      </div>
+
+      <div class="period medieval">
+        <h3>7. 중세 위기와 개혁 전조: 종교개혁의 조건이 만들어지다 <span class="badge">1303–1517</span></h3>
+        <p><strong>배경.</strong> 교황권의 정치적 위기, 아비뇽 유수, 서방교회 대분열, 흑사병, 경제 변화는 기존 교회 권위에 균열을 냈다. 르네상스 인문주의와 인쇄술은 원전 읽기와 사상 확산을 촉진했다.</p>
+        <p><strong>기독교사의 전개.</strong> 위클리프와 후스는 성경 권위와 교회 개혁을 주장했고, 1517년 루터의 95개조 반박문은 면벌부 논쟁을 통해 종교개혁의 상징적 시작점이 되었다.</p>
+        <p><strong>서양사 보조 맥락.</strong> 오컴의 유명론, 르네상스 인문주의, 인쇄술은 후기 중세의 지식 질서를 바꾸었다. 종교개혁은 이 지적·기술적 조건 없이는 같은 속도로 확산되기 어려웠다.</p>
+      </div>
+
+      <div class="period reformation">
+        <h3>8. 종교개혁과 고백화 시대: 교회가 여러 전통으로 분화되다 <span class="badge">1517–1648</span></h3>
+        <p><strong>배경.</strong> 핵심 논점은 성경 권위, 칭의, 성례, 교회 직분, 교황권, 예배 개혁이었다. 그러나 이 논쟁은 신학만의 문제가 아니라 제국 정치, 도시 자치, 인쇄 네트워크, 교육 개혁과 결합했다.</p>
+        <p><strong>기독교사의 전개.</strong> 루터교는 1530년 아우크스부르크 신앙고백으로, 개혁파는 프랑스·스코틀랜드·벨기에 신앙고백과 하이델베르크 요리문답, 제2 스위스 신앙고백 등으로, 성공회는 39개 신조로, 로마가톨릭은 트리엔트 공의회로 자기 입장을 문서화했다. 도르트 신경과 웨스트민스터 신앙고백은 개혁파 정통주의의 표준 문서가 되었다.</p>
+        <p><strong>서양사 보조 맥락.</strong> 같은 시기 자연철학은 코페르니쿠스, 갈릴레이, 케플러, 베이컨, 데카르트를 거치며 관찰·수학·방법의 문제를 새롭게 제기했다. 종교개혁과 과학혁명은 동일한 사건은 아니지만, 권위·방법·해석의 문제를 공유했다.</p>
+      </div>
+
+      <div class="period modern">
+        <h3>9. 근세: 고백 체제, 경건주의, 계몽주의, 부흥 <span class="badge">1648–1800</span></h3>
+        <p><strong>배경.</strong> 웨스트팔리아 조약 이후 유럽은 종교전쟁의 질서를 수습했고, 국가와 교파의 경계가 재조정되었다. 한편 계몽주의는 전통 권위보다 이성과 공적 검증을 강조했다.</p>
+        <p><strong>기독교사의 전개.</strong> 청교도 전통과 장로교·회중교회·침례교 고백문이 확산되었다. 경건주의와 웨슬리 운동, 대각성운동은 제도와 교리만으로 환원되지 않는 회심·경건·선교의 차원을 강조했다.</p>
+        <p><strong>서양사 보조 맥락.</strong> 뉴턴 역학은 자연 이해의 기준을 바꾸었고, 로크·흄·칸트는 지식, 도덕, 종교, 이성의 한계를 새롭게 논했다.</p>
+      </div>
+
+      <div class="period modern">
+        <h3>10. 최근세: 세계기독교화와 현대 논쟁 <span class="badge">1800–현재</span></h3>
+        <p><strong>배경.</strong> 산업화, 제국주의와 선교, 진화론, 역사비평, 민족주의, 세계대전, 탈식민화, 디지털 문명은 교회가 신앙을 설명하는 방식을 바꾸었다.</p>
+        <p><strong>기독교사의 전개.</strong> 19세기 선교운동 이후 기독교의 무게중심은 점차 유럽 밖으로 이동했다. 20세기에는 자유주의 신학, 근본주의, 에큐메니컬 운동, 복음주의, 오순절 운동이 병행되었다. 바르멘 선언은 국가주의에 종속된 교회를 비판했고, 제2차 바티칸 공의회는 현대 세계 속 가톨릭의 자기 이해를 재정리했으며, 로잔 언약은 복음전도와 사회적 책임을 함께 논했다.</p>
+        <p><strong>서양사 보조 맥락.</strong> 다윈, 마르크스, 니체, 프로이트, 아인슈타인, 양자역학, 분석철학과 대륙철학, 디지털 네트워크는 현대 기독교가 대면한 지적 환경이다.</p>
+      </div>
+    </section>
+
+    <section id="confessions" class="panel article-card">
+      <div class="section-head">
+        <p class="section-label">Creeds and confessions</p>
+        <h2>주요 역사적 신앙고백 연표</h2>
+      </div>
+      <p>여기서 <strong>신경</strong>은 대체로 공교회적 기본 신앙고백을, <strong>신앙고백</strong>은 특정 교회 전통이 논쟁 상황에서 자기 교리를 정리한 문서를, <strong>요리문답</strong>은 교육을 위한 문답형 교리 문서를 가리킨다.</p>
+      <table class="timeline-table">
+        <thead>
+          <tr><th>연도</th><th>문서</th><th>역사적 배경</th><th>핵심 기능</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>초기 형태: 2–4세기, 현재형 정착은 더 후대</td><td>사도신경</td><td>세례 고백과 초기 로마 신경 전통</td><td>서방교회의 기본 신앙 골격</td></tr>
+          <tr><td>325</td><td>니케아 신경</td><td>아리우스 논쟁</td><td>성자의 참 신성, 성부와 동일본질 고백</td></tr>
+          <tr><td>381</td><td>니케아-콘스탄티노폴리스 신경</td><td>성령론 논쟁과 니케아 계승</td><td>성령의 신성과 보편교회 고백 보완</td></tr>
+          <tr><td>451</td><td>칼케돈 신조</td><td>그리스도의 신성과 인성 논쟁</td><td>한 인격 안의 두 본성 정식화</td></tr>
+          <tr><td>1523</td><td>츠빙글리 67개 조항</td><td>취리히 종교개혁</td><td>스위스 종교개혁의 출발점</td></tr>
+          <tr><td>1530</td><td>아우크스부르크 신앙고백</td><td>제국 의회에서 루터파 입장 제시</td><td>루터교 표준 신앙고백</td></tr>
+          <tr><td>1559</td><td>프랑스 신앙고백서</td><td>위그노 박해와 프랑스 개혁교회 조직</td><td>프랑스 개혁교회의 교리 정체성</td></tr>
+          <tr><td>1560</td><td>스코틀랜드 신앙고백서</td><td>스코틀랜드 종교개혁</td><td>스코틀랜드 장로교 전통의 초기 고백</td></tr>
+          <tr><td>1561</td><td>벨기에 신앙고백서</td><td>저지대 개혁파 박해와 변증</td><td>개혁파 교회의 정통성과 시민적 충성 변증</td></tr>
+          <tr><td>1563</td><td>하이델베르크 요리문답</td><td>팔츠 지역의 교회 교육과 일치 필요</td><td>비참·구원·감사의 구조로 신앙 교육</td></tr>
+          <tr><td>1566</td><td>제2 스위스 신앙고백</td><td>불링거와 스위스 개혁교회</td><td>개혁파 국제 표준 문서 중 하나</td></tr>
+          <tr><td>1563/1571</td><td>39개 신조</td><td>엘리자베스 종교정착과 영국교회 정체성</td><td>성공회 교리의 역사적 표준</td></tr>
+          <tr><td>1618–1619</td><td>도르트 신경</td><td>항론파 논쟁</td><td>개혁파 구원론, 은혜와 견인 교리 정리</td></tr>
+          <tr><td>1646–1647</td><td>웨스트민스터 신앙고백</td><td>영국 내전과 웨스트민스터 총회</td><td>장로교·개혁파 표준문서</td></tr>
+        </tbody>
+      </table>
+      <div class="callout warning">
+        <strong>연도 보정.</strong> 일부 도표에서는 39개 신조를 1567년으로 표시하기도 하지만, 영국교회 자료 기준으로는 1562년 런던 소집회에서 합의된 조항, 1563년 흐름, 1571년 최종 승인 흐름을 함께 보는 것이 더 안전하다. 사도신경도 “150년 이전에 현재 형태가 완성되었다”고 단정하기 어렵다.
+      </div>
+    </section>
+
+    <section id="west" class="panel article-card">
+      <div class="section-head">
+        <p class="section-label">Secondary layer</p>
+        <h2>기독교 역사 옆의 서양 철학사·과학사</h2>
+      </div>
+      <p>서양 지성사는 기독교사의 원인이 전부는 아니지만, 교회가 자신을 설명할 때 사용한 언어와 질문을 제공했다. 아래 표는 메인 흐름이 아니라 <strong>보조 배경 지도</strong>다.</p>
+      <table class="timeline-table">
+        <thead><tr><th>시기</th><th>철학사·과학사 배경</th><th>기독교사와의 접점</th></tr></thead>
+        <tbody>
+          <tr><td>1–325</td><td>스토아 윤리, 중기 플라톤주의, 갈레노스, 프톨레마이오스, 신플라톤주의</td><td>기독교 변증과 교리 언어가 헬라 철학의 어휘를 수용·변형함</td></tr>
+          <tr><td>325–590</td><td>후기 고대 철학, 아우구스티누스, 보에티우스</td><td>서방 신학이 내면성, 의지, 은혜, 역사관을 철학적으로 정리함</td></tr>
+          <tr><td>590–1300</td><td>수도원 학교, 카롤링거 르네상스, 아리스토텔레스 번역, 대학과 스콜라학</td><td>신학이 대학의 학문 형식 안에서 논증과 체계의 형태를 갖춤</td></tr>
+          <tr><td>1300–1517</td><td>유명론, 르네상스 인문주의, 인쇄술</td><td>원전 회귀와 인쇄 네트워크가 성경 번역과 종교개혁 확산에 기여함</td></tr>
+          <tr><td>1517–1648</td><td>코페르니쿠스, 갈릴레이, 케플러, 베이컨, 데카르트</td><td>성경 해석, 자연 이해, 권위와 방법의 문제가 새롭게 제기됨</td></tr>
+          <tr><td>1648–1800</td><td>뉴턴, 로크, 흄, 칸트, 계몽주의</td><td>자연신학, 이신론, 계시와 이성의 관계, 종교의 공적 역할이 논쟁화됨</td></tr>
+          <tr><td>1800–현재</td><td>다윈, 마르크스, 니체, 프로이트, 아인슈타인, 양자역학, 현대 철학</td><td>창조·인간·역사·무의식·권력·언어·기술에 대한 신학적 응답이 요구됨</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="didache" class="panel article-card">
+      <div class="section-head">
+        <p class="section-label">Document zoom-in</p>
+        <h2>디다케를 왜 첫머리에 두는가</h2>
+      </div>
+      <p>디다케는 니케아 신경처럼 정밀한 교리 논문이 아니다. 오히려 초대교회가 세례받을 사람에게 무엇을 가르쳤고, 공동체 예배를 어떻게 운영했으며, 순회 사역자를 어떻게 분별했는지 보여 주는 생활 문서다.</p>
+      <div class="grid-2">
+        <div class="mini-card"><strong>두 길</strong><p>생명의 길과 죽음의 길. 기독교는 추상 사상만이 아니라 걸어야 할 삶의 방식으로 제시된다.</p></div>
+        <div class="mini-card"><strong>세례</strong><p>성부·성자·성령의 이름으로 세례를 베풀며, 물의 조건에 따라 방식의 유연성을 둔다.</p></div>
+        <div class="mini-card"><strong>기도와 금식</strong><p>주기도문과 정기적 금식을 통해 공동체의 경건 리듬을 형성한다.</p></div>
+        <div class="mini-card"><strong>성찬 감사기도</strong><p>세례받은 공동체가 감사와 일치의 식탁에 참여한다는 점을 보여 준다.</p></div>
+        <div class="mini-card"><strong>지도자 분별</strong><p>말보다 삶, 돈에 대한 태도, 공동체를 세우는 열매로 사역자를 검증한다.</p></div>
+        <div class="mini-card"><strong>종말의 깨어 있음</strong><p>교회는 현재의 윤리와 예배를 주님의 오심에 대한 기다림 속에서 실천한다.</p></div>
+      </div>
+      <div class="callout">
+        <strong>핵심 요약.</strong> 디다케는 “초대교회는 무엇을 믿었는가?”보다 “초대교회는 어떻게 살고 예배했는가?”에 더 가까운 문서다. 그래서 기독교 역사 전체의 출발점을 교리 체계가 아니라 공동체의 삶으로 보게 만든다.
+      </div>
+    </section>
+
+    <section id="sources" class="panel article-card">
+      <div class="section-head">
+        <p class="section-label">Sources</p>
+        <h2>참고자료와 검증 기준</h2>
+      </div>
+      <p>아래 자료는 공개 원문·교단 자료·학술 백과사전 중심으로 골랐다. 접속일은 2026-07-04이다.</p>
+      <ol class="source-list">
+        <li>New Advent, “The Didache.” <a href="https://www.newadvent.org/fathers/0714.htm">https://www.newadvent.org/fathers/0714.htm</a></li>
+        <li>New Advent Catholic Encyclopedia, “Apostles’ Creed.” <a href="https://www.newadvent.org/cathen/01629a.htm">https://www.newadvent.org/cathen/01629a.htm</a></li>
+        <li>Fordham Internet History Sourcebooks, “The Nicene Creed.” <a href="https://sourcebooks.web.fordham.edu/source/nicenecreed.asp">https://sourcebooks.web.fordham.edu/source/nicenecreed.asp</a></li>
+        <li>Fordham Internet History Sourcebooks, “Council of Chalcedon, 451.” <a href="https://sourcebooks.web.fordham.edu/basis/chalcedon.asp">https://sourcebooks.web.fordham.edu/basis/chalcedon.asp</a></li>
+        <li>The Book of Concord, “The Augsburg Confession.” <a href="https://thebookofconcord.org/augsburg-confession/">https://thebookofconcord.org/augsburg-confession/</a></li>
+        <li>Christian History Institute, “Zwingli’s Sixty-Seven Articles.” <a href="https://christianhistoryinstitute.org/study/module/zwinglis-sixty-seven-articles/">https://christianhistoryinstitute.org/study/module/zwinglis-sixty-seven-articles/</a></li>
+        <li>CCEL, Philip Schaff, “The French Confession of Faith, A.D. 1559.” <a href="https://www.ccel.org/ccel/schaff/creeds3.iv.vii.html">https://www.ccel.org/ccel/schaff/creeds3.iv.vii.html</a></li>
+        <li>Free Presbyterian Church of Scotland, “The Scots Confession 1560.” <a href="https://www.fpchurch.org.uk/about-us/important-documents/the-scots-confession-1560/">https://www.fpchurch.org.uk/about-us/important-documents/the-scots-confession-1560/</a></li>
+        <li>Christian Reformed Church in North America, “Belgic Confession.” <a href="https://www.crcna.org/welcome/beliefs/confessions/belgic-confession">https://www.crcna.org/welcome/beliefs/confessions/belgic-confession</a></li>
+        <li>Christian Reformed Church in North America, “Heidelberg Catechism.” <a href="https://www.crcna.org/welcome/beliefs/confessions/heidelberg-catechism">https://www.crcna.org/welcome/beliefs/confessions/heidelberg-catechism</a></li>
+        <li>Christian Reformed Church in North America, “Canons of Dort.” <a href="https://www.crcna.org/welcome/beliefs/confessions/canons-dort">https://www.crcna.org/welcome/beliefs/confessions/canons-dort</a></li>
+        <li>CRI Voice, “The Second Helvetic Confession.” <a href="https://www.crivoice.org/creed2helvetic.html">https://www.crivoice.org/creed2helvetic.html</a></li>
+        <li>Church of England, “Articles of Religion.” <a href="https://www.churchofengland.org/prayer-and-worship/worship-texts-and-resources/book-common-prayer/articles-religion">https://www.churchofengland.org/prayer-and-worship/worship-texts-and-resources/book-common-prayer/articles-religion</a></li>
+        <li>EKD, “The Barmen Declaration.” <a href="https://www.ekd.de/en/the-barmen-declaration-303.htm">https://www.ekd.de/en/the-barmen-declaration-303.htm</a></li>
+        <li>Vatican, “Documents of the Second Vatican Council.” <a href="https://www.vatican.va/archive/hist_councils/ii_vatican_council/index.htm">https://www.vatican.va/archive/hist_councils/ii_vatican_council/index.htm</a></li>
+        <li>Lausanne Movement, “The Lausanne Covenant.” <a href="https://lausanne.org/statement/lausanne-covenant">https://lausanne.org/statement/lausanne-covenant</a></li>
+        <li>Stanford Encyclopedia of Philosophy, “Augustine of Hippo.” <a href="https://plato.stanford.edu/entries/augustine/">https://plato.stanford.edu/entries/augustine/</a></li>
+        <li>Stanford Encyclopedia of Philosophy, “Plotinus.” <a href="https://plato.stanford.edu/entries/plotinus/">https://plato.stanford.edu/entries/plotinus/</a></li>
+        <li>Stanford Encyclopedia of Philosophy, “Medieval Philosophy.” <a href="https://plato.stanford.edu/entries/medieval-philosophy/">https://plato.stanford.edu/entries/medieval-philosophy/</a></li>
+        <li>Stanford Encyclopedia of Philosophy, “Thomas Aquinas.” <a href="https://plato.stanford.edu/entries/aquinas/">https://plato.stanford.edu/entries/aquinas/</a></li>
+        <li>Stanford Encyclopedia of Philosophy, “Scientific Method.” <a href="https://plato.stanford.edu/entries/scientific-method/">https://plato.stanford.edu/entries/scientific-method/</a></li>
+      </ol>
+      <p class="footnote">이 글의 목적은 입문용 지도 작성이다. 각 문서의 원문 번역, 교단별 해석 차이, 동방교회와 비서구 기독교사는 별도 글에서 보완하는 것이 적절하다.</p>
+    </section>
+  </main>
+
+  <script>
+    const timelineData = [
+  {
+    "id": "apostolic-age",
+    "year": "1–100",
+    "title": "사도시대",
+    "type": "시대",
+    "phase": "ancient",
+    "macro": "고대 교회사",
+    "summary": "예수 그리스도의 복음이 유대 지역을 넘어 로마 세계로 확장되고, 사도적 증언이 교회의 기준으로 자리 잡은 시기.",
+    "background": "로마 제국의 도로·도시망, 헬라어 공용어, 유대 디아스포라 회당은 복음 전파의 통로가 되었다.",
+    "christian": "신약 문서의 기록과 전승, 세례와 성찬, 장로·감독·집사의 초기 형태, 박해 속 공동체 정체성 형성.",
+    "documents": "신약성경 문서들, 초기 세례 고백 전통",
+    "west": "로마 제국 질서, 스토아 윤리, 중기 플라톤주의, 유대 묵시문학의 공존"
+  },
+  {
+    "id": "didache",
+    "year": "1세기 말–2세기 초 추정",
+    "title": "디다케",
+    "type": "문서",
+    "phase": "ancient",
+    "macro": "초기 교회 생활",
+    "summary": "초대교회의 윤리·세례·금식·기도·성찬·지도자 분별을 담은 교회 생활 매뉴얼.",
+    "background": "사도 이후 공동체는 입교자 교육, 예배 질서, 순회 사역자 검증 기준이 필요했다. 정확한 작성 연대와 지역은 확실하지 않다.",
+    "christian": "생명의 길과 죽음의 길, 삼위일체적 세례, 주기도문, 감사기도, 세례받은 자의 성찬 참여, 거짓 선지자 분별.",
+    "documents": "Didache 1–16장",
+    "west": "도시 공동체 윤리와 종교 결사체 문화 속에서 기독교 공동체의 독자적 규범 형성"
+  },
+  {
+    "id": "pre-nicaea",
+    "year": "170–325",
+    "title": "니케아 전 시대",
+    "type": "시대",
+    "phase": "ancient",
+    "macro": "교리 경계 형성",
+    "summary": "교회가 성장하면서 정경, 이단, 직분, 변증의 문제가 본격화된 시기.",
+    "background": "영지주의, 마르키온주의, 몬타누스 운동 등은 '무엇이 사도적 신앙인가'라는 질문을 촉발했다.",
+    "christian": "사도적 계승, 정경 목록, 신앙의 규칙, 라틴 신학과 알렉산드리아 해석 전통의 발전.",
+    "documents": "무라토리 단편, 이레니우스 『이단 반박』, 터툴리안·오리게네스 저작, 사도전승(저자·연대 논쟁 있음)",
+    "west": "갈레노스 의학, 프톨레마이오스 천문학, 플로티노스의 신플라톤주의"
+  },
+  {
+    "id": "nicaea",
+    "year": "325",
+    "title": "니케아 신경",
+    "type": "신경",
+    "phase": "ancient",
+    "macro": "공의회 신학",
+    "summary": "성자는 피조물이 아니라 성부와 동일본질이라는 기준을 세운 공의회 신앙고백.",
+    "background": "아리우스 논쟁은 성자의 신성과 구원의 근거를 둘러싼 논쟁이었다. 제국의 공인 이후 교회 논쟁은 공적 차원의 문제로 확대되었다.",
+    "christian": "'나셨고 지음받지 않았으며 성부와 한 본질'이라는 언어로 성자의 참 신성을 고백.",
+    "documents": "니케아 신경, 니케아 공의회 문서",
+    "west": "콘스탄티누스 이후 제국과 교회의 관계 재편, 후기 고대의 형이상학 언어 활용"
+  },
+  {
+    "id": "constantinople",
+    "year": "381",
+    "title": "니케아-콘스탄티노폴리스 신경",
+    "type": "신경",
+    "phase": "ancient",
+    "macro": "삼위일체 정식화",
+    "summary": "니케아 신조를 계승·보완하며 성령의 신성과 예배받으심을 더 분명히 고백한 문서.",
+    "background": "성자의 신성 논쟁 이후 성령의 위격과 신성을 약화하는 입장들이 문제로 떠올랐다.",
+    "christian": "성령을 '주님이며 생명을 주시는 분'으로 고백하고, 하나의 거룩하고 보편적이며 사도적인 교회를 고백.",
+    "documents": "381년 콘스탄티노폴리스 공의회 신경",
+    "west": "카파도키아 교부들의 용어 정리와 헬라 철학 언어의 신학적 변용"
+  },
+  {
+    "id": "chalcedon",
+    "year": "451",
+    "title": "칼케돈 신조",
+    "type": "신조",
+    "phase": "ancient",
+    "macro": "기독론 정식화",
+    "summary": "예수 그리스도는 한 인격 안에 두 본성, 곧 참 하나님과 참 인간의 본성을 지닌다고 정리한 기독론 문서.",
+    "background": "네스토리우스 논쟁과 단성론 논쟁은 그리스도의 신성과 인성이 어떻게 결합되는지 묻게 했다.",
+    "christian": "혼합 없이, 변화 없이, 분할 없이, 분리 없이 한 그리스도를 고백.",
+    "documents": "칼케돈 신조, 에베소 공의회 문서와 연결",
+    "west": "로마 제국 말기 정치 불안 속에서 교리 언어가 동서 교회 정체성의 기준이 됨"
+  },
+  {
+    "id": "medieval-transition",
+    "year": "590–800",
+    "title": "중세 전환과 선교",
+    "type": "시대",
+    "phase": "medieval",
+    "macro": "중세 교회사",
+    "summary": "서로마 이후 교회가 서유럽 사회 질서와 선교의 중심으로 기능하기 시작한 시기.",
+    "background": "로마 행정 질서의 약화, 게르만 왕국의 형성, 수도원의 확산은 교회를 교육·복지·문화 보존의 중심으로 만들었다.",
+    "christian": "그레고리 1세, 베네딕트 규칙, 수도원 선교, 라틴 서방교회의 조직화.",
+    "documents": "베네딕트 규칙서, 그레고리 1세의 목회 관련 저작",
+    "west": "고전 학문의 수도원 보존, 보에티우스·카시오도루스의 유산, 이슬람 문명의 부상"
+  },
+  {
+    "id": "great-schism",
+    "year": "800–1073 / 1054",
+    "title": "로마교회 성장과 동서교회 분리",
+    "type": "시대·사건",
+    "phase": "medieval",
+    "macro": "중세 교회사",
+    "summary": "샤를마뉴 대관 이후 서방 기독교 세계가 형성되고, 1054년을 상징점으로 동서교회 분리가 가시화된 시기.",
+    "background": "언어·정치·전례·교황권 이해의 차이와 필리오케 논쟁이 누적되었다.",
+    "christian": "로마 중심 서방교회와 콘스탄티노폴리스 중심 동방교회의 분리, 교황권 강화의 기반 형성.",
+    "documents": "필리오케 관련 논쟁 문서, 교황권 관련 문서들",
+    "west": "카롤링거 르네상스, 학교 제도 정비, 아랍어권 과학·철학의 성장"
+  },
+  {
+    "id": "high-middle-ages",
+    "year": "1073–1303",
+    "title": "중세 전성기",
+    "type": "시대",
+    "phase": "medieval",
+    "macro": "로마교회 전성기",
+    "summary": "교황권, 수도회, 십자군, 대학, 스콜라 신학이 서방 기독교 문명의 중심축을 형성한 시기.",
+    "background": "교회 개혁운동과 세속 권력과의 충돌, 도시 성장과 대학의 출현이 신학의 제도화를 이끌었다.",
+    "christian": "그레고리우스 개혁, 십자군, 탁발수도회, 안셀무스와 아퀴나스의 신학 체계화.",
+    "documents": "안셀무스 『왜 하나님이 사람이 되셨는가』, 제4차 라테란 공의회 문서, 토마스 아퀴나스 『신학대전』",
+    "west": "아리스토텔레스 라틴 번역, 파리·옥스퍼드 대학, 스콜라 방법, 초기 자연철학 논의"
+  },
+  {
+    "id": "late-medieval-crisis",
+    "year": "1303–1517",
+    "title": "중세 위기와 개혁 전조",
+    "type": "시대",
+    "phase": "medieval",
+    "macro": "개혁 전조기",
+    "summary": "교황권 위기, 흑사병, 대분열, 인문주의와 인쇄술이 종교개혁의 조건을 만든 시기.",
+    "background": "아비뇽 유수와 서방교회 대분열은 교회 권위의 신뢰를 약화시켰고, 성경과 원전으로 돌아가려는 움직임이 강화되었다.",
+    "christian": "위클리프와 후스의 개혁 주장, 면벌부 논쟁, 성경 번역과 설교 운동.",
+    "documents": "위클리프·후스 관련 문서, 1517년 루터 95개조 반박문",
+    "west": "르네상스 인문주의, 오컴과 유명론, 구텐베르크 인쇄술, 초기 근대 국가의 형성"
+  },
+  {
+    "id": "reformation-confessions",
+    "year": "1517–1648",
+    "title": "종교개혁과 고백화 시대",
+    "type": "시대",
+    "phase": "reformation",
+    "macro": "근세 교회사",
+    "summary": "교회 개혁이 루터교·개혁파·성공회·가톨릭 개혁으로 분화되고, 각 전통이 신앙고백 문서로 자기 정체성을 정리한 시기.",
+    "background": "구원론, 성경 권위, 교황권, 성례, 교회 제도에 대한 논쟁이 정치·도시·제국 질서와 결합했다.",
+    "christian": "95개조, 아우크스부르크 신앙고백, 트리엔트 공의회, 하이델베르크 요리문답, 도르트 신경, 웨스트민스터 신앙고백.",
+    "documents": "츠빙글리 67개 조항, 아우크스부르크 신앙고백, 프랑스·스코틀랜드·벨기에 신앙고백, 제2 스위스 신앙고백, 39개 신조, 도르트 신경, 웨스트민스터 신앙고백",
+    "west": "코페르니쿠스·갈릴레이·케플러·베이컨·데카르트로 이어지는 과학혁명과 방법 논쟁"
+  },
+  {
+    "id": "post-westphalia",
+    "year": "1648–1800",
+    "title": "근세: 신교 확장, 경건주의, 계몽주의",
+    "type": "시대",
+    "phase": "modern",
+    "macro": "근세 교회사",
+    "summary": "웨스트팔리아 이후 교파 체제가 안정되는 동시에 경건주의·대각성·계몽주의가 교회의 내면성과 공적 권위를 새롭게 문제 삼은 시기.",
+    "background": "종교전쟁의 피로, 국민국가의 강화, 이성 중심 문화는 교회가 신앙·도덕·공적 질서를 새롭게 설명하게 했다.",
+    "christian": "청교도 전통, 1689 런던 침례교 신앙고백, 경건주의, 웨슬리 운동, 대각성.",
+    "documents": "웨스트민스터 표준문서의 확산, 1689 런던 침례교 신앙고백, 조나단 에드워즈 저작",
+    "west": "뉴턴 역학, 로크·흄·칸트, 계몽주의, 프랑스혁명"
+  },
+  {
+    "id": "global-christianity",
+    "year": "1800–현재",
+    "title": "최근세: 세계기독교화와 현대 논쟁",
+    "type": "시대",
+    "phase": "modern",
+    "macro": "현대 교회사",
+    "summary": "기독교가 유럽 중심 종교에서 세계 종교로 재편되고, 자유주의·근본주의·에큐메니컬·복음주의·오순절 운동이 병행된 시기.",
+    "background": "제국주의와 선교, 산업화, 도시화, 진화론, 역사비평, 세계대전, 탈식민화가 교회의 자기 이해를 흔들었다.",
+    "christian": "근대 선교운동, The Fundamentals, 바르멘 선언, 제2차 바티칸 공의회, 로잔 언약, 세계 남반구 기독교의 성장.",
+    "documents": "The Fundamentals, 바르멘 선언, 제2차 바티칸 공의회 문서, 로잔 언약",
+    "west": "다윈, 마르크스·니체·프로이트, 아인슈타인과 양자역학, 분석철학·대륙철학, 디지털 전환"
+  }
+];
+    const rail = document.getElementById('timelineRail');
+    const detail = document.getElementById('eventDetail');
+    const filterButtons = [...document.querySelectorAll('[data-filter]')];
+    let activeFilter = 'all';
+    let selectedId = timelineData[0].id;
+
+    function escapeHTML(value) {
+      return String(value).replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[char]));
+    }
+
+    function renderRail() {
+      const items = timelineData.filter(item => activeFilter === 'all' || item.phase === activeFilter);
+      if (!items.some(item => item.id === selectedId)) selectedId = items[0]?.id || timelineData[0].id;
+      rail.innerHTML = items.map(item => `
+        <button class="timeline-node ${item.id === selectedId ? 'active' : ''}" data-id="${escapeHTML(item.id)}" data-phase="${escapeHTML(item.phase)}" type="button">
+          <span class="year">${escapeHTML(item.year)}</span>
+          <span class="title">${escapeHTML(item.title)}</span>
+          <span class="type">${escapeHTML(item.type)} · ${escapeHTML(item.macro)}</span>
+        </button>
+      `).join('');
+      [...rail.querySelectorAll('.timeline-node')].forEach(btn => {
+        btn.addEventListener('click', () => {
+          selectedId = btn.dataset.id;
+          renderRail();
+          renderDetail();
+        });
+      });
+    }
+
+    function renderDetail() {
+      const item = timelineData.find(event => event.id === selectedId) || timelineData[0];
+      detail.innerHTML = `
+        <span class="detail-year">${escapeHTML(item.year)} · ${escapeHTML(item.type)}</span>
+        <h3>${escapeHTML(item.title)}</h3>
+        <p>${escapeHTML(item.summary)}</p>
+        <dl>
+          <div><dt>나오게 된 배경</dt><dd>${escapeHTML(item.background)}</dd></div>
+          <div><dt>기독교사 핵심</dt><dd>${escapeHTML(item.christian)}</dd></div>
+          <div><dt>대표 문서</dt><dd>${escapeHTML(item.documents)}</dd></div>
+          <div><dt>서양 철학·과학사 보조 맥락</dt><dd>${escapeHTML(item.west)}</dd></div>
+        </dl>
+      `;
+    }
+
+    filterButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        activeFilter = button.dataset.filter;
+        filterButtons.forEach(btn => btn.classList.toggle('active', btn === button));
+        renderRail();
+        renderDetail();
+      });
+    });
+
+    document.getElementById('copySummary').addEventListener('click', async () => {
+      const summary = `# 기독교 역사 전체 흐름 요약
+
+1. 교회 형성: 사도적 증언, 세례, 성찬, 디다케의 공동체 윤리.
+2. 교리 정식화: 니케아, 콘스탄티노폴리스, 칼케돈을 통해 삼위일체와 기독론 정리.
+3. 중세 제도화: 수도원, 교황권, 대학, 스콜라 신학의 형성.
+4. 종교개혁과 고백화: 루터교, 개혁파, 성공회, 가톨릭 개혁이 신앙고백 문서로 정체성 정리.
+5. 세계기독교화: 선교, 현대 신학 논쟁, 에큐메니컬·복음주의·오순절 운동, 세계 남반구 교회의 성장.
+
+핵심 관점: 기독교 역사는 역사적 압력 속에서 교회가 무엇을 믿고 어떻게 살아야 하는지 문서화해 온 과정이다.`;
+      try {
+        await navigator.clipboard.writeText(summary);
+        document.getElementById('copySummary').textContent = '복사됨';
+        setTimeout(() => document.getElementById('copySummary').textContent = '요약 복사', 1600);
+      } catch (e) {
+        alert(summary);
+      }
+    });
+
+    renderRail();
+    renderDetail();
+  </script>
+</body>
+</html>
