@@ -11,6 +11,12 @@
 {{ $writingData := index .Site.Data.categories "writing" }}
 
 <div class="home-page">
+    <a class="home-app-float" href="/christiandays-app/" aria-label="Open ChristianDays web app">
+        <img src="/christiandays-app/icon-192.png" alt="" aria-hidden="true" loading="lazy" decoding="async" />
+        <span>ChristianDays</span>
+        <small>Open app</small>
+    </a>
+
     <section class="home-hero" aria-labelledby="home-title">
         <div class="home-hero__inner">
             <div class="home-hero__copy">
@@ -37,6 +43,21 @@
                         Search
                     </button>
                 </form>
+
+                <a class="home-app-launcher" href="/christiandays-app/" aria-label="Open ChristianDays web app">
+                    <span class="home-app-launcher__icon" aria-hidden="true">
+                        <img src="/christiandays-app/icon-192.png" alt="" loading="lazy" decoding="async" />
+                    </span>
+                    <span class="home-app-launcher__body">
+                        <span class="home-app-launcher__eyebrow">Web app</span>
+                        <strong>ChristianDays</strong>
+                        <span>묵상과 공동체를 바로 여는 기독교 앱입니다.</span>
+                    </span>
+                    <span class="home-app-launcher__action">
+                        <span class="material-symbols-outlined" aria-hidden="true">open_in_new</span>
+                        Open
+                    </span>
+                </a>
 
                 <div class="home-hero__actions" aria-label="Primary links">
                     <a class="home-button home-button--primary" href="/posts/">
