@@ -76,9 +76,21 @@
                 </div>
             </div>
 
-            <div class="home-hero__media" aria-label="The Logos visual identity">
-                <img src="/images/og-default.png" alt="The Logos emblem with knowledge geometry" decoding="async"
-                    fetchpriority="high" />
+            <div class="home-hero__media" role="img" aria-label="A layered observatory field connecting the four disciplines of The Logos">
+                <div class="home-quantum-field" aria-hidden="true">
+                    <span class="home-quantum-orbit home-quantum-orbit--one"></span>
+                    <span class="home-quantum-orbit home-quantum-orbit--two"></span>
+                    <span class="home-quantum-orbit home-quantum-orbit--three"></span>
+                    <span class="home-quantum-node home-quantum-node--one"></span>
+                    <span class="home-quantum-node home-quantum-node--two"></span>
+                    <span class="home-quantum-node home-quantum-node--three"></span>
+                    <span class="home-quantum-node home-quantum-node--four"></span>
+                </div>
+                <div class="home-hero__archive-card" aria-hidden="true">
+                    <img src="/images/og-default.png" alt="" decoding="async" fetchpriority="high" />
+                    <span class="home-hero__archive-index">LOGOS / 01</span>
+                    <span class="home-hero__archive-caption">A field of connected questions</span>
+                </div>
                 <div class="home-hero__frame-label">Knowledge atlas</div>
                 <div class="home-hero__lenses" aria-label="Reading lenses">
                     <span class="home-hero__lens" style="--lens-color: {{ $religionData.color | default "#5dd4c2" }};">
