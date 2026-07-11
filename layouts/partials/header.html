@@ -101,6 +101,9 @@
                 localStorage.setItem('pref-theme', 'light');
             }
             updateThemeIcons();
+            window.dispatchEvent(new CustomEvent('thelogos-theme-change', {
+                detail: { theme: isDark ? 'dark' : 'light' }
+            }));
         });
     }
 

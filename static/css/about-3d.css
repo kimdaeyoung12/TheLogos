@@ -50,6 +50,13 @@ body.dark {
 /* Override body background when on About page (which has #three-canvas-container) */
 body:has(#three-canvas-container) {
     background:
+        radial-gradient(circle at 72% 26%, rgba(91, 128, 184, 0.18), transparent 34rem),
+        radial-gradient(circle at 18% 80%, rgba(15, 107, 95, 0.1), transparent 28rem),
+        #f4f7fb !important;
+}
+
+body.dark:has(#three-canvas-container) {
+    background:
         radial-gradient(circle at 72% 26%, rgba(91, 128, 184, 0.24), transparent 34rem),
         radial-gradient(circle at 18% 80%, rgba(15, 107, 95, 0.12), transparent 28rem),
         #0f172a !important;

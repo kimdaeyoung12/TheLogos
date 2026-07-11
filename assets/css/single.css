@@ -34,12 +34,12 @@
 }
 
 .article.article--about {
-    --article-ink: #f4f0e8;
-    --article-muted: #c8ced8;
-    --article-subtle: #9da8ba;
-    --article-line: rgba(244, 240, 232, 0.16);
-    --article-surface: rgba(18, 21, 27, 0.54);
-    --article-surface-strong: rgba(18, 21, 27, 0.6);
+    --article-ink: #172033;
+    --article-muted: #4d5c70;
+    --article-subtle: #66758a;
+    --article-line: rgba(23, 32, 51, 0.14);
+    --article-surface: rgba(255, 255, 255, 0.78);
+    --article-surface-strong: rgba(255, 255, 255, 0.9);
     background: transparent;
     min-height: 100vh;
     position: relative;
@@ -47,6 +47,22 @@
 }
 
 body:has(.article--about) {
+    background:
+        radial-gradient(circle at 72% 26%, rgba(91, 128, 184, 0.18), transparent 34rem),
+        radial-gradient(circle at 18% 80%, rgba(15, 107, 95, 0.1), transparent 28rem),
+        #f4f7fb !important;
+}
+
+.dark .article.article--about {
+    --article-ink: #f4f0e8;
+    --article-muted: #c8ced8;
+    --article-subtle: #9da8ba;
+    --article-line: rgba(244, 240, 232, 0.16);
+    --article-surface: rgba(18, 21, 27, 0.54);
+    --article-surface-strong: rgba(18, 21, 27, 0.6);
+}
+
+body.dark:has(.article--about) {
     background:
         radial-gradient(circle at 72% 26%, rgba(91, 128, 184, 0.24), transparent 34rem),
         radial-gradient(circle at 18% 80%, rgba(15, 107, 95, 0.12), transparent 28rem),
@@ -82,9 +98,9 @@ body:has(.article--about) {
 
 .article.article--about .header-container {
     background:
-        linear-gradient(90deg, rgba(18, 21, 27, 0.28), rgba(18, 21, 27, 0.08) 62%, transparent);
+        linear-gradient(90deg, rgba(255, 255, 255, 0.68), rgba(255, 255, 255, 0.3) 62%, transparent);
     border: 0;
-    border-left: 1px solid rgba(93, 212, 194, 0.2);
+    border-left: 1px solid rgba(15, 107, 95, 0.32);
     border-radius: 0;
     box-shadow: none;
     max-width: min(650px, 100%);
@@ -92,7 +108,7 @@ body:has(.article--about) {
 }
 
 .article.article--about .article-title {
-    text-shadow: 0 8px 28px rgba(0, 0, 0, 0.38);
+    text-shadow: 0 8px 28px rgba(30, 41, 59, 0.1);
 }
 
 .article.article--about .article-dek {
@@ -101,6 +117,24 @@ body:has(.article--about) {
 
 .article.article--about .article-content,
 .article.article--about .toc-wrapper {
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.84), rgba(248, 251, 253, 0.72)),
+        radial-gradient(circle at 100% 0%, rgba(15, 107, 95, 0.08), transparent 34%);
+    border-color: rgba(23, 32, 51, 0.14);
+}
+
+.dark .article.article--about .header-container {
+    background:
+        linear-gradient(90deg, rgba(18, 21, 27, 0.28), rgba(18, 21, 27, 0.08) 62%, transparent);
+    border-left-color: rgba(93, 212, 194, 0.2);
+}
+
+.dark .article.article--about .article-title {
+    text-shadow: 0 8px 28px rgba(0, 0, 0, 0.38);
+}
+
+.dark .article.article--about .article-content,
+.dark .article.article--about .toc-wrapper {
     background:
         linear-gradient(180deg, rgba(18, 21, 27, 0.58), rgba(18, 21, 27, 0.44)),
         radial-gradient(circle at 100% 0%, rgba(93, 212, 194, 0.07), transparent 34%);

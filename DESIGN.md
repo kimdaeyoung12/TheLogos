@@ -2,7 +2,7 @@
 
 ## Source of truth
 - Status: Active
-- Last refreshed: 2026-07-09
+- Last refreshed: 2026-07-12
 - Primary product surfaces: Hugo homepage, article archive, individual article pages, informational pages, embedded interactive explainers, knowledge graph, ChristianDays app launcher, footer/navigation.
 - Evidence reviewed: `layouts/index.html`, `layouts/_default/baseof.html`, `layouts/_default/list.html`, `layouts/posts/single.html`, `layouts/_default/single.html`, `layouts/_default/network.html`, `layouts/_default/about.html`, `layouts/shortcodes/interactiveframe.html`, `layouts/shortcodes/ai_summary.html`, `content/about.md`, `content/posts`, `assets/css/home.css`, `assets/css/archive.css`, `assets/css/main.css`, `assets/css/single.css`, `hugo.toml`, `static/images/og-default.png`, `static/christiandays-app/icon-192.png`.
 
@@ -33,7 +33,7 @@
 - Tradeoffs: iframe isolation keeps custom visual code from leaking into the site, but parent markdown should still carry the body text for search and reading. Homepage trend adoption should improve scanning and orientation without adding external runtime dependencies.
 
 ## Visual language
-- Color: shared pages use neutral paper/charcoal surfaces with teal, ember, gold, cobalt, and category-specific accents; restrained high-contrast dark explainers are acceptable inside interactive frames.
+- Color: shared pages use neutral paper/charcoal surfaces with teal, ember, gold, cobalt, and category-specific accents. Every primary route, including About and Network, must provide paired light and dark surface, text, muted-text, border, and control tokens; restrained high-contrast dark explainers are acceptable inside interactive frames.
 - Typography: reuse system and site typography; use serif display type for brand moments; avoid viewport-scaled body text and negative tracking.
 - Spacing/layout rhythm: dense but breathable article flow; homepage and archive use bento/grid scanning without nesting cards inside cards; page intro areas should read as open bands integrated with the page background, not as isolated rectangular panels.
 - Shape/radius/elevation: cards, forms, and frames should stay moderate and functional, with 8px radius on new homepage UI; when a page has a 3D/canvas identity layer, glass panels must stay translucent enough to reveal motion and depth instead of becoming opaque slabs, and the canvas background should belong to the page backdrop rather than a visible bounded rectangle.
@@ -49,7 +49,7 @@
 ## Accessibility
 - Target standard: semantic articles with keyboard-readable controls and visible labels.
 - Keyboard/focus behavior: native range inputs, links, forms, buttons, and article TOC anchors remain focusable and visibly interactive.
-- Contrast/readability: homepage and explainer text must remain readable in light and dark modes; chart labels must meet high-contrast dark UI expectations.
+- Contrast/readability: homepage, About, Network, and explainer text must remain readable in light and dark modes. Long-form text and controls use strong foreground/background separation; graph labels, panels, and canvas links must adapt with the selected theme.
 - Screen-reader semantics: parent article text must explain the visual model.
 - Reduced motion and sensory considerations: avoid continuous animation by default; redraw only after input or explicit button action; homepage decorative transitions must collapse under `prefers-reduced-motion`.
 

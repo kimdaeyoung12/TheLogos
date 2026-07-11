@@ -77,7 +77,7 @@
         container.innerHTML = '';
 
         const scene = new THREE.Scene();
-        scene.fog = new THREE.FogExp2(0x020205, 0.001); // Very deep space black
+        scene.fog = new THREE.FogExp2(0x020205, 0.001);
 
         const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 2000);
         camera.position.z = 50;
@@ -183,6 +183,19 @@
         const logosInner = new THREE.Mesh(innerGeo, innerMat);
         logosOuter.add(logosInner);
 
+        const applyTheme = () => {
+            const isDark = document.documentElement.classList.contains('dark') || document.body.classList.contains('dark');
+            scene.fog.color.setHex(isDark ? 0x020205 : 0xeaf0f6);
+            starMat.opacity = isDark ? 0.9 : 0.56;
+            cloudMat.color.setHex(isDark ? 0x4f46e5 : 0x2563eb);
+            cloudMat.opacity = isDark ? 0.05 : 0.035;
+            outerMat.color.setHex(isDark ? 0x8aa4c8 : 0x356b8f);
+            innerMat.color.setHex(isDark ? 0x7a9abb : 0x4f81a6);
+            innerMat.emissive.setHex(isDark ? 0x5c7a9e : 0x315f85);
+        };
+        applyTheme();
+        window.addEventListener('thelogos-theme-change', applyTheme);
+
         // --- Animation State ---
         let scrollY = 0;
         const onScroll = () => scrollY = window.scrollY;
@@ -237,6 +250,7 @@
             }
             window.removeEventListener('scroll', onScroll);
             window.removeEventListener('resize', onResize);
+            window.removeEventListener('thelogos-theme-change', applyTheme);
             // Remove 'pageReady' listener if it was attached by this instance? 
             // Ideally we use a named function we can remove, or just rely on 'soft-navigation'
             // to re-run scripts which will trigger the top of this IIFE to kill previous.

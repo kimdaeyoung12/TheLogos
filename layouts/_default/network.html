@@ -41,18 +41,39 @@
 
 <style>
     .graph-section {
-        --network-bg: #07111f;
-        --network-ink: #f4f0e8;
-        --network-muted: #b4bbc8;
-        --network-line: rgba(244, 240, 232, 0.14);
-        --network-surface: rgba(13, 15, 18, 0.82);
-        --network-accent: #5dd4c2;
+        --network-bg: #f4f7fb;
+        --network-ink: #172033;
+        --network-muted: #526175;
+        --network-line: rgba(23, 32, 51, 0.16);
+        --network-surface: rgba(255, 255, 255, 0.86);
+        --network-surface-strong: rgba(255, 255, 255, 0.96);
+        --network-accent: #0f6b5f;
+        --network-graph-link: #5d7288;
+        --network-node-post: #264761;
+        --network-node-tag: #708da5;
+        --network-node-default: #172033;
+        --network-error: #b42318;
         background: var(--network-bg);
         height: calc(100vh - 64px);
         min-height: 620px;
         overflow: hidden;
         position: relative;
         width: 100%;
+    }
+
+    .dark .graph-section {
+        --network-bg: #07111f;
+        --network-ink: #f4f0e8;
+        --network-muted: #b4bbc8;
+        --network-line: rgba(244, 240, 232, 0.14);
+        --network-surface: rgba(13, 15, 18, 0.82);
+        --network-surface-strong: rgba(13, 15, 18, 0.92);
+        --network-accent: #5dd4c2;
+        --network-graph-link: #94a3b8;
+        --network-node-post: #e2e8f0;
+        --network-node-tag: #475569;
+        --network-node-default: #ffffff;
+        --network-error: #f87171;
     }
 
     .knowledge-graph-container {
@@ -149,7 +170,8 @@
     }
 
     .network-search-input::placeholder {
-        color: rgba(180, 187, 200, 0.72);
+        color: var(--network-muted);
+        opacity: 0.82;
     }
 
     .network-search-clear {
@@ -185,11 +207,19 @@
         border-color: var(--network-accent);
     }
 
+    .reset-view-btn:focus-visible,
+    .network-search-clear:focus-visible,
+    .panel-close:focus-visible,
+    .panel-link:focus-visible {
+        outline: 3px solid color-mix(in srgb, var(--network-accent) 45%, transparent);
+        outline-offset: 3px;
+    }
+
     .node-panel {
-        background: rgba(13, 15, 18, 0.92);
+        background: var(--network-surface-strong);
         border: 1px solid var(--network-line);
         border-radius: 8px;
-        box-shadow: 0 22px 70px rgba(0, 0, 0, 0.42);
+        box-shadow: 0 22px 70px rgba(15, 23, 42, 0.2);
         max-height: 78vh;
         opacity: 0;
         overflow-y: auto;
@@ -202,6 +232,10 @@
         visibility: hidden;
         width: min(340px, calc(100% - 48px));
         z-index: 100;
+    }
+
+    .dark .node-panel {
+        box-shadow: 0 22px 70px rgba(0, 0, 0, 0.42);
     }
 
     .node-panel.open {

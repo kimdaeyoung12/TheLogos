@@ -13,6 +13,35 @@
     };
     window._knowledgeGraphState = state;
 
+    function readNetworkPalette() {
+        const section = document.querySelector('.graph-section');
+        const styles = section ? getComputedStyle(section) : null;
+        const token = (name, fallback) => styles?.getPropertyValue(name).trim() || fallback;
+
+        return {
+            link: token('--network-graph-link', '#94a3b8'),
+            post: token('--network-node-post', '#e2e8f0'),
+            tag: token('--network-node-tag', '#475569'),
+            fallback: token('--network-node-default', '#ffffff'),
+            muted: token('--network-muted', '#94a3b8'),
+            error: token('--network-error', '#f87171')
+        };
+    }
+
+    function nodeColor(node, palette) {
+        if (node.group === 'category') {
+            const name = node.name.toLowerCase();
+            if (name.includes('religion')) return '#d97706';
+            if (name.includes('philosophy')) return '#9333ea';
+            if (name.includes('engineering') || name.includes('dev')) return '#dc2626';
+            if (name.includes('writing') || name.includes('essay')) return '#059669';
+            return '#ca8a04';
+        }
+        if (node.group === 'post') return palette.post;
+        if (node.group === 'tag') return palette.tag;
+        return palette.fallback;
+    }
+
     function findScript(src) {
         const absoluteSrc = new URL(src, window.location.href).href;
         return Array.from(document.scripts).find(script =>
@@ -81,7 +110,9 @@
             container.appendChild(status);
         }
         status.textContent = message;
-        status.style.color = isError ? '#f87171' : '#94a3b8';
+        status.dataset.networkStatus = isError ? 'error' : 'default';
+        const palette = readNetworkPalette();
+        status.style.color = isError ? palette.error : palette.muted;
     }
 
     function getGraphData() {
@@ -180,30 +211,19 @@
             container.innerHTML = '';
             container.dataset.graphInitialized = 'true';
 
+            const palette = readNetworkPalette();
             const graph = window.ForceGraph3D()(container)
                 .width(width)
                 .height(height)
                 .graphData(data)
                 .nodeLabel('name')
-                .nodeColor(node => {
-                    if (node.group === 'category') {
-                        const name = node.name.toLowerCase();
-                        if (name.includes('religion')) return '#f59e0b';
-                        if (name.includes('philosophy')) return '#c084fc';
-                        if (name.includes('engineering') || name.includes('dev')) return '#ef4444';
-                        if (name.includes('writing') || name.includes('essay')) return '#10b981';
-                        return '#fbbf24';
-                    }
-                    if (node.group === 'post') return '#e2e8f0';
-                    if (node.group === 'tag') return '#475569';
-                    return '#ffffff';
-                })
+                .nodeColor(node => nodeColor(node, palette))
                 .nodeVal(node => node.val)
                 .nodeResolution(16)
                 .nodeOpacity(0.9)
                 .linkWidth(0.5)
                 .linkOpacity(0.6)
-                .linkColor('#94a3b8')
+                .linkColor(palette.link)
                 .backgroundColor('rgba(0,0,0,0)')
                 .onNodeClick(handleNodeClick);
 
@@ -347,6 +367,19 @@
         });
     }
 
+    function refreshGraphTheme() {
+        if (!document.querySelector('.graph-section')) return;
+        const palette = readNetworkPalette();
+        const status = document.querySelector('.network-graph-status');
+        if (status) {
+            status.style.color = status.dataset.networkStatus === 'error' ? palette.error : palette.muted;
+        }
+        if (!state.graph) return;
+        state.graph
+            .nodeColor(node => nodeColor(node, palette))
+            .linkColor(palette.link);
+    }
+
     window.initKnowledgeGraphPage = initKnowledgeGraphPage;
     window.destroyKnowledgeGraphPage = destroyKnowledgeGraphPage;
 
@@ -362,6 +395,8 @@
                 window.initKnowledgeGraphPage?.();
             }
         });
+
+        window.addEventListener('thelogos-theme-change', refreshGraphTheme);
 
         window._knowledgeGraphLifecycleBound = true;
     }
