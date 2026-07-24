@@ -62,7 +62,7 @@ body:has(.article--about) {
     --article-surface-strong: rgba(18, 21, 27, 0.6);
 }
 
-body.dark:has(.article--about) {
+html.dark body:has(.article--about) {
     background:
         radial-gradient(circle at 72% 26%, rgba(91, 128, 184, 0.24), transparent 34rem),
         radial-gradient(circle at 18% 80%, rgba(15, 107, 95, 0.12), transparent 28rem),

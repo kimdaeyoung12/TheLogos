@@ -22,8 +22,7 @@
     --radius-md: 12px;
 }
 
-html.dark,
-body.dark {
+html.dark {
     --primary-color: #5dd4c2;
     --primary-color-rgb: 93, 212, 194;
     --bg-primary: #0d0f12;
@@ -45,8 +44,8 @@ body {
     line-height: 1.6;
 }
 
-body.dark { background-color: var(--dark-bg); color: #f8fafc; }
-body:not(.dark) { background-color: var(--light-bg); color: #1e293b; }
+html.dark body { background-color: var(--dark-bg); color: #f8fafc; }
+html:not(.dark) body { background-color: var(--light-bg); color: #1e293b; }
 
 /* Header (Z-index 20000 to be above everything) */
 .header {
@@ -62,7 +61,7 @@ body:not(.dark) { background-color: var(--light-bg); color: #1e293b; }
 }
 
 .dark .header { background-color: rgba(16, 22, 34, 0.95); }
-body:not(.dark) .header { 
+html:not(.dark) .header {
     background-color: rgba(255, 255, 255, 0.95); 
     border-bottom: 1px solid rgba(0, 0, 0, 0.1); 
 }

@@ -44,7 +44,7 @@ body:has(.archive-page) {
     background: transparent;
 }
 
-body.dark:has(.archive-page) {
+html.dark body:has(.archive-page) {
     background:
         linear-gradient(90deg, rgba(244, 185, 90, 0.035) 1px, transparent 1px),
         linear-gradient(0deg, rgba(93, 212, 194, 0.032) 1px, transparent 1px),

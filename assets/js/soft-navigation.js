@@ -135,13 +135,10 @@
                 mainContent.innerHTML = content.innerHTML;
             }
 
-            // Update page title & body class
+            // Update page title and page-specific body classes. The theme is owned
+            // by the html element, so navigation cannot restore a stale body theme.
             document.title = title;
-            // Preserving 'dark' class if user toggled it manually might be needed, 
-            // but usually Hugo handles it. Let's merge if 'dark' is present in current body.
-            const isDark = document.body.classList.contains('dark');
             document.body.className = bodyClass;
-            if (isDark) document.body.classList.add('dark');
 
             // Update URL
             if (pushState) {

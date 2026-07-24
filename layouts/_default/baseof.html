@@ -45,36 +45,12 @@
             color: #111827;
         }
     </style>
-    {{- /* Sync dark class on html AND body from localStorage, before anything renders */}}
+    {{- /* The html element is the single source of truth for the site theme. */}}
     <script>
         (function() {
             var pref = localStorage.getItem('pref-theme');
             if (pref === 'light') {
                 document.documentElement.classList.remove('dark');
-            }
-            
-            function syncBody() {
-                var body = document.body;
-                if (body) {
-                    if (document.documentElement.classList.contains('dark')) {
-                        body.classList.add('dark');
-                    } else {
-                        body.classList.remove('dark');
-                    }
-                    return true;
-                }
-                return false;
-            }
-
-            // Try immediately
-            if (!syncBody()) {
-                // If not available, observe
-                var observer = new MutationObserver(function(mutations) {
-                    if (syncBody()) {
-                        observer.disconnect();
-                    }
-                });
-                observer.observe(document.documentElement, { childList: true });
             }
         })();
     </script>
@@ -233,7 +209,7 @@
 </head>
 
 <body
-    class="dark bg-design-background-light dark:bg-design-background-dark font-display text-gray-900 dark:text-white antialiased overflow-x-hidden list"
+    class="bg-design-background-light dark:bg-design-background-dark font-display text-gray-900 dark:text-white antialiased overflow-x-hidden list"
     id="top">
 
     {{- partial "header.html" . }}
