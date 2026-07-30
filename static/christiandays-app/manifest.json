@@ -4,8 +4,8 @@
     "description": "ChristianDays community for daily reflection and discussion",
     "start_url": "/christiandays-app/",
     "display": "standalone",
-    "background_color": "#F3EFE6",
-    "theme_color": "#F3EFE6",
+    "background_color": "#F7F2E9",
+    "theme_color": "#F7F2E9",
     "orientation": "portrait",
     "icons": [
         {
