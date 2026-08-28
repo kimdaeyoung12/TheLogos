@@ -2,7 +2,7 @@
 
 ## Source of truth
 - Status: Active
-- Last refreshed: 2026-08-28
+- Last refreshed: 2026-08-29
 - Primary product surfaces: Hugo homepage, article archive, individual article pages, informational pages, embedded interactive explainers, knowledge graph, ChristianDays app launcher, footer/navigation, and the unlisted retreat-prayer participant/Admin application under `/retreat-prayer/`.
 - Evidence reviewed: `layouts/index.html`, `layouts/_default/baseof.html`, `layouts/_default/list.html`, `layouts/posts/single.html`, `layouts/_default/single.html`, `layouts/_default/network.html`, `layouts/_default/about.html`, `layouts/shortcodes/interactiveframe.html`, `layouts/shortcodes/ai_summary.html`, `content/about.md`, `content/posts`, `assets/css/home.css`, `assets/css/archive.css`, `assets/css/main.css`, `assets/css/single.css`, `hugo.toml`, `static/images/og-default.png`, `static/christiandays-app/icon-192.png`, `static/retreat-prayer/`, `supabase/`, and the supplied Google Stitch project reference.
 
@@ -37,6 +37,37 @@
 - Principle 3: The whole site should feel like a knowledge atlas, not a generic blog feed; every major page should expose how faith, philosophy, engineering, and prose connect.
 - Tradeoffs: iframe isolation keeps custom visual code from leaking into the site, but parent markdown should still carry the body text for search and reading. Homepage trend adoption should improve scanning and orientation without adding external runtime dependencies.
 - Retreat prayer principles: Presence → Invitation → Prayer → Community; one primary action per screen; server-authoritative time; active browser connections are ambient awareness rather than a score; prayer focus lowers navigation, canvas salience, and information density; system failure preserves the last meaningful prayer content whenever possible.
+
+### Retreat prayer A–Z ideation and selected direction
+
+- A — Ambient: 먼저 의식되기보다 공간의 분위기로 느껴지는 존재감.
+- B — Balance: 말씀, 기도제목, 시간, Presence 사이의 안정된 무게 배분.
+- C — Clarity: 현재 무엇을 위해 기도하는지 즉시 이해되는 명료성.
+- D — Depth: 앞·중간·뒤 레이어로 형성하는 조용한 공간감.
+- E — Editorial: 말씀과 기도제목을 중심에 두는 출판적 구성.
+- F — Focus: 기도 시작 후 정보와 장식을 줄이는 집중.
+- G — Grid: 화면 크기가 달라도 질서를 유지하는 반응형 골격.
+- H — Hierarchy: 말씀 → 기도제목 → 시간 → 공동체 Presence 순의 우선순위.
+- I — Illumination: 장식이 아니라 함께 있음의 은유로 쓰는 빛.
+- J — Juxtaposition: 따뜻한 종이색과 깊은 잉크색의 절제된 대비.
+- K — Kinetics: 기능과 상태 변화를 설명하는 최소한의 움직임.
+- L — Luminance: 읽기 대비를 침범하지 않는 낮은 휘도 차이.
+- M — Materiality: 종이, 잉크, 얇은 유리처럼 느껴지는 표면성.
+- N — Negative Space: 묵상과 호흡을 위한 비어 있는 공간.
+- O — Orbit: 개인의 서열 없이 하나의 중심을 함께 둘러싼 관계.
+- P — Perspective: 익명 빛들의 전후 관계를 만드는 원근.
+- Q — Quietude: 주의를 요구하지 않는 고요함.
+- R — Rhythm: 말씀, 침묵, 기도가 이어지는 의식적 시간 리듬.
+- S — Sobriety: 과장된 종교 장식과 감정 자극을 피하는 절제.
+- T — Tactility: 버튼과 패널의 상태를 부드럽지만 분명하게 느끼게 하는 촉각성.
+- U — Unity: 각자의 익명 Presence가 하나의 공동체 장면을 이루는 통일성.
+- V — Volume: 평면 점이 아니라 깊이를 가진 빛의 장으로 보이는 부피감.
+- W — Wayfinding: 현재 단계와 나갈 길을 놓치지 않게 하는 방향성.
+- X — X-height: 작은 모바일 본문에서도 한글과 숫자의 판독성을 지키는 글자 비례.
+- Y — Y-axis: 모바일 세로 흐름에서 말씀을 먼저, Presence를 끝에 두는 축.
+- Z — Zoning: 기도 콘텐츠와 시스템 상태를 서로 침범하지 않게 구역화하는 원칙.
+
+Selected direction: **Sober Constellation — 절제된 공동체의 별자리**. 개혁주의 예배의 말씀 중심성과 절제된 공간 언어에 맞춰 `Clarity`, `Editorial`, `Focus`, `Hierarchy`, `Negative Space`, `Quietude`, `Sobriety`, `Unity`를 1차 기준으로 삼는다. `Depth`, `Perspective`, `Luminance`, `Orbit`, `Volume`은 기도문 뒤의 낮은 대비 3D Presence와 하단의 작은 인원 창에만 사용한다. 순서는 항상 **말씀/기도제목 > 남은 시간 > 공동체 Presence > 장식**이며, Presence는 사람을 식별하거나 참여를 경쟁시키지 않는다.
 
 ## Visual language
 - Color: shared pages use neutral paper/charcoal surfaces with teal, ember, gold, cobalt, and category-specific accents. Every primary route, including About and Network, must provide paired light and dark surface, text, muted-text, border, and control tokens; restrained high-contrast dark explainers are acceptable inside interactive frames.
@@ -89,8 +120,8 @@
 - Performance constraints: no external JS dependency for static theory explainers; homepage must avoid remote placeholder images and keep animation to composited opacity/transform work.
 - Compatibility constraints: static files must work under Hugo/GitHub Pages paths.
 - Test/screenshot expectations: run Hugo build; visually smoke-test the homepage, archive, one article, about page, and network page on desktop/mobile; check one interactive post when shortcode or explainer code changes.
-- Retreat prayer constraints: static Hugo/GitHub Pages frontend plus a dedicated Supabase project; private Presence through invisible anonymous Auth; RLS and column grants are the data boundary; anonymous writes and owner-only account changes go through Edge Functions; Admin and participant auth storage are isolated; no service-role secret is shipped to the browser. Validate unit tests, JS module graph, Edge syntax, Hugo build, 390/1280 layouts, controller lease/version races, and staging RLS before production activation.
+- Retreat prayer constraints: static Hugo/GitHub Pages frontend plus a dedicated Supabase project; private Presence through invisible anonymous Auth; RLS and column grants are the data boundary; anonymous writes and owner-only account changes go through Edge Functions; Admin and participant auth storage are isolated; no service-role secret is shipped to the browser. Live/content subscriptions install idempotently, reconcile both snapshots after connection, and retry initial failure with a capped 2/5/15/30-second backoff. The live 3D backdrop samples at most 36 anonymous light points and redraws at no more than 15fps/DPR 1.25, while the text count always shows the unsampled active-browser-connection value. Validate unit tests, JS module graph, Edge syntax, Hugo build, 360/390/1280 layouts, 200% zoom and mobile landscape, controller lease/version races, and staging RLS before production activation.
 
 ## Open questions
 - [ ] Whether future theory explainers should share a unified `/theory/` section instead of `content/posts`.
-- [ ] Provision the dedicated Supabase project, apply and execute-test the migration/RLS script, configure the publishable key, seed the first owner, and run two-browser realtime staging QA before making `/retreat-prayer/` operational.
+- [ ] Observe the live Presence window on low-end Android devices and reduce sampled points further if sustained animation affects prayer-text scrolling or battery use.

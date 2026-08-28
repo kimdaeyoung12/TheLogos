@@ -133,6 +133,14 @@
         </div>
         <button id="audio-toggle" class="icon-button icon-button--audio" type="button" data-action="toggle-audio" aria-pressed="false" aria-label="음악 켜기">♩</button>
       </header>
+      <div class="live-presence-backdrop" aria-hidden="true">
+        <span class="live-presence-orbit live-presence-orbit--outer"></span>
+        <span class="live-presence-orbit live-presence-orbit--inner"></span>
+        <canvas id="mini-presence-canvas"></canvas>
+        <div id="live-presence-fallback" class="live-presence-fallback" hidden>
+          <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+        </div>
+      </div>
       <div class="focus-content">
         <p id="live-stage-label" class="eyebrow">공동기도</p>
         <p id="live-scripture-reference" class="focus-reference"></p>
@@ -141,11 +149,14 @@
         <p id="live-mode-label" class="focus-mode-label">진행자와 함께하는 기도</p>
       </div>
       <footer class="focus-footer">
-        <div class="mini-presence" aria-hidden="true">
-          <canvas id="mini-presence-canvas"></canvas>
+        <div class="focus-presence-window" role="status" aria-live="polite" aria-atomic="true">
+          <span class="focus-presence-emblem" aria-hidden="true"><i></i></span>
+          <div class="focus-presence-copy">
+            <span class="focus-presence-kicker">함께 드리는 기도</span>
+            <p><strong id="live-presence-count">활성 연결 확인 중</strong><span id="live-presence-context">이 함께 기도 중입니다</span></p>
+            <span id="live-connection-state" class="quiet-state">활성 연결 수 확인 중</span>
+          </div>
         </div>
-        <p><strong id="live-presence-count">연결 확인 중</strong><span id="live-presence-context">이 함께 기도 중입니다</span></p>
-        <span id="live-connection-state" class="quiet-state">실시간 연결 확인 중</span>
       </footer>
     </section>
 

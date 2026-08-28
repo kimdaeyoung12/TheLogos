@@ -4,6 +4,8 @@ import test from "node:test";
 
 const source = await readFile(new URL("../static/retreat-prayer/assets/core.js", import.meta.url), "utf8");
 const core = await import(`data:text/javascript;base64,${Buffer.from(source).toString("base64")}`);
+const realtimeSetupSource = await readFile(new URL("../static/retreat-prayer/assets/realtime-setup.js", import.meta.url), "utf8");
+const { RealtimeSetupCoordinator } = await import(`data:text/javascript;base64,${Buffer.from(realtimeSetupSource).toString("base64")}`);
 const appSource = await readFile(new URL("../static/retreat-prayer/assets/app.js", import.meta.url), "utf8");
 const migrationSource = await readFile(
   new URL("../supabase/migrations/20260828010000_retreat_prayer.sql", import.meta.url),
@@ -54,7 +56,9 @@ const adminScriptSource = await readFile(new URL("../static/retreat-prayer/asset
 const manageAdminSource = await readFile(new URL("../supabase/functions/manage-admin/index.ts", import.meta.url), "utf8");
 const participantHtmlSource = await readFile(new URL("../static/retreat-prayer/index.html", import.meta.url), "utf8");
 const participantStylesSource = await readFile(new URL("../static/retreat-prayer/assets/styles.css", import.meta.url), "utf8");
+const presenceCanvasSource = await readFile(new URL("../static/retreat-prayer/assets/presence-canvas.js", import.meta.url), "utf8");
 const adminHtmlSource = await readFile(new URL("../static/retreat-prayer/admin/index.html", import.meta.url), "utf8");
+const designSource = await readFile(new URL("../DESIGN.md", import.meta.url), "utf8");
 
 async function assertUniqueIds(relativeHtmlPath) {
   const html = await readFile(new URL(relativeHtmlPath, import.meta.url), "utf8");
@@ -229,6 +233,77 @@ test("연결 상태는 본문을 가리지 않는 작은 아이콘으로만 표�
   assert.match(appSource, /banner\.setAttribute\("aria-label", message\)/);
 });
 
+test("공동기도는 기도문 뒤의 절제된 3D Presence와 정확한 활성 연결 문구를 제공한다", () => {
+  assert.match(participantHtmlSource, /class="live-presence-backdrop" aria-hidden="true"[\s\S]*?id="mini-presence-canvas"/);
+  assert.match(participantHtmlSource, /class="focus-presence-window" role="status" aria-live="polite"/);
+  assert.match(participantHtmlSource, /id="live-presence-fallback"[\s\S]*?hidden/);
+  assert.match(participantStylesSource, /\.live-presence-backdrop \{[\s\S]*?pointer-events: none;[\s\S]*?mask-image:/);
+  assert.match(participantStylesSource, /\.live-presence-backdrop::after[\s\S]*?radial-gradient/);
+  assert.match(participantStylesSource, /\.focus-content \{[\s\S]*?z-index: 2/);
+  assert.match(participantStylesSource, /\.focus-view \{[\s\S]*?grid-template-rows: auto minmax\(0, 1fr\) auto;[\s\S]*?overflow: hidden/);
+  assert.match(participantStylesSource, /orientation: landscape[\s\S]*?align-content: start/);
+  assert.match(appSource, /\$\("#live-presence-count"\), liveText/);
+  assert.match(appSource, /\$\{state\.presenceCount\}개의 활성 브라우저 연결/);
+  assert.match(appSource, /활성 연결 수 동기화됨/);
+  assert.match(appSource, /\$\("#live-presence-context"\), state\.presenceSynced \? state\.livePresenceContext : ""/);
+  assert.match(appSource, /function setLivePresenceContext\(message\)/);
+  assert.match(appSource, /variant: "live-backdrop"/);
+  assert.match(appSource, /if \(!state\.miniCanvas\.start\(\)\) setVisible\(\$\("#live-presence-fallback"\), true\)/);
+  assert.match(presenceCanvasSource, /variant === "live-backdrop" \? 36/);
+  assert.match(presenceCanvasSource, /variant === "live-backdrop" \? 1000 \/ 15/);
+  assert.match(presenceCanvasSource, /variant === "live-backdrop" \? 1\.25 : 2/);
+});
+
+test("Realtime 준비가 실패해도 내용을 유지하고 멱등형 재설치를 예약한다", () => {
+  assert.match(appSource, /new RealtimeSetupCoordinator\(\{[\s\S]*?install: installRealtimeSubscriptions/);
+  assert.match(appSource, /마지막으로 받은 기도 내용은 계속 볼 수 있습니다/);
+  assert.match(appSource, /state\.presenceStatus = "unavailable";[\s\S]*?renderPresence\(\)/);
+  assert.match(appSource, /await reconcileRealtimeSnapshot\(\)/);
+  assert.match(appSource, /fetchLiveSession[\s\S]*?fetchPublicContent/);
+  assert.match(realtimeSetupSource, /\[2_000, 5_000, 15_000, 30_000\]/);
+  assert.match(realtimeSetupSource, /if \(this\.inFlight\) return this\.inFlight/);
+});
+
+test("Realtime 조정기는 첫 실패 뒤 두 번째 설치에 성공하고 중복 설치하지 않는다", async () => {
+  let attempts = 0;
+  let failures = 0;
+  let successes = 0;
+  const scheduled = [];
+  const coordinator = new RealtimeSetupCoordinator({
+    install: async () => {
+      attempts += 1;
+      if (attempts === 1) throw new Error("first attempt fails");
+    },
+    onFailure: () => { failures += 1; },
+    onSuccess: () => { successes += 1; },
+    setTimer: (callback, delay) => {
+      const timer = { callback, delay };
+      scheduled.push(timer);
+      return timer;
+    },
+    clearTimer: () => {},
+  });
+
+  assert.equal(await coordinator.start(), false);
+  assert.equal(attempts, 1);
+  assert.equal(failures, 1);
+  assert.equal(scheduled[0].delay, 2_000);
+  scheduled.shift().callback();
+  assert.equal(await coordinator.start(), true);
+  assert.equal(attempts, 2);
+  assert.equal(successes, 1);
+  assert.equal(await coordinator.start(), true);
+  assert.equal(attempts, 2);
+});
+
+test("A–Z 디자인 어휘는 절제된 공동체 별자리 결정으로 수렴한다", () => {
+  const alphabetEntries = designSource.match(/^- [A-Z] — /gm) || [];
+  assert.equal(alphabetEntries.length, 26);
+  assert.match(designSource, /Sober Constellation — 절제된 공동체의 별자리/);
+  assert.match(designSource, /Clarity[\s\S]*?Editorial[\s\S]*?Focus[\s\S]*?Hierarchy[\s\S]*?Negative Space[\s\S]*?Quietude[\s\S]*?Sobriety[\s\S]*?Unity/);
+  assert.match(designSource, /말씀\/기도제목 > 남은 시간 > 공동체 Presence > 장식/);
+});
+
 test("오늘의 기도에는 승인형 기도제목 등록 동선이 있다", () => {
   assert.match(participantHtmlSource, /class="ritual-share-invitation"[\s\S]*?data-action="open-submit"/);
 });
@@ -356,6 +431,6 @@ test("기도제목 공개 변경은 본문 없는 revision으로만 알리고 RL
 test("공개 해제된 집중 기도제목은 복사된 본문까지 지우고 목록으로 이동한다", () => {
   assert.match(appSource, /function clearPersonalFocus\(\)[\s\S]*?personal-focus-title"\), ""/);
   assert.match(appSource, /if \(!request\) \{[\s\S]*?clearPersonalFocus\(\);[\s\S]*?showView\("requests"\)/);
-  assert.match(appSource, /state\.contentUnsubscribe = state\.service\.subscribeContent/);
+  assert.match(appSource, /nextContentUnsubscribe = state\.service\.subscribeContent\(applyPublicContent/);
   assert.match(appSource, /visibilityState === "visible"\) revalidatePublicContent\(\)/);
 });

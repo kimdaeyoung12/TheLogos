@@ -722,6 +722,7 @@ button {
 .personal-focus-view {
   position: fixed;
   z-index: 90;
+  isolation: isolate;
   inset: 0;
   width: 100%;
   min-height: 100dvh;
@@ -730,6 +731,12 @@ button {
   background:
     radial-gradient(circle at 50% 40%, rgba(233, 219, 190, 0.28), transparent 28rem),
     linear-gradient(135deg, #f8f6f0, #fbfaf6 55%, #f1f4ef);
+}
+
+.focus-view {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  overflow: hidden;
 }
 
 .focus-view::before,
@@ -742,6 +749,67 @@ button {
   transform: rotate(-9deg);
   pointer-events: none;
 }
+
+.live-presence-backdrop {
+  position: fixed;
+  z-index: 1;
+  inset: 82px 0 108px;
+  overflow: hidden;
+  pointer-events: none;
+  -webkit-mask-image: radial-gradient(ellipse 64% 62% at 50% 48%, transparent 0 23%, rgba(0, 0, 0, 0.18) 42%, #000 78%);
+  mask-image: radial-gradient(ellipse 64% 62% at 50% 48%, transparent 0 23%, rgba(0, 0, 0, 0.18) 42%, #000 78%);
+}
+
+.live-presence-backdrop::after {
+  content: "";
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  background: radial-gradient(ellipse 58% 54% at 50% 48%, rgba(249, 247, 241, 0.96) 0 27%, rgba(249, 247, 241, 0.76) 44%, transparent 72%);
+}
+
+.live-presence-backdrop canvas,
+.live-presence-fallback {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.live-presence-backdrop canvas { opacity: 0.58; }
+
+.live-presence-orbit {
+  position: absolute;
+  z-index: 0;
+  top: 50%;
+  left: 50%;
+  border: 1px solid rgba(76, 102, 85, 0.075);
+  border-radius: 50%;
+  transform: translate(-50%, -50%) rotate(-12deg);
+}
+
+.live-presence-orbit--outer { width: min(76vw, 980px); height: min(62vh, 610px); }
+.live-presence-orbit--inner { width: min(52vw, 650px); height: min(44vh, 430px); transform: translate(-50%, -50%) rotate(17deg); }
+
+.live-presence-fallback i {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: rgba(174, 132, 55, 0.58);
+  box-shadow: 0 0 12px rgba(184, 145, 71, 0.36);
+}
+
+.live-presence-fallback i:nth-child(1) { top: 22%; left: 24%; }
+.live-presence-fallback i:nth-child(2) { top: 28%; left: 72%; }
+.live-presence-fallback i:nth-child(3) { top: 40%; left: 18%; }
+.live-presence-fallback i:nth-child(4) { top: 36%; left: 82%; }
+.live-presence-fallback i:nth-child(5) { top: 56%; left: 12%; }
+.live-presence-fallback i:nth-child(6) { top: 61%; left: 87%; }
+.live-presence-fallback i:nth-child(7) { top: 75%; left: 27%; }
+.live-presence-fallback i:nth-child(8) { top: 72%; left: 69%; }
+.live-presence-fallback i:nth-child(9) { top: 84%; left: 51%; }
 
 .focus-topbar {
   position: relative;
@@ -804,9 +872,12 @@ button {
   place-items: center;
   align-content: center;
   width: min(980px, calc(100% - 48px));
-  min-height: calc(100dvh - 190px);
+  min-height: 0;
+  height: 100%;
   margin: 0 auto;
   padding: 52px 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
   text-align: center;
 }
 
@@ -856,32 +927,97 @@ button {
 .focus-footer {
   position: relative;
   z-index: 3;
-  display: grid;
-  grid-template-columns: 90px 1fr auto;
+  display: flex;
   align-items: center;
-  gap: 16px;
+  justify-content: center;
   min-height: 108px;
   padding: 14px 32px;
   border-top: 1px solid rgba(197, 193, 181, 0.54);
+  background: linear-gradient(180deg, rgba(250, 248, 243, 0.62), rgba(246, 246, 240, 0.9));
+  backdrop-filter: blur(14px);
 }
 
-.mini-presence {
-  width: 88px;
-  height: 64px;
+.focus-presence-window {
+  position: relative;
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr);
+  align-items: center;
+  gap: 14px;
+  width: min(430px, 100%);
+  min-height: 76px;
+  padding: 10px 18px 10px 12px;
+  overflow: hidden;
+  border: 1px solid rgba(96, 114, 100, 0.2);
+  border-radius: 20px;
+  background:
+    linear-gradient(135deg, rgba(255, 253, 248, 0.9), rgba(239, 243, 236, 0.74)),
+    rgba(255, 253, 248, 0.72);
+  box-shadow: 0 18px 34px -30px rgba(42, 58, 48, 0.66), inset 0 1px rgba(255, 255, 255, 0.78);
+  transform: perspective(760px) rotateX(0.7deg);
 }
 
-.mini-presence canvas { width: 100%; height: 100%; }
+.focus-presence-window::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 12%;
+  left: 12%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(186, 147, 75, 0.34), transparent);
+}
 
-.focus-footer p {
+.focus-presence-emblem {
+  position: relative;
+  display: grid;
+  width: 50px;
+  height: 50px;
+  place-items: center;
+  border: 1px solid rgba(83, 108, 91, 0.15);
+  border-radius: 50%;
+  background: radial-gradient(circle at 42% 36%, rgba(255, 251, 232, 0.9), rgba(214, 224, 213, 0.4) 42%, rgba(90, 116, 97, 0.08) 68%, transparent 70%);
+  box-shadow: inset -5px -6px 12px rgba(69, 93, 78, 0.08), 0 8px 20px -16px rgba(54, 77, 62, 0.9);
+}
+
+.focus-presence-emblem::before {
+  content: "";
+  position: absolute;
+  inset: 8px 4px;
+  border: 1px solid rgba(165, 128, 60, 0.25);
+  border-radius: 50%;
+  transform: rotate(-24deg);
+}
+
+.focus-presence-emblem i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #b48736;
+  box-shadow: -10px 7px 0 -2px rgba(75, 104, 84, 0.5), 11px -6px 0 -2px rgba(75, 104, 84, 0.42), 0 0 12px rgba(190, 149, 71, 0.46);
+  animation: presence-breathe 7s ease-in-out infinite;
+}
+
+.focus-presence-copy { min-width: 0; }
+
+.focus-presence-kicker {
+  display: block;
+  margin-bottom: 3px;
+  color: var(--sage-strong);
+  font-size: 0.66rem;
+  font-weight: 780;
+  letter-spacing: 0.08em;
+}
+
+.focus-presence-copy p {
   display: flex;
   flex-wrap: wrap;
   gap: 5px;
   margin: 0;
-  font-size: 0.85rem;
+  font-size: 0.86rem;
 }
 
-.focus-footer p span { color: var(--muted); }
-.quiet-state { color: var(--muted); font-size: 0.76rem; }
+.focus-presence-copy p strong { color: var(--ink); }
+.focus-presence-copy p span { color: var(--muted); }
+.quiet-state { display: block; margin-top: 2px; color: var(--muted); font-size: 0.7rem; }
 
 .ritual-view,
 .requests-view {
@@ -1465,6 +1601,8 @@ button {
 
   #prayer-main { min-height: calc(100dvh - 64px); }
   .app-view { width: min(100% - 32px, var(--content)); padding: 44px 0 76px; }
+  .focus-view,
+  .personal-focus-view { width: 100%; padding: 0; }
   .app-view--center { min-height: calc(100dvh - 140px); }
 
   .home-view { padding-top: 36px; }
@@ -1522,11 +1660,13 @@ button {
   .focus-topbar { grid-template-columns: 56px 1fr 56px; min-height: 70px; padding: 9px 12px; }
   .icon-button { width: 44px; height: 44px; }
   .stage-progress { padding: 0 8px; }
-  .focus-content { min-height: calc(100dvh - 174px); padding: 36px 0; }
+  .focus-content { min-height: 0; height: 100%; padding: 30px 0; }
   .focus-content h1 { font-size: clamp(2rem, 10vw, 3.3rem); line-height: 1.36; }
-  .focus-footer { grid-template-columns: 54px 1fr; min-height: 104px; padding: 12px 16px; }
-  .mini-presence { width: 54px; height: 54px; }
-  .quiet-state { display: none; }
+  .live-presence-backdrop { inset: 70px 0 104px; }
+  .live-presence-orbit--outer { width: 132vw; height: 66vh; }
+  .live-presence-orbit--inner { width: 88vw; height: 44vh; }
+  .focus-footer { min-height: 104px; padding: 10px 14px; }
+  .focus-presence-window { min-height: 78px; padding-right: 14px; border-radius: 18px; }
 
   .ritual-view,
   .requests-view { padding-top: 48px; }
@@ -1565,11 +1705,13 @@ button {
     right: 12px;
     bottom: calc(88px + env(safe-area-inset-bottom));
   }
-  body.is-focus .status-banner { bottom: 116px; }
+  body.is-focus .status-banner { top: 82px; right: 12px; bottom: auto; }
 }
 
 @media (max-width: 390px) {
   .app-view { width: calc(100% - 24px); }
+  .focus-view,
+  .personal-focus-view { width: 100%; }
   .home-copy h1,
   .page-intro h1,
   .ritual-intro h1 { font-size: 2.65rem; }
@@ -1578,6 +1720,31 @@ button {
   .mobile-nav a { font-size: 0.61rem; }
   .focus-content { width: calc(100% - 28px); }
   .focus-content h1 { font-size: 2.15rem; }
+  .focus-presence-window { grid-template-columns: 46px minmax(0, 1fr); gap: 11px; padding-left: 10px; }
+  .focus-presence-emblem { width: 44px; height: 44px; }
+  .focus-presence-copy p { font-size: 0.8rem; }
+  .focus-presence-kicker { font-size: 0.62rem; }
+  .quiet-state {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+}
+
+@media (max-height: 650px) and (orientation: landscape) {
+  .focus-topbar { min-height: 62px; }
+  .live-presence-backdrop { inset: 62px 0 82px; }
+  .focus-content { min-height: 0; height: 100%; align-content: start; padding: 18px 0; }
+  .focus-content h1 { font-size: clamp(1.75rem, 6vw, 3rem); }
+  .focus-timer { margin-top: 24px; }
+  .focus-footer { min-height: 82px; padding-block: 7px; }
+  .focus-presence-window { min-height: 66px; padding-block: 7px; }
+  .focus-presence-emblem { width: 42px; height: 42px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
