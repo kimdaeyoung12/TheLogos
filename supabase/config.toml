@@ -1,0 +1,33 @@
+project_id = "retreat-prayer"
+
+[api]
+enabled = true
+schemas = ["public", "storage", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[db]
+major_version = 17
+
+[realtime]
+enabled = true
+
+[auth]
+enabled = true
+site_url = "http://127.0.0.1:1313/retreat-prayer/admin/"
+additional_redirect_urls = [
+  "https://thelogos.dev/retreat-prayer/admin/",
+  "http://localhost:1313/retreat-prayer/admin/",
+  "http://127.0.0.1:1313/retreat-prayer/admin/"
+]
+enable_anonymous_sign_ins = true
+
+[storage]
+enabled = true
+file_size_limit = "20MiB"
+
+[functions.submit-prayer-request]
+verify_jwt = true
+
+[functions.manage-admin]
+verify_jwt = true

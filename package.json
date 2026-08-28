@@ -5,7 +5,8 @@
   "scripts": {
     "start": "hugo server",
     "build": "hugo --gc --minify",
-    "clean-emojis": "python scripts/clean_emojis.py"
+    "clean-emojis": "python scripts/clean_emojis.py",
+    "test:retreat-prayer": "node --test tests/retreat-prayer.unit.mjs"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.19",

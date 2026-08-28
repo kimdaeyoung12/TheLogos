@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta name="theme-color" content="#eef0eb">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self'; img-src 'self' data:; connect-src 'self' https://*.supabase.co wss://*.supabase.co; media-src 'self' blob: https://*.supabase.co; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
+  <title>공동기도 운영 콘솔</title>
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/admin.css">
+  <script src="../config.js" defer></script>
+  <script type="module" src="../assets/admin.js"></script>
+</head>
+<body class="admin-app">
+  <a class="skip-link" href="#admin-main">운영 화면으로 바로가기</a>
+  <div id="admin-preview-ribbon" class="preview-ribbon" hidden>로컬 운영 콘솔 미리보기 · 실제 참여자에게 송출되지 않습니다</div>
+
+  <main id="admin-main">
+    <section id="admin-loading" class="admin-gate" aria-labelledby="admin-loading-title">
+      <div class="quiet-loader" aria-hidden="true"><i></i><i></i><i></i></div>
+      <h1 id="admin-loading-title">운영 환경을 확인하고 있습니다</h1>
+    </section>
+
+    <section id="admin-config" class="admin-gate" aria-labelledby="admin-config-title" hidden>
+      <p class="eyebrow">설정 필요</p>
+      <h1 id="admin-config-title">Admin 연결이 아직 준비되지 않았습니다</h1>
+      <p>운영 Supabase 설정이 연결된 뒤에만 Admin 로그인을 사용할 수 있습니다.</p>
+    </section>
+
+    <section id="admin-login" class="admin-gate" aria-labelledby="admin-login-title" hidden>
+      <div class="admin-login-card">
+        <div class="admin-login-mark" aria-hidden="true"><i></i><i></i><i></i></div>
+        <p class="eyebrow">Retreat Prayer Operations</p>
+        <h1 id="admin-login-title">공동기도 운영 콘솔</h1>
+        <p>인증된 Admin만 기도 진행과 콘텐츠를 변경할 수 있습니다.</p>
+        <form id="admin-login-form" method="post" action="./" novalidate>
+          <label for="admin-email">이메일</label>
+          <input id="admin-email" name="email" type="email" autocomplete="username" required>
+          <label for="admin-login-password">비밀번호</label>
+          <input id="admin-login-password" name="password" type="password" autocomplete="current-password" required>
+          <button class="button button--primary button--full" type="submit">Admin 로그인</button>
+          <p id="admin-login-error" class="field-error" role="alert"></p>
+        </form>
+        <button id="admin-preview-button" class="button button--quiet button--full" type="button" data-action="open-preview" hidden>미리보기 콘솔 열기</button>
+        <a class="admin-back-link" href="../">참여자 화면으로 돌아가기</a>
+      </div>
+    </section>
+
+    <section id="admin-password" class="admin-gate" aria-labelledby="admin-password-title" hidden>
+      <div class="admin-login-card">
+        <div class="admin-login-mark" aria-hidden="true"><i></i><i></i><i></i></div>
+        <p class="eyebrow">Admin Invitation</p>
+        <h1 id="admin-password-title">첫 비밀번호를 설정해주세요</h1>
+        <p>초대 링크 확인이 완료되었습니다. 이후 로그인에 사용할 비밀번호를 만듭니다.</p>
+        <form id="admin-password-form" method="post" action="./" novalidate>
+          <label for="admin-new-password">새 비밀번호</label>
+          <input id="admin-new-password" name="password" type="password" autocomplete="new-password" minlength="10" required>
+          <label for="admin-confirm-password">비밀번호 확인</label>
+          <input id="admin-confirm-password" name="passwordConfirm" type="password" autocomplete="new-password" minlength="10" required>
+          <button class="button button--primary button--full" type="submit">비밀번호 설정하고 콘솔 열기</button>
+          <p id="admin-password-error" class="field-error" role="alert"></p>
+        </form>
+      </div>
+    </section>
+
+    <section id="admin-console" class="admin-console" hidden>
+      <aside class="admin-sidebar">
+        <div class="admin-brand">
+          <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span><strong>Prayer Ops</strong><small>수련회 공동기도</small></span>
+        </div>
+        <nav aria-label="Admin 메뉴">
+          <button type="button" data-admin-route="live" aria-current="page"><span aria-hidden="true">◉</span>실시간 진행</button>
+          <button type="button" data-admin-route="program"><span aria-hidden="true">≡</span>기도회 구성</button>
+          <button type="button" data-admin-route="content"><span aria-hidden="true">▤</span>오늘의 콘텐츠</button>
+          <button type="button" data-admin-route="requests"><span aria-hidden="true">◇</span>기도제목 승인</button>
+          <button type="button" data-admin-route="media"><span aria-hidden="true">♩</span>음악 관리</button>
+          <button type="button" data-admin-route="accounts"><span aria-hidden="true">◎</span>Admin 관리</button>
+          <button type="button" data-admin-route="operations"><span aria-hidden="true">⌁</span>운영 상태</button>
+        </nav>
+        <div class="admin-profile">
+          <span id="admin-avatar" aria-hidden="true">관</span>
+          <span><strong id="admin-name">Admin</strong><small id="admin-role">권한 확인 중</small></span>
+          <button type="button" data-action="logout">로그아웃</button>
+        </div>
+      </aside>
+
+      <div class="admin-workspace">
+        <header class="admin-topbar">
+          <div>
+            <button id="admin-menu-button" class="admin-menu-button" type="button" data-action="toggle-admin-menu" aria-expanded="false" aria-label="Admin 메뉴 열기">☰</button>
+            <p id="admin-section-eyebrow">Live Prayer</p>
+            <h1 id="admin-section-title">실시간 공동기도 진행</h1>
+          </div>
+          <div class="ops-strip" aria-label="운영 상태">
+            <span><i class="ops-live-dot" aria-hidden="true"></i><b id="ops-live-status">LIVE</b></span>
+            <span>활성 연결 <b id="ops-presence-count">확인 중</b></span>
+            <span>서버 시간 <b id="ops-server-time">--:--:--</b></span>
+            <span>연결 <b id="ops-connection">확인 중</b></span>
+          </div>
+        </header>
+
+        <div id="controller-banner" class="controller-banner" role="status">
+          <div><span class="status-dot" aria-hidden="true"></span><strong id="controller-state">제어권을 확인하고 있습니다</strong><small id="controller-detail">실시간 조작 전 제어권을 확보해야 합니다.</small></div>
+          <button id="claim-controller-button" class="button button--quiet" type="button" data-action="claim-controller">제어권 요청</button>
+        </div>
+
+        <section id="admin-panel-live" class="admin-panel" aria-labelledby="admin-section-title">
+          <div class="operator-grid">
+            <div class="monitor-column">
+              <article class="operator-monitor operator-monitor--program">
+                <header><span><i class="ops-live-dot" aria-hidden="true"></i> PROGRAM · 참여자에게 보이는 화면</span><strong id="program-version">v—</strong></header>
+                <div class="monitor-canvas">
+                  <p id="program-stage-label" class="eyebrow">현재 단계</p>
+                  <p id="program-reference" class="monitor-reference"></p>
+                  <h2 id="program-content">송출 내용을 준비하고 있습니다.</h2>
+                  <div class="monitor-time"><span id="program-remaining">--:--</span><small id="program-participants">활성 연결 확인 중</small></div>
+                </div>
+              </article>
+
+              <article class="operator-monitor operator-monitor--preview">
+                <header><span>PREVIEW · 다음 단계</span><strong id="preview-stage-number">—</strong></header>
+                <div class="preview-canvas">
+                  <div><p id="preview-stage-label">다음 단계 없음</p><h3 id="preview-content">마지막 단계입니다.</h3></div>
+                  <p id="preview-duration">—</p>
+                </div>
+              </article>
+            </div>
+
+            <aside class="cue-column" aria-label="기도 순서">
+              <header><div><p>Run of Show</p><h2>기도 순서</h2></div><button class="icon-button" type="button" data-action="edit-program" aria-label="기도 순서 편집">＋</button></header>
+              <ol id="cue-list" class="cue-list"></ol>
+            </aside>
+          </div>
+
+          <div class="live-control-bar" aria-label="실시간 기도 진행 제어">
+            <div class="now-next">
+              <span><small>NOW</small><strong id="control-now">—</strong></span>
+              <span><small>NEXT</small><strong id="control-next">—</strong></span>
+            </div>
+            <div class="primary-controls">
+              <button class="control-start" type="button" data-live-action="start">기도회 시작</button>
+              <button type="button" data-live-action="previous" aria-label="이전 단계">← 이전</button>
+              <button class="control-primary" type="button" data-live-action="next">다음 단계 송출 →</button>
+              <button type="button" data-live-action="pause">일시정지</button>
+              <button type="button" data-live-action="extend" data-seconds="60">＋1분 연장</button>
+              <button type="button" data-live-action="media_start">음악 시작</button>
+              <button type="button" data-live-action="media_stop">음악 종료</button>
+            </div>
+            <button class="control-danger" type="button" data-action="confirm-complete">기도회 종료</button>
+          </div>
+
+          <div class="mobile-emergency-controls" aria-label="모바일 긴급 제어">
+            <button class="button button--primary" type="button" data-live-action="start">기도회 시작</button>
+            <button class="button button--primary" type="button" data-live-action="next">다음 단계</button>
+            <button class="button button--quiet" type="button" data-live-action="extend" data-seconds="60">＋1분</button>
+            <button class="button button--quiet" type="button" data-live-action="pause">일시정지</button>
+            <button class="button admin-danger-button" type="button" data-action="confirm-complete">종료</button>
+          </div>
+        </section>
+
+        <section id="admin-panel-program" class="admin-panel" hidden>
+          <div class="admin-page-heading">
+            <div>
+              <p class="eyebrow">Run of Show</p>
+              <h2>공동기도 순서 구성</h2>
+              <p>기도회가 진행 중이 아닐 때 다음 일정과 단계별 말씀·기도제목·음악을 게시합니다.</p>
+            </div>
+          </div>
+          <form id="program-form" class="admin-form-card program-form" method="post" action="./">
+            <div class="form-row form-row--three">
+              <label>기도회 이름<input id="program-title" name="title" maxlength="120" required></label>
+              <label>시작 시각 · Asia/Seoul<input id="program-schedule" name="scheduledFor" type="datetime-local" required></label>
+              <label>진행 방식
+                <select id="program-mode" name="mode">
+                  <option value="manual">Admin 직접 진행</option>
+                  <option value="auto">서버 시간 자동 진행</option>
+                </select>
+              </label>
+            </div>
+            <div class="program-form__heading">
+              <div><h3>기도 단계</h3><p>자동 진행에서는 각 단계 시간이 끝나면 다음 단계로 조용히 전환됩니다.</p></div>
+              <button class="button button--quiet" type="button" data-action="add-program-step">＋ 단계 추가</button>
+            </div>
+            <div id="program-steps" class="program-steps"></div>
+            <div class="form-actions">
+              <p id="program-save-status" role="status"></p>
+              <button class="button button--primary" type="submit">기도회 구성 게시</button>
+            </div>
+          </form>
+        </section>
+
+        <section id="admin-panel-content" class="admin-panel" hidden>
+          <div class="admin-page-heading"><div><p class="eyebrow">Daily Prayer</p><h2>오늘의 말씀과 기도제목</h2><p>교회 설정 Timezone의 00:00을 기준으로 오늘 콘텐츠가 바뀝니다.</p></div></div>
+          <form id="app-settings-form" class="admin-form-card settings-form" method="post" action="./">
+            <div class="form-row form-row--three">
+              <label>공동체 이름<input id="settings-church-name" name="churchName" maxlength="80" required></label>
+              <label>수련회 날짜<input id="settings-retreat-date" name="retreatDate" type="date" required></label>
+              <label>정기 공동기도 시각<input id="settings-prayer-time" name="dailyPrayerTime" type="time" required></label>
+            </div>
+            <div class="form-actions"><p id="settings-save-status" role="status">기준 Timezone: Asia/Seoul</p><button class="button button--quiet" type="submit">기본 일정 저장</button></div>
+          </form>
+          <form id="daily-content-form" class="admin-form-card" method="post" action="./">
+            <div class="form-row">
+              <label>적용 날짜<input id="content-date" name="prayerDate" type="date" required></label>
+              <label>말씀 본문<input id="content-reference" name="scriptureReference" maxlength="80" placeholder="예: 빌립보서 4:6–7" required></label>
+            </div>
+            <label>말씀<textarea id="content-scripture" name="scriptureText" rows="5" maxlength="1200" required></textarea></label>
+            <label>오늘의 수련회 기도제목<textarea id="content-topic" name="prayerTopic" rows="6" maxlength="1200" required></textarea></label>
+            <div class="form-actions"><p id="content-save-status" role="status"></p><button class="button button--primary" type="submit">오늘 콘텐츠 게시</button></div>
+          </form>
+        </section>
+
+        <section id="admin-panel-requests" class="admin-panel" hidden>
+          <div class="admin-page-heading"><div><p class="eyebrow">Moderation Queue</p><h2>기도제목 승인 대기</h2><p>개인정보가 포함되지 않았는지 확인한 뒤 공개해주세요.</p></div><strong id="pending-count">0건 대기</strong></div>
+          <div id="moderation-list" class="moderation-list"></div>
+          <div id="moderation-empty" class="empty-state" hidden><span aria-hidden="true">○</span><h2>승인 대기 중인 기도제목이 없습니다</h2></div>
+          <div class="admin-list-card published-requests-card">
+            <header><h3>현재 공개 중인 기도제목</h3></header>
+            <div id="published-request-list"></div>
+          </div>
+        </section>
+
+        <section id="admin-panel-media" class="admin-panel" hidden>
+          <div class="admin-page-heading"><div><p class="eyebrow">Music & Media</p><h2>공동기도 음악 관리</h2><p>참여자의 최초 동작 이후에만 재생하며, 로컬 음량을 강제로 바꾸지 않습니다.</p></div></div>
+          <div class="media-grid">
+            <form id="youtube-form" class="admin-form-card" method="post" action="./">
+              <span class="media-icon" aria-hidden="true">▶</span>
+              <h3>YouTube 연결</h3>
+              <label>표시 이름<input name="label" maxlength="80" required></label>
+              <label>YouTube URL<input name="sourceUrl" type="url" placeholder="https://www.youtube.com/watch?v=..." required></label>
+              <label>시작 시점(초)<input name="startSeconds" type="number" min="0" max="36000" value="0"></label>
+              <button class="button button--primary" type="submit">음악 목록에 추가</button>
+              <p class="form-status" role="status"></p>
+            </form>
+            <form id="audio-upload-form" class="admin-form-card" method="post" action="./">
+              <span class="media-icon" aria-hidden="true">♩</span>
+              <h3>음원 직접 업로드</h3>
+              <label>표시 이름<input name="label" maxlength="80" required></label>
+              <label class="file-drop">MP3 · M4A · OGG, 최대 20MB<input name="audioFile" type="file" accept="audio/mpeg,audio/mp4,audio/ogg" required></label>
+              <button class="button button--primary" type="submit">안전하게 업로드</button>
+              <p class="form-status" role="status"></p>
+            </form>
+          </div>
+          <div class="admin-list-card"><header><h3>등록된 음악</h3></header><div id="media-list"></div></div>
+        </section>
+
+        <section id="admin-panel-accounts" class="admin-panel" hidden>
+          <div class="admin-page-heading"><div><p class="eyebrow">Admin Access</p><h2>Admin 계정 관리</h2><p>대표 관리자만 초대와 비활성화를 할 수 있으며, 활성 계정은 최대 5개입니다.</p></div><strong id="account-count">0 / 5</strong></div>
+          <form id="admin-invite-form" class="admin-form-card admin-form-card--inline" method="post" action="./">
+            <label>이메일<input name="email" type="email" required></label>
+            <label>표시 이름<input name="displayName" maxlength="40" required></label>
+            <button class="button button--primary" type="submit">Admin 초대</button>
+            <p class="form-status" role="status"></p>
+          </form>
+          <div class="admin-list-card"><div id="account-list"></div></div>
+        </section>
+
+        <section id="admin-panel-operations" class="admin-panel" hidden>
+          <div class="admin-page-heading"><div><p class="eyebrow">System & Audit</p><h2>운영 상태와 작업 이력</h2><p>실시간 연결과 중요한 운영 변경을 확인합니다.</p></div></div>
+          <div class="ops-cards">
+            <article><span class="status-dot status-dot--live" aria-hidden="true"></span><p>Realtime</p><strong id="ops-card-realtime">연결됨</strong></article>
+            <article><span aria-hidden="true">◷</span><p>서버 시각 차이</p><strong id="ops-card-clock">계산 중</strong></article>
+            <article><span aria-hidden="true">◎</span><p>Active Controller</p><strong id="ops-card-controller">없음</strong></article>
+            <article><span aria-hidden="true">♩</span><p>현재 음악</p><strong id="ops-card-media">재생 없음</strong></article>
+          </div>
+          <div class="admin-list-card audit-card"><header><h3>중요 작업 이력</h3></header><div id="audit-list"></div></div>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <dialog id="admin-confirm-dialog" class="app-dialog" aria-labelledby="admin-confirm-title">
+    <form method="dialog" class="dialog-shell">
+      <p class="eyebrow eyebrow--danger">중요 작업 확인</p>
+      <h2 id="admin-confirm-title">기도회를 종료할까요?</h2>
+      <p id="admin-confirm-message">종료하면 모든 참여자 화면이 기도 종료 상태로 전환됩니다.</p>
+      <div class="confirm-actions">
+        <button class="button button--quiet" value="cancel">취소</button>
+        <button id="admin-confirm-button" class="button admin-danger-button" value="confirm">기도회 종료</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div id="admin-toast" class="admin-toast" role="status" aria-live="polite" hidden></div>
+</body>
+</html>
