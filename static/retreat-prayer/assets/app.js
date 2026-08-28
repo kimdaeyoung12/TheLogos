@@ -26,7 +26,7 @@ const state = {
   presenceCount: null,
   presenceSynced: false,
   presenceStatus: "connecting",
-  livePresenceContext: "이 함께 기도 중입니다",
+  livePresenceContext: "가 함께 기도 중입니다",
   presenceDisconnect: null,
   presenceContext: null,
   presenceGeneration: 0,
@@ -146,15 +146,15 @@ function showView(name, { updateHash = true, focusMain = true, updatePresence = 
 
 function renderPresence() {
   const text = state.presenceSynced && Number.isFinite(state.presenceCount)
-    ? `${state.presenceCount}개의 활성 연결`
+    ? `${state.presenceCount}명의 지체`
     : state.presenceStatus === "reconnecting" || state.presenceStatus === "unavailable"
-      ? "활성 연결 일시 중단"
+      ? "인원 확인 일시 중단"
       : "연결 확인 중";
   const liveText = state.presenceSynced && Number.isFinite(state.presenceCount)
-    ? `${state.presenceCount}개의 활성 브라우저 연결`
+    ? `${state.presenceCount}명의 지체`
     : state.presenceStatus === "reconnecting" || state.presenceStatus === "unavailable"
-      ? "활성 연결 일시 중단"
-      : "활성 연결 확인 중";
+      ? "인원 확인 일시 중단"
+      : "인원 확인 중";
   setText($("#presence-count"), text);
   setText($("#header-presence"), text);
   setText($("#live-presence-count"), liveText);
@@ -162,10 +162,10 @@ function renderPresence() {
   setText(
     $("#live-connection-state"),
     state.presenceSynced
-      ? "활성 연결 수 동기화됨"
+      ? "지체 수 동기화됨"
       : state.presenceStatus === "reconnecting" || state.presenceStatus === "unavailable"
         ? "연결이 돌아오면 인원 수를 다시 확인합니다"
-        : "활성 연결 수 확인 중",
+        : "인원 수 확인 중",
   );
   const visualCount = state.presenceSynced ? state.presenceCount || 0 : 0;
   state.presenceCanvas?.setCount(visualCount);
@@ -324,7 +324,7 @@ function renderLive() {
   setText($("#live-heading"), step.content);
   setText($("#live-timer"), view.status === "paused" ? "기도 흐름이 잠시 머물러 있습니다" : formatRemaining(view.remainingSeconds));
   setText($("#live-mode-label"), live.mode === "auto" ? "사전 설정에 따라 진행 중" : "진행자와 함께하는 기도");
-  setLivePresenceContext("이 함께 기도 중입니다");
+  setLivePresenceContext("가 함께 기도 중입니다");
   $("#live-progress").value = view.progress;
 
   const media = getCurrentMedia(view);

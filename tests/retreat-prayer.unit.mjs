@@ -243,8 +243,10 @@ test("공동기도는 기도문 뒤의 절제된 3D Presence와 정확한 활성
   assert.match(participantStylesSource, /\.focus-view \{[\s\S]*?grid-template-rows: auto minmax\(0, 1fr\) auto;[\s\S]*?overflow: hidden/);
   assert.match(participantStylesSource, /orientation: landscape[\s\S]*?align-content: start/);
   assert.match(appSource, /\$\("#live-presence-count"\), liveText/);
-  assert.match(appSource, /\$\{state\.presenceCount\}개의 활성 브라우저 연결/);
-  assert.match(appSource, /활성 연결 수 동기화됨/);
+  assert.match(appSource, /\$\{state\.presenceCount\}명의 지체/);
+  assert.match(appSource, /livePresenceContext: "가 함께 기도 중입니다"/);
+  assert.match(appSource, /지체 수 동기화됨/);
+  assert.doesNotMatch(appSource, /명의 지체이 함께 기도 중입니다/);
   assert.match(appSource, /\$\("#live-presence-context"\), state\.presenceSynced \? state\.livePresenceContext : ""/);
   assert.match(appSource, /function setLivePresenceContext\(message\)/);
   assert.match(appSource, /variant: "live-backdrop"/);
