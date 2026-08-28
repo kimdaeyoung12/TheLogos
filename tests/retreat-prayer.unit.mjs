@@ -9,6 +9,18 @@ const migrationSource = await readFile(
   new URL("../supabase/migrations/20260828010000_retreat_prayer.sql", import.meta.url),
   "utf8",
 );
+const validationMigrationSource = await readFile(
+  new URL("../supabase/migrations/20260828020000_retreat_prayer_security_validation.sql", import.meta.url),
+  "utf8",
+);
+const edgeSecretHelperSource = await readFile(
+  new URL("../supabase/functions/_shared/supabase-key.ts", import.meta.url),
+  "utf8",
+);
+const runtimeConfigSource = await readFile(
+  new URL("../static/retreat-prayer/config.js", import.meta.url),
+  "utf8",
+);
 
 async function assertUniqueIds(relativeHtmlPath) {
   const html = await readFile(new URL(relativeHtmlPath, import.meta.url), "utf8");
@@ -116,6 +128,29 @@ test("공개 배포는 완전한 Supabase 설정이 없으면 운영 모드가 �
     supabaseUrl: "https://example.supabase.co",
     supabasePublishableKey: "sb_publishable_example",
   }), true);
+});
+
+test("운영 설정에는 전용 프로젝트의 공개 키만 들어간다", () => {
+  assert.match(runtimeConfigSource, /supabaseUrl: "https:\/\/bxgqhdqseahujiadvhyk\.supabase\.co"/);
+  assert.match(runtimeConfigSource, /supabasePublishableKey: "sb_publishable_/);
+  assert.doesNotMatch(runtimeConfigSource, /sb_secret_/);
+  assert.doesNotMatch(runtimeConfigSource, /eyJ[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+/);
+});
+
+test("Edge Function은 hosted secret key를 우선하고 legacy 값은 로컬 호환 fallback으로만 사용한다", () => {
+  assert.match(edgeSecretHelperSource, /Deno\.env\.get\("SUPABASE_SECRET_KEYS"\)/);
+  assert.match(edgeSecretHelperSource, /JSON\.parse\(hostedKeys\)/);
+  assert.match(edgeSecretHelperSource, /keys\.default/);
+  assert.match(edgeSecretHelperSource, /SUPABASE_SECRET_KEY/);
+  assert.match(edgeSecretHelperSource, /SUPABASE_SERVICE_ROLE_KEY/);
+});
+
+test("원격 보안 검증 migration은 핵심 권한과 운영 자원을 배포 시 단언한다", () => {
+  assert.match(validationMigrationSource, /prayer_requests direct INSERT is exposed/);
+  assert.match(validationMigrationSource, /private Presence policies are incomplete/);
+  assert.match(validationMigrationSource, /where id = 'prayer-audio' and public is true/);
+  assert.match(validationMigrationSource, /retreat-prayer-purge-expired/);
+  assert.match(validationMigrationSource, /Realtime publication is incomplete/);
 });
 
 test("참여자와 Admin 화면의 id 및 JavaScript 참조가 일치한다", async () => {

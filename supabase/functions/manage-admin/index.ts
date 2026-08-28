@@ -1,4 +1,5 @@
 import { createClient } from "npm:@supabase/supabase-js@2.111.0";
+import { getSupabaseSecretKey } from "../_shared/supabase-key.ts";
 
 const DEFAULT_ORIGINS = [
   "https://thelogos.dev",
@@ -18,7 +19,8 @@ function allowedOrigins(): Set<string> {
 function corsHeaders(origin: string | null): HeadersInit {
   return {
     "Access-Control-Allow-Origin": origin || DEFAULT_ORIGINS[0],
-    "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+    "Access-Control-Allow-Headers":
+      "authorization, x-client-info, apikey, content-type, x-retry-count, traceparent, tracestate, baggage",
     "Access-Control-Allow-Methods": "POST, OPTIONS",
     "Access-Control-Max-Age": "86400",
     "Vary": "Origin",
@@ -44,7 +46,7 @@ Deno.serve(async (request) => {
   if (request.method !== "POST") return json(405, { error: "POST 요청만 지원합니다." }, origin);
 
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
-  const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  const serviceRoleKey = getSupabaseSecretKey();
   if (!supabaseUrl || !serviceRoleKey) return json(503, { error: "Admin 관리 기능이 준비되지 않았습니다." }, origin);
 
   const authorization = request.headers.get("Authorization");

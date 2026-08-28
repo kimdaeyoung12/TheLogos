@@ -1,4 +1,5 @@
 import { createClient } from "npm:@supabase/supabase-js@2.111.0";
+import { getSupabaseSecretKey } from "../_shared/supabase-key.ts";
 
 const DEFAULT_ORIGINS = [
   "https://thelogos.dev",
@@ -18,7 +19,8 @@ function allowedOrigins(): Set<string> {
 function corsHeaders(origin: string | null): HeadersInit {
   return {
     "Access-Control-Allow-Origin": origin || DEFAULT_ORIGINS[0],
-    "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+    "Access-Control-Allow-Headers":
+      "authorization, x-client-info, apikey, content-type, x-retry-count, traceparent, tracestate, baggage",
     "Access-Control-Allow-Methods": "POST, OPTIONS",
     "Access-Control-Max-Age": "86400",
     "Vary": "Origin",
@@ -64,7 +66,7 @@ Deno.serve(async (request) => {
   }
 
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
-  const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  const serviceRoleKey = getSupabaseSecretKey();
   const rateLimitSalt = Deno.env.get("PRAYER_RATE_LIMIT_SALT");
   if (!supabaseUrl || !serviceRoleKey || !rateLimitSalt) {
     return json(503, { error: "제출 기능이 아직 준비되지 않았습니다." }, origin);

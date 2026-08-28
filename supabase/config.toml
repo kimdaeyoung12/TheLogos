@@ -2,7 +2,7 @@ project_id = "retreat-prayer"
 
 [api]
 enabled = true
-schemas = ["public", "storage", "graphql_public"]
+schemas = ["public", "graphql_public"]
 extra_search_path = ["public", "extensions"]
 max_rows = 1000
 
@@ -14,17 +14,35 @@ enabled = true
 
 [auth]
 enabled = true
-site_url = "http://127.0.0.1:1313/retreat-prayer/admin/"
+site_url = "https://thelogos.dev/retreat-prayer/admin/"
 additional_redirect_urls = [
   "https://thelogos.dev/retreat-prayer/admin/",
+  "https://www.thelogos.dev/retreat-prayer/admin/",
   "http://localhost:1313/retreat-prayer/admin/",
   "http://127.0.0.1:1313/retreat-prayer/admin/"
 ]
 enable_anonymous_sign_ins = true
+minimum_password_length = 10
+password_requirements = "lower_upper_letters_digits_symbols"
 
-[storage]
-enabled = true
-file_size_limit = "20MiB"
+[auth.rate_limit]
+anonymous_users = 30
+token_refresh = 150
+sign_in_sign_ups = 30
+token_verifications = 30
+
+[auth.email]
+enable_signup = false
+double_confirm_changes = true
+enable_confirmations = true
+secure_password_change = true
+max_frequency = "1m0s"
+otp_length = 8
+otp_expiry = 3600
+
+[auth.mfa.totp]
+enroll_enabled = true
+verify_enabled = true
 
 [functions.submit-prayer-request]
 verify_jwt = true

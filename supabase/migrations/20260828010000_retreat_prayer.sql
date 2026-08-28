@@ -438,7 +438,6 @@ declare
   extension_seconds integer;
   effective_elapsed integer;
   cumulative_before integer := 0;
-  step_index integer;
   action_time timestamptz := clock_timestamp();
   selected_media public.media_assets%rowtype;
 begin
@@ -917,13 +916,18 @@ as $$
 declare
   deleted_count integer;
   rate_limit_count integer;
+  anonymous_user_count integer;
 begin
   delete from public.prayer_requests where expires_at <= clock_timestamp();
   get diagnostics deleted_count = row_count;
   delete from public.submission_rate_limits
   where resets_at <= clock_timestamp() - interval '24 hours';
   get diagnostics rate_limit_count = row_count;
-  return deleted_count + rate_limit_count;
+  delete from auth.users
+  where is_anonymous is true
+    and created_at <= clock_timestamp() - interval '30 days';
+  get diagnostics anonymous_user_count = row_count;
+  return deleted_count + rate_limit_count + anonymous_user_count;
 end;
 $$;
 
@@ -1091,3 +1095,13 @@ on conflict (id) do nothing;
 insert into public.live_controller_leases (id) values (1) on conflict (id) do nothing;
 
 alter publication supabase_realtime add table public.live_sessions, public.content_revisions;
+
+-- Run shortly after midnight in Asia/Seoul (15:15 UTC) so expired prayer
+-- requests and stale rate-limit hashes are removed without an external worker.
+create extension if not exists pg_cron with schema pg_catalog;
+
+select cron.schedule(
+  'retreat-prayer-purge-expired',
+  '15 15 * * *',
+  'select public.purge_expired_prayer_requests();'
+);
