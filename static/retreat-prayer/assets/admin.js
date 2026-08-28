@@ -409,11 +409,11 @@ function renderMedia() {
     row.append(content);
     const button = document.createElement("button");
     button.type = "button";
-    button.dataset.action = "deactivate-media";
+    button.dataset.action = "delete-media";
     button.dataset.mediaId = item.id;
-    button.textContent = "사용 중지";
+    button.textContent = "삭제";
     button.disabled = ["live", "paused"].includes(state.snapshot?.liveSession?.status);
-    if (button.disabled) button.title = "기도회 진행 중에는 Live Control의 음악 종료를 사용해주세요.";
+    if (button.disabled) button.title = "진행 중인 기도회를 종료한 뒤 음악을 삭제할 수 있습니다.";
     row.append(button);
     list.append(row);
   });
@@ -792,19 +792,38 @@ async function uploadAudio(event) {
   }
 }
 
-async function deactivateMedia(id) {
+function openMediaDeleteConfirmation(id) {
+  const media = (state.snapshot?.media || []).find((item) => String(item.id) === String(id));
+  if (!media) return toast("삭제할 음악을 찾을 수 없습니다.", 4200);
   if (["live", "paused"].includes(state.snapshot?.liveSession?.status)) {
-    toast("기도회 진행 중에는 Live Control의 음악 종료를 사용해주세요.", 4200);
+    toast("진행 중인 기도회를 종료한 뒤 음악을 삭제해주세요.", 4200);
     return;
   }
+  state.confirmation = { type: "delete-media", mediaId: id };
+  setText($("#admin-confirm-title"), `‘${media.label}’ 음악을 삭제할까요?`);
+  setText($("#admin-confirm-message"), "기도회 구성에서 이 음악의 연결을 해제하고, 업로드한 음원 파일도 삭제합니다. 이 작업은 되돌릴 수 없습니다.");
+  setText($("#admin-confirm-button"), "음악 삭제");
+  const dialog = $("#admin-confirm-dialog");
+  if (typeof dialog.showModal === "function") dialog.showModal();
+  else dialog.setAttribute("open", "");
+}
+
+async function deleteMedia(id) {
   try {
-    await state.service.deactivateMedia(id);
+    const result = await state.service.deleteMedia(id);
     state.snapshot.media = (state.snapshot.media || []).filter((item) => String(item.id) !== String(id));
+    for (const program of state.snapshot.programs || []) {
+      program.steps = (program.steps || []).map((step) => String(step.media_id) === String(id)
+        ? { ...step, media_id: null }
+        : step);
+    }
     renderMedia();
     renderProgramEditor();
-    toast("음악을 사용 중지했습니다. 기도회 구성에서 연결 상태를 확인한 뒤 다시 게시해주세요.", 4200);
+    toast(result.storageCleanupFailed
+      ? "음악 목록에서는 삭제했지만 저장소 파일 정리에 실패했습니다. 운영 상태에서 확인해주세요."
+      : "음악과 업로드 파일을 삭제했습니다.", 4800);
   } catch (error) {
-    toast(error.message || "음악을 사용 중지하지 못했습니다.", 4200);
+    toast(error.message || "음악을 삭제하지 못했습니다.", 4200);
   }
 }
 
@@ -902,7 +921,7 @@ async function handleClick(event) {
       else await moderate(actionTarget);
     }
     if (action === "disable-admin") openDisableConfirmation(actionTarget.dataset.userId);
-    if (action === "deactivate-media") await deactivateMedia(actionTarget.dataset.mediaId);
+    if (action === "delete-media") openMediaDeleteConfirmation(actionTarget.dataset.mediaId);
     if (action === "activate-admin") {
       try {
         await state.service.manageAdmin("activate", { userId: actionTarget.dataset.userId });
@@ -976,6 +995,7 @@ $("#admin-confirm-dialog")?.addEventListener("close", async (event) => {
     fakeButton.dataset.status = state.confirmation.status;
     await moderate(fakeButton);
   }
+  if (state.confirmation?.type === "delete-media") await deleteMedia(state.confirmation.mediaId);
   state.confirmation = null;
 });
 globalThis.addEventListener("pagehide", () => {

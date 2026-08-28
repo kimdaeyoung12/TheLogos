@@ -39,6 +39,10 @@ const safeLiveContentMigrationSource = await readFile(
   new URL("../supabase/migrations/20260829040000_retreat_prayer_safe_live_content_edit.sql", import.meta.url),
   "utf8",
 );
+const mediaDeleteMigrationSource = await readFile(
+  new URL("../supabase/migrations/20260829050000_retreat_prayer_media_delete.sql", import.meta.url),
+  "utf8",
+);
 const edgeSecretHelperSource = await readFile(
   new URL("../supabase/functions/_shared/supabase-key.ts", import.meta.url),
   "utf8",
@@ -324,6 +328,19 @@ test("YouTube 계열은 등록·숨김 재생하지 않고 업로드 음원만 �
   assert.doesNotMatch(participantHtmlSource, /id="youtube-player"/);
   assert.doesNotMatch(appSource, /youtube-nocookie\.com\/embed/);
   assert.match(appSource, /YouTube 음악은 광고 없는 재생을 보장할 수 없어 재생하지 않습니다/);
+});
+
+test("등록 음악 삭제는 확인 후 서버 권한으로 연결과 업로드 파일을 함께 정리한다", () => {
+  assert.match(adminScriptSource, /button\.dataset\.action = "delete-media"/);
+  assert.match(adminScriptSource, /type: "delete-media", mediaId: id/);
+  assert.match(adminScriptSource, /state\.service\.deleteMedia\(id\)/);
+  assert.match(backendSource, /rpc\("delete_media_asset", \{ p_media_id: id \}\)/);
+  assert.match(backendSource, /storage\.from\("prayer-audio"\)\.remove\(\[media\.storage_path\]\)/);
+  assert.match(mediaDeleteMigrationSource, /if current_status in \('live', 'paused'\)/);
+  assert.match(mediaDeleteMigrationSource, /update public\.prayer_programs[\s\S]*?step\.value - 'media_id'/);
+  assert.match(mediaDeleteMigrationSource, /delete from public\.media_assets where id = p_media_id/);
+  assert.match(mediaDeleteMigrationSource, /'media\.delete'/);
+  assert.match(mediaDeleteMigrationSource, /grant execute on function public\.delete_media_asset\(uuid\) to authenticated/);
 });
 
 test("모바일 메뉴는 명시적인 닫기 상태와 키보드 복구를 제공한다", async () => {

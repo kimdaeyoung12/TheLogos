@@ -471,12 +471,18 @@ class PreviewService {
     return clone(record);
   }
 
-  async deactivateMedia(id) {
-    const record = this.state.media.find((item) => String(item.id) === String(id));
+  async deleteMedia(id) {
+    const index = this.state.media.findIndex((item) => String(item.id) === String(id));
+    const record = this.state.media[index];
     if (!record) throw new Error("음악을 찾을 수 없습니다.");
-    record.active = false;
+    this.state.media.splice(index, 1);
+    for (const program of this.state.programs || []) {
+      program.steps = (program.steps || []).map((step) => String(step.media_id) === String(id)
+        ? { ...step, media_id: null }
+        : step);
+    }
     this.persist();
-    return clone(record);
+    return { media: clone(record), storageCleanupFailed: false };
   }
 
   async uploadAudio(file) {
@@ -932,15 +938,16 @@ class SupabaseService {
     return data;
   }
 
-  async deactivateMedia(id) {
-    const { data, error } = await this.supabase
-      .from("media_assets")
-      .update({ active: false })
-      .eq("id", id)
-      .select("id, kind, label, source_url, storage_path, start_seconds, active, created_at")
-      .single();
+  async deleteMedia(id) {
+    const { data, error } = await this.supabase.rpc("delete_media_asset", { p_media_id: id });
     if (error) throw error;
-    return data;
+    const media = typeof data === "string" ? JSON.parse(data) : data;
+    let storageCleanupFailed = false;
+    if (media?.storage_path) {
+      const { error: storageError } = await this.supabase.storage.from("prayer-audio").remove([media.storage_path]);
+      storageCleanupFailed = Boolean(storageError);
+    }
+    return { media, storageCleanupFailed };
   }
 
   async uploadAudio(file) {
