@@ -195,19 +195,20 @@
         <section id="admin-panel-content" class="admin-panel" hidden>
           <div class="admin-page-heading"><div><p class="eyebrow">Daily Prayer</p><h2>오늘의 말씀과 기도제목</h2><p>교회 설정 Timezone의 00:00을 기준으로 오늘 콘텐츠가 바뀝니다.</p></div></div>
           <form id="app-settings-form" class="admin-form-card settings-form" method="post" action="./">
-            <div class="form-row form-row--three">
+            <div class="form-row form-row--settings">
               <label>공동체 이름<input id="settings-church-name" name="churchName" maxlength="80" required></label>
-              <label>수련회 날짜<input id="settings-retreat-date" name="retreatDate" type="date" required></label>
-              <label>정기 공동기도 시각<input id="settings-prayer-time" name="dailyPrayerTime" type="time" required></label>
+              <label>수련회 시작일<input id="settings-retreat-date" name="retreatDate" type="date" required></label>
+              <label>수련회 종료일<input id="settings-retreat-end-date" name="retreatEndDate" type="date"></label>
+              <label>공동기도 시각 (선택)<input id="settings-prayer-time" name="dailyPrayerTime" type="time"></label>
             </div>
             <div class="form-actions"><p id="settings-save-status" role="status">기준 Timezone: Asia/Seoul</p><button class="button button--quiet" type="submit">기본 일정 저장</button></div>
           </form>
           <form id="daily-content-form" class="admin-form-card" method="post" action="./">
             <div class="form-row">
               <label>적용 날짜<input id="content-date" name="prayerDate" type="date" required></label>
-              <label>말씀 본문<input id="content-reference" name="scriptureReference" maxlength="80" placeholder="예: 빌립보서 4:6–7" required></label>
+              <label>말씀 본문 (선택)<input id="content-reference" name="scriptureReference" maxlength="80" placeholder="예: 빌립보서 4:6–7"></label>
             </div>
-            <label>말씀<textarea id="content-scripture" name="scriptureText" rows="5" maxlength="1200" required></textarea></label>
+            <label>오늘의 말씀 (선택)<textarea id="content-scripture" name="scriptureText" rows="5" maxlength="1200" placeholder="말씀 없이 기도제목만 게시할 수 있습니다."></textarea></label>
             <label>오늘의 수련회 기도제목<textarea id="content-topic" name="prayerTopic" rows="6" maxlength="1200" required></textarea></label>
             <div class="form-actions"><p id="content-save-status" role="status"></p><button class="button button--primary" type="submit">오늘 콘텐츠 게시</button></div>
           </form>
@@ -225,22 +226,17 @@
 
         <section id="admin-panel-media" class="admin-panel" hidden>
           <div class="admin-page-heading"><div><p class="eyebrow">Music & Media</p><h2>공동기도 음악 관리</h2><p>참여자의 최초 동작 이후에만 재생하며, 로컬 음량을 강제로 바꾸지 않습니다.</p></div></div>
-          <div class="media-grid">
-            <form id="youtube-form" class="admin-form-card" method="post" action="./">
-              <span class="media-icon" aria-hidden="true">▶</span>
-              <h3>YouTube 연결</h3>
-              <label>표시 이름<input name="label" maxlength="80" required></label>
-              <label>YouTube URL<input name="sourceUrl" type="url" placeholder="https://www.youtube.com/watch?v=..." required></label>
-              <label>시작 시점(초)<input name="startSeconds" type="number" min="0" max="36000" value="0"></label>
-              <button class="button button--primary" type="submit">음악 목록에 추가</button>
-              <p class="form-status" role="status"></p>
-            </form>
+          <aside class="media-policy-notice">
+            <strong>YouTube · YouTube Music은 공동기도 음악으로 연결하지 않습니다</strong>
+            <p>임베드 광고를 끌 수 없고, 숨겨진 플레이어나 오디오만 재송출하는 방식도 지원 정책에 맞지 않습니다. 광고 없는 기도 흐름을 위해 사용 권한을 확인한 음원 파일만 직접 업로드해주세요.</p>
+          </aside>
+          <div class="media-grid media-grid--single">
             <form id="audio-upload-form" class="admin-form-card" method="post" action="./">
               <span class="media-icon" aria-hidden="true">♩</span>
               <h3>음원 직접 업로드</h3>
               <label>표시 이름<input name="label" maxlength="80" required></label>
               <label class="file-drop">MP3 · M4A · OGG, 최대 20MB<input name="audioFile" type="file" accept="audio/mpeg,audio/mp4,audio/ogg" required></label>
-              <button class="button button--primary" type="submit">안전하게 업로드</button>
+              <button class="button button--primary" type="submit">음원 업로드</button>
               <p class="form-status" role="status"></p>
             </form>
           </div>

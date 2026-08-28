@@ -8,10 +8,11 @@
  */
 window.RETREAT_PRAYER_CONFIG = Object.freeze({
   appName: "수련회를 위한 공동기도",
-  churchName: "우리 공동체",
+  churchName: "시광교회 2청년부",
   timeZone: "Asia/Seoul",
-  retreatDate: "",
-  dailyPrayerTime: "21:00",
+  retreatDate: "2026-10-08",
+  retreatEndDate: "2026-10-10",
+  dailyPrayerTime: "",
   siteOrigin: "https://thelogos.dev",
   supabaseUrl: "https://bxgqhdqseahujiadvhyk.supabase.co",
   supabasePublishableKey: "sb_publishable__ZIcITO_8TYjrJiy3E4IJA_6sELN9Z4",

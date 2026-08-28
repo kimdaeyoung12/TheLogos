@@ -61,16 +61,18 @@
 
             <!-- Mobile Menu Toggle Button -->
             <button id="mobile-menu-toggle"
-                class="p-2 rounded-lg md:hidden hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-gray-700 dark:text-white"
-                aria-label="Menu">
-                <span class="material-symbols-outlined">menu</span>
+                class="mobile-menu-toggle p-2 rounded-lg md:hidden hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-gray-700 dark:text-white"
+                type="button" aria-label="메뉴 열기" aria-controls="mobile-menu" aria-expanded="false">
+                <span class="material-symbols-outlined" aria-hidden="true">menu</span>
+                <span class="mobile-menu-toggle__text">메뉴</span>
             </button>
         </div>
     </div>
 
     <!-- Mobile Navigation Menu -->
     <div id="mobile-menu"
-        class="hidden md:hidden flex-col bg-white dark:bg-design-background-dark border-t border-gray-100 dark:border-white/5 py-4 px-6 gap-4">
+        class="hidden md:hidden flex-col bg-white dark:bg-design-background-dark border-t border-gray-100 dark:border-white/5 py-4 px-6 gap-4"
+        aria-hidden="true">
         <a class="text-base font-medium text-gray-700 dark:text-gray-300" href="{{ "" | absLangURL }}">Home</a>
         <a class="text-base font-medium text-gray-700 dark:text-gray-300" href="{{ "posts/" | absLangURL }}">Articles</a>
         <a class="text-base font-medium text-gray-700 dark:text-gray-300" href="{{ "about/" | absLangURL }}">About</a>
@@ -113,26 +115,50 @@
     const mobileMenu = document.getElementById('mobile-menu');
 
     if (mobileBtn && mobileMenu) {
+        const mobileIcon = mobileBtn.querySelector('.material-symbols-outlined');
+        const mobileLabel = mobileBtn.querySelector('.mobile-menu-toggle__text');
+
+        function setMobileMenu(open) {
+            mobileMenu.classList.toggle('hidden', !open);
+            mobileMenu.classList.toggle('mobile-menu-open', open);
+            mobileMenu.style.display = open ? 'flex' : 'none';
+            mobileMenu.setAttribute('aria-hidden', String(!open));
+            mobileBtn.setAttribute('aria-expanded', String(open));
+            mobileBtn.setAttribute('aria-label', open ? '메뉴 닫기' : '메뉴 열기');
+            if (mobileIcon) mobileIcon.textContent = open ? 'close' : 'menu';
+            if (mobileLabel) mobileLabel.textContent = open ? '닫기' : '메뉴';
+        }
+
         mobileBtn.addEventListener('click', () => {
-            const isHidden = mobileMenu.classList.toggle('hidden');
-            // If we are not hidden, ensure display is flex (Tailwind compatibility)
-            mobileMenu.style.display = isHidden ? 'none' : 'flex';
-            
-            const icon = mobileBtn.querySelector('span');
-            if (icon) {
-                icon.textContent = isHidden ? 'menu' : 'close';
+            setMobileMenu(mobileBtn.getAttribute('aria-expanded') !== 'true');
+        });
+
+        const mobileLinks = mobileMenu.querySelectorAll('a');
+        mobileLinks.forEach(link => {
+            link.addEventListener('click', () => setMobileMenu(false));
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && mobileBtn.getAttribute('aria-expanded') === 'true') {
+                setMobileMenu(false);
+                mobileBtn.focus();
             }
         });
 
-        // Close menu when clicking a link (important for soft navigation)
-        const mobileLinks = mobileMenu.querySelectorAll('a');
-        mobileLinks.forEach(link => {
-            link.addEventListener('click', () => {
-                mobileMenu.classList.add('hidden');
-                mobileMenu.style.display = 'none';
-                const icon = mobileBtn.querySelector('span');
-                if (icon) icon.textContent = 'menu';
-            });
+        document.addEventListener('click', (event) => {
+            if (
+                mobileBtn.getAttribute('aria-expanded') === 'true' &&
+                !mobileBtn.contains(event.target) &&
+                !mobileMenu.contains(event.target)
+            ) {
+                setMobileMenu(false);
+            }
         });
+
+        window.matchMedia('(min-width: 768px)').addEventListener('change', (event) => {
+            if (event.matches) setMobileMenu(false);
+        });
+
+        setMobileMenu(false);
     }
 </script>

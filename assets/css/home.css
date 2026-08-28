@@ -46,6 +46,13 @@
     text-decoration: none;
 }
 
+/* Korean editorial copy should wrap at spaces. Very long unbroken strings may
+   still wrap as a last resort so mobile cards never overflow. */
+.home-page :where(h1, h2, h3, h4, p, li, blockquote) {
+    overflow-wrap: break-word;
+    word-break: keep-all;
+}
+
 .home-page .sr-only {
     border: 0;
     clip: rect(0, 0, 0, 0);

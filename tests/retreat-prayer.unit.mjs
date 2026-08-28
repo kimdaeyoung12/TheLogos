@@ -13,6 +13,30 @@ const validationMigrationSource = await readFile(
   new URL("../supabase/migrations/20260828020000_retreat_prayer_security_validation.sql", import.meta.url),
   "utf8",
 );
+const schedulePendingMigrationSource = await readFile(
+  new URL("../supabase/migrations/20260828040000_retreat_prayer_schedule_pending.sql", import.meta.url),
+  "utf8",
+);
+const inviteOnlyAuthMigrationSource = await readFile(
+  new URL("../supabase/migrations/20260828050000_retreat_prayer_invite_only_auth.sql", import.meta.url),
+  "utf8",
+);
+const optionalScriptureMigrationSource = await readFile(
+  new URL("../supabase/migrations/20260829010000_retreat_prayer_optional_scripture.sql", import.meta.url),
+  "utf8",
+);
+const liveContentEditMigrationSource = await readFile(
+  new URL("../supabase/migrations/20260829020000_retreat_prayer_live_content_edit.sql", import.meta.url),
+  "utf8",
+);
+const privateRealtimeMigrationSource = await readFile(
+  new URL("../supabase/migrations/20260829030000_retreat_prayer_private_realtime_changes.sql", import.meta.url),
+  "utf8",
+);
+const safeLiveContentMigrationSource = await readFile(
+  new URL("../supabase/migrations/20260829040000_retreat_prayer_safe_live_content_edit.sql", import.meta.url),
+  "utf8",
+);
 const edgeSecretHelperSource = await readFile(
   new URL("../supabase/functions/_shared/supabase-key.ts", import.meta.url),
   "utf8",
@@ -21,6 +45,16 @@ const runtimeConfigSource = await readFile(
   new URL("../static/retreat-prayer/config.js", import.meta.url),
   "utf8",
 );
+const supabaseConfigSource = await readFile(
+  new URL("../supabase/config.toml", import.meta.url),
+  "utf8",
+);
+const backendSource = await readFile(new URL("../static/retreat-prayer/assets/backend.js", import.meta.url), "utf8");
+const adminScriptSource = await readFile(new URL("../static/retreat-prayer/assets/admin.js", import.meta.url), "utf8");
+const manageAdminSource = await readFile(new URL("../supabase/functions/manage-admin/index.ts", import.meta.url), "utf8");
+const participantHtmlSource = await readFile(new URL("../static/retreat-prayer/index.html", import.meta.url), "utf8");
+const participantStylesSource = await readFile(new URL("../static/retreat-prayer/assets/styles.css", import.meta.url), "utf8");
+const adminHtmlSource = await readFile(new URL("../static/retreat-prayer/admin/index.html", import.meta.url), "utf8");
 
 async function assertUniqueIds(relativeHtmlPath) {
   const html = await readFile(new URL(relativeHtmlPath, import.meta.url), "utf8");
@@ -84,6 +118,14 @@ test("Asia/Seoul 자정은 UTC 날짜와 독립적으로 오늘의 기도 키를
   assert.equal(core.zonedDateKey(new Date("2026-08-28T15:00:00Z"), "Asia/Seoul"), "2026-08-29");
 });
 
+test("공동기도 시각이 미정이면 임의의 21시 대신 안내 예정 상태를 표시한다", () => {
+  assert.equal(core.formatDailyPrayerInvitation(null), "다음 공동기도 일정은 곧 안내됩니다.");
+  assert.equal(
+    core.formatDailyPrayerInvitation("21:00:00"),
+    "다음 공동기도는 매일 오후 9:00에 시작됩니다.",
+  );
+});
+
 test("기도제목 입력은 필수 동의와 길이 제한을 조용히 우회하지 못한다", () => {
   const tooLong = core.normalizePrayerSubmission({
     displayName: "가".repeat(41),
@@ -135,6 +177,84 @@ test("운영 설정에는 전용 프로젝트의 공개 키만 들어간다", ()
   assert.match(runtimeConfigSource, /supabasePublishableKey: "sb_publishable_/);
   assert.doesNotMatch(runtimeConfigSource, /sb_secret_/);
   assert.doesNotMatch(runtimeConfigSource, /eyJ[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+/);
+  assert.match(runtimeConfigSource, /churchName: "시광교회 2청년부"/);
+  assert.match(runtimeConfigSource, /retreatDate: "2026-10-08"/);
+  assert.match(runtimeConfigSource, /retreatEndDate: "2026-10-10"/);
+  assert.match(runtimeConfigSource, /dailyPrayerTime: ""/);
+});
+
+test("일정 미정 migration은 수련회 기간과 nullable 공동기도 시각을 보존한다", () => {
+  assert.match(migrationSource, /retreat_end_date date/);
+  assert.match(migrationSource, /daily_prayer_time time,/);
+  assert.match(migrationSource, /constraint app_settings_retreat_date_range_check/);
+  assert.match(schedulePendingMigrationSource, /alter column daily_prayer_time drop not null/);
+  assert.match(schedulePendingMigrationSource, /set daily_prayer_time = null/);
+  assert.match(schedulePendingMigrationSource, /set scheduled_for = null,[\s\S]*?status = 'draft'/);
+});
+
+test("초대 Admin은 이메일 로그인할 수 있지만 공개 회원가입은 할 수 없다", () => {
+  const authSection = supabaseConfigSource.slice(
+    supabaseConfigSource.indexOf("[auth]"),
+    supabaseConfigSource.indexOf("[auth.rate_limit]"),
+  );
+  const emailSection = supabaseConfigSource.slice(
+    supabaseConfigSource.indexOf("[auth.email]"),
+    supabaseConfigSource.indexOf("[auth.mfa.totp]"),
+  );
+  assert.match(authSection, /enable_signup = true/);
+  assert.match(authSection, /enable_anonymous_sign_ins = true/);
+  assert.match(emailSection, /enable_signup = true/);
+  assert.match(supabaseConfigSource, /\[auth\.hook\.before_user_created\][\s\S]*?enabled = true[\s\S]*?hook_restrict_retreat_prayer_signup/);
+  assert.match(inviteOnlyAuthMigrationSource, /if user_is_anonymous then[\s\S]*?return '\{\}'::jsonb/);
+  assert.match(inviteOnlyAuthMigrationSource, /delete from public\.admin_invite_nonces[\s\S]*?returning nonce_hash into consumed_nonce/);
+  assert.match(inviteOnlyAuthMigrationSource, /grant execute on function public\.hook_restrict_retreat_prayer_signup\(jsonb\)[\s\S]*?to supabase_auth_admin/);
+  assert.match(manageAdminSource, /createInviteNonce\(\)[\s\S]*?admin_invite_nonces/);
+  assert.match(manageAdminSource, /retreat_prayer_invite_nonce: inviteNonce/);
+});
+
+test("오늘의 말씀은 비워 게시할 수 있고 참여자 화면은 빈 말씀 카드를 생략한다", () => {
+  assert.match(optionalScriptureMigrationSource, /alter column scripture_reference drop not null/);
+  assert.match(optionalScriptureMigrationSource, /alter column scripture_text drop not null/);
+  assert.match(appSource, /setVisible\(\$\("#home-scripture-card"\), !hasPublishedDaily \|\| hasScripture\)/);
+  assert.match(appSource, /ritual-layout--without-scripture/);
+  assert.match(participantHtmlSource, /id="today-scripture-card"/);
+});
+
+test("연결 상태는 본문을 가리지 않는 작은 아이콘으로만 표시한다", () => {
+  const statusBannerStart = participantStylesSource.indexOf(".status-banner {");
+  const statusBannerBlock = participantStylesSource.slice(statusBannerStart, participantStylesSource.indexOf("}\n", statusBannerStart) + 2);
+  assert.match(participantHtmlSource, /id="connection-message" class="sr-only"/);
+  assert.match(statusBannerBlock, /width: 34px;[\s\S]*?height: 34px;/);
+  assert.doesNotMatch(statusBannerBlock, /left: 50%/);
+  assert.match(appSource, /banner\.setAttribute\("aria-label", message\)/);
+});
+
+test("오늘의 기도에는 승인형 기도제목 등록 동선이 있다", () => {
+  assert.match(participantHtmlSource, /class="ritual-share-invitation"[\s\S]*?data-action="open-submit"/);
+});
+
+test("같이 기도하기는 선택 Dialog 없이 음악을 켜고 바로 진입한다", () => {
+  assert.doesNotMatch(participantHtmlSource, /id="join-dialog"/);
+  assert.match(appSource, /function enterLivePrayer\(\)[\s\S]*?if \(firstJoin\)[\s\S]*?state\.audioEnabled = true[\s\S]*?showView\("live"\)/);
+  assert.doesNotMatch(appSource, /function enterLivePrayer\(\)[\s\S]*?showView\("live"\);\s*void startConfiguredMedia\(\)/);
+  assert.match(appSource, /if \(route === "live"\) return enterLivePrayer\(\)/);
+});
+
+test("YouTube 계열은 등록·숨김 재생하지 않고 업로드 음원만 운영한다", () => {
+  assert.doesNotMatch(adminHtmlSource, /id="youtube-form"/);
+  assert.match(adminHtmlSource, /YouTube · YouTube Music은 공동기도 음악으로 연결하지 않습니다/);
+  assert.match(adminHtmlSource, /음원 직접 업로드/);
+  assert.doesNotMatch(participantHtmlSource, /id="youtube-player"/);
+  assert.doesNotMatch(appSource, /youtube-nocookie\.com\/embed/);
+  assert.match(appSource, /YouTube 음악은 광고 없는 재생을 보장할 수 없어 재생하지 않습니다/);
+});
+
+test("모바일 메뉴는 명시적인 닫기 상태와 키보드 복구를 제공한다", async () => {
+  const headerSource = await readFile(new URL("../layouts/partials/header.html", import.meta.url), "utf8");
+  assert.match(headerSource, /aria-controls="mobile-menu" aria-expanded="false"/);
+  assert.match(headerSource, /open \? '메뉴 닫기' : '메뉴 열기'/);
+  assert.match(headerSource, /mobileLabel\.textContent = open \? '닫기' : '메뉴'/);
+  assert.match(headerSource, /event\.key === 'Escape'/);
 });
 
 test("Edge Function은 hosted secret key를 우선하고 legacy 값은 로컬 호환 fallback으로만 사용한다", () => {
@@ -187,18 +307,34 @@ test("직접 연 공동기도 화면에서도 예약된 자동 진행을 서버�
 });
 
 test("실시간 재구독은 현재 상태를 다시 조회하고 버전이 오래된 응답은 무시한다", async () => {
-  const backendSource = await readFile(new URL("../static/retreat-prayer/assets/backend.js", import.meta.url), "utf8");
   const adminSource = await readFile(new URL("../static/retreat-prayer/assets/admin.js", import.meta.url), "utf8");
   assert.match(backendSource, /status === "SUBSCRIBED"\) reconcile\(\)/);
   assert.match(backendSource, /await this\.fetchLiveSession\(\)/);
+  assert.match(backendSource, /channel\("retreat-prayer:live-state", \{ config: \{ private: true \} \}\)/);
+  assert.match(backendSource, /channel\("retreat-prayer:public-content", \{ config: \{ private: true \} \}\)/);
+  assert.match(appSource, /await state\.service\.prepareRealtime\?\.\(\);[\s\S]*?state\.service\.subscribeLive/);
+  assert.match(privateRealtimeMigrationSource, /retreat_prayer_postgres_changes_read[\s\S]*?retreat-prayer:live-state[\s\S]*?retreat-prayer:public-content/);
   assert.match(appSource, /Number\(liveSession\?\.version \?\? -1\) < Number\(previousVersion \?\? -1\)/);
   assert.match(adminSource, /Number\(liveSession\?\.version \?\? -1\) < Number\(state\.snapshot\.liveSession\?\.version \?\? -1\)/);
 });
 
-test("#live 직접 진입은 참여 확정 전 Home과 일반 Presence를 유지한다", () => {
+test("#live 직접 진입도 선택창 없이 공동기도 화면으로 이어진다", () => {
   assert.match(appSource, /showView\(route === "live" \? "home" : route,[\s\S]*?updatePresence: false/);
   assert.match(appSource, /await setPresenceContext\("space"\)/);
-  assert.match(appSource, /if \(!state\.joinedLive && routeFromHash\(\) === "live"\) showView\("home"\)/);
+  assert.match(appSource, /if \(route === "live"\) enterLivePrayer\(\)/);
+});
+
+test("진행 중 구성 게시에는 구조를 고정하고 내용과 음악 교정만 허용한다", () => {
+  assert.match(safeLiveContentMigrationSource, /if live\.status in \('live', 'paused'\) then[\s\S]*?lease\.controller_id is distinct from caller/);
+  assert.match(safeLiveContentMigrationSource, /live\.version is distinct from p_expected_version/);
+  assert.match(safeLiveContentMigrationSource, /p_program_id is distinct from live\.program_id/);
+  assert.match(safeLiveContentMigrationSource, /existing\.value \|\| jsonb_build_object[\s\S]*?'label'[\s\S]*?'content'[\s\S]*?'media_id'/);
+  assert.doesNotMatch(safeLiveContentMigrationSource.match(/select coalesce\(jsonb_agg\([\s\S]*?into live_merged_steps/)?.[0] || "", /'duration_seconds'/);
+  assert.match(safeLiveContentMigrationSource, /kind = 'audio'/);
+  assert.match(safeLiveContentMigrationSource, /program\.update_live_content/);
+  assert.match(safeLiveContentMigrationSource, /'applied_to_running_session', true/);
+  assert.match(backendSource, /p_lease_token: payload\.leaseToken \|\| null[\s\S]*?p_expected_version: payload\.expectedVersion \?\? null/);
+  assert.match(adminScriptSource, /running && !ownsControllerLease\(\)[\s\S]*?Live Control 제어권/);
 });
 
 test("공동기도 프로그램과 수동 음악 송출에는 공개 필드만 스냅샷한다", () => {
@@ -208,7 +344,6 @@ test("공동기도 프로그램과 수동 음악 송출에는 공개 필드만 �
 });
 
 test("기도제목 공개 변경은 본문 없는 revision으로만 알리고 RLS 목록을 다시 조회한다", async () => {
-  const backendSource = await readFile(new URL("../static/retreat-prayer/assets/backend.js", import.meta.url), "utf8");
   assert.match(migrationSource, /create table public\.content_revisions/);
   assert.match(migrationSource, /when 'INSERT' then publish_change := new\.status = 'approved'/);
   assert.match(migrationSource, /when 'UPDATE' then publish_change := old\.status = 'approved' or new\.status = 'approved'/);

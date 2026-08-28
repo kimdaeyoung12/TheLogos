@@ -38,6 +38,18 @@ function normalizeText(value: unknown): string {
   return String(value ?? "").normalize("NFKC").replace(/\s+/g, " ").trim();
 }
 
+async function sha256(value: string): Promise<string> {
+  const bytes = new TextEncoder().encode(value);
+  const digest = await crypto.subtle.digest("SHA-256", bytes);
+  return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+
+function createInviteNonce(): string {
+  const bytes = new Uint8Array(32);
+  crypto.getRandomValues(bytes);
+  return Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+
 Deno.serve(async (request) => {
   const origin = request.headers.get("Origin");
   const origins = allowedOrigins();
@@ -99,11 +111,27 @@ Deno.serve(async (request) => {
     if (countError) return json(503, { error: "Admin 수를 확인하지 못했습니다." }, origin);
     if ((count || 0) >= 5) return json(409, { error: "활성 Admin은 최대 5명입니다." }, origin);
 
+    const inviteNonce = createInviteNonce();
+    const nonceHash = await sha256(inviteNonce);
+    const emailHash = await sha256(email);
+    const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString();
+    const { error: nonceError } = await service.from("admin_invite_nonces").insert({
+      nonce_hash: nonceHash,
+      email_hash: emailHash,
+      created_by: authData.user.id,
+      expires_at: expiresAt,
+    });
+    if (nonceError) return json(503, { error: "Admin 초대 권한을 준비하지 못했습니다." }, origin);
+
     const redirectTo = Deno.env.get("ADMIN_REDIRECT_URL") || `${DEFAULT_ORIGINS[0]}/retreat-prayer/admin/`;
     const { data: inviteData, error: inviteError } = await service.auth.admin.inviteUserByEmail(email, {
       redirectTo,
-      data: { retreat_prayer_needs_password_setup: true },
+      data: {
+        retreat_prayer_needs_password_setup: true,
+        retreat_prayer_invite_nonce: inviteNonce,
+      },
     });
+    await service.from("admin_invite_nonces").delete().eq("nonce_hash", nonceHash);
     if (inviteError || !inviteData.user) return json(400, { error: inviteError?.message || "Admin 초대를 보내지 못했습니다." }, origin);
 
     const { data: profile, error: profileError } = await service

@@ -17,11 +17,14 @@ create table public.app_settings (
   app_name text not null default '수련회를 위한 공동기도',
   church_name text not null default '우리 공동체',
   retreat_date date,
+  retreat_end_date date,
   time_zone text not null default 'Asia/Seoul',
-  daily_prayer_time time not null default '21:00',
+  daily_prayer_time time,
   emergency_notice text not null default '' check (char_length(emergency_notice) <= 240),
   updated_by uuid references auth.users(id),
-  updated_at timestamptz not null default clock_timestamp()
+  updated_at timestamptz not null default clock_timestamp(),
+  constraint app_settings_retreat_date_range_check
+    check (retreat_end_date is null or retreat_date is null or retreat_end_date >= retreat_date)
 );
 
 -- Public clients subscribe only to this opaque counter. The event never carries
@@ -46,8 +49,8 @@ create table public.admin_profiles (
 create table public.daily_prayers (
   id uuid primary key default gen_random_uuid(),
   prayer_date date not null unique,
-  scripture_reference text not null check (char_length(scripture_reference) between 1 and 80),
-  scripture_text text not null check (char_length(scripture_text) between 1 and 1200),
+  scripture_reference text check (scripture_reference is null or char_length(scripture_reference) between 1 and 80),
+  scripture_text text check (scripture_text is null or char_length(scripture_text) between 1 and 1200),
   prayer_topic text not null check (char_length(prayer_topic) between 1 and 1200),
   published boolean not null default false,
   created_by uuid references auth.users(id),
@@ -951,7 +954,7 @@ revoke all on public.app_settings, public.content_revisions, public.admin_profil
   public.prayer_requests, public.media_assets, public.admin_audit,
   public.submission_rate_limits
 from anon, authenticated;
-grant select (id, app_name, church_name, retreat_date, time_zone, daily_prayer_time, emergency_notice, updated_at)
+grant select (id, app_name, church_name, retreat_date, retreat_end_date, time_zone, daily_prayer_time, emergency_notice, updated_at)
   on public.app_settings to anon, authenticated;
 grant select (id, revision, updated_at) on public.content_revisions to anon, authenticated;
 grant select (id, prayer_date, scripture_reference, scripture_text, prayer_topic, published, created_at, updated_at)
@@ -964,7 +967,7 @@ grant select (id, display_name, is_anonymous, body, status, approved_at, created
   on public.prayer_requests to anon, authenticated;
 grant select (id, kind, label, source_url, storage_path, start_seconds, active, created_at)
   on public.media_assets to anon, authenticated;
-grant update (church_name, retreat_date, daily_prayer_time) on public.app_settings to authenticated;
+grant update (church_name, retreat_date, retreat_end_date, daily_prayer_time) on public.app_settings to authenticated;
 grant insert, update on public.daily_prayers, public.media_assets to authenticated;
 grant select on public.prayer_programs to authenticated;
 grant update (status, approved_at) on public.prayer_requests to authenticated;
@@ -1015,6 +1018,14 @@ with check (
   and realtime.messages.extension = 'presence'
 );
 
+-- Private-only Realtime projects authorize every channel join. These topics
+-- carry Postgres Changes only; browser roles receive no INSERT grant here.
+create policy retreat_prayer_postgres_changes_read
+on realtime.messages for select to authenticated
+using (
+  realtime.topic() in ('retreat-prayer:live-state', 'retreat-prayer:public-content')
+);
+
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 values ('prayer-audio', 'prayer-audio', true, 20971520, array['audio/mpeg', 'audio/mp4', 'audio/ogg'])
 on conflict (id) do update set
@@ -1030,8 +1041,8 @@ with check (bucket_id = 'prayer-audio' and public.is_active_admin());
 create policy prayer_audio_admin_delete on storage.objects for delete to authenticated
 using (bucket_id = 'prayer-audio' and public.is_active_admin());
 
-insert into public.app_settings (id, app_name, church_name, retreat_date, time_zone, daily_prayer_time)
-values (1, '수련회를 위한 공동기도', '우리 공동체', null, 'Asia/Seoul', time '21:00')
+insert into public.app_settings (id, app_name, church_name, retreat_date, retreat_end_date, time_zone, daily_prayer_time)
+values (1, '수련회를 위한 공동기도', '우리 공동체', null, null, 'Asia/Seoul', null)
 on conflict (id) do nothing;
 
 insert into public.daily_prayers (
@@ -1054,11 +1065,7 @@ insert into public.prayer_programs (id, title, scheduled_for, mode, steps, statu
 values (
   '00000000-0000-4000-8000-000000000001',
   '저녁 공동기도',
-  case
-    when (clock_timestamp() at time zone 'Asia/Seoul')::time < time '21:00'
-      then ((clock_timestamp() at time zone 'Asia/Seoul')::date + time '21:00') at time zone 'Asia/Seoul'
-    else (((clock_timestamp() at time zone 'Asia/Seoul')::date + 1) + time '21:00') at time zone 'Asia/Seoul'
-  end,
+  null,
   'manual',
   '[
     {"id":"welcome","label":"마음을 모으는 시간","kind":"scripture","scripture_reference":"시편 133:1","content":"보라 형제가 연합하여 동거함이 어찌 그리 선하고 아름다운고","duration_seconds":180},
@@ -1067,7 +1074,7 @@ values (
     {"id":"community","label":"서로를 위한 중보","kind":"request","scripture_reference":"갈라디아서 6:2","content":"서로의 짐을 함께 지며, 나누어진 기도제목을 한마음으로 중보합니다.","duration_seconds":300},
     {"id":"closing","label":"공동체 기도","kind":"prayer","scripture_reference":"골로새서 3:14","content":"이 모든 것 위에 사랑을 더하여 공동체가 온전히 하나 되도록 기도합니다.","duration_seconds":180}
   ]'::jsonb,
-  'published'
+  'draft'
 )
 on conflict (id) do nothing;
 
@@ -1082,7 +1089,7 @@ insert into public.live_sessions (
 )
 select
   1,
-  'scheduled',
+  'draft',
   program.mode,
   program.scheduled_for,
   program.id,

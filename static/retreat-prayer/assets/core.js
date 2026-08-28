@@ -84,6 +84,15 @@ export function formatKoreanTime(date, timeZone = DEFAULT_TIME_ZONE) {
   }).format(new Date(date));
 }
 
+export function formatDailyPrayerInvitation(value) {
+  const match = String(value || "").match(/^([01]\d|2[0-3]):([0-5]\d)/);
+  if (!match) return "다음 공동기도 일정은 곧 안내됩니다.";
+  const hour = Number(match[1]);
+  const period = hour < 12 ? "오전" : "오후";
+  const displayHour = hour % 12 || 12;
+  return `다음 공동기도는 매일 ${period} ${displayHour}:${match[2]}에 시작됩니다.`;
+}
+
 export function formatRemaining(seconds) {
   const safe = Math.max(0, Math.ceil(Number(seconds) || 0));
   const minutes = Math.floor(safe / 60);
@@ -196,15 +205,6 @@ export function normalizePrayerSubmission(input) {
     errors,
     valid: Object.keys(errors).length === 0,
   };
-}
-
-export function isYouTubeUrl(value) {
-  try {
-    const url = new URL(value);
-    return ["youtube.com", "www.youtube.com", "youtu.be", "www.youtube-nocookie.com"].includes(url.hostname);
-  } catch {
-    return false;
-  }
 }
 
 export function setText(element, value) {

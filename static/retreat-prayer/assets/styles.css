@@ -132,22 +132,26 @@ button {
 .status-banner {
   position: fixed;
   z-index: 120;
-  top: 84px;
-  left: 50%;
-  display: flex;
+  right: 20px;
+  bottom: 20px;
+  display: grid;
+  width: 34px;
+  height: 34px;
   align-items: center;
-  gap: 9px;
-  width: max-content;
-  max-width: calc(100% - 32px);
-  padding: 10px 16px;
+  justify-items: center;
+  padding: 0;
   border: 1px solid var(--line-strong);
-  border-radius: 999px;
+  border-radius: 50%;
   background: rgba(255, 253, 248, 0.94);
   box-shadow: var(--shadow-soft);
-  color: var(--ink-soft);
-  font-size: 0.875rem;
-  transform: translateX(-50%);
   backdrop-filter: blur(12px);
+}
+
+.status-banner[data-state="error"] .status-dot,
+.status-banner[data-state="offline"] .status-dot {
+  border-radius: 2px;
+  background: var(--danger);
+  box-shadow: 0 0 0 4px rgba(143, 57, 45, 0.1);
 }
 
 .status-dot {
@@ -921,6 +925,39 @@ button {
 .ritual-card--topic .section-label,
 .ritual-card--topic .gentle-copy { color: #d8e1d9; }
 
+.ritual-layout--without-scripture {
+  grid-template-columns: minmax(0, 760px);
+}
+
+.ritual-share-invitation {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 28px;
+  margin-top: 22px;
+  padding: 26px 30px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: rgba(255, 253, 248, 0.58);
+}
+
+.ritual-share-invitation .section-label { margin-bottom: 8px; }
+
+.ritual-share-invitation h2 {
+  margin: 0;
+  font-family: "Iowan Old Style", "Noto Serif KR", Batang, serif;
+  font-size: clamp(1.25rem, 2.3vw, 1.7rem);
+  font-weight: 540;
+  letter-spacing: -0.035em;
+  line-height: 1.4;
+}
+
+.ritual-share-invitation p:not(.section-label) {
+  margin: 7px 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
 .ritual-topic {
   margin: 0;
   font-family: "Iowan Old Style", "Noto Serif KR", Batang, serif;
@@ -1495,6 +1532,8 @@ button {
   .requests-view { padding-top: 48px; }
   .ritual-layout { margin-top: 40px; }
   .ritual-card { min-height: 330px; padding: 30px 24px; border-radius: 20px; }
+  .ritual-share-invitation { align-items: stretch; flex-direction: column; padding: 24px 22px; }
+  .ritual-share-invitation .button { width: 100%; }
   .sticky-action:not(.sticky-action--focus) {
     position: sticky;
     z-index: 8;
@@ -1519,12 +1558,14 @@ button {
   .completion-view { min-height: calc(100dvh - 140px); }
   .completion-actions { display: grid; width: 100%; grid-template-columns: 1fr; }
 
-  .join-options { grid-template-columns: 1fr; }
-  .join-option { min-height: 142px; }
   .dialog-shell { padding: 38px 22px 26px; }
   .app-dialog { border-radius: 20px; }
   .app-dialog--form { max-height: calc(100dvh - 16px); }
-  .status-banner { top: 72px; }
+  .status-banner {
+    right: 12px;
+    bottom: calc(88px + env(safe-area-inset-bottom));
+  }
+  body.is-focus .status-banner { bottom: 116px; }
 }
 
 @media (max-width: 390px) {

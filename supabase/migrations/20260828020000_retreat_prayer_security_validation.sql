@@ -61,6 +61,15 @@ begin
   end if;
 
   if not exists (
+    select 1 from pg_policies
+    where schemaname = 'realtime'
+      and tablename = 'messages'
+      and policyname = 'retreat_prayer_postgres_changes_read'
+  ) then
+    raise exception 'private Postgres Changes policy is incomplete';
+  end if;
+
+  if not exists (
     select 1 from storage.buckets
     where id = 'prayer-audio' and public is true
   ) then

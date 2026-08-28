@@ -16,7 +16,7 @@ begin
     and c.relname = any(array[
       'app_settings', 'content_revisions', 'admin_profiles', 'daily_prayers', 'prayer_programs',
       'live_sessions', 'live_controller_leases', 'prayer_requests',
-      'media_assets', 'admin_audit', 'submission_rate_limits'
+      'media_assets', 'admin_audit', 'submission_rate_limits', 'admin_invite_nonces'
     ])
     and not c.relrowsecurity;
 
@@ -49,6 +49,40 @@ begin
   if has_function_privilege('anon', 'public.consume_submission_quota(text,text)', 'EXECUTE')
      or has_function_privilege('authenticated', 'public.consume_submission_quota(text,text)', 'EXECUTE') then
     raise exception 'rate limit function must remain service-role only';
+  end if;
+
+  if has_table_privilege('anon', 'public.admin_invite_nonces', 'SELECT')
+     or has_table_privilege('authenticated', 'public.admin_invite_nonces', 'SELECT') then
+    raise exception 'Admin invite nonces must not be visible to browser roles';
+  end if;
+
+  if has_function_privilege('anon', 'public.hook_restrict_retreat_prayer_signup(jsonb)', 'EXECUTE')
+     or has_function_privilege('authenticated', 'public.hook_restrict_retreat_prayer_signup(jsonb)', 'EXECUTE')
+     or has_function_privilege('service_role', 'public.hook_restrict_retreat_prayer_signup(jsonb)', 'EXECUTE')
+     or not has_function_privilege('supabase_auth_admin', 'public.hook_restrict_retreat_prayer_signup(jsonb)', 'EXECUTE') then
+    raise exception 'Before User Created hook privileges are unsafe';
+  end if;
+
+  if has_function_privilege(
+       'authenticated',
+       'public.configure_prayer_program(uuid,text,timestamp with time zone,public.live_mode,jsonb)',
+       'EXECUTE'
+     )
+     or not has_function_privilege(
+       'authenticated',
+       'public.configure_prayer_program(uuid,text,timestamp with time zone,public.live_mode,jsonb,uuid,bigint)',
+       'EXECUTE'
+     ) then
+    raise exception 'live program editing must require lease and expected version arguments';
+  end if;
+
+  if not exists (
+    select 1 from pg_policies
+    where schemaname = 'realtime'
+      and tablename = 'messages'
+      and policyname = 'retreat_prayer_postgres_changes_read'
+  ) then
+    raise exception 'private Postgres Changes policy is incomplete';
   end if;
 end
 $$;

@@ -111,6 +111,7 @@ function createDemoState(config) {
       app_name: config.appName,
       church_name: config.churchName,
       retreat_date: config.retreatDate || "2026-09-09",
+      retreat_end_date: config.retreatEndDate || null,
       time_zone: config.timeZone,
       daily_prayer_time: config.dailyPrayerTime,
       emergency_notice: "",
@@ -240,6 +241,8 @@ class PreviewService {
     onState({ synced: true, count: context === "live" ? 12 : 9, status: "connected" });
     return () => {};
   }
+
+  async prepareRealtime() {}
 
   subscribeLive(listener, onStatus = () => {}) {
     this.liveListeners.add(listener);
@@ -533,11 +536,15 @@ class SupabaseService {
     await this.supabase.realtime.setAuth();
   }
 
+  async prepareRealtime() {
+    await this.ensureAnonymousSession();
+  }
+
   async fetchPublicContent(serverNow = null, attempt = 0) {
     const effectiveNow = serverNow || await this.getServerTime();
     const settingsResult = await this.supabase
       .from("app_settings")
-      .select("id, app_name, church_name, retreat_date, time_zone, daily_prayer_time, emergency_notice, updated_at")
+      .select("id, app_name, church_name, retreat_date, retreat_end_date, time_zone, daily_prayer_time, emergency_notice, updated_at")
       .eq("id", 1)
       .maybeSingle();
     if (settingsResult.error) throw settingsResult.error;
@@ -697,7 +704,7 @@ class SupabaseService {
       }
     };
     const channel = this.supabase
-      .channel("retreat-prayer:live-state")
+      .channel("retreat-prayer:live-state", { config: { private: true } })
       .on(
         "postgres_changes",
         { event: "UPDATE", schema: "public", table: "live_sessions", filter: "id=eq.1" },
@@ -744,7 +751,7 @@ class SupabaseService {
       }
     };
     const channel = this.supabase
-      .channel("retreat-prayer:public-content")
+      .channel("retreat-prayer:public-content", { config: { private: true } })
       .on(
         "postgres_changes",
         { event: "UPDATE", schema: "public", table: "content_revisions", filter: "id=eq.1" },
@@ -884,7 +891,7 @@ class SupabaseService {
       .from("app_settings")
       .update(payload)
       .eq("id", 1)
-      .select("id, app_name, church_name, retreat_date, time_zone, daily_prayer_time, emergency_notice, updated_at")
+      .select("id, app_name, church_name, retreat_date, retreat_end_date, time_zone, daily_prayer_time, emergency_notice, updated_at")
       .single();
     if (error) throw error;
     return data;
@@ -897,6 +904,8 @@ class SupabaseService {
       p_scheduled_for: payload.scheduledFor,
       p_mode: payload.mode,
       p_steps: payload.steps,
+      p_lease_token: payload.leaseToken || null,
+      p_expected_version: payload.expectedVersion ?? null,
     });
     if (error) throw error;
     return data;

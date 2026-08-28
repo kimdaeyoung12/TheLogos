@@ -2,7 +2,6 @@ import {
   createId,
   deriveLiveView,
   formatRemaining,
-  isYouTubeUrl,
   setText,
   setVisible,
   zonedDateKey,
@@ -236,7 +235,7 @@ function createProgramStepRow(step = {}, index = 0) {
   noMedia.value = "";
   noMedia.textContent = "음악 없음";
   media.append(noMedia);
-  (state.snapshot?.media || []).forEach((item) => {
+  (state.snapshot?.media || []).filter((item) => item.kind === "audio").forEach((item) => {
     const option = document.createElement("option");
     option.value = item.id;
     option.textContent = item.label;
@@ -305,7 +304,8 @@ function fillSettingsForm() {
   const settings = state.snapshot?.settings || {};
   $("#settings-church-name").value = settings.church_name || config.churchName || "";
   $("#settings-retreat-date").value = settings.retreat_date || "";
-  $("#settings-prayer-time").value = String(settings.daily_prayer_time || config.dailyPrayerTime || "21:00").slice(0, 5);
+  $("#settings-retreat-end-date").value = settings.retreat_end_date || config.retreatEndDate || "";
+  $("#settings-prayer-time").value = String(settings.daily_prayer_time ?? config.dailyPrayerTime ?? "").slice(0, 5);
 }
 
 function renderModeration() {
@@ -402,7 +402,9 @@ function renderMedia() {
     const title = document.createElement("strong");
     title.textContent = item.label;
     const detail = document.createElement("small");
-    detail.textContent = `${item.kind === "youtube" ? "YouTube" : "업로드 음원"} · ${item.start_seconds || 0}초부터`;
+    detail.textContent = item.kind === "youtube"
+      ? "YouTube 연결 · 더 이상 공동기도에서 재생하지 않음"
+      : `업로드 음원 · ${item.start_seconds || 0}초부터`;
     content.append(title, detail);
     row.append(content);
     const button = document.createElement("button");
@@ -629,8 +631,8 @@ async function saveDailyContent(event) {
   try {
     const saved = await state.service.saveDailyPrayer({
       prayer_date: form.prayerDate.value,
-      scripture_reference: form.scriptureReference.value.trim(),
-      scripture_text: form.scriptureText.value.trim(),
+      scripture_reference: form.scriptureReference.value.trim() || null,
+      scripture_text: form.scriptureText.value.trim() || null,
       prayer_topic: form.prayerTopic.value.trim(),
       published: true,
     });
@@ -644,11 +646,19 @@ async function saveDailyContent(event) {
 async function saveSettings(event) {
   event.preventDefault();
   const status = $("#settings-save-status");
+  const retreatDate = $("#settings-retreat-date").value;
+  const retreatEndDate = $("#settings-retreat-end-date").value;
+  if (retreatEndDate && retreatEndDate < retreatDate) {
+    setText(status, "수련회 종료일은 시작일보다 빠를 수 없습니다.");
+    $("#settings-retreat-end-date").focus();
+    return;
+  }
   try {
     const saved = await state.service.saveSettings({
       church_name: $("#settings-church-name").value.trim(),
-      retreat_date: $("#settings-retreat-date").value,
-      daily_prayer_time: $("#settings-prayer-time").value,
+      retreat_date: retreatDate,
+      retreat_end_date: retreatEndDate || null,
+      daily_prayer_time: $("#settings-prayer-time").value || null,
     });
     state.snapshot.settings = saved;
     setText(status, "공동체 이름과 수련회·기도 일정을 저장했습니다.");
@@ -661,6 +671,12 @@ async function saveProgram(event) {
   event.preventDefault();
   const form = event.currentTarget;
   const status = $("#program-save-status");
+  const running = ["live", "paused"].includes(state.snapshot?.liveSession?.status);
+  if (running && !ownsControllerLease()) {
+    setText(status, "진행 중인 기도회를 수정하려면 먼저 Live Control 제어권을 요청해주세요.");
+    $("#claim-controller-button")?.focus();
+    return;
+  }
   const rows = $$(".program-step", $("#program-steps"));
   const steps = rows.map((row) => ({
     id: row.dataset.stepId || createId(),
@@ -683,6 +699,8 @@ async function saveProgram(event) {
       scheduledFor: scheduleInputToIso($("#program-schedule").value),
       mode: $("#program-mode").value,
       steps,
+      leaseToken: state.leaseToken,
+      expectedVersion: state.snapshot?.liveSession?.version ?? null,
     });
     state.snapshot.liveSession = result.live_session || result.liveSession;
     if (result.program) {
@@ -693,8 +711,13 @@ async function saveProgram(event) {
     }
     renderLive();
     renderProgramEditor();
-    setText(status, "다음 공동기도 구성을 게시했습니다.");
-    toast("참여자 Waiting Room의 다음 일정이 갱신되었습니다.");
+    if (result.applied_to_running_session) {
+      setText(status, "현재 단계와 남은 시간은 유지하고, 진행 중인 기도회의 내용과 음악을 갱신했습니다.");
+      toast("수정한 기도 내용이 참여자 화면에 실시간으로 송출되었습니다.");
+    } else {
+      setText(status, "다음 공동기도 구성을 게시했습니다.");
+      toast("참여자 Waiting Room의 다음 일정이 갱신되었습니다.");
+    }
   } catch (error) {
     setText(status, error.message || "기도회 구성을 게시하지 못했습니다.");
   }
@@ -736,32 +759,6 @@ function openModerationDeleteConfirmation(button) {
   const dialog = $("#admin-confirm-dialog");
   if (typeof dialog.showModal === "function") dialog.showModal();
   else dialog.setAttribute("open", "");
-}
-
-async function saveYouTube(event) {
-  event.preventDefault();
-  const form = event.currentTarget;
-  const status = $(".form-status", form);
-  if (!isYouTubeUrl(form.sourceUrl.value)) {
-    setText(status, "올바른 YouTube 링크를 입력해주세요.");
-    return;
-  }
-  try {
-    const item = await state.service.saveMedia({
-      kind: "youtube",
-      label: form.label.value.trim(),
-      source_url: form.sourceUrl.value.trim(),
-      start_seconds: Number(form.startSeconds.value) || 0,
-      active: true,
-    });
-    state.snapshot.media.unshift(item);
-    form.reset();
-    renderMedia();
-    renderProgramEditor();
-    setText(status, "YouTube 음악을 등록했습니다.");
-  } catch (error) {
-    setText(status, error.message || "등록하지 못했습니다.");
-  }
 }
 
 async function uploadAudio(event) {
@@ -960,7 +957,6 @@ $("#admin-password-form")?.addEventListener("submit", setInitialPassword);
 $("#daily-content-form")?.addEventListener("submit", saveDailyContent);
 $("#app-settings-form")?.addEventListener("submit", saveSettings);
 $("#program-form")?.addEventListener("submit", saveProgram);
-$("#youtube-form")?.addEventListener("submit", saveYouTube);
 $("#audio-upload-form")?.addEventListener("submit", uploadAudio);
 $("#admin-invite-form")?.addEventListener("submit", inviteAdmin);
 $("#admin-confirm-dialog")?.addEventListener("close", async (event) => {

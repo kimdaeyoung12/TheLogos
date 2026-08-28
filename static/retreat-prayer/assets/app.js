@@ -1,5 +1,6 @@
 import {
   deriveLiveView,
+  formatDailyPrayerInvitation,
   formatDday,
   formatKoreanDate,
   formatKoreanTime,
@@ -64,11 +65,14 @@ function announce(message) {
   requestAnimationFrame(() => setText($("#app-announcer"), message));
 }
 
-function showConnection(message, { connected = false, persistent = false } = {}) {
+function showConnection(message, { connected = false, persistent = false, status = null } = {}) {
   const banner = $("#connection-banner");
   const dot = $(".status-dot", banner);
   setText($("#connection-message"), message);
   dot?.classList.toggle("status-dot--live", connected);
+  banner.dataset.state = status || (connected ? "connected" : "reconnecting");
+  banner.setAttribute("aria-label", message);
+  banner.title = message;
   setVisible(banner, true);
   clearTimeout(showConnection.timeout);
   if (!persistent) showConnection.timeout = setTimeout(() => setVisible(banner, false), 2600);
@@ -153,12 +157,8 @@ function getNextPrayerCopy() {
   if (live?.scheduled_for && Date.parse(live.scheduled_for) > now) {
     return `다음 공동기도는 ${formatKoreanTime(live.scheduled_for, config.timeZone)}에 시작됩니다.`;
   }
-  const configuredPrayerTime = state.data?.settings?.daily_prayer_time || config.dailyPrayerTime || "21:00";
-  const [hourValue, minute = "00"] = String(configuredPrayerTime).split(":");
-  const hour = Number(hourValue) || 21;
-  const period = hour < 12 ? "오전" : "오후";
-  const displayHour = hour % 12 || 12;
-  return `다음 공동기도는 매일 ${period} ${displayHour}:${minute}에 시작됩니다.`;
+  const configuredPrayerTime = state.data?.settings?.daily_prayer_time ?? config.dailyPrayerTime;
+  return formatDailyPrayerInvitation(configuredPrayerTime);
 }
 
 function maybeSyncAutomaticState(view) {
@@ -191,7 +191,10 @@ function renderHome() {
   const serverDate = new Date(Date.now() + state.serverOffsetMs);
   setText($("#dday-label"), formatDday(getDday(retreatDate, serverDate, settings?.time_zone || config.timeZone)));
   setText($("#next-prayer-copy"), getNextPrayerCopy());
-  setText($("#home-scripture"), dailyPrayer?.scripture_text || "오늘의 말씀이 곧 준비됩니다.");
+  const hasPublishedDaily = Boolean(dailyPrayer);
+  const hasScripture = Boolean(dailyPrayer?.scripture_text?.trim() || dailyPrayer?.scripture_reference?.trim());
+  setVisible($("#home-scripture-card"), !hasPublishedDaily || hasScripture);
+  setText($("#home-scripture"), hasPublishedDaily ? dailyPrayer?.scripture_text || "" : "오늘의 말씀이 곧 준비됩니다.");
   setText($("#home-scripture-reference"), dailyPrayer?.scripture_reference || "");
   setText($("#home-topic"), dailyPrayer?.prayer_topic || "오늘 함께 기도할 제목이 곧 준비됩니다.");
   setText(
@@ -202,8 +205,12 @@ function renderHome() {
 
 function renderToday() {
   const daily = state.data?.dailyPrayer;
+  const hasPublishedDaily = Boolean(daily);
+  const hasScripture = Boolean(daily?.scripture_text?.trim() || daily?.scripture_reference?.trim());
   setText($("#today-date"), formatKoreanDate(new Date(Date.now() + state.serverOffsetMs), state.data?.settings?.time_zone || config.timeZone));
-  setText($("#today-scripture"), daily?.scripture_text || "오늘의 말씀이 곧 준비됩니다.");
+  setVisible($("#today-scripture-card"), !hasPublishedDaily || hasScripture);
+  $(".ritual-layout")?.classList.toggle("ritual-layout--without-scripture", hasPublishedDaily && !hasScripture);
+  setText($("#today-scripture"), hasPublishedDaily ? daily?.scripture_text || "" : "오늘의 말씀이 곧 준비됩니다.");
   setText($("#today-scripture-reference"), daily?.scripture_reference || "");
   setText($("#today-topic"), daily?.prayer_topic || "오늘 함께 기도할 제목이 곧 준비됩니다.");
 }
@@ -317,12 +324,6 @@ function renderAll() {
   renderPresence();
 }
 
-function openJoinDialog() {
-  const dialog = $("#join-dialog");
-  if (typeof dialog.showModal === "function") dialog.showModal();
-  else dialog.setAttribute("open", "");
-}
-
 function closeDialog(dialog) {
   if (!dialog) return;
   if (typeof dialog.close === "function") dialog.close();
@@ -366,6 +367,8 @@ function renderPersonalFocus() {
   setText($("#personal-focus-title"), focus.body);
   setText($("#personal-focus-scripture"), focus.scripture);
   setText($("#personal-focus-reference"), focus.reference);
+  setVisible($("#personal-focus-scripture"), Boolean(focus.scripture));
+  setVisible($("#personal-focus-reference"), Boolean(focus.reference));
 }
 
 function clearPersonalFocus() {
@@ -424,7 +427,6 @@ function stopMediaPlayback() {
   audio.pause();
   audio.removeAttribute("src");
   audio.load();
-  $("#youtube-player").replaceChildren();
 }
 
 function pauseMedia() {
@@ -432,17 +434,6 @@ function pauseMedia() {
   state.audioEnabled = false;
   $("#audio-toggle")?.setAttribute("aria-pressed", "false");
   $("#audio-toggle")?.setAttribute("aria-label", "음악 켜기");
-}
-
-function extractYouTubeId(source) {
-  try {
-    const url = new URL(source);
-    if (url.hostname === "youtu.be") return url.pathname.slice(1).split("/")[0];
-    if (url.pathname.startsWith("/embed/")) return url.pathname.split("/")[2];
-    return url.searchParams.get("v");
-  } catch {
-    return null;
-  }
 }
 
 function getCurrentMedia(view = deriveLiveView(state.data?.liveSession, Date.now() + state.serverOffsetMs)) {
@@ -462,24 +453,18 @@ async function startConfiguredMedia(view) {
   if (!state.audioEnabled || !mediaConfig?.source_url) return;
   stopMediaPlayback();
   if (mediaConfig.kind === "youtube") {
-    const videoId = extractYouTubeId(mediaConfig.source_url);
-    if (!videoId) return;
-    const iframe = document.createElement("iframe");
-    iframe.title = "공동기도 배경 음악";
-    iframe.allow = "autoplay";
-    iframe.src = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(videoId)}?autoplay=1&controls=0&start=${Number(mediaConfig.start_seconds) || 0}`;
-    $("#youtube-player").replaceChildren(iframe);
-  } else {
-    const audio = $("#prayer-audio");
-    audio.src = mediaConfig.source_url;
-    audio.currentTime = Number(mediaConfig.start_seconds) || 0;
-    await audio.play().catch(() => {
-      state.audioEnabled = false;
-      $("#audio-toggle")?.setAttribute("aria-pressed", "false");
-      $("#audio-toggle")?.setAttribute("aria-label", "음악 켜기");
-      showConnection("브라우저가 음악 재생을 막았습니다. 음악 버튼을 눌러 다시 시작해주세요.", { persistent: true });
-    });
+    showConnection("YouTube 음악은 광고 없는 재생을 보장할 수 없어 재생하지 않습니다.", { persistent: true, status: "warning" });
+    return;
   }
+  const audio = $("#prayer-audio");
+  audio.src = mediaConfig.source_url;
+  audio.currentTime = Number(mediaConfig.start_seconds) || 0;
+  await audio.play().catch(() => {
+    state.audioEnabled = false;
+    $("#audio-toggle")?.setAttribute("aria-pressed", "false");
+    $("#audio-toggle")?.setAttribute("aria-label", "음악 켜기");
+    showConnection("브라우저가 음악 재생을 막았습니다. 음악 버튼을 눌러 다시 시작해주세요.", { persistent: true, status: "warning" });
+  });
 }
 
 async function toggleAudio() {
@@ -488,6 +473,20 @@ async function toggleAudio() {
   $("#audio-toggle")?.setAttribute("aria-label", state.audioEnabled ? "음악 끄기" : "음악 켜기");
   if (state.audioEnabled) await startConfiguredMedia();
   else pauseMedia();
+}
+
+function enterLivePrayer() {
+  const firstJoin = !state.joinedLive;
+  const enteringFromAnotherView = state.view !== "live";
+  if (firstJoin) {
+    state.audioEnabled = true;
+    state.joinedLive = true;
+    $("#audio-toggle")?.setAttribute("aria-pressed", "true");
+    $("#audio-toggle")?.setAttribute("aria-label", "음악 끄기");
+  }
+  if (enteringFromAnotherView) state.activeMediaKey = null;
+  showView("live");
+  announce("공동기도 화면에 들어왔습니다. 설정된 음악이 있으면 함께 재생됩니다.");
 }
 
 function showFormErrors(errors) {
@@ -547,9 +546,10 @@ function routeFromHash() {
 }
 
 function handleRoute(route) {
-  if (route === "live" && !state.joinedLive) {
-    openJoinDialog();
-    return;
+  if (route === "live") return enterLivePrayer();
+  if (state.view === "live") {
+    stopMediaPlayback();
+    state.activeMediaKey = null;
   }
   showView(route);
 }
@@ -565,17 +565,7 @@ function handleClick(event) {
   if (!actionTarget) return;
   const action = actionTarget.dataset.action;
   if (action === "retry") boot();
-  if (action === "join-live") openJoinDialog();
-  if (action === "confirm-join") {
-    state.audioEnabled = actionTarget.dataset.audio === "on";
-    $("#audio-toggle")?.setAttribute("aria-pressed", String(state.audioEnabled));
-    $("#audio-toggle")?.setAttribute("aria-label", state.audioEnabled ? "음악 끄기" : "음악 켜기");
-    state.joinedLive = true;
-    closeDialog($("#join-dialog"));
-    showView("live");
-    startConfiguredMedia();
-    announce("공동기도 화면에 들어왔습니다.");
-  }
+  if (action === "join-live") enterLivePrayer();
   if (action === "toggle-audio") toggleAudio();
   if (action === "start-today") startTodayPrayer();
   if (action === "focus-request") focusRequest(actionTarget.dataset.requestId);
@@ -591,7 +581,7 @@ function handleClick(event) {
 
 function handleError(error) {
   console.error(error);
-  showConnection(error?.message || "연결 중 문제가 생겼습니다. 잠시 후 다시 시도해주세요.", { persistent: true });
+  showConnection(error?.message || "연결 중 문제가 생겼습니다. 잠시 후 다시 시도해주세요.", { persistent: true, status: "error" });
 }
 
 async function boot() {
@@ -607,6 +597,7 @@ async function boot() {
     state.data = await state.service.loadPublicData(serverTime);
     state.currentDateKey = zonedDateKey(new Date(serverTime), state.data?.settings?.time_zone || config.timeZone);
     renderAll();
+    await state.service.prepareRealtime?.();
     state.liveUnsubscribe?.();
     state.liveUnsubscribe = state.service.subscribeLive(
       (liveSession) => {
@@ -637,7 +628,7 @@ async function boot() {
       handleError(error);
       showConnection("함께 접속 중인 수는 잠시 확인할 수 없지만, 기도 콘텐츠는 계속 이용할 수 있습니다.", { persistent: true });
     });
-    if (route === "live") openJoinDialog();
+    if (route === "live") enterLivePrayer();
   } catch (error) {
     if (error?.code === "CONFIG_REQUIRED") {
       showView("config", { updateHash: false });
@@ -698,14 +689,11 @@ $("#request-sort")?.addEventListener("change", (event) => {
   state.requestOrder = event.target.value;
   renderRequests();
 });
-$("#join-dialog")?.addEventListener("close", () => {
-  if (!state.joinedLive && routeFromHash() === "live") showView("home");
-});
 globalThis.addEventListener("hashchange", () => {
   if (!state.data) return;
   handleRoute(routeFromHash());
 });
-globalThis.addEventListener("offline", () => showConnection("인터넷 연결이 끊겼습니다. 마지막으로 받은 기도 내용을 유지합니다.", { persistent: true }));
+globalThis.addEventListener("offline", () => showConnection("인터넷 연결이 끊겼습니다. 마지막으로 받은 기도 내용을 유지합니다.", { persistent: true, status: "offline" }));
 globalThis.addEventListener("online", () => {
   showConnection("연결을 다시 확인하고 있습니다.", { connected: true });
   revalidatePublicContent({ reportError: true });
@@ -732,6 +720,6 @@ setInterval(() => {
   if (state.view === "home") renderHome();
 }, 1000);
 setInterval(refreshForNewChurchDay, 30_000);
-setInterval(revalidatePublicContent, 5 * 60_000);
+setInterval(revalidatePublicContent, 60_000);
 
 boot();

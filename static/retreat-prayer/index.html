@@ -6,7 +6,7 @@
   <meta name="robots" content="noindex, nofollow, noarchive">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta name="theme-color" content="#f7f4ec">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self'; img-src 'self' data:; connect-src 'self' https://*.supabase.co wss://*.supabase.co; media-src 'self' blob: https://*.supabase.co; frame-src https://www.youtube-nocookie.com; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self'; img-src 'self' data:; connect-src 'self' https://*.supabase.co wss://*.supabase.co; media-src 'self' blob: https://*.supabase.co; frame-src 'none'; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
   <title>수련회를 위한 공동기도</title>
   <meta name="description" content="정해진 시간에는 함께, 일상에서는 자유롭게 수련회를 위해 기도하는 공동체 공간입니다.">
   <link rel="stylesheet" href="./assets/styles.css">
@@ -20,9 +20,9 @@
     로컬 미리보기 · 표시된 인원과 콘텐츠는 예시입니다
   </div>
 
-  <div id="connection-banner" class="status-banner" role="status" aria-live="polite" hidden>
+  <div id="connection-banner" class="status-banner" role="status" aria-live="polite" aria-label="연결 상태" hidden>
     <span class="status-dot" aria-hidden="true"></span>
-    <span id="connection-message">연결을 다시 확인하고 있습니다.</span>
+    <span id="connection-message" class="sr-only">연결을 다시 확인하고 있습니다.</span>
   </div>
 
   <header class="site-header">
@@ -92,7 +92,7 @@
       </div>
 
       <div class="home-editorial">
-        <article class="scripture-feature" aria-labelledby="today-scripture-title">
+        <article id="home-scripture-card" class="scripture-feature" aria-labelledby="today-scripture-title">
           <p id="today-scripture-title" class="section-label">오늘의 말씀</p>
           <blockquote id="home-scripture">말씀을 불러오고 있습니다.</blockquote>
           <cite id="home-scripture-reference"></cite>
@@ -156,7 +156,7 @@
         <p class="view-lead">오늘도 여러 지체가 각자의 자리에서 수련회를 위해 기도하고 있습니다.</p>
       </div>
       <div class="ritual-layout">
-        <article class="ritual-card ritual-card--scripture">
+        <article id="today-scripture-card" class="ritual-card ritual-card--scripture">
           <p class="section-label">오늘의 말씀</p>
           <blockquote id="today-scripture"></blockquote>
           <cite id="today-scripture-reference"></cite>
@@ -167,6 +167,14 @@
           <p class="gentle-copy">기도 시간은 정해져 있지 않습니다. 준비되었을 때 시작하고 편안한 때에 마쳐주세요.</p>
         </article>
       </div>
+      <aside class="ritual-share-invitation" aria-labelledby="today-share-title">
+        <div>
+          <p class="section-label">함께 나누는 기도</p>
+          <h2 id="today-share-title">공동체와 나누고 싶은 기도제목이 있나요?</h2>
+          <p>관리자가 내용을 확인한 뒤 공동체 기도제목으로 공개합니다.</p>
+        </div>
+        <button class="button button--quiet" type="button" data-action="open-submit">기도제목 올리기</button>
+      </aside>
       <div class="sticky-action">
         <button class="button button--primary" type="button" data-action="start-today">오늘의 기도 시작</button>
       </div>
@@ -238,27 +246,6 @@
     <a href="#requests" data-route="requests"><span aria-hidden="true">◇</span>기도제목</a>
   </nav>
 
-  <dialog id="join-dialog" class="app-dialog" aria-labelledby="join-title">
-    <form method="dialog" class="dialog-shell">
-      <button class="dialog-close" value="cancel" aria-label="닫기">×</button>
-      <p class="eyebrow">공동기도에 들어가기</p>
-      <h2 id="join-title">어떤 방식으로 함께할까요?</h2>
-      <p>음악 선택은 이 브라우저에만 적용되며, 언제든 바꿀 수 있습니다.</p>
-      <div class="join-options">
-        <button class="join-option" type="button" data-action="confirm-join" data-audio="on">
-          <span aria-hidden="true">♩</span>
-          <strong>음악과 함께 참여</strong>
-          <small>설정된 구간에서 음악을 재생합니다</small>
-        </button>
-        <button class="join-option" type="button" data-action="confirm-join" data-audio="off">
-          <span aria-hidden="true">○</span>
-          <strong>조용히 참여</strong>
-          <small>음악 없이 같은 기도 흐름에 참여합니다</small>
-        </button>
-      </div>
-    </form>
-  </dialog>
-
   <dialog id="submit-dialog" class="app-dialog app-dialog--form" aria-labelledby="submit-title">
     <form id="prayer-request-form" class="dialog-shell" method="post" action="./" novalidate>
       <button class="dialog-close" type="button" data-action="close-submit" aria-label="닫기">×</button>
@@ -296,7 +283,6 @@
   </dialog>
 
   <audio id="prayer-audio" preload="none"></audio>
-  <div id="youtube-player" class="sr-only" aria-hidden="true"></div>
   <div id="app-announcer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
 </body>
 </html>
