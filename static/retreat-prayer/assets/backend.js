@@ -4,7 +4,9 @@ import {
   hasProductionConfig,
   isLocalPreview,
   zonedDateKey,
-} from "./core.js";
+} from "./core.js?v=20260829-4";
+
+const MAX_ACTIVE_ADMINS = 10;
 
 const DEMO_REQUESTS = [
   {
@@ -237,12 +239,28 @@ class PreviewService {
     return () => clearTimeout(timeout);
   }
 
+  async updatePresenceContext({ context }, onState) {
+    onState({ synced: false, count: null, status: "connecting" });
+    const timeout = setTimeout(() => {
+      onState({ synced: true, count: context === "live" ? 12 : 9, status: "connected" });
+    }, 180);
+    return () => clearTimeout(timeout);
+  }
+
   async observePresence(context, onState) {
     onState({ synced: true, count: context === "live" ? 12 : 9, status: "connected" });
     return () => {};
   }
 
   async prepareRealtime() {}
+
+  async subscribeParticipantUpdates(liveListener, contentListener, onLiveStatus = () => {}, onContentStatus = () => {}) {
+    const unsubscribeLive = this.subscribeLive(liveListener, onLiveStatus);
+    const unsubscribeContent = this.subscribeContent(contentListener, onContentStatus);
+    return async () => {
+      await Promise.allSettled([unsubscribeLive?.(), unsubscribeContent?.()]);
+    };
+  }
 
   subscribeLive(listener, onStatus = () => {}) {
     this.liveListeners.add(listener);
@@ -306,6 +324,10 @@ class PreviewService {
 
   async updateAdminPassword() {
     return this.previewAdminLogin();
+  }
+
+  async requestAdminPasswordReset() {
+    return { sent: true };
   }
 
   async adminLogin() {
@@ -492,7 +514,7 @@ class PreviewService {
   async manageAdmin(action, payload = {}) {
     if (action === "list") return clone(this.state.accounts);
     if (action === "invite") {
-      if (this.state.accounts.filter((item) => item.active).length >= 5) throw new Error("활성 Admin은 최대 5명입니다.");
+      if (this.state.accounts.filter((item) => item.active).length >= MAX_ACTIVE_ADMINS) throw new Error(`활성 Admin은 최대 ${MAX_ACTIVE_ADMINS}명입니다.`);
       const account = {
         user_id: createId(),
         display_name: payload.displayName,
@@ -512,7 +534,7 @@ class PreviewService {
       return clone(account);
     }
     if (action === "activate") {
-      if (this.state.accounts.filter((item) => item.active).length >= 5) throw new Error("활성 Admin은 최대 5명입니다.");
+      if (this.state.accounts.filter((item) => item.active).length >= MAX_ACTIVE_ADMINS) throw new Error(`활성 Admin은 최대 ${MAX_ACTIVE_ADMINS}명입니다.`);
       const account = this.state.accounts.find((item) => item.user_id === payload.userId);
       if (!account) throw new Error("Admin 계정을 찾을 수 없습니다.");
       account.active = true;
@@ -523,13 +545,35 @@ class PreviewService {
   }
 }
 
-class SupabaseService {
+export class SupabaseService {
   constructor(config, supabase) {
     this.config = config;
     this.supabase = supabase;
     this.mode = "production";
     this.presenceChannel = null;
+    this.presenceContextVersion = 0;
+    this.presenceTrackPromise = Promise.resolve();
+    this.presenceLastTrackAt = 0;
+    this.presenceMinTrackIntervalMs = 6_500;
+    this.presenceTracked = false;
     this.liveChannel = null;
+  }
+
+  queuePresenceTrack(channel, version, payload) {
+    const task = this.presenceTrackPromise
+      .catch(() => {})
+      .then(async () => {
+        if (this.presenceChannel !== channel || version !== this.presenceContextVersion) return "superseded";
+        const waitMs = Math.max(0, this.presenceMinTrackIntervalMs - (Date.now() - this.presenceLastTrackAt));
+        if (waitMs > 0) await new Promise((resolve) => setTimeout(resolve, waitMs));
+        if (this.presenceChannel !== channel || version !== this.presenceContextVersion) return "superseded";
+        this.presenceLastTrackAt = Date.now();
+        const result = await channel.track(payload);
+        if (result !== "ok") throw new Error(`Presence context update failed with ${result}.`);
+        return version === this.presenceContextVersion ? "ok" : "superseded";
+      });
+    this.presenceTrackPromise = task.catch(() => {});
+    return task;
   }
 
   async ensureAnonymousSession() {
@@ -595,7 +639,6 @@ class SupabaseService {
   }
 
   async loadPublicData(serverNow = null) {
-    await this.syncLive();
     const [publicContent, liveResult, mediaResult] = await Promise.all([
       this.fetchPublicContent(serverNow),
       this.supabase
@@ -632,41 +675,132 @@ class SupabaseService {
   async connectPresence({ sessionId, tabId, context }, onState) {
     await this.ensureAnonymousSession();
     onState({ synced: false, count: null, status: "connecting" });
-    const topic = context === "live" ? `${this.config.presenceTopic}:live` : this.config.presenceTopic;
-    const channel = this.supabase.channel(topic, {
+    const channel = this.supabase.channel(this.config.presenceTopic, {
       config: { private: true, presence: { key: tabId } },
     });
-    channel.on("presence", { event: "sync" }, () => {
-      onState({
+    this.presenceSessionId = sessionId;
+    this.presenceContext = context;
+    this.presenceOnState = onState;
+    this.presenceContextVersion += 1;
+    this.presenceTrackPromise = Promise.resolve();
+    const initialVersion = this.presenceContextVersion;
+    let initialSettled = false;
+    let resolveInitial;
+    let rejectInitial;
+    const initialReady = new Promise((resolve, reject) => {
+      resolveInitial = resolve;
+      rejectInitial = reject;
+    });
+    const reportPresence = () => {
+      if (!this.presenceTracked || this.presenceChannel !== channel) return;
+      const currentContext = this.presenceContext;
+      this.presenceOnState?.({
         synced: true,
-        count: countUniquePresenceSessions(channel.presenceState()),
+        count: countUniquePresenceSessions(
+          channel.presenceState(),
+          currentContext === "live" ? "live" : null,
+        ),
         status: "connected",
       });
-    });
-    channel.subscribe(async (status) => {
-      if (status === "SUBSCRIBED") {
-        await channel.track({ session_id: sessionId, context, joined_at: new Date().toISOString() });
-      }
-      if (["CHANNEL_ERROR", "TIMED_OUT", "CLOSED"].includes(status)) {
-        onState({ synced: false, count: null, status: "reconnecting" });
-      }
+    };
+    channel.on("presence", { event: "sync" }, () => {
+      reportPresence();
     });
     this.presenceChannel = channel;
+    channel.subscribe(async (status) => {
+      if (status === "SUBSCRIBED") {
+        this.presenceTracked = false;
+        try {
+          if (initialSettled) this.presenceContextVersion += 1;
+          const currentVersion = initialSettled ? this.presenceContextVersion : initialVersion;
+          const currentSessionId = this.presenceSessionId;
+          const currentContext = this.presenceContext;
+          const result = await this.queuePresenceTrack(channel, currentVersion, {
+            session_id: currentSessionId,
+            context: currentContext,
+            joined_at: new Date().toISOString(),
+          });
+          if (result !== "ok") {
+            if (!initialSettled) throw new Error("Presence connection was superseded before tracking completed.");
+            return;
+          }
+          this.presenceTracked = true;
+          reportPresence();
+          if (!initialSettled) {
+            initialSettled = true;
+            resolveInitial();
+          }
+        } catch (error) {
+          if (!initialSettled) {
+            initialSettled = true;
+            rejectInitial(error);
+          }
+        }
+      }
+      if (["CHANNEL_ERROR", "TIMED_OUT", "CLOSED"].includes(status)) {
+        if (this.presenceChannel === channel) {
+          this.presenceOnState?.({ synced: false, count: null, status: "reconnecting" });
+        }
+        if (!initialSettled) {
+          initialSettled = true;
+          rejectInitial(new Error(`Presence channel failed with ${status}.`));
+        }
+      }
+    });
+    try {
+      await initialReady;
+    } catch (error) {
+      if (this.presenceChannel === channel) {
+        this.presenceChannel = null;
+        this.presenceOnState = null;
+      }
+      await this.supabase.removeChannel(channel).catch(() => {});
+      throw error;
+    }
     return async () => {
-      await channel.untrack().catch(() => {});
+      if (this.presenceChannel !== channel) return;
+      this.presenceChannel = null;
+      this.presenceSessionId = null;
+      this.presenceContext = null;
+      this.presenceOnState = null;
+      this.presenceTracked = false;
+      this.presenceContextVersion += 1;
       await this.supabase.removeChannel(channel);
     };
+  }
+
+  async updatePresenceContext({ sessionId, context }, onState) {
+    const channel = this.presenceChannel;
+    if (!channel) throw new Error("Presence channel is not connected.");
+    this.presenceTracked = false;
+    this.presenceSessionId = sessionId;
+    this.presenceContext = context;
+    this.presenceOnState = onState;
+    this.presenceContextVersion += 1;
+    const version = this.presenceContextVersion;
+    onState({ synced: false, count: null, status: "connecting" });
+    const result = await this.queuePresenceTrack(channel, version, {
+      session_id: sessionId,
+      context,
+      joined_at: new Date().toISOString(),
+    });
+    if (result !== "ok" || version !== this.presenceContextVersion || this.presenceChannel !== channel) return;
+    this.presenceTracked = true;
+    onState({
+      synced: true,
+      count: countUniquePresenceSessions(channel.presenceState(), context === "live" ? "live" : null),
+      status: "connected",
+    });
   }
 
   async observePresence(context, onState) {
     await this.supabase.realtime.setAuth();
     onState({ synced: false, count: null, status: "connecting" });
-    const topic = context === "live" ? `${this.config.presenceTopic}:live` : this.config.presenceTopic;
-    const channel = this.supabase.channel(topic, { config: { private: true } });
+    const channel = this.supabase.channel(this.config.presenceTopic, { config: { private: true } });
     channel.on("presence", { event: "sync" }, () => {
       onState({
         synced: true,
-        count: countUniquePresenceSessions(channel.presenceState()),
+        count: countUniquePresenceSessions(channel.presenceState(), context === "live" ? "live" : null),
         status: "connected",
       });
     });
@@ -686,6 +820,120 @@ class SupabaseService {
       .maybeSingle();
     if (error) throw error;
     return data;
+  }
+
+  async subscribeParticipantUpdates(liveListener, contentListener, onLiveStatus = () => {}, onContentStatus = () => {}) {
+    let active = true;
+    let initialSettled = false;
+    let needsRecovery = false;
+    let contentReconciling = false;
+    let contentReconcileRequested = false;
+    let recoveryReconciling = false;
+
+    const reconcileContent = async () => {
+      if (!active) return;
+      if (contentReconciling) {
+        contentReconcileRequested = true;
+        return;
+      }
+      contentReconciling = true;
+      contentReconcileRequested = false;
+      try {
+        const content = await this.fetchPublicContent();
+        if (active) contentListener(content);
+        if (active) onContentStatus("connected");
+      } catch (error) {
+        if (active) onContentStatus("reconnecting", error);
+      } finally {
+        contentReconciling = false;
+        if (active && contentReconcileRequested) queueMicrotask(reconcileContent);
+      }
+    };
+
+    const reconcileAfterRecovery = async () => {
+      if (!active || recoveryReconciling) return;
+      recoveryReconciling = true;
+      try {
+        const [liveSession, publicContent] = await Promise.all([
+          this.fetchLiveSession(),
+          this.fetchPublicContent(),
+        ]);
+        if (active && liveSession) liveListener(liveSession);
+        if (active && publicContent) contentListener(publicContent);
+      } catch (error) {
+        if (active) {
+          onLiveStatus("reconnecting", error);
+          onContentStatus("reconnecting", error);
+        }
+      } finally {
+        recoveryReconciling = false;
+      }
+    };
+
+    let settleInitial;
+    let rejectInitial;
+    const ready = new Promise((resolve, reject) => {
+      settleInitial = resolve;
+      rejectInitial = reject;
+    });
+    const markInitialFailure = (error) => {
+      if (initialSettled) return;
+      initialSettled = true;
+      rejectInitial(error);
+    };
+    const channel = this.supabase
+      .channel("retreat-prayer:live-state", { config: { private: true } })
+      .on("system", {}, (payload) => {
+        if (payload?.extension !== "postgres_changes") return;
+        if (payload.status === "ok") {
+          onLiveStatus("connected");
+          onContentStatus("connected");
+          if (!initialSettled) {
+            initialSettled = true;
+            settleInitial();
+          } else if (needsRecovery) {
+            needsRecovery = false;
+            void reconcileAfterRecovery();
+          }
+          return;
+        }
+        const systemError = new Error(payload?.message || "Realtime Postgres Changes subscription failed.");
+        systemError.code = "POSTGRES_CHANGES_UNAVAILABLE";
+        needsRecovery = true;
+        onLiveStatus(initialSettled ? "failed" : "reconnecting", systemError);
+        onContentStatus("reconnecting", systemError);
+        markInitialFailure(systemError);
+      })
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "live_sessions", filter: "id=eq.1" },
+        (payload) => liveListener(payload.new),
+      )
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "content_revisions", filter: "id=eq.1" },
+        reconcileContent,
+      )
+      .subscribe((status, error) => {
+        if (["CHANNEL_ERROR", "TIMED_OUT", "CLOSED"].includes(status)) {
+          needsRecovery = true;
+          onLiveStatus("reconnecting", error);
+          onContentStatus("reconnecting", error);
+          markInitialFailure(error || new Error(`Realtime participant channel failed with ${status}.`));
+        }
+      });
+
+    try {
+      await ready;
+    } catch (error) {
+      active = false;
+      await this.supabase.removeChannel(channel);
+      throw error;
+    }
+    return () => {
+      active = false;
+      return this.supabase.removeChannel(channel);
+    };
   }
 
   subscribeLive(listener, onStatus = () => {}) {
@@ -804,6 +1052,17 @@ class SupabaseService {
     const session = await this.getAdminSession();
     if (!session) throw new Error("활성 Admin 권한을 확인할 수 없습니다.");
     return { ...session, user: data.user || session.user };
+  }
+
+  async requestAdminPasswordReset(email) {
+    const redirectUrl = new URL(globalThis.location.href);
+    redirectUrl.search = "";
+    redirectUrl.hash = "";
+    const { error } = await this.supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: redirectUrl.href,
+    });
+    if (error) throw error;
+    return { sent: true };
   }
 
   async adminLogin(email, password) {

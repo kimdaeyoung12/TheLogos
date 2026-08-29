@@ -178,9 +178,10 @@ export function deriveLiveView(liveState, now = Date.now()) {
   };
 }
 
-export function countUniquePresenceSessions(presenceState) {
+export function countUniquePresenceSessions(presenceState, context = null) {
   const sessions = new Set();
   Object.values(presenceState || {}).flat().forEach((presence) => {
+    if (context && presence?.context !== context) return;
     const id = presence?.session_id;
     if (typeof id === "string" && /^[a-zA-Z0-9-]{16,80}$/.test(id)) sessions.add(id);
   });

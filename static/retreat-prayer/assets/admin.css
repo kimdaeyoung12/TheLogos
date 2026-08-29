@@ -97,6 +97,10 @@
 
 .admin-login-card form .button { margin-top: 18px; }
 .admin-login-card > .button { margin-top: 12px; }
+.admin-recovery { margin-top: 22px; border-top: 1px solid #d9ddd5; padding-top: 18px; }
+.admin-recovery summary { color: var(--ink-soft); font-size: .82rem; font-weight: 720; cursor: pointer; }
+.admin-recovery form { margin-top: 10px; }
+.admin-login-card .field-help { margin: 2px 0 0; color: var(--muted); font-size: .76rem; line-height: 1.55; }
 .admin-back-link { display: block; margin-top: 24px; color: var(--muted); font-size: .78rem; text-align: center; text-underline-offset: 3px; }
 
 .admin-console {

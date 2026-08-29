@@ -5,10 +5,12 @@ import {
   setText,
   setVisible,
   zonedDateKey,
-} from "./core.js";
-import { createPrayerService } from "./backend.js";
+} from "./core.js?v=20260829-4";
+import { createPrayerService } from "./backend.js?v=20260829-4";
 
 const config = globalThis.RETREAT_PRAYER_CONFIG || {};
+const MAX_ACTIVE_ADMINS = 10;
+const PASSWORD_SYMBOLS = "!@#$%^&*()_+-=[]{};'\\:\"|<>?,./`~";
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 
@@ -424,10 +426,10 @@ function renderAccounts() {
   const list = $("#account-list");
   list.replaceChildren();
   const activeCount = accounts.filter((account) => account.active).length;
-  setText($("#account-count"), `${activeCount} / 5 · 등록 ${accounts.length}`);
+  setText($("#account-count"), `${activeCount} / ${MAX_ACTIVE_ADMINS} · 등록 ${accounts.length}`);
   const inviteButton = $("button[type='submit']", $("#admin-invite-form"));
-  if (inviteButton) inviteButton.disabled = activeCount >= 5;
-  if (activeCount >= 5) setText($(".form-status", $("#admin-invite-form")), "활성 Admin 5명이 모두 등록되어 있습니다.");
+  if (inviteButton) inviteButton.disabled = activeCount >= MAX_ACTIVE_ADMINS;
+  if (activeCount >= MAX_ACTIVE_ADMINS) setText($(".form-status", $("#admin-invite-form")), `활성 Admin ${MAX_ACTIVE_ADMINS}명이 모두 등록되어 있습니다.`);
   accounts.forEach((account) => {
     const row = document.createElement("div");
     row.className = "admin-list-row";
@@ -560,8 +562,9 @@ async function setInitialPassword(event) {
   const button = $("button[type='submit']", form);
   const password = form.password.value;
   setText($("#admin-password-error"), "");
-  if (password.length < 10) {
-    setText($("#admin-password-error"), "비밀번호는 10자 이상으로 설정해주세요.");
+  const hasAllowedSymbol = [...password].some((character) => PASSWORD_SYMBOLS.includes(character));
+  if (password.length < 10 || password.length > 72 || !/[a-z]/.test(password) || !/[A-Z]/.test(password) || !/\d/.test(password) || !hasAllowedSymbol) {
+    setText($("#admin-password-error"), "비밀번호는 10~72자이며 영문 대문자·소문자·숫자·허용 특수문자(!, @, # 등)를 각각 포함해야 합니다.");
     return;
   }
   if (password !== form.passwordConfirm.value) {
@@ -575,6 +578,29 @@ async function setInitialPassword(event) {
     await openConsole(result);
   } catch (error) {
     setText($("#admin-password-error"), error.message || "비밀번호를 설정하지 못했습니다.");
+  } finally {
+    button.disabled = false;
+  }
+}
+
+async function requestPasswordReset(event) {
+  event.preventDefault();
+  const form = event.currentTarget;
+  const button = $("button[type='submit']", form);
+  const status = $("#admin-recovery-status");
+  const email = form.email.value.trim();
+  setText(status, "");
+  if (!email || !form.email.validity.valid) {
+    setText(status, "초대받은 이메일 주소를 확인해주세요.");
+    form.email.focus();
+    return;
+  }
+  button.disabled = true;
+  try {
+    await state.service.requestAdminPasswordReset(email);
+    setText(status, "등록된 Admin 이메일이라면 새 비밀번호 설정 링크를 보냈습니다. 메일함을 확인해주세요.");
+  } catch (error) {
+    setText(status, error.message || "새 설정 링크를 보내지 못했습니다. 잠시 후 다시 시도해주세요.");
   } finally {
     button.disabled = false;
   }
@@ -617,7 +643,19 @@ async function applyLiveAction(button) {
     renderLive();
     toast(action === "next" ? "다음 단계를 참여자 화면에 송출했습니다." : "공동기도 진행 상태를 변경했습니다.");
   } catch (error) {
-    toast(error.message || "진행 상태를 변경하지 못했습니다.", 4200);
+    const originalMessage = error.message || "진행 상태를 변경하지 못했습니다.";
+    state.leaseToken = null;
+    state.leaseExpiresAt = null;
+    try {
+      const liveSession = await state.service.fetchLiveSession();
+      if (liveSession) state.snapshot.liveSession = liveSession;
+      renderController();
+      renderLive();
+      toast(`${originalMessage} 최신 진행 상태를 다시 확인했습니다. 제어권을 다시 요청해주세요.`, 5600);
+    } catch {
+      renderController();
+      toast(`${originalMessage} 최신 진행 상태도 확인하지 못했습니다. 연결 후 제어권을 다시 요청해주세요.`, 5600);
+    }
   } finally {
     button.disabled = false;
   }
@@ -941,6 +979,13 @@ async function handleClick(event) {
 async function boot() {
   showGate("loading");
   try {
+    await Promise.allSettled([state.presenceDisconnect?.(), state.liveUnsubscribe?.()]);
+    clearInterval(state.leaseInterval);
+    state.presenceDisconnect = null;
+    state.liveUnsubscribe = null;
+    state.leaseInterval = null;
+    state.leaseToken = null;
+    state.leaseExpiresAt = null;
     state.service = await createPrayerService(config, { admin: true });
     state.mode = state.service.mode;
     setVisible($("#admin-preview-ribbon"), state.mode === "preview");
@@ -950,6 +995,7 @@ async function boot() {
       if (restored) {
         const inviteEntry = restored.user?.user_metadata?.retreat_prayer_needs_password_setup === true
           || location.hash.includes("type=invite")
+          || location.hash.includes("type=recovery")
           || new URLSearchParams(location.search).has("code");
         if (inviteEntry) {
           state.pendingAdminSession = restored;
@@ -973,6 +1019,7 @@ async function boot() {
 document.addEventListener("click", handleClick);
 $("#admin-login-form")?.addEventListener("submit", login);
 $("#admin-password-form")?.addEventListener("submit", setInitialPassword);
+$("#admin-password-recovery-form")?.addEventListener("submit", requestPasswordReset);
 $("#daily-content-form")?.addEventListener("submit", saveDailyContent);
 $("#app-settings-form")?.addEventListener("submit", saveSettings);
 $("#program-form")?.addEventListener("submit", saveProgram);
@@ -1002,6 +1049,9 @@ globalThis.addEventListener("pagehide", () => {
   state.presenceDisconnect?.();
   state.liveUnsubscribe?.();
   clearInterval(state.leaseInterval);
+});
+globalThis.addEventListener("pageshow", (event) => {
+  if (event.persisted) void boot();
 });
 
 setInterval(() => {

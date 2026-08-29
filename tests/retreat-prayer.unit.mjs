@@ -43,6 +43,10 @@ const mediaDeleteMigrationSource = await readFile(
   new URL("../supabase/migrations/20260829050000_retreat_prayer_media_delete.sql", import.meta.url),
   "utf8",
 );
+const adminLimitMigrationSource = await readFile(
+  new URL("../supabase/migrations/20260829060000_retreat_prayer_admin_limit_10.sql", import.meta.url),
+  "utf8",
+);
 const edgeSecretHelperSource = await readFile(
   new URL("../supabase/functions/_shared/supabase-key.ts", import.meta.url),
   "utf8",
@@ -56,6 +60,7 @@ const supabaseConfigSource = await readFile(
   "utf8",
 );
 const backendSource = await readFile(new URL("../static/retreat-prayer/assets/backend.js", import.meta.url), "utf8");
+const { SupabaseService } = await import(new URL("../static/retreat-prayer/assets/backend.js", import.meta.url));
 const adminScriptSource = await readFile(new URL("../static/retreat-prayer/assets/admin.js", import.meta.url), "utf8");
 const manageAdminSource = await readFile(new URL("../supabase/functions/manage-admin/index.ts", import.meta.url), "utf8");
 const participantHtmlSource = await readFile(new URL("../static/retreat-prayer/index.html", import.meta.url), "utf8");
@@ -97,6 +102,15 @@ test("자동 진행은 서버 기준 경과 시간으로 현재 단계를 계산
   assert.equal(Math.round(view.remainingSeconds), 150);
 });
 
+test("일반 첫 화면 조회는 자동 진행 행 잠금 RPC를 매번 호출하지 않는다", () => {
+  const loadPublicDataBody = backendSource.slice(
+    backendSource.indexOf("async loadPublicData(serverNow = null)"),
+    backendSource.indexOf("async syncLive()"),
+  );
+  assert.doesNotMatch(loadPublicDataBody, /syncLive\(\)/);
+  assert.match(appSource, /const shouldStart[\s\S]*?const shouldComplete[\s\S]*?state\.service\.syncLive\(\)/);
+});
+
 test("수동 진행은 stage_started_at과 서버 오프셋이 반영된 now를 사용한다", () => {
   const anchor = Date.parse("2026-08-28T12:00:00Z");
   const view = core.deriveLiveView({
@@ -112,13 +126,190 @@ test("수동 진행은 stage_started_at과 서버 오프셋이 반영된 now를 
 });
 
 test("Presence는 탭 수가 아니라 고유 브라우저 session_id 수를 센다", () => {
-  const count = core.countUniquePresenceSessions({
-    tabA: [{ session_id: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa" }],
-    tabB: [{ session_id: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa" }],
-    tabC: [{ session_id: "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb" }],
+  const presenceState = {
+    tabA: [{ session_id: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", context: "live" }],
+    tabB: [{ session_id: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", context: "space" }],
+    tabC: [{ session_id: "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb", context: "space" }],
     invalid: [{ session_id: "short" }],
-  });
-  assert.equal(count, 2);
+  };
+  assert.equal(core.countUniquePresenceSessions(presenceState), 2);
+  assert.equal(core.countUniquePresenceSessions(presenceState, "live"), 1);
+});
+
+test("Presence 상태 전환이 겹쳐도 마지막 화면의 context가 서버에 마지막으로 기록된다", async () => {
+  const pendingTracks = [];
+  const channel = {
+    track(payload) {
+      return new Promise((resolve) => pendingTracks.push({ payload, resolve }));
+    },
+    presenceState() {
+      return {};
+    },
+  };
+  const service = new SupabaseService({}, {});
+  service.presenceMinTrackIntervalMs = 0;
+  service.presenceChannel = channel;
+  const states = [];
+
+  const liveUpdate = service.updatePresenceContext(
+    { sessionId: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", context: "live" },
+    (state) => states.push(["live", state]),
+  );
+  await new Promise((resolve) => setImmediate(resolve));
+  const spaceUpdate = service.updatePresenceContext(
+    { sessionId: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", context: "space" },
+    (state) => states.push(["space", state]),
+  );
+
+  assert.equal(pendingTracks.length, 1);
+  assert.equal(pendingTracks[0].payload.context, "live");
+  pendingTracks.shift().resolve("ok");
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(pendingTracks.length, 1);
+  assert.equal(pendingTracks[0].payload.context, "space");
+  pendingTracks.shift().resolve("ok");
+  await Promise.all([liveUpdate, spaceUpdate]);
+
+  assert.equal(service.presenceContext, "space");
+  assert.equal(states.some(([label, state]) => label === "live" && state.synced), false);
+  assert.equal(states.some(([label, state]) => label === "space" && state.synced), true);
+});
+
+test("Presence context track 대기 중 sync는 새 화면의 동기화 완료로 표시하지 않는다", async () => {
+  let syncCallback;
+  let resolveContextTrack;
+  let trackCalls = 0;
+  const channel = {
+    on(event, _filter, callback) {
+      if (event === "presence") syncCallback = callback;
+      return this;
+    },
+    subscribe(callback) {
+      queueMicrotask(() => callback("SUBSCRIBED"));
+      return this;
+    },
+    track() {
+      trackCalls += 1;
+      if (trackCalls === 1) return Promise.resolve("ok");
+      return new Promise((resolve) => { resolveContextTrack = resolve; });
+    },
+    presenceState() {
+      return { liveMember: [{ session_id: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", context: "live" }] };
+    },
+  };
+  const supabase = {
+    auth: { async getSession() { return { data: { session: { access_token: "test" } }, error: null }; } },
+    realtime: { async setAuth() {} },
+    channel() { return channel; },
+    async removeChannel() {},
+  };
+  const service = new SupabaseService({ presenceTopic: "retreat-prayer:presence" }, supabase);
+  service.presenceMinTrackIntervalMs = 0;
+  const states = [];
+  const disconnect = await service.connectPresence(
+    {
+      sessionId: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+      tabId: "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+      context: "space",
+    },
+    (nextState) => states.push(nextState),
+  );
+  states.length = 0;
+
+  const update = service.updatePresenceContext(
+    { sessionId: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", context: "live" },
+    (nextState) => states.push(nextState),
+  );
+  await new Promise((resolve) => setImmediate(resolve));
+  syncCallback();
+  assert.equal(states.some((nextState) => nextState.synced), false);
+
+  resolveContextTrack("ok");
+  await update;
+  assert.equal(states.filter((nextState) => nextState.synced).length, 1);
+  await disconnect();
+});
+
+test("첫 Presence track이 실패하면 연결 완료로 표시하지 않고 채널을 정리한다", async () => {
+  let removed = false;
+  const channel = {
+    on() { return this; },
+    subscribe(callback) {
+      queueMicrotask(() => callback("SUBSCRIBED"));
+      return this;
+    },
+    async track() { return "timed out"; },
+    async untrack() { return "ok"; },
+    presenceState() { return {}; },
+  };
+  const supabase = {
+    auth: { async getSession() { return { data: { session: { access_token: "test" } }, error: null }; } },
+    realtime: { async setAuth() {} },
+    channel() { return channel; },
+    async removeChannel() { removed = true; },
+  };
+  const service = new SupabaseService({ presenceTopic: "retreat-prayer:presence" }, supabase);
+  const states = [];
+
+  await assert.rejects(
+    service.connectPresence(
+      {
+        sessionId: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+        tabId: "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+        context: "space",
+      },
+      (state) => states.push(state),
+    ),
+    /timed out/,
+  );
+
+  assert.equal(states.some((state) => state.synced), false);
+  assert.equal(removed, true);
+  assert.equal(service.presenceChannel, null);
+});
+
+test("Presence 채널이 재연결되면 마지막 화면 context를 다시 track한다", async () => {
+  let subscribeCallback;
+  const trackedContexts = [];
+  const channel = {
+    on() { return this; },
+    subscribe(callback) {
+      subscribeCallback = callback;
+      queueMicrotask(() => callback("SUBSCRIBED"));
+      return this;
+    },
+    async track(payload) {
+      trackedContexts.push(payload.context);
+      return "ok";
+    },
+    presenceState() { return {}; },
+  };
+  const supabase = {
+    auth: { async getSession() { return { data: { session: { access_token: "test" } }, error: null }; } },
+    realtime: { async setAuth() {} },
+    channel() { return channel; },
+    async removeChannel() {},
+  };
+  const service = new SupabaseService({ presenceTopic: "retreat-prayer:presence" }, supabase);
+  service.presenceMinTrackIntervalMs = 0;
+  const disconnect = await service.connectPresence(
+    {
+      sessionId: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+      tabId: "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+      context: "space",
+    },
+    () => {},
+  );
+  await service.updatePresenceContext(
+    { sessionId: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", context: "live" },
+    () => {},
+  );
+
+  subscribeCallback("SUBSCRIBED");
+  await new Promise((resolve) => setImmediate(resolve));
+
+  assert.deepEqual(trackedContexts, ["space", "live", "live"]);
+  await disconnect();
 });
 
 test("Asia/Seoul 자정은 UTC 날짜와 독립적으로 오늘의 기도 키를 바꾼다", () => {
@@ -220,6 +411,15 @@ test("초대 Admin은 이메일 로그인할 수 있지만 공개 회원가입�
   assert.match(manageAdminSource, /retreat_prayer_invite_nonce: inviteNonce/);
 });
 
+test("Admin 초대 비밀번호 실패 후 새 설정 링크를 받고 정책을 미리 확인할 수 있다", () => {
+  assert.match(adminHtmlSource, /id="admin-password-recovery-form"[\s\S]*?새 비밀번호 설정 링크 받기/);
+  assert.match(adminHtmlSource, /10~72자이며 영문 대문자·소문자·숫자·허용 특수문자/);
+  assert.match(adminScriptSource, /const PASSWORD_SYMBOLS = [\s\S]*?password\.length < 10 \|\| password\.length > 72[\s\S]*?hasAllowedSymbol/);
+  assert.match(backendSource, /requestAdminPasswordReset\(email\)[\s\S]*?resetPasswordForEmail\(email,[\s\S]*?redirectTo: redirectUrl\.href/);
+  assert.match(adminScriptSource, /type=invite[\s\S]*?type=recovery[\s\S]*?URLSearchParams\(location\.search\)\.has\("code"\)/);
+  assert.match(adminScriptSource, /requestAdminPasswordReset\(email\)[\s\S]*?등록된 Admin 이메일이라면/);
+});
+
 test("오늘의 말씀은 비워 게시할 수 있고 참여자 화면은 빈 말씀 카드를 생략한다", () => {
   assert.match(optionalScriptureMigrationSource, /alter column scripture_reference drop not null/);
   assert.match(optionalScriptureMigrationSource, /alter column scripture_text drop not null/);
@@ -239,11 +439,13 @@ test("연결 상태는 본문을 가리지 않는 작은 아이콘으로만 표�
 
 test("공동기도는 기도문 뒤의 절제된 3D Presence와 정확한 활성 연결 문구를 제공한다", () => {
   assert.match(participantHtmlSource, /class="live-presence-backdrop" aria-hidden="true"[\s\S]*?id="mini-presence-canvas"/);
-  assert.match(participantHtmlSource, /class="focus-presence-window" role="status" aria-live="polite"/);
+  assert.match(participantHtmlSource, /class="focus-presence-window" aria-label="함께 기도 중인 지체 수"/);
   assert.match(participantHtmlSource, /id="live-presence-fallback"[\s\S]*?hidden/);
   assert.match(participantStylesSource, /\.live-presence-backdrop \{[\s\S]*?pointer-events: none;[\s\S]*?mask-image:/);
   assert.match(participantStylesSource, /\.live-presence-backdrop::after[\s\S]*?radial-gradient/);
   assert.match(participantStylesSource, /\.focus-content \{[\s\S]*?z-index: 2/);
+  assert.match(participantStylesSource, /\.focus-footer \{[\s\S]*?position: fixed;[\s\S]*?pointer-events: none/);
+  assert.match(participantStylesSource, /\.focus-presence-window \{[\s\S]*?border-radius: 999px;[\s\S]*?pointer-events: none;[\s\S]*?animation: focus-presence-float 8s/);
   assert.match(participantStylesSource, /\.focus-view \{[\s\S]*?grid-template-rows: auto minmax\(0, 1fr\) auto;[\s\S]*?overflow: hidden/);
   assert.match(participantStylesSource, /orientation: landscape[\s\S]*?align-content: start/);
   assert.match(appSource, /\$\("#live-presence-count"\), liveText/);
@@ -261,13 +463,38 @@ test("공동기도는 기도문 뒤의 절제된 3D Presence와 정확한 활성
 });
 
 test("Realtime 준비가 실패해도 내용을 유지하고 멱등형 재설치를 예약한다", () => {
-  assert.match(appSource, /new RealtimeSetupCoordinator\(\{[\s\S]*?install: installRealtimeSubscriptions/);
+  assert.match(appSource, /new RealtimeSetupCoordinator\(\{[\s\S]*?install: \(\) => installRealtimeSubscriptions\(service, coordinator\)/);
   assert.match(appSource, /마지막으로 받은 기도 내용은 계속 볼 수 있습니다/);
   assert.match(appSource, /state\.presenceStatus = "unavailable";[\s\S]*?renderPresence\(\)/);
-  assert.match(appSource, /await reconcileRealtimeSnapshot\(\)/);
+  assert.match(appSource, /await reconcileRealtimeSnapshot\(service\)/);
   assert.match(appSource, /fetchLiveSession[\s\S]*?fetchPublicContent/);
   assert.match(realtimeSetupSource, /\[2_000, 5_000, 15_000, 30_000\]/);
   assert.match(realtimeSetupSource, /if \(this\.inFlight\) return this\.inFlight/);
+});
+
+test("50명 규모의 동시 접속은 Realtime과 Presence를 각각 16초 구간에 분산한다", () => {
+  assert.match(appSource, /const REALTIME_STAGGER_MAX_MS = 16_000/);
+  assert.match(appSource, /const PRESENCE_STAGGER_MAX_MS = 16_000/);
+  assert.match(appSource, /getRealtimeStaggerDelay\(scope, maximumDelayMs = REALTIME_STAGGER_MAX_MS\)/);
+  assert.match(appSource, /waitForRealtimeStagger\(`presence:\$\{context\}`, minimumDelayMs, PRESENCE_STAGGER_MAX_MS\)/);
+  assert.match(appSource, /updatePresence && state\.realtimeReady/);
+  assert.match(appSource, /await waitForRealtimeStagger\("startup"\)/);
+  assert.match(appSource, /onSuccess:[\s\S]*?state\.realtimeReady = true;[\s\S]*?minimumDelayMs: REALTIME_STAGGER_MAX_MS/);
+  assert.match(appSource, /state\.service\.updatePresenceContext\([\s\S]*?sessionId: state\.sessionId[\s\S]*?context/);
+  assert.match(backendSource, /queuePresenceTrack\([\s\S]*?channel\.track[\s\S]*?updatePresenceContext\([\s\S]*?queuePresenceTrack/);
+  assert.match(appSource, /delays: REALTIME_RETRY_DELAYS_MS\.map\(\(delay\) => delay \+ getRealtimeStaggerDelay\("retry"\)\)/);
+  assert.match(appSource, /enterLivePrayer\(\{ updatePresence: false \}\)/);
+  assert.match(appSource, /await service\.subscribeParticipantUpdates\([\s\S]*?isCurrentInstall\(\)[\s\S]*?receiveLiveSession[\s\S]*?applyPublicContent/);
+  assert.match(backendSource, /subscribeParticipantUpdates\([\s\S]*?channel\("retreat-prayer:live-state", \{ config: \{ private: true \} \}\)[\s\S]*?table: "live_sessions"[\s\S]*?table: "content_revisions"/);
+  assert.match(appSource, /setInterval\(revalidatePublicContent, 60_000\)/);
+});
+
+test("Presence 전환 대기 중 화면이 바뀌면 오래된 예약과 인원 표시를 취소한다", () => {
+  assert.match(appSource, /const generation = \+\+state\.presenceGeneration;\s*state\.presenceDesiredContext = context/);
+  assert.match(appSource, /state\.presenceSynced = false;\s*state\.presenceCount = null;[\s\S]*?await waitForRealtimeStagger/);
+  assert.match(appSource, /generation !== state\.presenceGeneration \|\| state\.presenceDesiredContext !== context/);
+  assert.match(appSource, /state\.presenceContext === context && state\.presenceDisconnect && state\.presenceUpdateInFlight === 0[\s\S]*?state\.presenceSnapshots\.get\(context\)[\s\S]*?return/);
+  assert.match(backendSource, /queuePresenceTrack\(channel, version,[\s\S]*?presenceContextVersion[\s\S]*?"superseded"/);
 });
 
 test("Realtime 조정기는 첫 실패 뒤 두 번째 설치에 성공하고 중복 설치하지 않는다", async () => {
@@ -300,6 +527,10 @@ test("Realtime 조정기는 첫 실패 뒤 두 번째 설치에 성공하고 중
   assert.equal(successes, 1);
   assert.equal(await coordinator.start(), true);
   assert.equal(attempts, 2);
+  assert.equal(coordinator.retry(new Error("runtime failure")), true);
+  assert.equal(coordinator.ready, false);
+  assert.equal(failures, 2);
+  assert.equal(scheduled[0].delay, 2_000);
 });
 
 test("A–Z 디자인 어휘는 절제된 공동체 별자리 결정으로 수렴한다", () => {
@@ -316,8 +547,8 @@ test("오늘의 기도에는 승인형 기도제목 등록 동선이 있다", ()
 
 test("같이 기도하기는 선택 Dialog 없이 음악을 켜고 바로 진입한다", () => {
   assert.doesNotMatch(participantHtmlSource, /id="join-dialog"/);
-  assert.match(appSource, /function enterLivePrayer\(\)[\s\S]*?if \(firstJoin\)[\s\S]*?state\.audioEnabled = true[\s\S]*?showView\("live"\)/);
-  assert.doesNotMatch(appSource, /function enterLivePrayer\(\)[\s\S]*?showView\("live"\);\s*void startConfiguredMedia\(\)/);
+  assert.match(appSource, /function enterLivePrayer\(\{ updatePresence = true \} = \{\}\)[\s\S]*?if \(firstJoin\)[\s\S]*?state\.audioEnabled = true[\s\S]*?showView\("live", \{ updatePresence \}\)/);
+  assert.doesNotMatch(appSource, /function enterLivePrayer[\s\S]*?showView\("live"[^;]*;\s*void startConfiguredMedia\(\)/);
   assert.match(appSource, /if \(route === "live"\) return enterLivePrayer\(\)/);
 });
 
@@ -349,6 +580,28 @@ test("모바일 메뉴는 명시적인 닫기 상태와 키보드 복구를 제�
   assert.match(headerSource, /open \? '메뉴 닫기' : '메뉴 열기'/);
   assert.match(headerSource, /mobileLabel\.textContent = open \? '닫기' : '메뉴'/);
   assert.match(headerSource, /event\.key === 'Escape'/);
+});
+
+test("BFCache 복귀 시 참여자와 Admin 실시간 연결을 다시 초기화한다", () => {
+  assert.match(appSource, /addEventListener\("pagehide", \(\) => \{\s*state\.bootGeneration \+= 1;\s*state\.presenceGeneration \+= 1;\s*state\.presenceDesiredContext = null;[\s\S]*?const previousPresenceDisconnect = state\.presenceDisconnect/);
+  assert.match(appSource, /addEventListener\("pageshow", \(event\) => \{[\s\S]*?event\.persisted[\s\S]*?void boot\(\)/);
+  assert.match(adminScriptSource, /addEventListener\("pageshow", \(event\) => \{[\s\S]*?event\.persisted\) void boot\(\)/);
+  assert.match(adminScriptSource, /async function boot\(\)[\s\S]*?Promise\.allSettled\(\[state\.presenceDisconnect\?\.\(\), state\.liveUnsubscribe\?\.\(\)\]\)[\s\S]*?state\.leaseToken = null/);
+});
+
+test("Admin 진행 조작의 응답이 불명확하면 최신 상태를 읽고 제어권을 다시 요청한다", () => {
+  assert.match(adminScriptSource, /async function applyLiveAction[\s\S]*?catch \(error\)[\s\S]*?state\.leaseToken = null[\s\S]*?await state\.service\.fetchLiveSession\(\)[\s\S]*?제어권을 다시 요청해주세요/);
+});
+
+test("활성 Admin 상한 10명은 DB·Edge Function·화면에서 일관되게 적용된다", () => {
+  assert.match(adminLimitMigrationSource, /enforce_admin_safety[\s\S]*?pg_advisory_xact_lock\(hashtextextended\('retreat-prayer-admin-limit', 0\)\)[\s\S]*?active_count >= 10/);
+  assert.match(adminLimitMigrationSource, /the last active owner cannot be changed/);
+  assert.match(adminLimitMigrationSource, /the last active owner cannot be deleted/);
+  assert.match(manageAdminSource, /const MAX_ACTIVE_ADMINS = 10/);
+  assert.match(manageAdminSource, /count \|\| 0\) >= MAX_ACTIVE_ADMINS/);
+  assert.match(adminScriptSource, /const MAX_ACTIVE_ADMINS = 10/);
+  assert.match(backendSource, /const MAX_ACTIVE_ADMINS = 10/);
+  assert.match(adminHtmlSource, /활성 계정은 최대 10개입니다[\s\S]*?id="account-count">0 \/ 10/);
 });
 
 test("Edge Function은 hosted secret key를 우선하고 legacy 값은 로컬 호환 fallback으로만 사용한다", () => {
@@ -402,11 +655,14 @@ test("직접 연 공동기도 화면에서도 예약된 자동 진행을 서버�
 
 test("실시간 재구독은 현재 상태를 다시 조회하고 버전이 오래된 응답은 무시한다", async () => {
   const adminSource = await readFile(new URL("../static/retreat-prayer/assets/admin.js", import.meta.url), "utf8");
-  assert.match(backendSource, /status === "SUBSCRIBED"\) reconcile\(\)/);
-  assert.match(backendSource, /await this\.fetchLiveSession\(\)/);
-  assert.match(backendSource, /channel\("retreat-prayer:live-state", \{ config: \{ private: true \} \}\)/);
-  assert.match(backendSource, /channel\("retreat-prayer:public-content", \{ config: \{ private: true \} \}\)/);
-  assert.match(appSource, /await state\.service\.prepareRealtime\?\.\(\);[\s\S]*?state\.service\.subscribeLive/);
+  assert.match(backendSource, /subscribeParticipantUpdates\([\s\S]*?\.on\("system", \{\},[\s\S]*?payload\?\.extension !== "postgres_changes"[\s\S]*?payload\.status === "ok"/);
+  assert.match(backendSource, /table: "live_sessions"[\s\S]*?table: "content_revisions"/);
+  assert.match(backendSource, /needsRecovery = true;[\s\S]*?onLiveStatus\(initialSettled \? "failed" : "reconnecting"/);
+  assert.match(backendSource, /await this\.supabase\.removeChannel\(channel\);[\s\S]*?throw error/);
+  assert.match(appSource, /await service\.prepareRealtime\?\.\(\);[\s\S]*?await service\.subscribeParticipantUpdates/);
+  assert.doesNotMatch(appSource, /typeof state\.service\.subscribeParticipantUpdates/);
+  assert.match(appSource, /restartRealtimeSubscriptions[\s\S]*?state\.realtimeCoordinator === coordinator[\s\S]*?coordinator\.retry\(error\)/);
+  assert.match(appSource, /installRealtimeSubscriptions\(service, coordinator\)[\s\S]*?state\.service !== service \|\| state\.realtimeCoordinator !== coordinator[\s\S]*?nextLiveUnsubscribe/);
   assert.match(privateRealtimeMigrationSource, /retreat_prayer_postgres_changes_read[\s\S]*?retreat-prayer:live-state[\s\S]*?retreat-prayer:public-content/);
   assert.match(appSource, /Number\(liveSession\?\.version \?\? -1\) < Number\(previousVersion \?\? -1\)/);
   assert.match(adminSource, /Number\(liveSession\?\.version \?\? -1\) < Number\(state\.snapshot\.liveSession\?\.version \?\? -1\)/);
@@ -414,8 +670,10 @@ test("실시간 재구독은 현재 상태를 다시 조회하고 버전이 오�
 
 test("#live 직접 진입도 선택창 없이 공동기도 화면으로 이어진다", () => {
   assert.match(appSource, /showView\(route === "live" \? "home" : route,[\s\S]*?updatePresence: false/);
-  assert.match(appSource, /await setPresenceContext\("space"\)/);
-  assert.match(appSource, /if \(route === "live"\) enterLivePrayer\(\)/);
+  assert.match(appSource, /if \(route === "live"\) enterLivePrayer\(\{ updatePresence: false \}\)/);
+  assert.match(appSource, /void startRealtimeAfterStagger\(state\.realtimeCoordinator\)/);
+  assert.match(appSource, /onSuccess:[\s\S]*?setPresenceContext\(state\.view === "live" \? "live" : "space", \{[\s\S]*?minimumDelayMs: REALTIME_STAGGER_MAX_MS/);
+  assert.doesNotMatch(appSource, /await setPresenceContext\("space"\)[\s\S]*?enterLivePrayer/);
 });
 
 test("진행 중 구성 게시에는 구조를 고정하고 내용과 음악 교정만 허용한다", () => {
@@ -450,6 +708,6 @@ test("기도제목 공개 변경은 본문 없는 revision으로만 알리고 RL
 test("공개 해제된 집중 기도제목은 복사된 본문까지 지우고 목록으로 이동한다", () => {
   assert.match(appSource, /function clearPersonalFocus\(\)[\s\S]*?personal-focus-title"\), ""/);
   assert.match(appSource, /if \(!request\) \{[\s\S]*?clearPersonalFocus\(\);[\s\S]*?showView\("requests"\)/);
-  assert.match(appSource, /nextContentUnsubscribe = state\.service\.subscribeContent\(applyPublicContent/);
+  assert.match(appSource, /setInterval\(revalidatePublicContent, 60_000\)/);
   assert.match(appSource, /visibilityState === "visible"\) revalidatePublicContent\(\)/);
 });

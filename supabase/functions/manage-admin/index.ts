@@ -1,6 +1,8 @@
 import { createClient } from "npm:@supabase/supabase-js@2.111.0";
 import { getSupabaseSecretKey } from "../_shared/supabase-key.ts";
 
+const MAX_ACTIVE_ADMINS = 10;
+
 const DEFAULT_ORIGINS = [
   "https://thelogos.dev",
   "https://www.thelogos.dev",
@@ -109,7 +111,7 @@ Deno.serve(async (request) => {
       .select("user_id", { count: "exact", head: true })
       .eq("active", true);
     if (countError) return json(503, { error: "Admin 수를 확인하지 못했습니다." }, origin);
-    if ((count || 0) >= 5) return json(409, { error: "활성 Admin은 최대 5명입니다." }, origin);
+    if ((count || 0) >= MAX_ACTIVE_ADMINS) return json(409, { error: `활성 Admin은 최대 ${MAX_ACTIVE_ADMINS}명입니다.` }, origin);
 
     const inviteNonce = createInviteNonce();
     const nonceHash = await sha256(inviteNonce);
@@ -202,7 +204,7 @@ Deno.serve(async (request) => {
       .select("user_id", { count: "exact", head: true })
       .eq("active", true);
     if (countError) return json(503, { error: "Admin 수를 확인하지 못했습니다." }, origin);
-    if ((count || 0) >= 5) return json(409, { error: "활성 Admin은 최대 5명입니다." }, origin);
+    if ((count || 0) >= MAX_ACTIVE_ADMINS) return json(409, { error: `활성 Admin은 최대 ${MAX_ACTIVE_ADMINS}명입니다.` }, origin);
 
     const { data: profile, error } = await service
       .from("admin_profiles")

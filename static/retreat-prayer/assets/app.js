@@ -11,12 +11,15 @@ import {
   setText,
   setVisible,
   zonedDateKey,
-} from "./core.js";
-import { createPrayerService } from "./backend.js";
-import { PrayerPresenceCanvas } from "./presence-canvas.js";
-import { RealtimeSetupCoordinator } from "./realtime-setup.js";
+} from "./core.js?v=20260829-4";
+import { createPrayerService } from "./backend.js?v=20260829-4";
+import { PrayerPresenceCanvas } from "./presence-canvas.js?v=20260829-4";
+import { RealtimeSetupCoordinator } from "./realtime-setup.js?v=20260829-4";
 
 const config = globalThis.RETREAT_PRAYER_CONFIG || {};
+const REALTIME_STAGGER_MAX_MS = 16_000;
+const PRESENCE_STAGGER_MAX_MS = 16_000;
+const REALTIME_RETRY_DELAYS_MS = [2_000, 5_000, 15_000, 30_000];
 const state = {
   service: null,
   data: null,
@@ -29,10 +32,16 @@ const state = {
   livePresenceContext: "가 함께 기도 중입니다",
   presenceDisconnect: null,
   presenceContext: null,
+  presenceDesiredContext: null,
+  presenceSnapshots: new Map(),
   presenceGeneration: 0,
+  presenceUpdateInFlight: 0,
   liveUnsubscribe: null,
   contentUnsubscribe: null,
   realtimeCoordinator: null,
+  realtimeReady: false,
+  restartingRealtime: false,
+  bootGeneration: 0,
   presenceCanvas: null,
   miniCanvas: null,
   sessionId: null,
@@ -90,35 +99,80 @@ function setCurrentNav(name) {
   });
 }
 
-async function setPresenceContext(context) {
-  if (!state.service || state.presenceContext === context) return;
+function getRealtimeStaggerDelay(scope, maximumDelayMs = REALTIME_STAGGER_MAX_MS) {
+  const seed = `${state.tabId || "tab"}:${scope}`;
+  let hash = 2166136261;
+  for (let index = 0; index < seed.length; index += 1) {
+    hash ^= seed.charCodeAt(index);
+    hash = Math.imul(hash, 16777619);
+  }
+  return (hash >>> 0) % (maximumDelayMs + 1);
+}
+
+function waitForRealtimeStagger(scope, minimumDelayMs = 0, maximumDelayMs = REALTIME_STAGGER_MAX_MS) {
+  const delay = minimumDelayMs + getRealtimeStaggerDelay(scope, maximumDelayMs);
+  return delay > 0 ? new Promise((resolve) => setTimeout(resolve, delay)) : Promise.resolve();
+}
+
+async function setPresenceContext(context, { stagger = true, minimumDelayMs = 0 } = {}) {
+  if (!state.service) return;
   const generation = ++state.presenceGeneration;
-  if (state.presenceDisconnect) await state.presenceDisconnect();
-  state.presenceContext = context;
+  state.presenceDesiredContext = context;
+  if (state.presenceContext === context && state.presenceDisconnect && state.presenceUpdateInFlight === 0) {
+    const snapshot = state.presenceSnapshots.get(context);
+    if (snapshot) {
+      state.presenceSynced = snapshot.synced;
+      state.presenceCount = snapshot.count;
+      state.presenceStatus = snapshot.status;
+      renderPresence();
+    }
+    return;
+  }
   state.presenceSynced = false;
   state.presenceCount = null;
   state.presenceStatus = "connecting";
   renderPresence();
+  if (stagger) await waitForRealtimeStagger(`presence:${context}`, minimumDelayMs, PRESENCE_STAGGER_MAX_MS);
+  if (generation !== state.presenceGeneration || state.presenceDesiredContext !== context) return;
+  const receivePresence = (presence) => {
+    const snapshot = {
+      synced: Boolean(presence.synced),
+      count: presence.count,
+      status: presence.status || (presence.synced ? "connected" : "connecting"),
+    };
+    state.presenceSnapshots.set(context, snapshot);
+    if (generation !== state.presenceGeneration || state.presenceDesiredContext !== context) return;
+    state.presenceSynced = snapshot.synced;
+    state.presenceCount = snapshot.count;
+    state.presenceStatus = snapshot.status;
+    renderPresence();
+    if (presence.status === "reconnecting") {
+      showConnection("실시간 연결을 다시 확인하고 있습니다.", { persistent: true });
+    } else if (presence.status === "connected") {
+      showConnection("공동체의 기도 공간과 다시 연결되었습니다.", { connected: true });
+    }
+  };
+  state.presenceUpdateInFlight += 1;
   try {
+    if (state.presenceDisconnect && typeof state.service.updatePresenceContext === "function") {
+      await state.service.updatePresenceContext(
+        { sessionId: state.sessionId, tabId: state.tabId, context },
+        receivePresence,
+      );
+      if (generation !== state.presenceGeneration || state.presenceDesiredContext !== context) return;
+      state.presenceContext = context;
+      return;
+    }
     const disconnect = await state.service.connectPresence(
       { sessionId: state.sessionId, tabId: state.tabId, context },
-      (presence) => {
-        state.presenceSynced = Boolean(presence.synced);
-        state.presenceCount = presence.count;
-        state.presenceStatus = presence.status || (presence.synced ? "connected" : "connecting");
-        renderPresence();
-        if (presence.status === "reconnecting") {
-          showConnection("실시간 연결을 다시 확인하고 있습니다.", { persistent: true });
-        } else if (presence.status === "connected") {
-          showConnection("공동체의 기도 공간과 다시 연결되었습니다.", { connected: true });
-        }
-      }
+      receivePresence,
     );
     if (generation !== state.presenceGeneration) {
       await disconnect();
       return;
     }
     state.presenceDisconnect = disconnect;
+    state.presenceContext = context;
   } catch (error) {
     if (generation === state.presenceGeneration) {
       state.presenceContext = null;
@@ -126,6 +180,8 @@ async function setPresenceContext(context) {
       renderPresence();
     }
     throw error;
+  } finally {
+    state.presenceUpdateInFlight = Math.max(0, state.presenceUpdateInFlight - 1);
   }
 }
 
@@ -140,7 +196,9 @@ function showView(name, { updateHash = true, focusMain = true, updatePresence = 
     history.replaceState(null, "", `#${name}`);
   }
   if (focusMain) $("#prayer-main")?.focus({ preventScroll: true });
-  if (updatePresence) setPresenceContext(name === "live" ? "live" : "space").catch(handleError);
+  if (updatePresence && state.realtimeReady) {
+    setPresenceContext(name === "live" ? "live" : "space").catch(handleError);
+  }
   if (name === "live" && state.data) renderLive();
 }
 
@@ -505,7 +563,7 @@ async function toggleAudio() {
   else pauseMedia();
 }
 
-function enterLivePrayer() {
+function enterLivePrayer({ updatePresence = true } = {}) {
   const firstJoin = !state.joinedLive;
   const enteringFromAnotherView = state.view !== "live";
   if (firstJoin) {
@@ -515,7 +573,7 @@ function enterLivePrayer() {
     $("#audio-toggle")?.setAttribute("aria-label", "음악 끄기");
   }
   if (enteringFromAnotherView) state.activeMediaKey = null;
-  showView("live");
+  showView("live", { updatePresence });
   announce("공동기도 화면에 들어왔습니다. 설정된 음악이 있으면 함께 재생됩니다.");
 }
 
@@ -626,9 +684,13 @@ function receiveLiveSession(liveSession) {
   }
 }
 
-function handleLiveRealtimeStatus(status) {
+function handleLiveRealtimeStatus(status, error) {
   if (status === "reconnecting") {
     showConnection("공동기도 진행 연결을 다시 확인하고 있습니다. 마지막으로 받은 내용을 유지합니다.", { persistent: true });
+  }
+  if (status === "failed") {
+    showConnection("공동기도 진행 연결을 다시 준비하고 있습니다. 마지막으로 받은 내용을 유지합니다.", { persistent: true, status: "error" });
+    void restartRealtimeSubscriptions(error || new Error("Realtime Postgres Changes subscription became unavailable."));
   }
   if (status === "connected") showConnection("공동기도 진행과 다시 연결되었습니다.", { connected: true });
 }
@@ -640,28 +702,70 @@ function handleContentRealtimeStatus(status) {
   if (status === "connected") showConnection("공개 기도 콘텐츠를 다시 확인했습니다.", { connected: true });
 }
 
-async function reconcileRealtimeSnapshot() {
+async function reconcileRealtimeSnapshot(service = state.service) {
   const [liveSession, publicContent] = await Promise.all([
-    typeof state.service.fetchLiveSession === "function"
-      ? state.service.fetchLiveSession()
+    typeof service?.fetchLiveSession === "function"
+      ? service.fetchLiveSession()
       : Promise.resolve(state.data?.liveSession),
-    state.service.fetchPublicContent(),
+    service.fetchPublicContent(),
   ]);
+  if (service !== state.service) return false;
   if (liveSession) receiveLiveSession(liveSession);
   if (publicContent) applyPublicContent(publicContent);
+  return true;
 }
 
-async function installRealtimeSubscriptions() {
-  await state.service.prepareRealtime?.();
+async function restartRealtimeSubscriptions(error) {
+  if (state.restartingRealtime || !state.realtimeCoordinator) return;
+  const coordinator = state.realtimeCoordinator;
+  state.restartingRealtime = true;
+  state.realtimeReady = false;
+  const previousLiveUnsubscribe = state.liveUnsubscribe;
+  const previousContentUnsubscribe = state.contentUnsubscribe;
+  state.liveUnsubscribe = null;
+  state.contentUnsubscribe = null;
+  try {
+    await Promise.allSettled([previousLiveUnsubscribe?.(), previousContentUnsubscribe?.()]);
+    if (state.realtimeCoordinator === coordinator) coordinator.retry(error);
+  } finally {
+    state.restartingRealtime = false;
+  }
+}
+
+async function installRealtimeSubscriptions(service, coordinator) {
+  await service.prepareRealtime?.();
+  if (state.service !== service || state.realtimeCoordinator !== coordinator) return;
   let nextLiveUnsubscribe = null;
   let nextContentUnsubscribe = null;
+  const isCurrentInstall = () => state.service === service && state.realtimeCoordinator === coordinator;
   try {
-    nextLiveUnsubscribe = state.service.subscribeLive(receiveLiveSession, handleLiveRealtimeStatus);
-    nextContentUnsubscribe = state.service.subscribeContent(applyPublicContent, handleContentRealtimeStatus);
-    await reconcileRealtimeSnapshot();
+    nextLiveUnsubscribe = await service.subscribeParticipantUpdates(
+      (liveSession) => {
+        if (isCurrentInstall()) receiveLiveSession(liveSession);
+      },
+      (publicContent) => {
+        if (isCurrentInstall()) applyPublicContent(publicContent);
+      },
+      (status, error) => {
+        if (isCurrentInstall()) handleLiveRealtimeStatus(status, error);
+      },
+      (status, error) => {
+        if (isCurrentInstall()) handleContentRealtimeStatus(status, error);
+      },
+    );
+    if (state.service !== service || state.realtimeCoordinator !== coordinator) {
+      await nextLiveUnsubscribe?.();
+      return;
+    }
+    await reconcileRealtimeSnapshot(service);
   } catch (error) {
     await Promise.allSettled([nextLiveUnsubscribe?.(), nextContentUnsubscribe?.()]);
     throw error;
+  }
+
+  if (state.service !== service || state.realtimeCoordinator !== coordinator) {
+    await Promise.allSettled([nextLiveUnsubscribe?.(), nextContentUnsubscribe?.()]);
+    return;
   }
 
   const previousLiveUnsubscribe = state.liveUnsubscribe;
@@ -671,52 +775,83 @@ async function installRealtimeSubscriptions() {
   await Promise.allSettled([previousLiveUnsubscribe?.(), previousContentUnsubscribe?.()]);
 }
 
-function createRealtimeCoordinator() {
+function createRealtimeCoordinator(service) {
   state.realtimeCoordinator?.stop();
-  return new RealtimeSetupCoordinator({
-    install: installRealtimeSubscriptions,
+  let coordinator;
+  coordinator = new RealtimeSetupCoordinator({
+    install: () => installRealtimeSubscriptions(service, coordinator),
+    delays: REALTIME_RETRY_DELAYS_MS.map((delay) => delay + getRealtimeStaggerDelay("retry")),
     onFailure: (error) => {
       console.error(error);
-      state.presenceStatus = "unavailable";
-      renderPresence();
+      if (!state.presenceDisconnect) {
+        state.presenceStatus = "unavailable";
+        renderPresence();
+      }
       showConnection("실시간 연결을 준비하지 못했지만, 마지막으로 받은 기도 내용은 계속 볼 수 있습니다.", { persistent: true, status: "error" });
     },
+    onSuccess: () => {
+      if (state.realtimeCoordinator !== coordinator) return;
+      state.realtimeReady = true;
+      setPresenceContext(state.view === "live" ? "live" : "space", {
+        minimumDelayMs: REALTIME_STAGGER_MAX_MS,
+      }).catch(handleError);
+    },
   });
+  return coordinator;
+}
+
+async function startRealtimeAfterStagger(coordinator) {
+  await waitForRealtimeStagger("startup");
+  if (state.realtimeCoordinator !== coordinator) return;
+  await coordinator.start();
 }
 
 async function boot() {
+  const generation = ++state.bootGeneration;
   showView("loading", { updateHash: false, focusMain: false });
   try {
     state.realtimeCoordinator?.stop();
-    await Promise.allSettled([
-      state.liveUnsubscribe?.(),
-      state.contentUnsubscribe?.(),
-      state.presenceDisconnect?.(),
-    ]);
+    const previousLiveUnsubscribe = state.liveUnsubscribe;
+    const previousContentUnsubscribe = state.contentUnsubscribe;
+    const previousPresenceDisconnect = state.presenceDisconnect;
+    state.realtimeCoordinator = null;
     state.liveUnsubscribe = null;
     state.contentUnsubscribe = null;
     state.presenceDisconnect = null;
+    await Promise.allSettled([
+      previousLiveUnsubscribe?.(),
+      previousContentUnsubscribe?.(),
+      previousPresenceDisconnect?.(),
+    ]);
+    if (generation !== state.bootGeneration) return;
     state.presenceContext = null;
+    state.presenceDesiredContext = null;
+    state.presenceSnapshots.clear();
+    state.realtimeReady = false;
+    state.restartingRealtime = false;
+    state.presenceGeneration += 1;
     state.sessionId = getOrCreateStorageId(localStorage, "retreat-prayer-session-id");
     state.tabId = getOrCreateStorageId(sessionStorage, "retreat-prayer-tab-id");
-    state.service = await createPrayerService(config);
-    state.serviceMode = state.service.mode;
+    const service = await createPrayerService(config);
+    if (generation !== state.bootGeneration) return;
+    state.service = service;
+    state.serviceMode = service.mode;
     setVisible($("#preview-ribbon"), state.serviceMode === "preview");
-    const serverTime = await state.service.getServerTime();
+    const serverTime = await service.getServerTime();
+    if (generation !== state.bootGeneration || state.service !== service) return;
     state.serverOffsetMs = Date.parse(serverTime) - Date.now();
-    state.data = await state.service.loadPublicData(serverTime);
+    const publicData = await service.loadPublicData(serverTime);
+    if (generation !== state.bootGeneration || state.service !== service) return;
+    state.data = publicData;
     state.currentDateKey = zonedDateKey(new Date(serverTime), state.data?.settings?.time_zone || config.timeZone);
     renderAll();
-    state.realtimeCoordinator = createRealtimeCoordinator();
-    await state.realtimeCoordinator.start();
+    state.realtimeCoordinator = createRealtimeCoordinator(service);
     const route = routeFromHash();
     showView(route === "live" ? "home" : route, { updateHash: false, focusMain: false, updatePresence: false });
-    await setPresenceContext("space").catch((error) => {
-      handleError(error);
-      showConnection("함께 접속 중인 수는 잠시 확인할 수 없지만, 기도 콘텐츠는 계속 이용할 수 있습니다.", { persistent: true });
-    });
-    if (route === "live") enterLivePrayer();
+    if (route === "live") enterLivePrayer({ updatePresence: false });
+    void startRealtimeAfterStagger(state.realtimeCoordinator);
   } catch (error) {
+    if (generation !== state.bootGeneration) return;
     if (error?.code === "CONFIG_REQUIRED") {
       showView("config", { updateHash: false });
       setVisible($("#preview-ribbon"), false);
@@ -790,12 +925,30 @@ document.addEventListener("visibilitychange", () => {
   if (document.visibilityState === "visible") revalidatePublicContent();
 });
 globalThis.addEventListener("pagehide", () => {
+  state.bootGeneration += 1;
+  state.presenceGeneration += 1;
+  state.presenceDesiredContext = null;
   state.realtimeCoordinator?.stop();
-  state.presenceDisconnect?.();
-  state.liveUnsubscribe?.();
-  state.contentUnsubscribe?.();
+  state.realtimeCoordinator = null;
+  const previousPresenceDisconnect = state.presenceDisconnect;
+  const previousLiveUnsubscribe = state.liveUnsubscribe;
+  const previousContentUnsubscribe = state.contentUnsubscribe;
+  state.presenceDisconnect = null;
+  state.liveUnsubscribe = null;
+  state.contentUnsubscribe = null;
+  void Promise.allSettled([
+    previousPresenceDisconnect?.(),
+    previousLiveUnsubscribe?.(),
+    previousContentUnsubscribe?.(),
+  ]);
   state.presenceCanvas?.stop();
   state.miniCanvas?.stop();
+});
+globalThis.addEventListener("pageshow", (event) => {
+  if (!event.persisted) return;
+  state.presenceCanvas?.start();
+  state.miniCanvas?.start();
+  void boot();
 });
 
 state.presenceCanvas = new PrayerPresenceCanvas($("#presence-canvas"), { count: 0 });

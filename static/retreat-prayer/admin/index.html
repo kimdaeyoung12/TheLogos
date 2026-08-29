@@ -8,10 +8,10 @@
   <meta name="theme-color" content="#eef0eb">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self'; img-src 'self' data:; connect-src 'self' https://*.supabase.co wss://*.supabase.co; media-src 'self' blob: https://*.supabase.co; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
   <title>공동기도 운영 콘솔</title>
-  <link rel="stylesheet" href="../assets/styles.css">
-  <link rel="stylesheet" href="../assets/admin.css">
-  <script src="../config.js" defer></script>
-  <script type="module" src="../assets/admin.js"></script>
+  <link rel="stylesheet" href="../assets/styles.css?v=20260829-4">
+  <link rel="stylesheet" href="../assets/admin.css?v=20260829-4">
+  <script src="../config.js?v=20260829-4" defer></script>
+  <script type="module" src="../assets/admin.js?v=20260829-4"></script>
 </head>
 <body class="admin-app">
   <a class="skip-link" href="#admin-main">운영 화면으로 바로가기</a>
@@ -43,6 +43,15 @@
           <button class="button button--primary button--full" type="submit">Admin 로그인</button>
           <p id="admin-login-error" class="field-error" role="alert"></p>
         </form>
+        <details class="admin-recovery">
+          <summary>초대 링크에서 비밀번호 설정에 실패했나요?</summary>
+          <form id="admin-password-recovery-form" method="post" action="./" novalidate>
+            <label for="admin-recovery-email">초대받은 이메일</label>
+            <input id="admin-recovery-email" name="email" type="email" autocomplete="email" required>
+            <button class="button button--quiet button--full" type="submit">새 비밀번호 설정 링크 받기</button>
+            <p id="admin-recovery-status" class="form-status" role="status"></p>
+          </form>
+        </details>
         <button id="admin-preview-button" class="button button--quiet button--full" type="button" data-action="open-preview" hidden>미리보기 콘솔 열기</button>
         <a class="admin-back-link" href="../">참여자 화면으로 돌아가기</a>
       </div>
@@ -56,9 +65,10 @@
         <p>초대 링크 확인이 완료되었습니다. 이후 로그인에 사용할 비밀번호를 만듭니다.</p>
         <form id="admin-password-form" method="post" action="./" novalidate>
           <label for="admin-new-password">새 비밀번호</label>
-          <input id="admin-new-password" name="password" type="password" autocomplete="new-password" minlength="10" required>
+          <input id="admin-new-password" name="password" type="password" autocomplete="new-password" minlength="10" maxlength="72" required>
+          <p class="field-help">10~72자이며 영문 대문자·소문자·숫자·허용 특수문자(!, @, # 등)를 각각 포함해주세요.</p>
           <label for="admin-confirm-password">비밀번호 확인</label>
-          <input id="admin-confirm-password" name="passwordConfirm" type="password" autocomplete="new-password" minlength="10" required>
+          <input id="admin-confirm-password" name="passwordConfirm" type="password" autocomplete="new-password" minlength="10" maxlength="72" required>
           <button class="button button--primary button--full" type="submit">비밀번호 설정하고 콘솔 열기</button>
           <p id="admin-password-error" class="field-error" role="alert"></p>
         </form>
@@ -244,7 +254,7 @@
         </section>
 
         <section id="admin-panel-accounts" class="admin-panel" hidden>
-          <div class="admin-page-heading"><div><p class="eyebrow">Admin Access</p><h2>Admin 계정 관리</h2><p>대표 관리자만 초대와 비활성화를 할 수 있으며, 활성 계정은 최대 5개입니다.</p></div><strong id="account-count">0 / 5</strong></div>
+          <div class="admin-page-heading"><div><p class="eyebrow">Admin Access</p><h2>Admin 계정 관리</h2><p>대표 관리자만 초대와 비활성화를 할 수 있으며, 활성 계정은 최대 10개입니다.</p></div><strong id="account-count">0 / 10</strong></div>
           <form id="admin-invite-form" class="admin-form-card admin-form-card--inline" method="post" action="./">
             <label>이메일<input name="email" type="email" required></label>
             <label>표시 이름<input name="displayName" maxlength="40" required></label>

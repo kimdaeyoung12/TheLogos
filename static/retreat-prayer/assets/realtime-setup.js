@@ -61,6 +61,14 @@ export class RealtimeSetupCoordinator {
     }, delay);
   }
 
+  retry(error) {
+    if (this.stopped) return false;
+    this.ready = false;
+    this.onFailure(error);
+    this.schedule();
+    return true;
+  }
+
   stop() {
     this.stopped = true;
     this.ready = false;

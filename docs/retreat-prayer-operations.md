@@ -16,10 +16,10 @@
 ## 1. Supabase 프로젝트 준비
 
 1. 다른 서비스의 테이블·권한과 충돌하지 않도록 전용 프로젝트만 사용한다. 저장소는 위 프로젝트에 연결되어 있다.
-2. `20260828010000_retreat_prayer.sql`, 원격 카탈로그 단언을 담은 `20260828020000_retreat_prayer_security_validation.sql`, lint 보정용 `20260828030000_retreat_prayer_lint_cleanup.sql`, 일정 미정 상태를 지원하는 `20260828040000_retreat_prayer_schedule_pending.sql`, 초대 전용 Auth 훅을 구성하는 `20260828050000_retreat_prayer_invite_only_auth.sql`, 선택형 말씀을 지원하는 `20260829010000_retreat_prayer_optional_scripture.sql`, 진행 중 콘텐츠 교정을 허용하는 `20260829020000_retreat_prayer_live_content_edit.sql`, private Postgres Changes 구독 권한을 추가하는 `20260829030000_retreat_prayer_private_realtime_changes.sql`을 차례로 적용한다. validation migration 실패는 운영 권한 구성이 완성되지 않았다는 뜻이다.
+2. `20260828010000_retreat_prayer.sql`, 원격 카탈로그 단언을 담은 `20260828020000_retreat_prayer_security_validation.sql`, lint 보정용 `20260828030000_retreat_prayer_lint_cleanup.sql`, 일정 미정 상태를 지원하는 `20260828040000_retreat_prayer_schedule_pending.sql`, 초대 전용 Auth 훅을 구성하는 `20260828050000_retreat_prayer_invite_only_auth.sql`, 선택형 말씀을 지원하는 `20260829010000_retreat_prayer_optional_scripture.sql`, 진행 중 콘텐츠 교정을 허용하는 `20260829020000_retreat_prayer_live_content_edit.sql`, private Postgres Changes 구독 권한을 추가하는 `20260829030000_retreat_prayer_private_realtime_changes.sql`, 진행 중 콘텐츠 저장을 안전하게 제한하는 `20260829040000_retreat_prayer_safe_live_content_edit.sql`, 등록 음악을 참조 해제 후 삭제하는 `20260829050000_retreat_prayer_media_delete.sql`, 활성 Admin 상한을 10명으로 올리는 `20260829060000_retreat_prayer_admin_limit_10.sql`을 차례로 적용한다. validation migration 실패는 운영 권한 구성이 완성되지 않았다는 뜻이다.
 3. Anonymous Sign-ins를 켠다. 일반 사용자는 로그인 UI를 보지 않지만, private Realtime Presence 채널에 들어가기 위한 최소 권한 토큰으로만 사용한다.
 4. 전역 `auth.enable_signup`과 `auth.email.enable_signup`은 모두 켠다. 전역 가입을 끄면 익명 Presence 세션도 막히고, 이메일 제공자를 끄면 기존 Admin 로그인도 `Email logins are disabled`로 막히기 때문이다. 대신 `hook_restrict_retreat_prayer_signup` Before User Created 훅이 익명 사용자와 서버가 발급한 일회성 nonce가 있는 Admin 초대만 허용하고 나머지 영구 계정 생성을 거부한다. Site URL과 Redirect URL은 운영·로컬 Admin 경로로 제한한다.
-5. Admin 비밀번호는 최소 10자와 대·소문자, 숫자, 기호를 요구하고 이메일 확인·안전한 비밀번호 변경·TOTP MFA 등록을 켠다.
+5. Admin 비밀번호는 10~72자와 대·소문자, 숫자, Supabase 허용 기호를 요구하고 이메일 확인·안전한 비밀번호 변경·TOTP MFA 등록을 켠다.
 6. `submit-prayer-request`, `manage-admin` Edge Function은 JWT 검증을 켠 상태로 배포한다.
 7. Realtime Settings에서 **Allow public access**를 끈다. 앱 채널도 항상 `private: true`로 연결한다. 현재 운영 프로젝트에는 private-only 설정이 적용되어 있다.
 8. Admin 초대 메일이 임의의 주소에도 도착해야 한다면 운영 SMTP와 발신 도메인을 설정하고 초대를 1회 검증한다. Supabase 기본 SMTP만으로 운영 범위를 넓히지 않는다.
@@ -44,7 +44,7 @@ npx supabase@latest secrets set ADMIN_REDIRECT_URL=https://thelogos.dev/retreat-
 
 ## 3. 대표 관리자와 Admin 계정
 
-실제 대표 관리자 이메일과 표시 이름은 공개 저장소가 아니라 Supabase Auth와 `admin_profiles`에만 유지한다. 초대 메일의 링크를 열고 10자 이상의 첫 비밀번호를 설정하면 Admin 콘솔을 사용할 수 있다. 링크가 만료되거나 메일이 오지 않으면 Supabase Dashboard에서 사용자를 삭제해 임의로 재생성하지 말고, 초대를 다시 보내 권한 행과 Auth 사용자가 어긋나지 않게 한다.
+실제 대표 관리자 이메일과 표시 이름은 공개 저장소가 아니라 Supabase Auth와 `admin_profiles`에만 유지한다. 초대 메일의 링크를 열고 **10~72자이며 영문 대문자·소문자·숫자·Supabase 허용 특수문자를 각각 포함한** 첫 비밀번호를 설정하면 Admin 콘솔을 사용할 수 있다. 초대·복구 링크의 인증 코드는 일회용이므로, 비밀번호 설정에 실패한 뒤 같은 링크를 다시 열지 않는다. 관리자 로그인 화면의 **초대 링크에서 비밀번호 설정에 실패했나요? → 새 비밀번호 설정 링크 받기**에서 초대받은 이메일로 새 링크를 발급한다. 메일이 오지 않거나 복구 링크도 실패하면 Supabase Dashboard에서 사용자를 삭제해 임의로 재생성하지 말고, Auth 사용자와 `admin_profiles` 행을 함께 확인한다.
 
 첫 대표 관리자를 수동으로 복구해야 할 때에만 Supabase Auth Dashboard에서 이메일 사용자를 만든 뒤 SQL Editor에서 해당 사용자를 대표 관리자로 연결한다.
 
@@ -60,10 +60,10 @@ where email = 'owner@example.org';
 1. 대표 관리자로 `/retreat-prayer/admin/`에 로그인한다.
 2. 왼쪽 메뉴의 **Admin 계정 관리**로 이동한다.
 3. 이메일과 표시 이름을 입력하고 **Admin 초대 보내기**를 누른다.
-4. 초대받은 사람은 이메일 링크를 열어 10자 이상의 첫 비밀번호를 설정한다.
+4. 초대받은 사람은 이메일 링크를 열어 10~72자이며 영문 대문자·소문자·숫자·허용 특수문자를 각각 포함한 첫 비밀번호를 설정한다.
 5. 이후 같은 관리자 URL에서 이메일과 비밀번호로 로그인한다.
 
-초대·활성화·비활성화는 대표 관리자만 할 수 있다. 활성 계정은 대표 관리자를 포함해 최대 5개이며, 자기 자신과 마지막 대표 관리자는 비활성화할 수 없다. 실제 권한은 초대 메타데이터가 아니라 `admin_profiles`의 활성 상태와 RLS가 판단한다.
+초대·활성화·비활성화는 대표 관리자만 할 수 있다. 활성 계정은 대표 관리자를 포함해 최대 10개이며, 자기 자신과 마지막 대표 관리자는 비활성화할 수 없다. 실제 권한은 초대 메타데이터가 아니라 `admin_profiles`의 활성 상태와 RLS가 판단한다. 5명으로 되돌릴 때에는 UI와 Edge Function을 먼저 낮추고 활성 Admin을 5명 이하로 정리한 다음 별도 보상 migration으로 DB 제한을 낮춘다.
 
 Supabase 기본 SMTP는 프로젝트 팀 구성원 주소 위주의 제한된 시험 발송용이다. 교회 구성원의 임의 이메일 주소로 Admin 초대를 보내려면 먼저 운영 SMTP와 발신 도메인을 연결하고 테스트해야 한다. Admin 초대 함수는 이메일과 일회성 nonce의 SHA-256 해시만 10분간 보관하고, Auth 훅이 계정 생성 순간 이를 원자적으로 소비한다.
 
@@ -109,7 +109,12 @@ publishable key는 브라우저에 노출되는 공개 키이며, 실제 데이�
 - 등록 음악 삭제는 진행 중인 기도회가 없을 때만 허용한다. 삭제하면 기도회 구성의 해당 음악 연결을 해제하고 `prayer-audio` 저장소 파일도 정리하며, `media.delete` Audit Trail을 남긴다.
 - 긴급 종료, 승인, Admin 변경 등의 주요 작업은 `admin_audit`에 남긴다.
 - 공개 콘텐츠 변경은 본문이 없는 `content_revisions` 숫자만 Realtime으로 알린다. 참여자 브라우저는 이 신호나 재연결을 받으면 승인된 기도제목과 오늘의 말씀을 RLS를 통해 다시 조회한다.
-- `live_sessions`와 `content_revisions` 구독도 private 채널과 익명 Auth 토큰을 사용한다. Realtime 알림이 일시적으로 누락되더라도 60초 간격의 재검증과 탭 복귀 시 재검증으로 공개 콘텐츠를 회복한다.
+- `live_sessions`와 `content_revisions` 갱신은 하나의 private 채널과 익명 Auth 토큰을 사용한다. Realtime 알림이 일시적으로 누락되더라도 60초 간격의 재검증과 탭 복귀 시 재검증으로 공개 콘텐츠를 회복한다.
+- 여러 지체가 같은 시각에 접속할 때 Realtime 초기 구독과 첫 Presence 연결은 각각 브라우저별 최대 16초 안에서 분산한다. 화면과 기도 콘텐츠는 먼저 표시하고, 인원 수는 백그라운드 연결이 모이는 동안 차분하게 갱신한다.
+- 참여자 브라우저는 공동기도·공개 콘텐츠 갱신 채널과 Presence 채널을 합쳐 Realtime 채널 2개만 사용한다. 첫 Presence 연결은 갱신 채널보다 16초 늦게 시작해 다시 최대 16초에 걸쳐 모이도록 한다. Home ↔ 공동기도 전환에서는 Presence 채널을 떠나 재가입하지 않고 동일 채널의 익명 상태만 갱신하므로 기도 시작 시각의 재가입 폭주를 피한다. Admin 제어 화면은 동일 Presence 채널을 읽기 전용으로 관찰한다.
+- Supabase의 클라이언트당 Presence 호출 제한을 넘지 않도록 화면 상태 갱신은 최소 6.5초 간격으로 직렬화하고, 그 사이 여러 번 화면을 오가면 마지막 상태만 전송한다. 네트워크 재연결 뒤에는 현재 화면의 상태를 다시 등록한다.
+- 50명이 한 시각에 페이지를 열어도 말씀·기도제목은 먼저 보이지만, 분산 연결 때문에 전체 Presence 인원 수가 안정되는 데에는 최악의 경우 약 30초가 걸릴 수 있다. 이 구간을 연결 실패로 오인해 새로고침을 반복하지 않도록 운영 전에 안내한다.
+- 현재 익명 인증은 Supabase 기본 제한에 따라 동일 IP에서 시간당 30회까지다. 서로 다른 네트워크에서 접속하는 50명 운영에는 직접적인 제한이 아니지만, 한 장소·한 공유망에서 리허설할 때는 이 제한과 기도제목 제출 제한을 별도로 점검한다.
 - 오늘의 말씀과 본문 표기는 선택 항목이다. 둘 다 비어 있으면 참여자 화면은 빈 카드나 준비 중 문구를 만들지 않고 말씀 영역을 생략한다.
 - YouTube/YouTube Music은 임베드 광고를 끌 수 없고 숨겨진 플레이어나 오디오 재송출 방식도 지원 정책과 충돌하므로 등록·재생하지 않는다. 공동기도에는 사용 권한을 확보한 직접 업로드 음원만 사용한다.
 - 진행 중 `기도회 구성 게시`는 Live Control 제어권과 최신 상태 버전을 가진 Admin만 사용할 수 있다. 제목, 말씀·기도제목, 연결 음원만 즉시 갱신하며 단계·타이머와 `시간 연장` 결과는 서버 값으로 유지한다. 단계 수·순서·종류 변경은 종료 후에만 허용한다.
