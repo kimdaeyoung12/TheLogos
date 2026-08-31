@@ -350,7 +350,7 @@ class PreviewService {
   }
 
   async claimController(token) {
-    return { acquired: true, lease_token: token, expires_at: new Date(Date.now() + 30_000).toISOString() };
+    return { acquired: true, lease_token: token, expires_at: new Date(Date.now() + 90_000).toISOString() };
   }
 
   async applyLiveAction(token, action, payload = {}) {

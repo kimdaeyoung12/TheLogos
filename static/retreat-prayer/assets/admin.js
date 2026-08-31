@@ -6,7 +6,8 @@ import {
   setVisible,
   zonedDateKey,
 } from "./core.js?v=20260829-4";
-import { createPrayerService } from "./backend.js?v=20260829-4";
+import { createPrayerService } from "./backend.js?v=20260901-1";
+import { ControllerLeaseCoordinator } from "./controller-lease.js?v=20260901-1";
 
 const config = globalThis.RETREAT_PRAYER_CONFIG || {};
 const MAX_ACTIVE_ADMINS = 10;
@@ -22,13 +23,16 @@ const state = {
   route: "live",
   leaseToken: null,
   leaseExpiresAt: null,
+  leaseStatus: "idle",
+  leaseMessage: null,
+  leaseCoordinator: null,
+  leaseAuthRecoveryScheduled: false,
   serverOffsetMs: 0,
   presenceCount: null,
   presenceSynced: false,
   presenceDisconnect: null,
   liveUnsubscribe: null,
   liveConnected: false,
-  leaseInterval: null,
   pendingAdminSession: null,
   confirmation: null,
 };
@@ -53,6 +57,56 @@ function toast(message, timeout = 2800) {
 
 function ownsControllerLease() {
   return Boolean(state.leaseToken && Date.parse(state.leaseExpiresAt) > Date.now() + state.serverOffsetMs);
+}
+
+function classifyLeaseError(error) {
+  const message = `${error?.message || ""} ${error?.details || ""}`;
+  if ([401, 403].includes(Number(error?.status))
+    || /jwt|session.*expired|not authenticated|active admin permission required|insufficient privilege/i.test(message)) {
+    return "auth";
+  }
+  return "transient";
+}
+
+function syncLeaseState(snapshot) {
+  state.leaseToken = snapshot.token;
+  state.leaseExpiresAt = snapshot.expiresAt;
+  state.leaseStatus = snapshot.status;
+  state.leaseMessage = snapshot.message || snapshot.error?.message || null;
+  if (state.snapshot) {
+    renderController();
+    renderLive();
+  }
+  if (snapshot.status === "unauthorized" && !state.leaseAuthRecoveryScheduled) {
+    state.leaseAuthRecoveryScheduled = true;
+    queueMicrotask(async () => {
+      state.leaseAuthRecoveryScheduled = false;
+      if (state.leaseStatus !== "unauthorized") return;
+      toast("Admin 인증을 다시 확인해야 합니다. 다시 로그인해주세요.", 4800);
+      await boot();
+    });
+  }
+}
+
+function ensureLeaseCoordinator() {
+  if (state.leaseCoordinator) return state.leaseCoordinator;
+  state.leaseCoordinator = new ControllerLeaseCoordinator({
+    claim: (token) => state.service.claimController(token),
+    createToken: createId,
+    classifyError: classifyLeaseError,
+    now: () => Date.now() + state.serverOffsetMs,
+    onUpdate: syncLeaseState,
+  });
+  return state.leaseCoordinator;
+}
+
+function discardLeaseCoordinator() {
+  state.leaseCoordinator?.dispose();
+  state.leaseCoordinator = null;
+  state.leaseToken = null;
+  state.leaseExpiresAt = null;
+  state.leaseStatus = "idle";
+  state.leaseMessage = null;
 }
 
 function showGate(name) {
@@ -100,15 +154,30 @@ function renderOps() {
   setText($("#ops-connection"), state.liveConnected ? "안정" : "확인 중");
   setText($("#ops-card-realtime"), state.liveConnected ? "연결됨" : "재연결 확인 중");
   setText($("#ops-card-clock"), `${Math.round(state.serverOffsetMs)}ms`);
-  setText($("#ops-card-controller"), state.leaseToken ? state.profile?.display_name || "현재 Admin" : "제어권 없음");
+  setText($("#ops-card-controller"), ownsControllerLease() ? state.profile?.display_name || "현재 Admin" : "제어권 없음");
   const liveOverride = live?.media?.stage_index === view.stageIndex ? live.media : null;
   setText($("#ops-card-media"), liveOverride?.stopped ? "Admin이 종료함" : liveOverride?.label || activeMedia?.label || "재생 없음");
 }
 
 function renderController() {
   const ownsLease = ownsControllerLease();
-  setText($("#controller-state"), ownsLease ? "현재 이 콘솔이 Live Control을 보유하고 있습니다" : "Live Control 제어권이 필요합니다");
-  setText($("#controller-detail"), ownsLease ? `제어권은 ${new Intl.DateTimeFormat("ko-KR", { timeZone: config.timeZone || "Asia/Seoul", hour: "2-digit", minute: "2-digit", second: "2-digit" }).format(new Date(state.leaseExpiresAt))}까지 자동 갱신됩니다.` : "한 번에 한 명의 Admin만 참여자 화면을 변경할 수 있습니다.");
+  const degraded = ["degraded", "reconnecting", "renewing", "requesting"].includes(state.leaseStatus);
+  const stateMessage = ownsLease
+    ? "현재 이 콘솔이 Live Control을 보유하고 있습니다"
+    : state.leaseStatus === "reconnecting"
+      ? "Live Control 연결을 다시 확인하고 있습니다"
+      : "Live Control 제어권이 필요합니다";
+  const detailMessage = ownsLease
+    ? degraded
+      ? "일시적인 연결 문제를 확인하고 있습니다. 현재 제어권은 만료 시각까지 유지됩니다."
+      : `제어권은 ${new Intl.DateTimeFormat("ko-KR", { timeZone: config.timeZone || "Asia/Seoul", hour: "2-digit", minute: "2-digit", second: "2-digit" }).format(new Date(state.leaseExpiresAt))}까지 자동 갱신됩니다.`
+    : state.leaseStatus === "held"
+      ? state.leaseMessage || "다른 Admin이 현재 기도회를 제어하고 있습니다."
+      : state.leaseStatus === "reconnecting"
+        ? "같은 제어권 토큰으로 5초마다 다시 연결합니다."
+        : "한 번에 한 명의 Admin만 참여자 화면을 변경할 수 있습니다.";
+  setText($("#controller-state"), stateMessage);
+  setText($("#controller-detail"), detailMessage);
   setText($("#claim-controller-button"), ownsLease ? "제어권 갱신" : "제어권 요청");
   $$('[data-live-action]').forEach((button) => { button.disabled = !ownsLease; });
   $("#controller-banner .status-dot")?.classList.toggle("status-dot--live", ownsLease);
@@ -505,6 +574,7 @@ async function openConsole(loginResult) {
   state.snapshot = await state.service.getAdminSnapshot();
   state.profile ||= state.snapshot.profile;
   state.serverOffsetMs = Date.parse(state.snapshot.serverNow) - Date.now();
+  const leaseCoordinator = ensureLeaseCoordinator();
   if (state.mode === "production") {
     const accountResult = await state.service.manageAdmin("list").catch((error) => {
       if (state.profile?.role === "owner") toast(error.message || "Admin 계정 목록을 불러오지 못했습니다.", 4800);
@@ -538,6 +608,7 @@ async function openConsole(loginResult) {
   );
   renderAll();
   showConsole();
+  if (leaseCoordinator.hasToken()) void leaseCoordinator.resume();
 }
 
 async function login(event) {
@@ -607,23 +678,20 @@ async function requestPasswordReset(event) {
 }
 
 async function claimController({ quiet = false } = {}) {
-  state.leaseToken ||= createId();
-  try {
-    const result = await state.service.claimController(state.leaseToken);
-    const payload = typeof result === "string" ? JSON.parse(result) : result;
-    if (!payload?.acquired) throw new Error(payload?.message || "다른 Admin이 제어 중입니다.");
-    state.leaseExpiresAt = payload.expires_at;
-    renderController();
-    renderLive();
+  const result = await ensureLeaseCoordinator().request({ quiet });
+  if (result.acquired) {
     if (!quiet) toast("Live Control 제어권을 확보했습니다.");
-    clearInterval(state.leaseInterval);
-    state.leaseInterval = setInterval(() => claimController({ quiet: true }), 20_000);
-  } catch (error) {
-    state.leaseToken = null;
-    state.leaseExpiresAt = null;
-    renderController();
-    if (!quiet) toast(error.message || "제어권을 확보하지 못했습니다.", 4200);
+    return;
   }
+  if (!quiet && result.classification !== "superseded") {
+    toast(result.message || result.error?.message || "제어권을 확보하지 못했습니다.", 4200);
+  }
+}
+
+async function renewControllerLease() {
+  const coordinator = state.leaseCoordinator;
+  if (!coordinator?.hasToken()) return;
+  await coordinator.renew({ quiet: true });
 }
 
 async function applyLiveAction(button) {
@@ -644,8 +712,7 @@ async function applyLiveAction(button) {
     toast(action === "next" ? "다음 단계를 참여자 화면에 송출했습니다." : "공동기도 진행 상태를 변경했습니다.");
   } catch (error) {
     const originalMessage = error.message || "진행 상태를 변경하지 못했습니다.";
-    state.leaseToken = null;
-    state.leaseExpiresAt = null;
+    void renewControllerLease();
     try {
       const liveSession = await state.service.fetchLiveSession();
       if (liveSession) state.snapshot.liveSession = liveSession;
@@ -933,6 +1000,7 @@ async function handleClick(event) {
       return openConsole(result);
     }
     if (action === "logout") {
+      state.leaseCoordinator?.dispose();
       await state.service.adminLogout();
       location.reload();
       return;
@@ -976,16 +1044,20 @@ async function handleClick(event) {
   if (liveAction) await applyLiveAction(liveAction);
 }
 
-async function boot() {
+async function boot({ preserveLease = false } = {}) {
   showGate("loading");
   try {
     await Promise.allSettled([state.presenceDisconnect?.(), state.liveUnsubscribe?.()]);
-    clearInterval(state.leaseInterval);
+    if (preserveLease) state.leaseCoordinator?.pause();
+    else discardLeaseCoordinator();
     state.presenceDisconnect = null;
     state.liveUnsubscribe = null;
-    state.leaseInterval = null;
-    state.leaseToken = null;
-    state.leaseExpiresAt = null;
+    if (!preserveLease) {
+      state.leaseToken = null;
+      state.leaseExpiresAt = null;
+      state.leaseStatus = "idle";
+      state.leaseMessage = null;
+    }
     state.service = await createPrayerService(config, { admin: true });
     state.mode = state.service.mode;
     setVisible($("#admin-preview-ribbon"), state.mode === "preview");
@@ -998,6 +1070,7 @@ async function boot() {
           || location.hash.includes("type=recovery")
           || new URLSearchParams(location.search).has("code");
         if (inviteEntry) {
+          if (preserveLease) discardLeaseCoordinator();
           state.pendingAdminSession = restored;
           showGate("password");
           return;
@@ -1006,8 +1079,10 @@ async function boot() {
         return;
       }
     }
+    if (preserveLease) discardLeaseCoordinator();
     showGate("login");
   } catch (error) {
+    if (preserveLease) discardLeaseCoordinator();
     if (error.code === "CONFIG_REQUIRED") showGate("config");
     else {
       showGate("login");
@@ -1048,11 +1123,17 @@ $("#admin-confirm-dialog")?.addEventListener("close", async (event) => {
 globalThis.addEventListener("pagehide", () => {
   state.presenceDisconnect?.();
   state.liveUnsubscribe?.();
-  clearInterval(state.leaseInterval);
+  state.leaseCoordinator?.pause();
 });
 globalThis.addEventListener("pageshow", (event) => {
-  if (event.persisted) void boot();
+  if (event.persisted) void boot({ preserveLease: true });
+  else void renewControllerLease();
 });
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible") void renewControllerLease();
+});
+globalThis.addEventListener("focus", () => { void renewControllerLease(); });
+globalThis.addEventListener("online", () => { void renewControllerLease(); });
 
 setInterval(() => {
   if (!state.snapshot) return;

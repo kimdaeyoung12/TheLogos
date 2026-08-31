@@ -6,6 +6,8 @@ const source = await readFile(new URL("../static/retreat-prayer/assets/core.js",
 const core = await import(`data:text/javascript;base64,${Buffer.from(source).toString("base64")}`);
 const realtimeSetupSource = await readFile(new URL("../static/retreat-prayer/assets/realtime-setup.js", import.meta.url), "utf8");
 const { RealtimeSetupCoordinator } = await import(`data:text/javascript;base64,${Buffer.from(realtimeSetupSource).toString("base64")}`);
+const controllerLeaseSource = await readFile(new URL("../static/retreat-prayer/assets/controller-lease.js", import.meta.url), "utf8");
+const { ControllerLeaseCoordinator } = await import(`data:text/javascript;base64,${Buffer.from(controllerLeaseSource).toString("base64")}`);
 const appSource = await readFile(new URL("../static/retreat-prayer/assets/app.js", import.meta.url), "utf8");
 const migrationSource = await readFile(
   new URL("../supabase/migrations/20260828010000_retreat_prayer.sql", import.meta.url),
@@ -45,6 +47,10 @@ const mediaDeleteMigrationSource = await readFile(
 );
 const adminLimitMigrationSource = await readFile(
   new URL("../supabase/migrations/20260829060000_retreat_prayer_admin_limit_10.sql", import.meta.url),
+  "utf8",
+);
+const resilientControllerLeaseMigrationSource = await readFile(
+  new URL("../supabase/migrations/20260901010000_retreat_prayer_resilient_controller_lease.sql", import.meta.url),
   "utf8",
 );
 const edgeSecretHelperSource = await readFile(
@@ -585,12 +591,154 @@ test("모바일 메뉴는 명시적인 닫기 상태와 키보드 복구를 제�
 test("BFCache 복귀 시 참여자와 Admin 실시간 연결을 다시 초기화한다", () => {
   assert.match(appSource, /addEventListener\("pagehide", \(\) => \{\s*state\.bootGeneration \+= 1;\s*state\.presenceGeneration \+= 1;\s*state\.presenceDesiredContext = null;[\s\S]*?const previousPresenceDisconnect = state\.presenceDisconnect/);
   assert.match(appSource, /addEventListener\("pageshow", \(event\) => \{[\s\S]*?event\.persisted[\s\S]*?void boot\(\)/);
-  assert.match(adminScriptSource, /addEventListener\("pageshow", \(event\) => \{[\s\S]*?event\.persisted\) void boot\(\)/);
-  assert.match(adminScriptSource, /async function boot\(\)[\s\S]*?Promise\.allSettled\(\[state\.presenceDisconnect\?\.\(\), state\.liveUnsubscribe\?\.\(\)\]\)[\s\S]*?state\.leaseToken = null/);
+  assert.match(adminScriptSource, /addEventListener\("pageshow", \(event\) => \{[\s\S]*?event\.persisted\) void boot\(\{ preserveLease: true \}\)/);
+  assert.match(adminScriptSource, /async function boot\(\{ preserveLease = false \} = \{\}\)[\s\S]*?preserveLease\) state\.leaseCoordinator\?\.pause\(\)/);
 });
 
-test("Admin 진행 조작의 응답이 불명확하면 최신 상태를 읽고 제어권을 다시 요청한다", () => {
-  assert.match(adminScriptSource, /async function applyLiveAction[\s\S]*?catch \(error\)[\s\S]*?state\.leaseToken = null[\s\S]*?await state\.service\.fetchLiveSession\(\)[\s\S]*?제어권을 다시 요청해주세요/);
+test("Admin 진행 조작의 응답이 불명확하면 제어권을 버리지 않고 최신 상태와 lease를 다시 확인한다", () => {
+  const applyActionSource = adminScriptSource.match(/async function applyLiveAction[\s\S]*?\n}\n\nasync function saveDailyContent/)?.[0] || "";
+  assert.match(applyActionSource, /catch \(error\)[\s\S]*?void renewControllerLease\(\)[\s\S]*?await state\.service\.fetchLiveSession\(\)/);
+  assert.doesNotMatch(applyActionSource, /state\.leaseToken = null/);
+});
+
+test("제어권 갱신의 일시 오류는 같은 토큰을 유지하고 5초 뒤 다시 시도한다", async () => {
+  const timers = [];
+  const updates = [];
+  let attempts = 0;
+  const now = Date.parse("2026-09-01T00:00:00Z");
+  const coordinator = new ControllerLeaseCoordinator({
+    claim: async (token) => {
+      attempts += 1;
+      assert.equal(token, "stable-token");
+      if (attempts === 1) throw new Error("fetch failed");
+      return { acquired: true, expires_at: new Date(now + 90_000).toISOString() };
+    },
+    createToken: () => "stable-token",
+    onUpdate: (snapshot) => updates.push(snapshot),
+    now: () => now,
+    setTimer: (callback, delay) => {
+      timers.push({ callback, delay });
+      return timers.length;
+    },
+    clearTimer: () => {},
+  });
+
+  const failedRenewal = await coordinator.request();
+  assert.equal(failedRenewal.classification, "transient");
+  assert.equal(coordinator.hasToken(), true);
+  assert.equal(timers.at(-1).delay, 5_000);
+  assert.equal(updates.at(-1).status, "reconnecting");
+
+  const recovered = await coordinator.renew();
+  assert.equal(recovered.acquired, true);
+  assert.equal(coordinator.hasToken(), true);
+  assert.equal(timers.at(-1).delay, 20_000);
+  assert.equal(updates.at(-1).status, "owned");
+});
+
+test("토큰 없는 자동 복귀 이벤트는 새 제어권을 요청하지 않는다", async () => {
+  let claims = 0;
+  const coordinator = new ControllerLeaseCoordinator({
+    claim: async () => { claims += 1; return { acquired: true }; },
+    createToken: () => "must-not-be-created",
+  });
+  const result = await coordinator.resume();
+  assert.equal(result.attempted, false);
+  assert.equal(claims, 0);
+  assert.match(adminScriptSource, /visibilitychange[\s\S]*?renewControllerLease\(\)[\s\S]*?addEventListener\("focus"[\s\S]*?renewControllerLease\(\)[\s\S]*?addEventListener\("online"/);
+});
+
+test("백그라운드에서 복귀하면 새 토큰을 만들지 않고 기존 제어권 토큰으로 즉시 갱신한다", async () => {
+  const claimedTokens = [];
+  let createdTokens = 0;
+  const now = Date.parse("2026-09-01T00:00:00Z");
+  const coordinator = new ControllerLeaseCoordinator({
+    claim: async (token) => {
+      claimedTokens.push(token);
+      return { acquired: true, expires_at: new Date(now + 90_000).toISOString() };
+    },
+    createToken: () => {
+      createdTokens += 1;
+      return `stable-token-${createdTokens}`;
+    },
+    now: () => now,
+  });
+
+  await coordinator.request();
+  coordinator.pause();
+  const resumed = await coordinator.resume();
+
+  assert.equal(resumed.acquired, true);
+  assert.equal(createdTokens, 1);
+  assert.deepEqual(claimedTokens, ["stable-token-1", "stable-token-1"]);
+  assert.equal(coordinator.hasToken(), true);
+  coordinator.dispose();
+});
+
+test("인증 만료 응답은 제어권 토큰을 제거하고 자동 재시도를 예약하지 않는다", async () => {
+  const timers = [];
+  const coordinator = new ControllerLeaseCoordinator({
+    claim: async () => { throw new Error("JWT expired"); },
+    createToken: () => "expired-auth-token",
+    classifyError: () => "auth",
+    setTimer: (callback, delay) => { timers.push({ callback, delay }); return timers.length; },
+    clearTimer: () => {},
+  });
+
+  const result = await coordinator.request();
+
+  assert.equal(result.classification, "auth");
+  assert.equal(coordinator.hasToken(), false);
+  assert.equal(coordinator.status, "unauthorized");
+  assert.equal(timers.length, 0);
+});
+
+test("다른 Admin이 보유했다는 서버 응답에서만 로컬 제어권 토큰을 제거한다", async () => {
+  const coordinator = new ControllerLeaseCoordinator({
+    claim: async () => ({ acquired: false, message: "다른 Admin이 현재 기도회를 제어하고 있습니다." }),
+    createToken: () => "contested-token",
+  });
+  const result = await coordinator.request();
+  assert.equal(result.classification, "held");
+  assert.equal(coordinator.hasToken(), false);
+  assert.equal(coordinator.status, "held");
+});
+
+test("중복 갱신과 늦게 도착한 응답은 새 스케줄러를 만들지 않는다", async () => {
+  let resolveClaim;
+  let calls = 0;
+  const timers = [];
+  const coordinator = new ControllerLeaseCoordinator({
+    claim: () => {
+      calls += 1;
+      return new Promise((resolve) => { resolveClaim = resolve; });
+    },
+    createToken: () => "in-flight-token",
+    setTimer: (callback, delay) => { timers.push({ callback, delay }); return timers.length; },
+    clearTimer: () => {},
+  });
+  const first = coordinator.request();
+  const duplicate = coordinator.renew();
+  assert.equal(first, duplicate);
+  assert.equal(calls, 0);
+  await Promise.resolve();
+  assert.equal(calls, 1);
+  coordinator.dispose();
+  resolveClaim({ acquired: true, expires_at: new Date(Date.now() + 90_000).toISOString() });
+  const result = await first;
+  assert.equal(result.classification, "superseded");
+  assert.equal(coordinator.hasToken(), false);
+  assert.equal(timers.length, 0);
+});
+
+test("제어권 lease는 90초이고 함수 권한과 단일 보유자 규칙을 유지한다", () => {
+  assert.match(resilientControllerLeaseMigrationSource, /expires_at = clock_timestamp\(\) \+ interval '90 seconds'/);
+  assert.match(resilientControllerLeaseMigrationSource, /where id = 1[\s\S]*?returning \* into lease/);
+  assert.match(resilientControllerLeaseMigrationSource, /revoke all on function public\.claim_live_controller\(uuid\) from public/);
+  assert.match(resilientControllerLeaseMigrationSource, /grant execute on function public\.claim_live_controller\(uuid\) to authenticated/);
+  assert.match(backendSource, /expires_at: new Date\(Date\.now\(\) \+ 90_000\)/);
+  assert.match(adminHtmlSource, /assets\/admin\.js\?v=20260901-1/);
+  assert.match(adminScriptSource, /controller-lease\.js\?v=20260901-1/);
 });
 
 test("활성 Admin 상한 10명은 DB·Edge Function·화면에서 일관되게 적용된다", () => {

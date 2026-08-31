@@ -16,7 +16,7 @@
 ## 1. Supabase 프로젝트 준비
 
 1. 다른 서비스의 테이블·권한과 충돌하지 않도록 전용 프로젝트만 사용한다. 저장소는 위 프로젝트에 연결되어 있다.
-2. `20260828010000_retreat_prayer.sql`, 원격 카탈로그 단언을 담은 `20260828020000_retreat_prayer_security_validation.sql`, lint 보정용 `20260828030000_retreat_prayer_lint_cleanup.sql`, 일정 미정 상태를 지원하는 `20260828040000_retreat_prayer_schedule_pending.sql`, 초대 전용 Auth 훅을 구성하는 `20260828050000_retreat_prayer_invite_only_auth.sql`, 선택형 말씀을 지원하는 `20260829010000_retreat_prayer_optional_scripture.sql`, 진행 중 콘텐츠 교정을 허용하는 `20260829020000_retreat_prayer_live_content_edit.sql`, private Postgres Changes 구독 권한을 추가하는 `20260829030000_retreat_prayer_private_realtime_changes.sql`, 진행 중 콘텐츠 저장을 안전하게 제한하는 `20260829040000_retreat_prayer_safe_live_content_edit.sql`, 등록 음악을 참조 해제 후 삭제하는 `20260829050000_retreat_prayer_media_delete.sql`, 활성 Admin 상한을 10명으로 올리는 `20260829060000_retreat_prayer_admin_limit_10.sql`을 차례로 적용한다. validation migration 실패는 운영 권한 구성이 완성되지 않았다는 뜻이다.
+2. `20260828010000_retreat_prayer.sql`, 원격 카탈로그 단언을 담은 `20260828020000_retreat_prayer_security_validation.sql`, lint 보정용 `20260828030000_retreat_prayer_lint_cleanup.sql`, 일정 미정 상태를 지원하는 `20260828040000_retreat_prayer_schedule_pending.sql`, 초대 전용 Auth 훅을 구성하는 `20260828050000_retreat_prayer_invite_only_auth.sql`, 선택형 말씀을 지원하는 `20260829010000_retreat_prayer_optional_scripture.sql`, 진행 중 콘텐츠 교정을 허용하는 `20260829020000_retreat_prayer_live_content_edit.sql`, private Postgres Changes 구독 권한을 추가하는 `20260829030000_retreat_prayer_private_realtime_changes.sql`, 진행 중 콘텐츠 저장을 안전하게 제한하는 `20260829040000_retreat_prayer_safe_live_content_edit.sql`, 등록 음악을 참조 해제 후 삭제하는 `20260829050000_retreat_prayer_media_delete.sql`, 활성 Admin 상한을 10명으로 올리는 `20260829060000_retreat_prayer_admin_limit_10.sql`, 유휴·백그라운드 탭에서도 제어권을 안정적으로 유지하는 `20260901010000_retreat_prayer_resilient_controller_lease.sql`을 차례로 적용한다. validation migration 실패는 운영 권한 구성이 완성되지 않았다는 뜻이다.
 3. Anonymous Sign-ins를 켠다. 일반 사용자는 로그인 UI를 보지 않지만, private Realtime Presence 채널에 들어가기 위한 최소 권한 토큰으로만 사용한다.
 4. 전역 `auth.enable_signup`과 `auth.email.enable_signup`은 모두 켠다. 전역 가입을 끄면 익명 Presence 세션도 막히고, 이메일 제공자를 끄면 기존 Admin 로그인도 `Email logins are disabled`로 막히기 때문이다. 대신 `hook_restrict_retreat_prayer_signup` Before User Created 훅이 익명 사용자와 서버가 발급한 일회성 nonce가 있는 Admin 초대만 허용하고 나머지 영구 계정 생성을 거부한다. Site URL과 Redirect URL은 운영·로컬 Admin 경로로 제한한다.
 5. Admin 비밀번호는 10~72자와 대·소문자, 숫자, Supabase 허용 기호를 요구하고 이메일 확인·안전한 비밀번호 변경·TOTP MFA 등록을 켠다.
@@ -102,7 +102,7 @@ publishable key는 브라우저에 노출되는 공개 키이며, 실제 데이�
 
 ## 6. 운영 중 대응
 
-- 관리자 제어권 lease는 30초이며 콘솔이 20초마다 갱신한다. 제어 Admin이 이탈하면 다른 Admin이 만료 후 제어권을 요청할 수 있다.
+- 관리자 제어권 lease는 90초이며 콘솔이 20초마다 갱신한다. 일시적인 네트워크 오류에는 5초 후 같은 토큰으로 다시 시도하고, 숨겨졌던 탭·오프라인 상태가 복귀하면 즉시 갱신한다. 제어 Admin이 브라우저를 비정상 종료하면 다른 Admin은 최대 90초 후 제어권을 요청할 수 있다.
 - Presence 숫자는 로그인된 인원이나 실제 사람 수가 아니라 heartbeat로 동기화된 **고유 활성 브라우저 세션 수**다.
 - 기도제목 원문은 승인 전에 관리자만 볼 수 있고, 기본 공개 만료 시점은 제출 후 180일이다. 만료된 행은 공개 RLS에서 즉시 제외된다. pg_cron 작업 `retreat-prayer-purge-expired`가 매일 00:15 KST에 만료 기도제목, 수명이 지난 제출 제한 해시, 30일 지난 익명 Auth 사용자를 물리 삭제한다. 교회 개인정보 정책에 맞게 보관 기간을 더 짧게 조정할 수 있다.
 - 음원이 실패해도 기도 진행은 계속한다. 참여자의 로컬 음량과 음소거 선택은 Admin이 강제로 바꾸지 않는다.
