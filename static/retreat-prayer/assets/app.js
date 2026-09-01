@@ -12,7 +12,7 @@ import {
   setVisible,
   zonedDateKey,
 } from "./core.js?v=20260829-4";
-import { createPrayerService } from "./backend.js?v=20260829-4";
+import { createPrayerService } from "./backend.js?v=20260901-2";
 import { PrayerPresenceCanvas } from "./presence-canvas.js?v=20260829-4";
 import { RealtimeSetupCoordinator } from "./realtime-setup.js?v=20260829-4";
 
@@ -29,7 +29,7 @@ const state = {
   presenceCount: null,
   presenceSynced: false,
   presenceStatus: "connecting",
-  livePresenceContext: "가 함께 기도 중입니다",
+  livePresenceContext: "함께 기도 중입니다",
   presenceDisconnect: null,
   presenceContext: null,
   presenceDesiredContext: null,
@@ -57,6 +57,7 @@ const state = {
   currentDateKey: null,
   refreshingDaily: false,
   refreshingContent: false,
+  activeAnnouncementId: null,
 };
 
 const $ = (selector, root = document) => root.querySelector(selector);
@@ -209,7 +210,7 @@ function renderPresence() {
       ? "인원 확인 일시 중단"
       : "연결 확인 중";
   const liveText = state.presenceSynced && Number.isFinite(state.presenceCount)
-    ? `${state.presenceCount}명의 지체`
+    ? `${state.presenceCount}명의 지체가`
     : state.presenceStatus === "reconnecting" || state.presenceStatus === "unavailable"
       ? "인원 확인 일시 중단"
       : "인원 확인 중";
@@ -362,7 +363,7 @@ function renderLive() {
     setText($("#live-heading"), getNextPrayerCopy());
     setText($("#live-timer"), "시작되면 같은 기도 흐름으로 이어집니다");
     setText($("#live-mode-label"), live?.mode === "auto" ? "사전 설정에 따라 시작됩니다" : "진행자가 곧 시작합니다");
-    setLivePresenceContext("이 함께 기다리고 있습니다");
+    setLivePresenceContext("함께 기다리고 있습니다");
     $("#live-progress").value = 0;
     if (state.activeMediaKey !== null) {
       state.activeMediaKey = null;
@@ -382,7 +383,7 @@ function renderLive() {
   setText($("#live-heading"), step.content);
   setText($("#live-timer"), view.status === "paused" ? "기도 흐름이 잠시 머물러 있습니다" : formatRemaining(view.remainingSeconds));
   setText($("#live-mode-label"), live.mode === "auto" ? "사전 설정에 따라 진행 중" : "진행자와 함께하는 기도");
-  setLivePresenceContext("가 함께 기도 중입니다");
+  setLivePresenceContext("함께 기도 중입니다");
   $("#live-progress").value = view.progress;
 
   const media = getCurrentMedia(view);
@@ -404,12 +405,30 @@ function renderLive() {
 
 }
 
+function renderParticipantAnnouncement() {
+  const announcement = state.data?.liveSession?.announcement?.trim() || "";
+  const announcementId = state.data?.liveSession?.announcement_id || null;
+  const container = $("#participant-announcement");
+  const isVisible = Boolean(announcement && announcementId);
+  if (!isVisible) {
+    if (!container.hidden) setVisible(container, false);
+    state.activeAnnouncementId = null;
+    return;
+  }
+  if (state.activeAnnouncementId === announcementId) return;
+  setText($("#participant-announcement-message"), announcement);
+  setVisible(container, true);
+  state.activeAnnouncementId = announcementId;
+  announce("새 공동기도 공지가 도착했습니다.");
+}
+
 function renderAll() {
   renderHome();
   renderToday();
   renderRequests();
   renderLive();
   renderPresence();
+  renderParticipantAnnouncement();
 }
 
 function closeDialog(dialog) {
@@ -679,6 +698,7 @@ function receiveLiveSession(liveSession) {
   state.announcedMilestones.clear();
   renderHome();
   renderLive();
+  renderParticipantAnnouncement();
   if (previousVersion !== undefined && liveSession.version !== previousVersion) {
     announce("공동기도 진행 내용이 새로 동기화되었습니다.");
   }

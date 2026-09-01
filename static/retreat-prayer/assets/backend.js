@@ -138,6 +138,8 @@ function createDemoState(config) {
       accumulated_pause_seconds: 0,
       paused_remaining_seconds: null,
       announcement: "",
+      announcement_id: null,
+      announcement_created_at: null,
       media: null,
       version: 4,
       updated_at: new Date(now - 92_000).toISOString(),
@@ -159,6 +161,12 @@ function createDemoState(config) {
       { user_id: "demo-admin", display_name: "진행 관리자", role: "admin", active: true },
     ],
     audit: [],
+    controller: {
+      controller_id: null,
+      lease_token: null,
+      expires_at: null,
+      controller_generation: 1,
+    },
   };
 }
 
@@ -168,6 +176,12 @@ class PreviewService {
     this.mode = "preview";
     this.state = createDemoState(config);
     this.state.contentRevision ||= 1;
+    this.state.controller ||= {
+      controller_id: null,
+      lease_token: null,
+      expires_at: null,
+      controller_generation: 1,
+    };
     this.liveListeners = new Set();
     this.contentListeners = new Set();
     this.sessionId = null;
@@ -350,7 +364,98 @@ class PreviewService {
   }
 
   async claimController(token) {
-    return { acquired: true, lease_token: token, expires_at: new Date(Date.now() + 90_000).toISOString() };
+    const controller = this.state.controller;
+    if (controller.controller_id === "demo-owner" && controller.lease_token === token) {
+      return { acquired: true, persistent: true, ...clone(controller) };
+    }
+    return {
+      acquired: false,
+      available: controller.controller_id === null,
+      persistent: true,
+      controller_id: controller.controller_id,
+      controller_name: controller.controller_id ? "대표 관리자" : null,
+      controller_generation: controller.controller_generation,
+    };
+  }
+
+  async acquireController(token, expectedGeneration) {
+    const controller = this.state.controller;
+    if (Number(controller.controller_generation) !== Number(expectedGeneration)) {
+      return { acquired: false, changed: true, controller_generation: controller.controller_generation };
+    }
+    if (controller.controller_id && !(controller.controller_id === "demo-owner" && controller.lease_token === token)) {
+      return { acquired: false, available: false, controller_name: "대표 관리자", controller_generation: controller.controller_generation };
+    }
+    if (!controller.controller_id) controller.controller_generation += 1;
+    controller.controller_id = "demo-owner";
+    controller.lease_token = token;
+    controller.expires_at = "9999-12-31T23:59:59+00:00";
+    this.persist();
+    return { acquired: true, persistent: true, ...clone(controller) };
+  }
+
+  async getControllerStatus(token) {
+    const controller = this.state.controller;
+    return {
+      acquired: controller.controller_id === "demo-owner" && controller.lease_token === token,
+      available: controller.controller_id === null,
+      persistent: true,
+      expires_at: controller.expires_at,
+      controller_id: controller.controller_id,
+      controller_name: controller.controller_id ? "대표 관리자" : null,
+      controller_generation: controller.controller_generation,
+    };
+  }
+
+  async releaseController(token, expectedGeneration) {
+    const controller = this.state.controller;
+    if (controller.controller_id !== "demo-owner"
+      || controller.lease_token !== token
+      || Number(controller.controller_generation) !== Number(expectedGeneration)) {
+      return { released: false, changed: true, controller_generation: controller.controller_generation };
+    }
+    controller.controller_id = null;
+    controller.lease_token = null;
+    controller.expires_at = null;
+    controller.controller_generation += 1;
+    this.persist();
+    return { released: true, controller_generation: controller.controller_generation };
+  }
+
+  async takeOverController(token, expectedGeneration) {
+    const controller = this.state.controller;
+    if (!controller.controller_id || Number(controller.controller_generation) !== Number(expectedGeneration)) {
+      return { acquired: false, changed: true, available: controller.controller_id === null, controller_generation: controller.controller_generation };
+    }
+    controller.controller_id = "demo-owner";
+    controller.lease_token = token;
+    controller.expires_at = "9999-12-31T23:59:59+00:00";
+    controller.controller_generation += 1;
+    this.persist();
+    return { acquired: true, persistent: true, ...clone(controller) };
+  }
+
+  async publishAnnouncement(token, message, expectedVersion) {
+    const status = await this.getControllerStatus(token);
+    if (!status.acquired) throw new Error("Live Control 제어권이 필요합니다.");
+    const live = this.state.liveSession;
+    if (Number(live.version) !== Number(expectedVersion)) throw new Error("공동기도 상태가 변경되었습니다.");
+    const normalized = String(message || "").trim().slice(0, 240);
+    live.announcement = normalized;
+    live.announcement_id = normalized ? createId() : null;
+    live.announcement_created_at = normalized ? new Date().toISOString() : null;
+    live.version += 1;
+    live.updated_at = new Date().toISOString();
+    this.state.audit.unshift({
+      id: createId(),
+      action: normalized ? "announcement.publish" : "announcement.clear",
+      created_at: live.updated_at,
+      details: { announcement_id: live.announcement_id, character_count: normalized.length },
+      admin_name: "대표 관리자",
+    });
+    this.persist();
+    this.emitLive();
+    return clone(live);
   }
 
   async applyLiveAction(token, action, payload = {}) {
@@ -390,8 +495,6 @@ class PreviewService {
       live.media = { ...clone(media), stage_index: live.stage_index };
     } else if (action === "media_stop") {
       live.media = { stopped: true, stage_index: live.stage_index };
-    } else if (action === "announce") {
-      live.announcement = String(payload.message || "").slice(0, 240);
     }
     live.version += 1;
     live.updated_at = now;
@@ -643,7 +746,7 @@ export class SupabaseService {
       this.fetchPublicContent(serverNow),
       this.supabase
         .from("live_sessions")
-        .select("id, status, mode, scheduled_for, program_id, program_snapshot, stage_index, started_at, stage_started_at, paused_at, accumulated_pause_seconds, paused_remaining_seconds, announcement, media, version, updated_at")
+        .select("id, status, mode, scheduled_for, program_id, program_snapshot, stage_index, started_at, stage_started_at, paused_at, accumulated_pause_seconds, paused_remaining_seconds, announcement, announcement_id, announcement_created_at, media, version, updated_at")
         .eq("id", 1)
         .maybeSingle(),
       this.supabase
@@ -815,7 +918,7 @@ export class SupabaseService {
   async fetchLiveSession() {
     const { data, error } = await this.supabase
       .from("live_sessions")
-      .select("id, status, mode, scheduled_for, program_id, program_snapshot, stage_index, started_at, stage_started_at, paused_at, accumulated_pause_seconds, paused_remaining_seconds, announcement, media, version, updated_at")
+      .select("id, status, mode, scheduled_for, program_id, program_snapshot, stage_index, started_at, stage_started_at, paused_at, accumulated_pause_seconds, paused_remaining_seconds, announcement, announcement_id, announcement_created_at, media, version, updated_at")
       .eq("id", 1)
       .maybeSingle();
     if (error) throw error;
@@ -1126,6 +1229,49 @@ export class SupabaseService {
 
   async claimController(token) {
     const { data, error } = await this.supabase.rpc("claim_live_controller", { p_lease_token: token });
+    if (error) throw error;
+    return data;
+  }
+
+  async acquireController(token, expectedGeneration) {
+    const { data, error } = await this.supabase.rpc("acquire_live_controller", {
+      p_lease_token: token,
+      p_expected_generation: expectedGeneration,
+    });
+    if (error) throw error;
+    return data;
+  }
+
+  async getControllerStatus(token) {
+    const { data, error } = await this.supabase.rpc("get_live_controller_status", { p_lease_token: token });
+    if (error) throw error;
+    return data;
+  }
+
+  async releaseController(token, expectedGeneration) {
+    const { data, error } = await this.supabase.rpc("release_live_controller", {
+      p_lease_token: token,
+      p_expected_generation: expectedGeneration,
+    });
+    if (error) throw error;
+    return data;
+  }
+
+  async takeOverController(token, expectedGeneration) {
+    const { data, error } = await this.supabase.rpc("take_over_live_controller", {
+      p_lease_token: token,
+      p_expected_generation: expectedGeneration,
+    });
+    if (error) throw error;
+    return data;
+  }
+
+  async publishAnnouncement(token, message, expectedVersion) {
+    const { data, error } = await this.supabase.rpc("publish_live_announcement", {
+      p_lease_token: token,
+      p_expected_version: expectedVersion,
+      p_message: message,
+    });
     if (error) throw error;
     return data;
   }

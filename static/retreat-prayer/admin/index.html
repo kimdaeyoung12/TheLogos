@@ -8,10 +8,10 @@
   <meta name="theme-color" content="#eef0eb">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self'; img-src 'self' data:; connect-src 'self' https://*.supabase.co wss://*.supabase.co; media-src 'self' blob: https://*.supabase.co; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
   <title>공동기도 운영 콘솔</title>
-  <link rel="stylesheet" href="../assets/styles.css?v=20260829-4">
-  <link rel="stylesheet" href="../assets/admin.css?v=20260829-4">
+  <link rel="stylesheet" href="../assets/styles.css?v=20260901-2">
+  <link rel="stylesheet" href="../assets/admin.css?v=20260901-2">
   <script src="../config.js?v=20260829-4" defer></script>
-  <script type="module" src="../assets/admin.js?v=20260901-1"></script>
+  <script type="module" src="../assets/admin.js?v=20260901-2"></script>
 </head>
 <body class="admin-app">
   <a class="skip-link" href="#admin-main">운영 화면으로 바로가기</a>
@@ -114,10 +114,31 @@
 
         <div id="controller-banner" class="controller-banner" role="status">
           <div><span class="status-dot" aria-hidden="true"></span><strong id="controller-state">제어권을 확인하고 있습니다</strong><small id="controller-detail">실시간 조작 전 제어권을 확보해야 합니다.</small></div>
-          <button id="claim-controller-button" class="button button--quiet" type="button" data-action="claim-controller">제어권 요청</button>
+          <div class="controller-banner__actions">
+            <button id="release-controller-button" class="button button--quiet" type="button" data-action="release-controller" hidden>제어권 반납</button>
+            <button id="claim-controller-button" class="button button--quiet" type="button" data-action="claim-controller">제어권 요청</button>
+          </div>
         </div>
 
         <section id="admin-panel-live" class="admin-panel" aria-labelledby="admin-section-title">
+          <section class="live-announcement-composer" aria-labelledby="live-announcement-title">
+            <div class="live-announcement-composer__copy">
+              <p class="eyebrow">Participant Notice</p>
+              <h2 id="live-announcement-title">참여자 공지</h2>
+              <p id="live-announcement-state">현재 게시된 공지가 없습니다.</p>
+            </div>
+            <label for="announcement-message">
+              공지 내용
+              <textarea id="announcement-message" rows="2" maxlength="240" placeholder="예: 기도 시간이 5분 연장되었습니다."></textarea>
+              <span id="announcement-character-count">0 / 240</span>
+            </label>
+            <div class="live-announcement-composer__actions">
+              <button id="clear-announcement-button" class="button button--quiet" type="button" data-action="clear-announcement">공지 내리기</button>
+              <button id="publish-announcement-button" class="button button--primary" type="button" data-action="publish-announcement">공지 띄우기</button>
+            </div>
+            <p class="live-announcement-composer__note">새 공지가 올라오거나 관리자가 내릴 때까지 모든 참여자 화면에 계속 표시됩니다.</p>
+          </section>
+
           <div class="operator-grid">
             <div class="monitor-column">
               <article class="operator-monitor operator-monitor--program">

@@ -6,8 +6,8 @@ import {
   setVisible,
   zonedDateKey,
 } from "./core.js?v=20260829-4";
-import { createPrayerService } from "./backend.js?v=20260901-1";
-import { ControllerLeaseCoordinator } from "./controller-lease.js?v=20260901-1";
+import { createPrayerService } from "./backend.js?v=20260901-2";
+import { ControllerLeaseCoordinator } from "./controller-lease.js?v=20260901-2";
 
 const config = globalThis.RETREAT_PRAYER_CONFIG || {};
 const MAX_ACTIVE_ADMINS = 10;
@@ -23,8 +23,12 @@ const state = {
   route: "live",
   leaseToken: null,
   leaseExpiresAt: null,
+  leaseGeneration: 1,
   leaseStatus: "idle",
   leaseMessage: null,
+  controllerId: null,
+  controllerName: null,
+  controllerStatusRefreshPromise: null,
   leaseCoordinator: null,
   leaseAuthRecoveryScheduled: false,
   serverOffsetMs: 0,
@@ -35,6 +39,7 @@ const state = {
   liveConnected: false,
   pendingAdminSession: null,
   confirmation: null,
+  announcementDraftDirty: false,
 };
 
 const panelMeta = {
@@ -59,6 +64,42 @@ function ownsControllerLease() {
   return Boolean(state.leaseToken && Date.parse(state.leaseExpiresAt) > Date.now() + state.serverOffsetMs);
 }
 
+function controllerStorageKey() {
+  const userId = state.profile?.user_id || state.profile?.id;
+  return userId ? `retreat-prayer-admin-controller-token:${userId}` : null;
+}
+
+function readStoredControllerToken() {
+  const key = controllerStorageKey();
+  if (!key) return null;
+  try {
+    return localStorage.getItem(key);
+  } catch (error) {
+    console.warn("Live Control token could not be read from browser storage.", error);
+    return null;
+  }
+}
+
+function storeControllerToken(token) {
+  const key = controllerStorageKey();
+  if (!key || !token) return;
+  try {
+    localStorage.setItem(key, token);
+  } catch (error) {
+    console.warn("Live Control token could not be saved to browser storage.", error);
+  }
+}
+
+function clearStoredControllerToken() {
+  const key = controllerStorageKey();
+  if (!key) return;
+  try {
+    localStorage.removeItem(key);
+  } catch (error) {
+    console.warn("Live Control token could not be removed from browser storage.", error);
+  }
+}
+
 function classifyLeaseError(error) {
   const message = `${error?.message || ""} ${error?.details || ""}`;
   if ([401, 403].includes(Number(error?.status))
@@ -73,6 +114,11 @@ function syncLeaseState(snapshot) {
   state.leaseExpiresAt = snapshot.expiresAt;
   state.leaseStatus = snapshot.status;
   state.leaseMessage = snapshot.message || snapshot.error?.message || null;
+  if (snapshot.details) {
+    state.leaseGeneration = Number(snapshot.details.controller_generation || state.leaseGeneration || 1);
+    state.controllerId = snapshot.details.controller_id || null;
+    state.controllerName = snapshot.details.controller_name || null;
+  }
   if (state.snapshot) {
     renderController();
     renderLive();
@@ -91,8 +137,9 @@ function syncLeaseState(snapshot) {
 function ensureLeaseCoordinator() {
   if (state.leaseCoordinator) return state.leaseCoordinator;
   state.leaseCoordinator = new ControllerLeaseCoordinator({
-    claim: (token) => state.service.claimController(token),
-    createToken: createId,
+    claim: (token) => state.service.acquireController(token, state.leaseGeneration),
+    check: (token) => state.service.getControllerStatus(token),
+    createToken: () => readStoredControllerToken() || createId(),
     classifyError: classifyLeaseError,
     now: () => Date.now() + state.serverOffsetMs,
     onUpdate: syncLeaseState,
@@ -107,6 +154,34 @@ function discardLeaseCoordinator() {
   state.leaseExpiresAt = null;
   state.leaseStatus = "idle";
   state.leaseMessage = null;
+  state.controllerId = null;
+  state.controllerName = null;
+}
+
+function applyControllerStatus(payload, token = null) {
+  state.leaseToken = payload?.acquired ? token : token || null;
+  state.leaseExpiresAt = payload?.expires_at || null;
+  state.leaseGeneration = Number(payload?.controller_generation || state.leaseGeneration || 1);
+  state.controllerId = payload?.controller_id || null;
+  state.controllerName = payload?.controller_name || null;
+  state.leaseMessage = payload?.message || null;
+  state.leaseStatus = payload?.acquired ? "owned" : payload?.available ? "available" : "held";
+  if (state.snapshot) {
+    renderController();
+    renderLive();
+  }
+}
+
+async function hydrateControllerStatus() {
+  const storedToken = readStoredControllerToken();
+  if (storedToken) {
+    const result = await ensureLeaseCoordinator().restore(storedToken);
+    if (result.classification === "auth") clearStoredControllerToken();
+    return result;
+  }
+  const status = await state.service.getControllerStatus(null);
+  applyControllerStatus(status);
+  return status;
 }
 
 function showGate(name) {
@@ -161,27 +236,44 @@ function renderOps() {
 
 function renderController() {
   const ownsLease = ownsControllerLease();
-  const degraded = ["degraded", "reconnecting", "renewing", "requesting"].includes(state.leaseStatus);
   const stateMessage = ownsLease
     ? "현재 이 콘솔이 Live Control을 보유하고 있습니다"
     : state.leaseStatus === "reconnecting"
       ? "Live Control 연결을 다시 확인하고 있습니다"
-      : "Live Control 제어권이 필요합니다";
+      : state.leaseStatus === "held"
+        ? `${state.controllerName || "다른 Admin"}이 Live Control을 보유하고 있습니다`
+        : "Live Control 제어권이 필요합니다";
   const detailMessage = ownsLease
-    ? degraded
-      ? "일시적인 연결 문제를 확인하고 있습니다. 현재 제어권은 만료 시각까지 유지됩니다."
-      : `제어권은 ${new Intl.DateTimeFormat("ko-KR", { timeZone: config.timeZone || "Asia/Seoul", hour: "2-digit", minute: "2-digit", second: "2-digit" }).format(new Date(state.leaseExpiresAt))}까지 자동 갱신됩니다.`
+    ? state.leaseStatus === "degraded"
+      ? "연결을 확인하고 있습니다. 명시적으로 반납하거나 다른 Admin이 승계하기 전까지 제어권은 유지됩니다."
+      : "명시적으로 반납하거나 다른 Admin이 승계하기 전까지 제어권이 유지됩니다."
     : state.leaseStatus === "held"
-      ? state.leaseMessage || "다른 Admin이 현재 기도회를 제어하고 있습니다."
+      ? "필요한 경우 확인 후 제어권을 승계할 수 있습니다."
       : state.leaseStatus === "reconnecting"
-        ? "같은 제어권 토큰으로 5초마다 다시 연결합니다."
-        : "한 번에 한 명의 Admin만 참여자 화면을 변경할 수 있습니다.";
+        ? "같은 제어권 정보로 다시 연결하고 있습니다. 이 과정에서 새 제어권을 자동 요청하지 않습니다."
+        : "한 번에 한 Admin 계정만 참여자 화면을 변경합니다.";
   setText($("#controller-state"), stateMessage);
   setText($("#controller-detail"), detailMessage);
-  setText($("#claim-controller-button"), ownsLease ? "제어권 갱신" : "제어권 요청");
+  setText($("#claim-controller-button"), ownsLease ? "상태 확인" : state.leaseStatus === "held" ? "제어권 승계" : "제어권 요청");
+  setVisible($("#release-controller-button"), ownsLease);
   $$('[data-live-action]').forEach((button) => { button.disabled = !ownsLease; });
   $("#controller-banner .status-dot")?.classList.toggle("status-dot--live", ownsLease);
+  renderAnnouncement();
   renderOps();
+}
+
+function renderAnnouncement() {
+  const live = state.snapshot?.liveSession;
+  const message = live?.announcement?.trim() || "";
+  const input = $("#announcement-message");
+  if (input && !state.announcementDraftDirty && document.activeElement !== input) input.value = message;
+  setText($("#announcement-character-count"), `${input?.value.length || 0} / 240`);
+  setText($("#live-announcement-state"), message
+    ? `현재 공지: ${message}`
+    : "현재 게시된 공지가 없습니다.");
+  const ownsLease = ownsControllerLease();
+  if ($("#publish-announcement-button")) $("#publish-announcement-button").disabled = !ownsLease;
+  if ($("#clear-announcement-button")) $("#clear-announcement-button").disabled = !ownsLease || !message;
 }
 
 function renderCueList(view) {
@@ -217,7 +309,7 @@ function renderLive() {
   setText($("#program-reference"), step?.scriptureReference || "");
   setText($("#program-content"), step?.content || "송출 내용을 준비하고 있습니다.");
   setText($("#program-remaining"), live?.status === "paused" ? "PAUSED" : formatRemaining(view.remainingSeconds));
-  setText($("#program-participants"), state.presenceSynced ? `${state.presenceCount}개의 활성 연결` : "활성 연결 확인 중");
+  setText($("#program-participants"), state.presenceSynced ? `${state.presenceCount}명의 지체가 함께 기도 중` : "함께 기도 중인 지체 확인 중");
   const next = view.steps[view.stageIndex + 1];
   setText($("#preview-stage-number"), next ? `${view.stageIndex + 2} / ${view.steps.length}` : "마지막");
   setText($("#preview-stage-label"), next?.label || "다음 단계 없음");
@@ -244,6 +336,7 @@ function renderLive() {
   $$('[data-action="confirm-complete"]').forEach((button) => setVisible(button, running));
   $(".mobile-emergency-controls")?.classList.toggle("is-start-only", !running);
   renderCueList(view);
+  renderAnnouncement();
   renderOps();
 }
 
@@ -321,19 +414,30 @@ function createProgramStepRow(step = {}, index = 0) {
   content.value = step.content || "";
   const contentField = field("참여자에게 보일 말씀 또는 기도제목", content);
   contentField.className = "program-step__content";
+  const controls = document.createElement("div");
+  controls.className = "program-step__controls";
+  const moveUp = document.createElement("button");
+  moveUp.type = "button";
+  moveUp.dataset.action = "move-program-step-up";
+  moveUp.textContent = "↑";
+  const moveDown = document.createElement("button");
+  moveDown.type = "button";
+  moveDown.dataset.action = "move-program-step-down";
+  moveDown.textContent = "↓";
   const remove = document.createElement("button");
   remove.type = "button";
   remove.className = "program-step__remove";
   remove.dataset.action = "remove-program-step";
   remove.setAttribute("aria-label", `${index + 1}번째 단계 삭제`);
   remove.textContent = "×";
+  controls.append(moveUp, moveDown, remove);
 
   row.append(
     field("단계 이름", label),
     field("종류", kind),
     field("시간(분)", minutes),
     field("연결할 음악", media),
-    remove,
+    controls,
     field("말씀 표기", reference),
     contentField
   );
@@ -344,10 +448,33 @@ function updateProgramStepControls() {
   const rows = $$(".program-step", $("#program-steps"));
   rows.forEach((row, index) => {
     row.setAttribute("aria-label", `기도 단계 ${index + 1}`);
-    const button = $(".program-step__remove", row);
-    button.disabled = rows.length <= 1;
-    button.setAttribute("aria-label", `${index + 1}번째 단계 삭제`);
+    const moveUp = $('[data-action="move-program-step-up"]', row);
+    const moveDown = $('[data-action="move-program-step-down"]', row);
+    const remove = $(".program-step__remove", row);
+    moveUp.disabled = index === 0;
+    moveDown.disabled = index === rows.length - 1;
+    remove.disabled = rows.length <= 1;
+    moveUp.setAttribute("aria-label", `${index + 1}번째 단계를 위로 이동`);
+    moveDown.setAttribute("aria-label", `${index + 1}번째 단계를 아래로 이동`);
+    remove.setAttribute("aria-label", `${index + 1}번째 단계 삭제`);
   });
+}
+
+function moveProgramStep(button, direction) {
+  const row = button.closest(".program-step");
+  const container = row?.parentElement;
+  if (!row || !container) return;
+  const sibling = direction < 0 ? row.previousElementSibling : row.nextElementSibling;
+  if (!sibling) return;
+  if (direction < 0) container.insertBefore(row, sibling);
+  else container.insertBefore(sibling, row);
+  updateProgramStepControls();
+  const preferred = $(direction < 0 ? '[data-action="move-program-step-up"]' : '[data-action="move-program-step-down"]', row);
+  const alternate = $(direction < 0 ? '[data-action="move-program-step-down"]' : '[data-action="move-program-step-up"]', row);
+  const focusTarget = preferred?.disabled ? alternate : preferred;
+  (focusTarget?.disabled ? $("input, select, textarea", row) : focusTarget)?.focus();
+  const newPosition = $$(".program-step", container).indexOf(row) + 1;
+  toast(`기도 단계를 ${newPosition}번째로 이동했습니다.`);
 }
 
 function renderProgramEditor() {
@@ -574,7 +701,6 @@ async function openConsole(loginResult) {
   state.snapshot = await state.service.getAdminSnapshot();
   state.profile ||= state.snapshot.profile;
   state.serverOffsetMs = Date.parse(state.snapshot.serverNow) - Date.now();
-  const leaseCoordinator = ensureLeaseCoordinator();
   if (state.mode === "production") {
     const accountResult = await state.service.manageAdmin("list").catch((error) => {
       if (state.profile?.role === "owner") toast(error.message || "Admin 계정 목록을 불러오지 못했습니다.", 4800);
@@ -582,6 +708,11 @@ async function openConsole(loginResult) {
     });
     state.snapshot.accounts = Array.isArray(accountResult) ? accountResult : accountResult.accounts || [];
   }
+  await hydrateControllerStatus().catch((error) => {
+    state.leaseStatus = "reconnecting";
+    state.leaseMessage = error.message || "제어권 상태를 확인하지 못했습니다.";
+    toast("제어권 상태를 다시 확인하고 있습니다. 자동으로 새 제어권을 요청하지 않습니다.", 4800);
+  });
   try {
     state.presenceDisconnect = await state.service.observePresence("live", (presence) => {
       state.presenceSynced = Boolean(presence.synced);
@@ -608,7 +739,6 @@ async function openConsole(loginResult) {
   );
   renderAll();
   showConsole();
-  if (leaseCoordinator.hasToken()) void leaseCoordinator.resume();
 }
 
 async function login(event) {
@@ -678,24 +808,163 @@ async function requestPasswordReset(event) {
 }
 
 async function claimController({ quiet = false } = {}) {
-  const result = await ensureLeaseCoordinator().request({ quiet });
+  if (ownsControllerLease()) {
+    const result = await ensureLeaseCoordinator().renew({ quiet });
+    if (!quiet) toast(result.acquired ? "Live Control 제어권 상태를 확인했습니다." : result.message || "제어권 상태가 변경되었습니다.");
+    return result;
+  }
+  if (state.leaseStatus === "held") {
+    openControllerTakeoverConfirmation();
+    return { acquired: false, classification: "held" };
+  }
+  const coordinator = ensureLeaseCoordinator();
+  const result = await coordinator.request({ quiet });
+  if (coordinator.token) storeControllerToken(coordinator.token);
   if (result.acquired) {
     if (!quiet) toast("Live Control 제어권을 확보했습니다.");
-    return;
+    return result;
+  }
+  if (result.payload?.changed) {
+    await hydrateControllerStatus().catch((error) => {
+      console.warn("Live Control status refresh failed after an acquire conflict.", error);
+    });
   }
   if (!quiet && result.classification !== "superseded") {
     toast(result.message || result.error?.message || "제어권을 확보하지 못했습니다.", 4200);
   }
+  return result;
 }
 
 async function renewControllerLease() {
   const coordinator = state.leaseCoordinator;
-  if (!coordinator?.hasToken()) return;
-  await coordinator.renew({ quiet: true });
+  if (coordinator?.hasToken()) return coordinator.renew({ quiet: true });
+  if (!state.service || !state.snapshot) return null;
+  if (state.controllerStatusRefreshPromise) return state.controllerStatusRefreshPromise;
+  const service = state.service;
+  const refreshPromise = service.getControllerStatus(null)
+    .then((status) => {
+      if (state.service !== service) return null;
+      applyControllerStatus(status);
+      return status;
+    })
+    .catch((error) => {
+      if (state.service !== service) return null;
+      state.leaseStatus = "reconnecting";
+      state.leaseMessage = error.message || "제어권 상태를 확인하지 못했습니다.";
+      renderController();
+      return null;
+    })
+    .finally(() => {
+      if (state.controllerStatusRefreshPromise === refreshPromise) state.controllerStatusRefreshPromise = null;
+    });
+  state.controllerStatusRefreshPromise = refreshPromise;
+  return refreshPromise;
+}
+
+function openControllerReleaseConfirmation() {
+  state.confirmation = { type: "release-controller", generation: state.leaseGeneration };
+  setText($("#admin-confirm-title"), "Live Control 제어권을 반납할까요?");
+  setText($("#admin-confirm-message"), "반납하면 다른 Admin이 제어권을 요청할 수 있습니다. 참여자 화면의 현재 진행 상태는 그대로 유지됩니다.");
+  setText($("#admin-confirm-button"), "제어권 반납");
+  const dialog = $("#admin-confirm-dialog");
+  if (typeof dialog.showModal === "function") dialog.showModal();
+  else dialog.setAttribute("open", "");
+}
+
+function openControllerTakeoverConfirmation() {
+  state.confirmation = { type: "take-over-controller", generation: state.leaseGeneration };
+  setText($("#admin-confirm-title"), "Live Control 제어권을 승계할까요?");
+  setText($("#admin-confirm-message"), `${state.controllerName || "현재 Admin"}의 제어권이 즉시 종료되고 이 콘솔로 넘어옵니다. 진행 담당자와 확인한 뒤 승계해주세요.`);
+  setText($("#admin-confirm-button"), "제어권 승계");
+  const dialog = $("#admin-confirm-dialog");
+  if (typeof dialog.showModal === "function") dialog.showModal();
+  else dialog.setAttribute("open", "");
+}
+
+async function releaseController(expectedGeneration) {
+  if (!ownsControllerLease()) return toast("현재 이 콘솔이 제어권을 보유하고 있지 않습니다.", 4200);
+  try {
+    const result = await state.service.releaseController(state.leaseToken, expectedGeneration);
+    if (!result?.released) {
+      await hydrateControllerStatus();
+      return toast(result?.message || "제어권 상태가 변경되어 반납하지 않았습니다.", 4800);
+    }
+    clearStoredControllerToken();
+    state.leaseCoordinator?.dispose();
+    state.leaseGeneration = Number(result.controller_generation || state.leaseGeneration + 1);
+    state.leaseStatus = "available";
+    state.controllerId = null;
+    state.controllerName = null;
+    renderController();
+    toast("Live Control 제어권을 반납했습니다.");
+  } catch (error) {
+    await hydrateControllerStatus().catch((refreshError) => {
+      console.warn("Live Control status refresh failed after release.", refreshError);
+    });
+    toast(error.message || "제어권을 반납하지 못했습니다.", 4800);
+  }
+}
+
+async function takeOverController(expectedGeneration) {
+  const token = readStoredControllerToken() || createId();
+  storeControllerToken(token);
+  try {
+    const result = await state.service.takeOverController(token, expectedGeneration);
+    if (!result?.acquired) {
+      await hydrateControllerStatus();
+      return toast(result?.message || "제어권 상태가 변경되어 승계하지 않았습니다.", 4800);
+    }
+    await ensureLeaseCoordinator().restore(token);
+    toast("Live Control 제어권을 승계했습니다.");
+  } catch (error) {
+    await hydrateControllerStatus().catch((refreshError) => {
+      console.warn("Live Control status refresh failed after takeover.", refreshError);
+    });
+    toast(error.message || "제어권을 승계하지 못했습니다.", 4800);
+  }
+}
+
+async function publishAnnouncement(message) {
+  if (!ownsControllerLease()) return toast("공지를 게시하려면 먼저 Live Control 제어권이 필요합니다.", 4200);
+  const normalized = message.trim();
+  if (!normalized) {
+    $("#announcement-message")?.focus();
+    return toast("참여자에게 보낼 공지 내용을 입력해주세요.");
+  }
+  try {
+    const result = await state.service.publishAnnouncement(state.leaseToken, normalized, state.snapshot.liveSession.version);
+    state.snapshot.liveSession = typeof result === "string" ? JSON.parse(result) : result;
+    state.announcementDraftDirty = false;
+    renderLive();
+    renderAnnouncement();
+    toast("공지 내용을 모든 참여자 화면에 게시했습니다.");
+  } catch (error) {
+    const fresh = await state.service.fetchLiveSession().catch(() => null);
+    if (fresh) state.snapshot.liveSession = fresh;
+    renderAnnouncement();
+    toast(error.message || "공지를 게시하지 못했습니다.", 4800);
+  }
+}
+
+async function clearAnnouncement() {
+  if (!ownsControllerLease()) return toast("공지를 내리려면 Live Control 제어권이 필요합니다.", 4200);
+  try {
+    const result = await state.service.publishAnnouncement(state.leaseToken, "", state.snapshot.liveSession.version);
+    state.snapshot.liveSession = typeof result === "string" ? JSON.parse(result) : result;
+    state.announcementDraftDirty = false;
+    renderLive();
+    renderAnnouncement();
+    toast("참여자 화면에서 공지를 내렸습니다.");
+  } catch (error) {
+    const fresh = await state.service.fetchLiveSession().catch(() => null);
+    if (fresh) state.snapshot.liveSession = fresh;
+    renderAnnouncement();
+    toast(error.message || "공지를 내리지 못했습니다.", 4800);
+  }
 }
 
 async function applyLiveAction(button) {
-  if (!state.leaseToken) return toast("먼저 Live Control 제어권을 요청해주세요.");
+  if (!ownsControllerLease()) return toast("먼저 Live Control 제어권을 요청해주세요.");
   let action = button.dataset.liveAction;
   if (action === "pause" && state.snapshot.liveSession.status === "paused") action = "resume";
   const payload = action === "extend" ? { seconds: Number(button.dataset.seconds) || 60 } : {};
@@ -1020,7 +1289,12 @@ async function handleClick(event) {
       actionTarget.closest(".program-step")?.remove();
       updateProgramStepControls();
     }
+    if (action === "move-program-step-up") moveProgramStep(actionTarget, -1);
+    if (action === "move-program-step-down") moveProgramStep(actionTarget, 1);
     if (action === "claim-controller") await claimController();
+    if (action === "release-controller") openControllerReleaseConfirmation();
+    if (action === "publish-announcement") await publishAnnouncement($("#announcement-message").value);
+    if (action === "clear-announcement") await clearAnnouncement();
     if (action === "confirm-complete") openCompleteConfirmation();
     if (action === "moderate") {
       if (["rejected", "deleted"].includes(actionTarget.dataset.status)) openModerationDeleteConfirmation(actionTarget);
@@ -1100,6 +1374,10 @@ $("#app-settings-form")?.addEventListener("submit", saveSettings);
 $("#program-form")?.addEventListener("submit", saveProgram);
 $("#audio-upload-form")?.addEventListener("submit", uploadAudio);
 $("#admin-invite-form")?.addEventListener("submit", inviteAdmin);
+$("#announcement-message")?.addEventListener("input", (event) => {
+  state.announcementDraftDirty = true;
+  setText($("#announcement-character-count"), `${event.target.value.length} / 240`);
+});
 $("#admin-confirm-dialog")?.addEventListener("close", async (event) => {
   if (event.target.returnValue !== "confirm") {
     state.confirmation = null;
@@ -1118,6 +1396,8 @@ $("#admin-confirm-dialog")?.addEventListener("close", async (event) => {
     await moderate(fakeButton);
   }
   if (state.confirmation?.type === "delete-media") await deleteMedia(state.confirmation.mediaId);
+  if (state.confirmation?.type === "release-controller") await releaseController(state.confirmation.generation);
+  if (state.confirmation?.type === "take-over-controller") await takeOverController(state.confirmation.generation);
   state.confirmation = null;
 });
 globalThis.addEventListener("pagehide", () => {
@@ -1134,6 +1414,16 @@ document.addEventListener("visibilitychange", () => {
 });
 globalThis.addEventListener("focus", () => { void renewControllerLease(); });
 globalThis.addEventListener("online", () => { void renewControllerLease(); });
+globalThis.addEventListener("storage", (event) => {
+  if (event.key !== controllerStorageKey() || event.newValue !== null) return;
+  state.leaseCoordinator?.dispose();
+  void hydrateControllerStatus().then(() => {
+    toast("다른 탭에서 제어권이 반납되어 현재 상태를 다시 확인했습니다.", 4200);
+  }).catch((error) => {
+    console.warn("Live Control status refresh failed after a cross-tab release.", error);
+    toast("다른 탭의 제어권 변경 상태를 확인하지 못했습니다. 연결 후 다시 확인해주세요.", 4800);
+  });
+});
 
 setInterval(() => {
   if (!state.snapshot) return;
@@ -1142,5 +1432,8 @@ setInterval(() => {
   if (state.route === "live") renderLive();
   renderController();
 }, 1000);
+setInterval(() => {
+  if (state.snapshot && !state.leaseCoordinator?.hasToken()) void renewControllerLease();
+}, 20_000);
 
 boot();

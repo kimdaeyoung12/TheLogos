@@ -2,7 +2,7 @@
 
 ## Source of truth
 - Status: Active
-- Last refreshed: 2026-08-29
+- Last refreshed: 2026-09-02
 - Primary product surfaces: Hugo homepage, article archive, individual article pages, informational pages, embedded interactive explainers, knowledge graph, ChristianDays app launcher, footer/navigation, and the unlisted retreat-prayer participant/Admin application under `/retreat-prayer/`.
 - Evidence reviewed: `layouts/index.html`, `layouts/_default/baseof.html`, `layouts/_default/list.html`, `layouts/posts/single.html`, `layouts/_default/single.html`, `layouts/_default/network.html`, `layouts/_default/about.html`, `layouts/shortcodes/interactiveframe.html`, `layouts/shortcodes/ai_summary.html`, `content/about.md`, `content/posts`, `assets/css/home.css`, `assets/css/archive.css`, `assets/css/main.css`, `assets/css/single.css`, `hugo.toml`, `static/images/og-default.png`, `static/christiandays-app/icon-192.png`, `static/retreat-prayer/`, `supabase/`, and the supplied Google Stitch project reference.
 
@@ -23,7 +23,7 @@
 - Primary personas: Korean/English readers interested in theological, philosophical, scientific, and technical essays.
 - User jobs: scan recent topics, read a coherent article, inspect an interactive model, follow references.
 - Key contexts of use: desktop deep reading, mobile article browsing, crawler/RSS access.
-- Retreat prayer personas and contexts: no-login participants on mobile, daily-prayer participants entering briefly from any location, request authors choosing a nickname or full anonymity, intercessors entering focus mode, desktop Admin operators, and a representative owner managing up to five Admin accounts.
+- Retreat prayer personas and contexts: no-login participants on mobile, daily-prayer participants entering briefly from any location, request authors choosing a nickname or full anonymity, intercessors entering focus mode, desktop Admin operators, and a representative owner managing up to ten Admin accounts.
 
 ## Information architecture
 - Primary navigation: Home, Articles, About, Network, Subscribe.
@@ -69,6 +69,8 @@
 
 Selected direction: **Sober Constellation — 절제된 공동체의 별자리**. 개혁주의 예배의 말씀 중심성과 절제된 공간 언어에 맞춰 `Clarity`, `Editorial`, `Focus`, `Hierarchy`, `Negative Space`, `Quietude`, `Sobriety`, `Unity`를 1차 기준으로 삼는다. `Depth`, `Perspective`, `Luminance`, `Orbit`, `Volume`은 기도문 뒤의 낮은 대비 3D Presence와 하단의 작은 인원 창에만 사용한다. 순서는 항상 **말씀/기도제목 > 남은 시간 > 공동체 Presence > 장식**이며, Presence는 사람을 식별하거나 참여를 경쟁시키지 않는다.
 
+Live Prayer의 Presence는 홈 화면과 같은 따뜻한 빛·타원 궤도·익명 입자 언어를 사용하되 기도문보다 낮은 대비로 한 단계 뒤에 둔다. 정확한 지체 수는 같은 장면 안의 작은 caption으로 제공한다. 참여자 공지는 장면과 분리된 compact notice이며, 참여자가 닫을 수 없다. 새 공지로 교체되거나 Admin이 명시적으로 내릴 때까지 모든 일반 화면과 Focus 화면에서 유지한다.
+
 ## Visual language
 - Color: shared pages use neutral paper/charcoal surfaces with teal, ember, gold, cobalt, and category-specific accents. Every primary route, including About and Network, must provide paired light and dark surface, text, muted-text, border, and control tokens; restrained high-contrast dark explainers are acceptable inside interactive frames.
 - Typography: reuse system and site typography; use serif display type for brand moments; avoid viewport-scaled body text and negative tracking.
@@ -107,6 +109,7 @@ Selected direction: **Sober Constellation — 절제된 공동체의 별자리**
 - Disabled: disabled controls must not imply meaningful interaction.
 - Offline/slow network, if applicable: explainers must not depend on external JavaScript.
 - Retreat prayer states: production without Supabase configuration fails closed; localhost alone may show a labeled preview. Presence never displays a number before sync. Scheduled sessions show a waiting state, late entrants receive the server-derived current stage, disconnection retains the last stage, automatic sessions start/end from server time, empty prayer lists invite submission without pressure, and submitted requests remain pending until Admin approval.
+- Retreat prayer operator states: Live Control is single-owner and persistent rather than time-expiring. Status checks, focus, reconnect, and BFCache return never acquire an empty controller slot. Ownership changes only through explicit acquire, release, or generation-checked takeover, with current holder and audit history visible. Run-of-Show step order uses keyboard-accessible up/down controls with disabled boundaries; stored DOM order is the published order.
 
 ## Content voice
 - Tone: direct, explanatory, careful about limits and assumptions; About copy should preserve the author's aphoristic Korean voice around entropy, order, suffering, gratitude, and Logos rather than flattening it into generic site marketing.
@@ -120,7 +123,7 @@ Selected direction: **Sober Constellation — 절제된 공동체의 별자리**
 - Performance constraints: no external JS dependency for static theory explainers; homepage must avoid remote placeholder images and keep animation to composited opacity/transform work.
 - Compatibility constraints: static files must work under Hugo/GitHub Pages paths.
 - Test/screenshot expectations: run Hugo build; visually smoke-test the homepage, archive, one article, about page, and network page on desktop/mobile; check one interactive post when shortcode or explainer code changes.
-- Retreat prayer constraints: static Hugo/GitHub Pages frontend plus a dedicated Supabase project; private Presence through invisible anonymous Auth; RLS and column grants are the data boundary; anonymous writes and owner-only account changes go through Edge Functions; Admin and participant auth storage are isolated; no service-role secret is shipped to the browser. Live/content subscriptions install idempotently, reconcile both snapshots after connection, and retry initial failure with a capped 2/5/15/30-second backoff. The live 3D backdrop samples at most 36 anonymous light points and redraws at no more than 15fps/DPR 1.25, while the text count always shows the unsampled active-browser-connection value. Validate unit tests, JS module graph, Edge syntax, Hugo build, 360/390/1280 layouts, 200% zoom and mobile landscape, controller lease/version races, and staging RLS before production activation.
+- Retreat prayer constraints: static Hugo/GitHub Pages frontend plus a dedicated Supabase project; private Presence through invisible anonymous Auth; RLS and column grants are the data boundary; anonymous writes and owner-only account changes go through Edge Functions; Admin and participant auth storage are isolated; no service-role secret is shipped to the browser. Live/content subscriptions install idempotently, reconcile both snapshots after connection, and retry initial failure with a capped 2/5/15/30-second backoff. Durable announcements have a server-issued identity and timestamp, and only the current Live Controller can publish or clear them against the latest live-session version. The live 3D backdrop samples at most 36 anonymous light points and redraws at no more than 15fps/DPR 1.25, while the text count always shows the unsampled active-browser-connection value. Validate unit tests, JS module graph, Edge syntax, Hugo build, 360/390/1280 layouts, 200% zoom and mobile landscape, controller generation/version races, and staging RLS before production activation.
 
 ## Open questions
 - [ ] Whether future theory explainers should share a unified `/theory/` section instead of `content/posts`.

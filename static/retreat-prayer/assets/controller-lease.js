@@ -4,6 +4,7 @@ const DEFAULT_RETRY_MS = 5_000;
 export class ControllerLeaseCoordinator {
   constructor({
     claim,
+    check = claim,
     createToken,
     classifyError = () => "transient",
     onUpdate = () => {},
@@ -14,8 +15,10 @@ export class ControllerLeaseCoordinator {
     clearTimer = (timer) => clearTimeout(timer),
   }) {
     if (typeof claim !== "function") throw new TypeError("A controller lease claim function is required.");
+    if (typeof check !== "function") throw new TypeError("A controller lease status function is required.");
     if (typeof createToken !== "function") throw new TypeError("A controller lease token factory is required.");
     this.claim = claim;
+    this.check = check;
     this.createToken = createToken;
     this.classifyError = classifyError;
     this.onUpdate = onUpdate;
@@ -27,6 +30,7 @@ export class ControllerLeaseCoordinator {
     this.token = null;
     this.expiresAt = null;
     this.status = "idle";
+    this.details = null;
     this.timer = null;
     this.inFlight = null;
     this.generation = 0;
@@ -49,6 +53,7 @@ export class ControllerLeaseCoordinator {
       status: this.status,
       error,
       message,
+      details: this.details,
     };
   }
 
@@ -73,15 +78,21 @@ export class ControllerLeaseCoordinator {
   }
 
   request({ quiet = false } = {}) {
-    return this.claimLease({ allowCreate: true, quiet });
+    return this.run({ operation: this.claim, allowCreate: true, quiet, checking: false });
   }
 
   renew({ quiet = true } = {}) {
     if (!this.token) return Promise.resolve({ acquired: false, attempted: false, classification: "idle" });
-    return this.claimLease({ allowCreate: false, quiet });
+    return this.run({ operation: this.check, allowCreate: false, quiet, checking: true });
   }
 
-  claimLease({ allowCreate, quiet }) {
+  restore(token) {
+    if (!token) return Promise.resolve({ acquired: false, attempted: false, classification: "idle" });
+    this.token = token;
+    return this.renew({ quiet: true });
+  }
+
+  run({ operation, allowCreate, quiet, checking }) {
     this.paused = false;
     if (this.inFlight) return this.inFlight;
     if (!this.token && allowCreate) this.token = this.createToken();
@@ -90,27 +101,35 @@ export class ControllerLeaseCoordinator {
     this.clearScheduled();
     const token = this.token;
     const generation = this.generation;
-    this.status = this.ownsLease() ? "renewing" : "requesting";
+    this.status = this.ownsLease() ? "renewing" : checking ? "checking" : "requesting";
     this.emit();
 
     const task = Promise.resolve()
-      .then(() => this.claim(token))
+      .then(() => operation(token))
       .then((payload) => {
         if (generation !== this.generation || token !== this.token) {
           return { acquired: false, attempted: true, classification: "superseded" };
         }
         if (!payload?.acquired) {
-          this.token = null;
           this.expiresAt = null;
-          this.status = "held";
+          this.details = payload || null;
+          this.status = payload?.available ? "available" : "held";
           this.emit(null, payload?.message || "다른 Admin이 현재 기도회를 제어하고 있습니다.");
-          return { acquired: false, attempted: true, classification: "held", message: payload?.message };
+          this.schedule(this.heartbeatMs);
+          return {
+            acquired: false,
+            attempted: true,
+            classification: payload?.available ? "available" : "held",
+            message: payload?.message,
+            payload,
+          };
         }
         this.expiresAt = payload.expires_at;
+        this.details = payload;
         this.status = "owned";
         this.emit();
         this.schedule(this.heartbeatMs);
-        return { acquired: true, attempted: true, classification: "owned", expiresAt: this.expiresAt };
+        return { acquired: true, attempted: true, classification: "owned", expiresAt: this.expiresAt, payload };
       })
       .catch((error) => {
         if (generation !== this.generation || token !== this.token) {
@@ -120,6 +139,7 @@ export class ControllerLeaseCoordinator {
         if (classification === "auth") {
           this.token = null;
           this.expiresAt = null;
+          this.details = null;
           this.status = "unauthorized";
           this.emit(error);
           return { acquired: false, attempted: true, classification, error, quiet };
@@ -153,6 +173,7 @@ export class ControllerLeaseCoordinator {
     this.token = null;
     this.expiresAt = null;
     this.status = "idle";
+    this.details = null;
     this.emit();
   }
 }

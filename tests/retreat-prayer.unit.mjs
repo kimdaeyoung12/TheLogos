@@ -53,6 +53,10 @@ const resilientControllerLeaseMigrationSource = await readFile(
   new URL("../supabase/migrations/20260901010000_retreat_prayer_resilient_controller_lease.sql", import.meta.url),
   "utf8",
 );
+const persistentControllerMigrationSource = await readFile(
+  new URL("../supabase/migrations/20260901020000_retreat_prayer_persistent_control_and_announcements.sql", import.meta.url),
+  "utf8",
+);
 const edgeSecretHelperSource = await readFile(
   new URL("../supabase/functions/_shared/supabase-key.ts", import.meta.url),
   "utf8",
@@ -444,19 +448,19 @@ test("연결 상태는 본문을 가리지 않는 작은 아이콘으로만 표�
 });
 
 test("공동기도는 기도문 뒤의 절제된 3D Presence와 정확한 활성 연결 문구를 제공한다", () => {
-  assert.match(participantHtmlSource, /class="live-presence-backdrop" aria-hidden="true"[\s\S]*?id="mini-presence-canvas"/);
-  assert.match(participantHtmlSource, /class="focus-presence-window" aria-label="함께 기도 중인 지체 수"/);
+  assert.match(participantHtmlSource, /class="live-presence-stage" aria-label="함께 기도 중인 지체 수"[\s\S]*?class="live-presence-field" aria-hidden="true"[\s\S]*?id="mini-presence-canvas"/);
+  assert.match(participantHtmlSource, /class="live-presence-caption"[\s\S]*?id="live-presence-count"/);
   assert.match(participantHtmlSource, /id="live-presence-fallback"[\s\S]*?hidden/);
-  assert.match(participantStylesSource, /\.live-presence-backdrop \{[\s\S]*?pointer-events: none;[\s\S]*?mask-image:/);
-  assert.match(participantStylesSource, /\.live-presence-backdrop::after[\s\S]*?radial-gradient/);
+  assert.match(participantStylesSource, /\.live-presence-stage \{[\s\S]*?pointer-events: none/);
+  assert.match(participantStylesSource, /\.live-presence-field \{[\s\S]*?radial-gradient[\s\S]*?border-radius/);
+  assert.match(participantStylesSource, /\.live-presence-core \{[\s\S]*?filter: blur/);
   assert.match(participantStylesSource, /\.focus-content \{[\s\S]*?z-index: 2/);
-  assert.match(participantStylesSource, /\.focus-footer \{[\s\S]*?position: fixed;[\s\S]*?pointer-events: none/);
-  assert.match(participantStylesSource, /\.focus-presence-window \{[\s\S]*?border-radius: 999px;[\s\S]*?pointer-events: none;[\s\S]*?animation: focus-presence-float 8s/);
-  assert.match(participantStylesSource, /\.focus-view \{[\s\S]*?grid-template-rows: auto minmax\(0, 1fr\) auto;[\s\S]*?overflow: hidden/);
+  assert.match(participantStylesSource, /\.live-presence-caption \{[\s\S]*?position: fixed;[\s\S]*?pointer-events: none;[\s\S]*?animation: focus-presence-float 8s/);
+  assert.match(participantStylesSource, /\.focus-view \{[\s\S]*?grid-template-rows: auto minmax\(0, 1fr\);[\s\S]*?overflow: hidden/);
   assert.match(participantStylesSource, /orientation: landscape[\s\S]*?align-content: start/);
   assert.match(appSource, /\$\("#live-presence-count"\), liveText/);
-  assert.match(appSource, /\$\{state\.presenceCount\}명의 지체/);
-  assert.match(appSource, /livePresenceContext: "가 함께 기도 중입니다"/);
+  assert.match(appSource, /\$\{state\.presenceCount\}명의 지체가/);
+  assert.match(appSource, /livePresenceContext: "함께 기도 중입니다"/);
   assert.match(appSource, /지체 수 동기화됨/);
   assert.doesNotMatch(appSource, /명의 지체이 함께 기도 중입니다/);
   assert.match(appSource, /\$\("#live-presence-context"\), state\.presenceSynced \? state\.livePresenceContext : ""/);
@@ -601,17 +605,18 @@ test("Admin 진행 조작의 응답이 불명확하면 제어권을 버리지 �
   assert.doesNotMatch(applyActionSource, /state\.leaseToken = null/);
 });
 
-test("제어권 갱신의 일시 오류는 같은 토큰을 유지하고 5초 뒤 다시 시도한다", async () => {
+test("제어권 상태 확인의 일시 오류는 같은 토큰을 유지하고 5초 뒤 다시 시도한다", async () => {
   const timers = [];
   const updates = [];
   let attempts = 0;
   const now = Date.parse("2026-09-01T00:00:00Z");
   const coordinator = new ControllerLeaseCoordinator({
-    claim: async (token) => {
+    claim: async () => ({ acquired: true, expires_at: "9999-12-31T23:59:59Z" }),
+    check: async (token) => {
       attempts += 1;
       assert.equal(token, "stable-token");
       if (attempts === 1) throw new Error("fetch failed");
-      return { acquired: true, expires_at: new Date(now + 90_000).toISOString() };
+      return { acquired: true, expires_at: "9999-12-31T23:59:59Z" };
     },
     createToken: () => "stable-token",
     onUpdate: (snapshot) => updates.push(snapshot),
@@ -623,11 +628,12 @@ test("제어권 갱신의 일시 오류는 같은 토큰을 유지하고 5초 �
     clearTimer: () => {},
   });
 
-  const failedRenewal = await coordinator.request();
+  await coordinator.request();
+  const failedRenewal = await coordinator.renew();
   assert.equal(failedRenewal.classification, "transient");
   assert.equal(coordinator.hasToken(), true);
   assert.equal(timers.at(-1).delay, 5_000);
-  assert.equal(updates.at(-1).status, "reconnecting");
+  assert.equal(updates.at(-1).status, "degraded");
 
   const recovered = await coordinator.renew();
   assert.equal(recovered.acquired, true);
@@ -646,16 +652,24 @@ test("토큰 없는 자동 복귀 이벤트는 새 제어권을 요청하지 않
   assert.equal(result.attempted, false);
   assert.equal(claims, 0);
   assert.match(adminScriptSource, /visibilitychange[\s\S]*?renewControllerLease\(\)[\s\S]*?addEventListener\("focus"[\s\S]*?renewControllerLease\(\)[\s\S]*?addEventListener\("online"/);
+  assert.match(adminScriptSource, /state\.service\.getControllerStatus\(null\)/);
+  assert.match(adminScriptSource, /const service = state\.service;[\s\S]*?if \(state\.service !== service\) return null/);
+  assert.match(adminScriptSource, /!state\.leaseCoordinator\?\.hasToken\(\)[\s\S]*?renewControllerLease\(\)/);
 });
 
-test("백그라운드에서 복귀하면 새 토큰을 만들지 않고 기존 제어권 토큰으로 즉시 갱신한다", async () => {
-  const claimedTokens = [];
+test("백그라운드에서 복귀하면 새 토큰을 만들거나 획득하지 않고 기존 토큰 상태만 확인한다", async () => {
+  const acquiredTokens = [];
+  const checkedTokens = [];
   let createdTokens = 0;
   const now = Date.parse("2026-09-01T00:00:00Z");
   const coordinator = new ControllerLeaseCoordinator({
     claim: async (token) => {
-      claimedTokens.push(token);
-      return { acquired: true, expires_at: new Date(now + 90_000).toISOString() };
+      acquiredTokens.push(token);
+      return { acquired: true, expires_at: "9999-12-31T23:59:59Z" };
+    },
+    check: async (token) => {
+      checkedTokens.push(token);
+      return { acquired: true, expires_at: "9999-12-31T23:59:59Z" };
     },
     createToken: () => {
       createdTokens += 1;
@@ -670,7 +684,8 @@ test("백그라운드에서 복귀하면 새 토큰을 만들지 않고 기존 �
 
   assert.equal(resumed.acquired, true);
   assert.equal(createdTokens, 1);
-  assert.deepEqual(claimedTokens, ["stable-token-1", "stable-token-1"]);
+  assert.deepEqual(acquiredTokens, ["stable-token-1"]);
+  assert.deepEqual(checkedTokens, ["stable-token-1"]);
   assert.equal(coordinator.hasToken(), true);
   coordinator.dispose();
 });
@@ -693,15 +708,16 @@ test("인증 만료 응답은 제어권 토큰을 제거하고 자동 재시도�
   assert.equal(timers.length, 0);
 });
 
-test("다른 Admin이 보유했다는 서버 응답에서만 로컬 제어권 토큰을 제거한다", async () => {
+test("다른 Admin이 보유해도 후보 토큰을 유지하며 읽기 전용 상태 확인을 계속한다", async () => {
   const coordinator = new ControllerLeaseCoordinator({
     claim: async () => ({ acquired: false, message: "다른 Admin이 현재 기도회를 제어하고 있습니다." }),
     createToken: () => "contested-token",
   });
   const result = await coordinator.request();
   assert.equal(result.classification, "held");
-  assert.equal(coordinator.hasToken(), false);
+  assert.equal(coordinator.hasToken(), true);
   assert.equal(coordinator.status, "held");
+  coordinator.dispose();
 });
 
 test("중복 갱신과 늦게 도착한 응답은 새 스케줄러를 만들지 않는다", async () => {
@@ -731,14 +747,60 @@ test("중복 갱신과 늦게 도착한 응답은 새 스케줄러를 만들지 
   assert.equal(timers.length, 0);
 });
 
-test("제어권 lease는 90초이고 함수 권한과 단일 보유자 규칙을 유지한다", () => {
-  assert.match(resilientControllerLeaseMigrationSource, /expires_at = clock_timestamp\(\) \+ interval '90 seconds'/);
-  assert.match(resilientControllerLeaseMigrationSource, /where id = 1[\s\S]*?returning \* into lease/);
-  assert.match(resilientControllerLeaseMigrationSource, /revoke all on function public\.claim_live_controller\(uuid\) from public/);
-  assert.match(resilientControllerLeaseMigrationSource, /grant execute on function public\.claim_live_controller\(uuid\) to authenticated/);
-  assert.match(backendSource, /expires_at: new Date\(Date\.now\(\) \+ 90_000\)/);
-  assert.match(adminHtmlSource, /assets\/admin\.js\?v=20260901-1/);
-  assert.match(adminScriptSource, /controller-lease\.js\?v=20260901-1/);
+test("제어권은 명시적 획득·반납·generation 승계만으로 바뀌고 자동 상태 확인은 획득하지 않는다", () => {
+  assert.match(persistentControllerMigrationSource, /expires_at = '9999-12-31 23:59:59\+00'/);
+  assert.match(persistentControllerMigrationSource, /lease_token is not null\s+and expires_at > clock_timestamp\(\)/);
+  assert.match(persistentControllerMigrationSource, /Never resurrect a controller[\s\S]*?controller_generation = controller_generation \+ 1/);
+  assert.match(persistentControllerMigrationSource, /create or replace function public\.acquire_live_controller/);
+  assert.match(persistentControllerMigrationSource, /create or replace function public\.get_live_controller_status/);
+  assert.match(persistentControllerMigrationSource, /create or replace function public\.release_live_controller/);
+  assert.match(persistentControllerMigrationSource, /create or replace function public\.take_over_live_controller/);
+  assert.match(persistentControllerMigrationSource, /controller_generation = controller_generation \+ 1/);
+  assert.match(persistentControllerMigrationSource, /if lease\.controller_id = caller and lease\.lease_token is not distinct from p_lease_token[\s\S]*?return jsonb_build_object/);
+  assert.match(persistentControllerMigrationSource, /Compatibility only:[\s\S]*?can never acquire an empty controller slot/);
+  const statusFunctionSource = persistentControllerMigrationSource.match(/create or replace function public\.get_live_controller_status[\s\S]*?\n\$\$;/)?.[0] || "";
+  assert.doesNotMatch(statusFunctionSource, /'lease_token'/);
+  assert.match(adminScriptSource, /check: \(token\) => state\.service\.getControllerStatus\(token\)/);
+  assert.match(adminScriptSource, /retreat-prayer-admin-controller-token:/);
+  assert.match(adminScriptSource, /명시적으로 반납하거나 다른 Admin이 승계하기 전까지 제어권이 유지됩니다/);
+  assert.match(adminHtmlSource, /assets\/admin\.js\?v=20260901-2/);
+  assert.match(adminScriptSource, /controller-lease\.js\?v=20260901-2/);
+});
+
+test("참여자 공지는 새 공지 또는 Admin 해제 전까지 닫기 없이 지속된다", () => {
+  assert.match(persistentControllerMigrationSource, /add column if not exists announcement_id uuid/);
+  assert.match(persistentControllerMigrationSource, /add column if not exists announcement_created_at timestamptz/);
+  assert.match(persistentControllerMigrationSource, /create or replace function public\.publish_live_announcement/);
+  assert.match(persistentControllerMigrationSource, /current_setting\('retreat_prayer\.allow_announcement_clear', true\) = 'on'/);
+  assert.match(persistentControllerMigrationSource, /new\.announcement := old\.announcement/);
+  assert.match(persistentControllerMigrationSource, /set_config\('retreat_prayer\.allow_announcement_clear', 'on', true\)/);
+  assert.match(persistentControllerMigrationSource, /where id = 1\s+returning \* into current_state/);
+  assert.match(persistentControllerMigrationSource, /case when normalized_message = '' then 'announcement\.clear' else 'announcement\.publish' end/);
+  assert.doesNotMatch(persistentControllerMigrationSource, /'message'\s*,\s*normalized_message/);
+  assert.doesNotMatch(persistentControllerMigrationSource, /'announcement'\s*,\s*normalized_message/);
+  assert.match(backendSource, /publishAnnouncement\(token, message, expectedVersion\)[\s\S]*?rpc\("publish_live_announcement"/);
+  assert.match(participantHtmlSource, /id="participant-announcement"[\s\S]*?id="participant-announcement-message"/);
+  assert.doesNotMatch(participantHtmlSource, /data-action="dismiss-announcement"/);
+  assert.match(appSource, /function renderParticipantAnnouncement\(\)[\s\S]*?announcement_id[\s\S]*?setVisible\(container, false\)[\s\S]*?setVisible\(container, true\)/);
+  assert.match(appSource, /state\.activeAnnouncementId === announcementId\) return;[\s\S]*?setText\(\$\("#participant-announcement-message"\), announcement\)/);
+  assert.match(appSource, /state\.activeAnnouncementId === announcementId\) return;[\s\S]*?새 공동기도 공지가 도착했습니다/);
+  assert.match(appSource, /receiveLiveSession\(liveSession\)[\s\S]*?renderParticipantAnnouncement\(\)/);
+  assert.match(adminHtmlSource, /id="publish-announcement-button"[\s\S]*?공지 띄우기/);
+  assert.match(adminHtmlSource, /id="clear-announcement-button"[\s\S]*?공지 내리기/);
+  assert.match(adminHtmlSource, /새 공지가 올라오거나 관리자가 내릴 때까지 모든 참여자 화면에 계속 표시됩니다/);
+  assert.match(adminScriptSource, /state\.service\.publishAnnouncement\(state\.leaseToken, normalized, state\.snapshot\.liveSession\.version\)/);
+  assert.match(adminScriptSource, /state\.service\.publishAnnouncement\(state\.leaseToken, "", state\.snapshot\.liveSession\.version\)/);
+});
+
+test("기도 단계는 경계가 비활성화된 위·아래 버튼으로 DOM 순서를 바꾼다", () => {
+  assert.match(adminScriptSource, /dataset\.action = "move-program-step-up"/);
+  assert.match(adminScriptSource, /dataset\.action = "move-program-step-down"/);
+  assert.match(adminScriptSource, /moveUp\.disabled = index === 0/);
+  assert.match(adminScriptSource, /moveDown\.disabled = index === rows\.length - 1/);
+  assert.match(adminScriptSource, /function moveProgramStep\(button, direction\)[\s\S]*?insertBefore[\s\S]*?preferred\?\.disabled[\s\S]*?focus\(\)[\s\S]*?기도 단계를 \$\{newPosition\}번째로 이동했습니다/);
+  assert.match(adminScriptSource, /if \(action === "move-program-step-up"\) moveProgramStep\(actionTarget, -1\)/);
+  assert.match(adminScriptSource, /if \(action === "move-program-step-down"\) moveProgramStep\(actionTarget, 1\)/);
+  assert.match(adminScriptSource, /const rows = \$\$\("\.program-step", \$\("#program-steps"\)\);[\s\S]*?const steps = rows\.map/);
 });
 
 test("활성 Admin 상한 10명은 DB·Edge Function·화면에서 일관되게 적용된다", () => {
