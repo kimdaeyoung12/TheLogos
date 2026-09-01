@@ -76,6 +76,7 @@ const manageAdminSource = await readFile(new URL("../supabase/functions/manage-a
 const participantHtmlSource = await readFile(new URL("../static/retreat-prayer/index.html", import.meta.url), "utf8");
 const participantStylesSource = await readFile(new URL("../static/retreat-prayer/assets/styles.css", import.meta.url), "utf8");
 const presenceCanvasSource = await readFile(new URL("../static/retreat-prayer/assets/presence-canvas.js", import.meta.url), "utf8");
+const { PrayerPresenceCanvas, mergeOverlappingZones, movePointOutsideZones } = await import(new URL("../static/retreat-prayer/assets/presence-canvas.js", import.meta.url));
 const adminHtmlSource = await readFile(new URL("../static/retreat-prayer/admin/index.html", import.meta.url), "utf8");
 const designSource = await readFile(new URL("../DESIGN.md", import.meta.url), "utf8");
 
@@ -467,9 +468,66 @@ test("공동기도는 기도문 뒤의 절제된 3D Presence와 정확한 활성
   assert.match(appSource, /function setLivePresenceContext\(message\)/);
   assert.match(appSource, /variant: "live-backdrop"/);
   assert.match(appSource, /if \(!state\.miniCanvas\.start\(\)\) setVisible\(\$\("#live-presence-fallback"\), true\)/);
-  assert.match(presenceCanvasSource, /variant === "live-backdrop" \? 36/);
+  assert.match(presenceCanvasSource, /LIVE_BACKDROP_POINT_LIMIT = 72/);
   assert.match(presenceCanvasSource, /variant === "live-backdrop" \? 1000 \/ 15/);
   assert.match(presenceCanvasSource, /variant === "live-backdrop" \? 1\.25 : 2/);
+  assert.match(participantStylesSource, /\.focus-content \{[\s\S]*?scrollbar-width: none;/);
+  assert.match(participantStylesSource, /\.focus-content::\-webkit\-scrollbar \{[\s\S]*?display: none;/);
+  assert.match(presenceCanvasSource, /globalCompositeOperation = "lighter"/);
+  assert.match(presenceCanvasSource, /LIVE_BACKDROP_EXCLUSION_SELECTORS[\s\S]*?#live-heading/);
+  assert.match(presenceCanvasSource, /getLiveBackdropExclusionZones\(\)/);
+});
+
+test("Live Prayer Presence는 50개 빛을 모두 그리고 더 큰 인원은 성능 한도 안에서 표본화한다", () => {
+  const canvas = { getContext: () => ({}) };
+  const presence = new PrayerPresenceCanvas(canvas, { count: 50, variant: "live-backdrop" });
+
+  assert.equal(presence.pointLimit, 72);
+  assert.equal(presence.points.length, 50);
+  presence.setCount(90);
+  assert.equal(presence.count, 90);
+  assert.equal(presence.points.length, 72);
+});
+
+test("Live Prayer의 밝은 빛 중심은 실제 기도문 영역 밖으로 이동한다", () => {
+  const zone = { left: 20, right: 80, top: 20, bottom: 80 };
+  const moved = movePointOutsideZones({ x: 50, y: 50 }, [zone], 3, 100, 100);
+
+  assert.equal(
+    moved.x > zone.left && moved.x < zone.right && moved.y > zone.top && moved.y < zone.bottom,
+    false,
+  );
+  assert.ok(moved.x >= 8 && moved.x <= 92);
+  assert.ok(moved.y >= 8 && moved.y <= 92);
+});
+
+test("기도문 경계로 이동한 빛은 직선이 아니라 곡률과 깊이 차이를 가진다", () => {
+  const zone = { left: 20, right: 180, top: 30, bottom: 90 };
+  const first = movePointOutsideZones({ x: 70, y: 60 }, [zone], 1, 200, 140);
+  const second = movePointOutsideZones({ x: 110, y: 60 }, [zone], 4, 200, 140);
+
+  assert.notEqual(first.y, second.y);
+  assert.equal(first.y > zone.top && first.y < zone.bottom, false);
+  assert.equal(second.y > zone.top && second.y < zone.bottom, false);
+});
+
+test("겹친 텍스트 보호 영역은 합쳐져 빛 중심이 영역 사이에서 왕복하지 않는다", () => {
+  const zones = [
+    { left: 20, right: 120, top: 20, bottom: 80 },
+    { left: 30, right: 130, top: 70, bottom: 120 },
+  ];
+  const merged = mergeOverlappingZones(zones);
+  const moved = movePointOutsideZones({ x: 60, y: 75 }, zones, 5, 160, 140);
+
+  assert.deepEqual(merged, [{ left: 20, right: 130, top: 20, bottom: 120 }]);
+  assert.equal(zones.some((zone) => (
+    moved.x > zone.left && moved.x < zone.right && moved.y > zone.top && moved.y < zone.bottom
+  )), false);
+});
+
+test("모바일 가로 Focus는 긴 기도문을 스크롤할 수 있지만 스크롤바는 노출하지 않는다", () => {
+  assert.match(participantStylesSource, /orientation: landscape[\s\S]*?\.focus-content \{[\s\S]*?overflow-x: hidden;[\s\S]*?overflow-y: auto;/);
+  assert.match(participantStylesSource, /\.focus-content::\-webkit\-scrollbar \{[\s\S]*?display: none;/);
 });
 
 test("Realtime 준비가 실패해도 내용을 유지하고 멱등형 재설치를 예약한다", () => {
