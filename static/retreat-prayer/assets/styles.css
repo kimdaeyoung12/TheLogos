@@ -972,15 +972,104 @@ button {
   font-weight: 720;
 }
 
-.focus-content h1 {
-  max-width: 920px;
+.focus-content > .eyebrow {
+  font-family: inherit;
+  line-height: 1.4;
+}
+
+.focus-prayer-content {
+  width: min(820px, 100%);
+  max-height: min(58vh, 600px);
+  padding: clamp(22px, 3.2vw, 36px) clamp(22px, 4vw, 44px);
+  overflow-y: auto;
+  border: 1px solid rgba(201, 196, 183, 0.72);
+  border-radius: clamp(18px, 2.2vw, 28px);
+  background: rgba(255, 253, 248, 0.78);
+  box-shadow: 0 24px 72px -58px rgba(38, 43, 36, 0.6);
+  scrollbar-color: rgba(69, 93, 78, 0.28) transparent;
+  scrollbar-width: thin;
+  text-align: left;
+  backdrop-filter: blur(10px);
+}
+
+.focus-prayer-scripture {
   margin: 0;
+  padding: 0 0 clamp(18px, 2.4vw, 26px);
+  border-bottom: 1px solid rgba(184, 140, 66, 0.28);
+  color: var(--ink);
   font-family: "Iowan Old Style", "Noto Serif KR", Batang, serif;
-  font-size: clamp(2.3rem, 5.8vw, 5.35rem);
+  font-size: clamp(1.15rem, 2vw, 1.65rem);
   font-weight: 520;
-  letter-spacing: -0.065em;
-  line-height: 1.28;
+  letter-spacing: -0.035em;
+  line-height: 1.62;
+  text-wrap: pretty;
+}
+
+.focus-prayer-lead {
+  margin: 0;
+  color: var(--ink);
+  font-family: "Iowan Old Style", "Noto Serif KR", Batang, serif;
+  font-size: clamp(1.25rem, 2.4vw, 2rem);
+  font-weight: 520;
+  letter-spacing: -0.035em;
+  line-height: 1.58;
+  text-align: center;
   text-wrap: balance;
+}
+
+.focus-prayer-scripture + .focus-prayer-lead,
+.focus-prayer-lead + .focus-prayer-lead {
+  margin-top: 18px;
+}
+
+.focus-prayer-points {
+  display: grid;
+  gap: 0;
+  margin: clamp(18px, 2.4vw, 26px) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.focus-prayer-points li {
+  position: relative;
+  padding: 13px 4px 13px 24px;
+  border-top: 1px solid rgba(220, 216, 204, 0.72);
+  color: var(--ink-soft);
+  font-size: clamp(0.98rem, 1.35vw, 1.15rem);
+  font-weight: 540;
+  line-height: 1.62;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+
+.focus-prayer-points li:first-child {
+  border-top: 0;
+}
+
+.focus-prayer-points li::before {
+  content: "";
+  position: absolute;
+  top: 1.35em;
+  left: 4px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--amber);
+  box-shadow: 0 0 0 5px rgba(184, 140, 66, 0.1);
+}
+
+.focus-prayer-content--dense {
+  padding-block: clamp(18px, 2.6vw, 28px);
+}
+
+.focus-prayer-content--dense .focus-prayer-scripture {
+  font-size: clamp(1.05rem, 1.7vw, 1.4rem);
+}
+
+.focus-prayer-content--dense .focus-prayer-points li {
+  padding-block: 10px;
+  font-size: clamp(0.94rem, 1.15vw, 1.05rem);
+  line-height: 1.55;
 }
 
 .focus-timer {
@@ -1747,7 +1836,13 @@ button {
   .icon-button { width: 44px; height: 44px; }
   .stage-progress { padding: 0 8px; }
   .focus-content { min-height: 0; height: 100%; padding: 30px 0; }
-  .focus-content h1 { font-size: clamp(2rem, 10vw, 3.3rem); line-height: 1.36; }
+  body.is-focus:has(.participant-announcement:not([hidden])) .focus-content {
+    align-content: start;
+    padding-top: 126px;
+  }
+  .focus-prayer-content { max-height: min(62vh, 620px); padding: 22px 20px; border-radius: 20px; }
+  .focus-prayer-scripture { font-size: clamp(1.08rem, 4.8vw, 1.35rem); line-height: 1.58; }
+  .focus-prayer-points li { padding: 12px 2px 12px 22px; font-size: clamp(0.94rem, 4vw, 1.05rem); }
   .focus-content { padding-bottom: 118px; }
   .live-presence-stage { inset: 70px 0 0; }
   .live-presence-field { width: 116vw; height: min(68vh, 620px); }
@@ -1810,7 +1905,7 @@ button {
   .presence-caption { width: calc(100% - 24px); }
   .mobile-nav a { font-size: 0.61rem; }
   .focus-content { width: calc(100% - 28px); }
-  .focus-content h1 { font-size: 2.15rem; }
+  .focus-prayer-content { max-height: min(64vh, 590px); padding: 19px 17px; }
   .live-presence-caption { grid-template-columns: 46px minmax(0, 1fr); gap: 11px; padding-left: 10px; }
   .focus-presence-emblem { width: 44px; height: 44px; }
   .focus-presence-copy p { font-size: 0.8rem; }
@@ -1832,7 +1927,10 @@ button {
   .live-presence-stage { inset: 62px 0 0; }
   .live-presence-field { width: 82vw; height: 78vh; }
   .focus-content { min-height: 0; height: 100%; place-items: start; align-content: start; padding: 42px 0 36px; overflow-x: hidden; overflow-y: auto; text-align: left; }
-  .focus-content h1 { max-width: calc(100% - 236px); font-size: clamp(1.45rem, 4vw, 2.1rem); line-height: 1.22; }
+  .focus-prayer-content { width: calc(100% - 236px); max-height: calc(100vh - 172px); padding: 18px 20px; }
+  .focus-prayer-scripture { padding-bottom: 12px; font-size: 1rem; line-height: 1.45; }
+  .focus-prayer-points { margin-top: 10px; }
+  .focus-prayer-points li { padding-block: 7px; font-size: .88rem; line-height: 1.4; }
   .focus-reference { margin-bottom: 10px; }
   .focus-timer { margin-top: 10px; }
   .focus-mode-label { margin-top: 8px; }

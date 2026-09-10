@@ -347,6 +347,57 @@ function renderRequests() {
   });
 }
 
+function renderLivePrayerContent(step = {}) {
+  const container = $("#live-heading");
+  if (!container) return;
+
+  const content = String(step.content || "").replace(/\r\n?/g, "\n").trim();
+  const lines = content.split("\n").map((line) => line.trim()).filter(Boolean);
+  const paragraphs = [];
+  const prayerPoints = [];
+
+  lines.forEach((line) => {
+    const point = line.match(/^[•●▪◦*\-]\s*(.+)$/);
+    if (point) prayerPoints.push(point[1]);
+    else paragraphs.push(line);
+  });
+
+  container.replaceChildren();
+  container.classList.toggle("focus-prayer-content--dense", content.length > 460 || prayerPoints.length > 3);
+
+  if (step.scriptureReference && paragraphs.length) {
+    const scripture = document.createElement("blockquote");
+    scripture.className = "focus-prayer-scripture";
+    scripture.textContent = paragraphs.shift();
+    container.append(scripture);
+  }
+
+  paragraphs.forEach((paragraph) => {
+    const body = document.createElement("p");
+    body.className = "focus-prayer-lead";
+    body.textContent = paragraph;
+    container.append(body);
+  });
+
+  if (prayerPoints.length) {
+    const list = document.createElement("ul");
+    list.className = "focus-prayer-points";
+    prayerPoints.forEach((point) => {
+      const item = document.createElement("li");
+      item.textContent = point;
+      list.append(item);
+    });
+    container.append(list);
+  }
+
+  if (!container.childElementCount) {
+    const body = document.createElement("p");
+    body.className = "focus-prayer-lead";
+    body.textContent = content;
+    container.append(body);
+  }
+}
+
 function renderLive() {
   const live = state.data?.liveSession;
   const view = deriveLiveView(live, Date.now() + state.serverOffsetMs);
@@ -360,7 +411,7 @@ function renderLive() {
     setText($("#live-stage-number"), "공동기도 준비");
     setText($("#live-stage-label"), "함께 기다리는 시간");
     setText($("#live-scripture-reference"), "");
-    setText($("#live-heading"), getNextPrayerCopy());
+    renderLivePrayerContent({ content: getNextPrayerCopy() });
     setText($("#live-timer"), "시작되면 같은 기도 흐름으로 이어집니다");
     setText($("#live-mode-label"), live?.mode === "auto" ? "사전 설정에 따라 시작됩니다" : "진행자가 곧 시작합니다");
     setLivePresenceContext("함께 기다리고 있습니다");
@@ -373,14 +424,14 @@ function renderLive() {
   }
   if (!step) {
     setText($("#live-stage-label"), "공동기도 준비 중");
-    setText($("#live-heading"), "진행자가 기도 내용을 준비하고 있습니다.");
+    renderLivePrayerContent({ content: "진행자가 기도 내용을 준비하고 있습니다." });
     setText($("#live-timer"), "잠시만 기다려주세요");
     return;
   }
   setText($("#live-stage-number"), `단계 ${view.stageIndex + 1} / ${view.steps.length}`);
   setText($("#live-stage-label"), step.label);
   setText($("#live-scripture-reference"), step.scriptureReference);
-  setText($("#live-heading"), step.content);
+  renderLivePrayerContent(step);
   setText($("#live-timer"), view.status === "paused" ? "기도 흐름이 잠시 머물러 있습니다" : formatRemaining(view.remainingSeconds));
   setText($("#live-mode-label"), live.mode === "auto" ? "사전 설정에 따라 진행 중" : "진행자와 함께하는 기도");
   setLivePresenceContext("함께 기도 중입니다");

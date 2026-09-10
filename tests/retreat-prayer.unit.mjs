@@ -478,6 +478,18 @@ test("공동기도는 기도문 뒤의 절제된 3D Presence와 정확한 활성
   assert.match(presenceCanvasSource, /getLiveBackdropExclusionZones\(\)/);
 });
 
+test("긴 공동기도 내용은 성구와 기도 항목으로 나뉘어 읽기 패널에 표시된다", () => {
+  assert.match(participantHtmlSource, /id="live-heading" class="focus-prayer-content"/);
+  assert.match(appSource, /function renderLivePrayerContent\(step = \{\}\)/);
+  assert.match(appSource, /prayerPoints\.push\(point\[1\]\)/);
+  assert.match(appSource, /scripture\.className = "focus-prayer-scripture"/);
+  assert.match(appSource, /list\.className = "focus-prayer-points"/);
+  assert.match(appSource, /renderLivePrayerContent\(step\);/);
+  assert.match(participantStylesSource, /\.focus-prayer-content \{[\s\S]*?max-height:[\s\S]*?overflow-y: auto/);
+  assert.match(participantStylesSource, /\.focus-prayer-points li \{[\s\S]*?font-size: clamp\(0\.98rem/);
+  assert.doesNotMatch(participantStylesSource, /\.focus-content h1 \{[\s\S]*?5\.35rem/);
+});
+
 test("Live Prayer Presence는 50개 빛을 모두 그리고 더 큰 인원은 성능 한도 안에서 표본화한다", () => {
   const canvas = { getContext: () => ({}) };
   const presence = new PrayerPresenceCanvas(canvas, { count: 50, variant: "live-backdrop" });
