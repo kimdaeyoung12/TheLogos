@@ -1,5 +1,5 @@
-// Replication events may omit unchanged large JSON values. Treat them as
-// invalidations and publish only complete, version-checked database reads.
+// Replication events may omit unchanged large JSON values. Render complete,
+// version-checked rows immediately; incomplete events require a database read.
 export function isCompleteLiveSession(row) {
   if (!row || !Number.isFinite(row.version) || !["draft", "scheduled", "live", "paused", "completed"].includes(row.status)) return false;
   if (!["live", "paused"].includes(row.status)) return true;
@@ -25,10 +25,12 @@ export function createLiveSync({ fetchSession, onSession, onStatus = () => {},
     running = true;
     requested = false;
     const readGeneration = requestGeneration;
+    const deliveredBeforeRead = deliveredVersion;
     let failed = false;
     try {
       const row = await fetchSession();
       if (!active) return;
+      if (deliveredVersion >= targetVersion && row?.version < deliveredVersion) return;
       if (!isCompleteLiveSession(row) || row.version < targetVersion || row.version < deliveredVersion) {
         throw new Error("기도회 전체 내용을 다시 확인하고 있습니다.");
       }
@@ -37,6 +39,13 @@ export function createLiveSync({ fetchSession, onSession, onStatus = () => {},
       onSession(row);
       onStatus("connected");
     } catch (error) {
+      // A newer complete event can satisfy this read while its HTTP request
+      // is still pending. A late failure must not restart an obsolete retry.
+      if (deliveredVersion > deliveredBeforeRead && deliveredVersion >= targetVersion
+        && unversionedGeneration <= readGeneration) {
+        requested = false;
+        return;
+      }
       failed = true;
       if (active) onStatus("reconnecting", error);
     } finally {
@@ -47,6 +56,18 @@ export function createLiveSync({ fetchSession, onSession, onStatus = () => {},
   }
 
   return {
+    receive(row) {
+      if (!active) return;
+      // A complete event needs no extra HTTP round trip. Never merge missing
+      // program JSON into a new version: configuration may have changed too.
+      if (isCompleteLiveSession(row)) {
+        if (row.version < Math.max(targetVersion, deliveredVersion)) return;
+        targetVersion = deliveredVersion = row.version;
+        if (timer !== null) { clearTimer(timer); timer = null; }
+        onSession(row);
+        onStatus("connected");
+      } else this.request(row?.version);
+    },
     request(version) {
       if (!active) return;
       requestGeneration++;

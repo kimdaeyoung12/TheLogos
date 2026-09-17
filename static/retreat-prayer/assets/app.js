@@ -12,8 +12,8 @@ import {
   setVisible,
   zonedDateKey,
 } from "./core.js?v=20260829-4";
-import { createPrayerService } from "./backend.js?v=20260917-2";
-import { isCompleteLiveSession } from "./live-sync.js?v=20260917-2";
+import { createPrayerService } from "./backend.js?v=20260917-3";
+import { isCompleteLiveSession } from "./live-sync.js?v=20260917-3";
 import { PrayerPresenceCanvas } from "./presence-canvas.js?v=20260829-4";
 import { RealtimeSetupCoordinator } from "./realtime-setup.js?v=20260829-4";
 
@@ -37,10 +37,13 @@ const state = {
   presenceSnapshots: new Map(),
   presenceGeneration: 0,
   presenceUpdateInFlight: 0,
+  presenceRetryTimer: null,
   liveUnsubscribe: null,
   contentUnsubscribe: null,
   realtimeCoordinator: null,
   realtimeReady: false,
+  realtimeLiveHealthy: false,
+  liveFallbackService: null,
   restartingRealtime: false,
   bootGeneration: 0,
   presenceCanvas: null,
@@ -118,6 +121,8 @@ function waitForRealtimeStagger(scope, minimumDelayMs = 0, maximumDelayMs = REAL
 
 async function setPresenceContext(context, { stagger = true, minimumDelayMs = 0 } = {}) {
   if (!state.service) return;
+  clearTimeout(state.presenceRetryTimer);
+  state.presenceRetryTimer = null;
   const generation = ++state.presenceGeneration;
   state.presenceDesiredContext = context;
   if (state.presenceContext === context && state.presenceDisconnect && state.presenceUpdateInFlight === 0) {
@@ -180,6 +185,13 @@ async function setPresenceContext(context, { stagger = true, minimumDelayMs = 0 
       state.presenceContext = null;
       state.presenceStatus = "unavailable";
       renderPresence();
+      // Initial channel failures otherwise leave the count unavailable until
+      // navigation. Retry gently without restarting the prayer subscription.
+      state.presenceRetryTimer = setTimeout(() => {
+        state.presenceRetryTimer = null;
+        if (generation !== state.presenceGeneration || state.presenceDesiredContext !== context) return;
+        void setPresenceContext(context).catch(handleError);
+      }, 5_000);
     }
     throw error;
   } finally {
@@ -348,11 +360,15 @@ function renderRequests() {
   });
 }
 
+const livePrayerContentCache = new WeakMap();
 function renderLivePrayerContent(step = {}) {
   const container = $("#live-heading");
   if (!container) return;
 
   const content = String(step.content || "").replace(/\r\n?/g, "\n").trim();
+  const contentKey = JSON.stringify([content, step.scriptureReference || ""]);
+  if (livePrayerContentCache.get(container) === contentKey) return;
+  livePrayerContentCache.set(container, contentKey);
   const lines = content.split("\n").map((line) => line.trim()).filter(Boolean);
   const paragraphs = [];
   const prayerPoints = [];
@@ -758,6 +774,7 @@ function receiveLiveSession(liveSession) {
 }
 
 function handleLiveRealtimeStatus(status, error) {
+  state.realtimeLiveHealthy = status === "connected";
   if (status === "reconnecting") {
     showConnection("공동기도 진행 연결을 다시 확인하고 있습니다. 마지막으로 받은 내용을 유지합니다.", { persistent: true });
   }
@@ -766,6 +783,23 @@ function handleLiveRealtimeStatus(status, error) {
     void restartRealtimeSubscriptions(error || new Error("Realtime Postgres Changes subscription became unavailable."));
   }
   if (status === "connected") showConnection("공동기도 진행과 다시 연결되었습니다.", { connected: true });
+}
+
+async function pollLiveWhileConnecting() {
+  if (!state.data || !["home", "live"].includes(state.view) || document.hidden
+    || (state.realtimeReady && state.realtimeLiveHealthy) || state.liveFallbackService) return;
+  const service = state.service;
+  if (!service?.fetchLiveSession) return;
+  state.liveFallbackService = service;
+  try {
+    const liveSession = await service.fetchLiveSession();
+    if (state.service === service) receiveLiveSession(liveSession);
+  } catch {
+    // Keep the last content; the next bounded tick retries. Realtime status
+    // remains separate: a successful HTTP read does not prove socket health.
+  } finally {
+    if (state.liveFallbackService === service) state.liveFallbackService = null;
+  }
 }
 
 function handleContentRealtimeStatus(status) {
@@ -866,7 +900,7 @@ function createRealtimeCoordinator(service) {
       if (state.realtimeCoordinator !== coordinator) return;
       state.realtimeReady = true;
       setPresenceContext(state.view === "live" ? "live" : "space", {
-        minimumDelayMs: REALTIME_STAGGER_MAX_MS,
+        minimumDelayMs: 0,
       }).catch(handleError);
     },
   });
@@ -881,6 +915,10 @@ async function startRealtimeAfterStagger(coordinator) {
 
 async function boot() {
   const generation = ++state.bootGeneration;
+  state.presenceGeneration += 1;
+  state.presenceDesiredContext = null;
+  clearTimeout(state.presenceRetryTimer);
+  state.presenceRetryTimer = null;
   showView("loading", { updateHash: false, focusMain: false });
   try {
     state.realtimeCoordinator?.stop();
@@ -901,8 +939,8 @@ async function boot() {
     state.presenceDesiredContext = null;
     state.presenceSnapshots.clear();
     state.realtimeReady = false;
+    state.realtimeLiveHealthy = false;
     state.restartingRealtime = false;
-    state.presenceGeneration += 1;
     state.sessionId = getOrCreateStorageId(localStorage, "retreat-prayer-session-id");
     state.tabId = getOrCreateStorageId(sessionStorage, "retreat-prayer-tab-id");
     const service = await createPrayerService(config);
@@ -1001,6 +1039,8 @@ globalThis.addEventListener("pagehide", () => {
   state.bootGeneration += 1;
   state.presenceGeneration += 1;
   state.presenceDesiredContext = null;
+  clearTimeout(state.presenceRetryTimer);
+  state.presenceRetryTimer = null;
   state.realtimeCoordinator?.stop();
   state.realtimeCoordinator = null;
   const previousPresenceDisconnect = state.presenceDisconnect;
@@ -1036,5 +1076,6 @@ setInterval(() => {
 }, 1000);
 setInterval(refreshForNewChurchDay, 30_000);
 setInterval(revalidatePublicContent, 60_000);
+setInterval(pollLiveWhileConnecting, 2_000);
 
 boot();

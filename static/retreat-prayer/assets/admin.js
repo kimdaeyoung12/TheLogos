@@ -6,7 +6,7 @@ import {
   setVisible,
   zonedDateKey,
 } from "./core.js?v=20260829-4";
-import { createPrayerService } from "./backend.js?v=20260917-2";
+import { createPrayerService } from "./backend.js?v=20260917-3";
 import { ControllerLeaseCoordinator } from "./controller-lease.js?v=20260917-1";
 
 const config = globalThis.RETREAT_PRAYER_CONFIG || {};
@@ -41,6 +41,8 @@ const state = {
   confirmation: null,
   announcementDraftDirty: false,
   liveActionPending: false,
+  templateSavePending: false,
+  templateRequest: null,
 };
 
 const panelMeta = {
@@ -482,6 +484,7 @@ function moveProgramStep(button, direction) {
 }
 
 function renderProgramEditor() {
+  renderProgramLibrary();
   const live = state.snapshot?.liveSession;
   const view = deriveLiveView(live, Date.now() + state.serverOffsetMs);
   $("#program-title").value = live?.program_snapshot?.title || "저녁 공동기도";
@@ -492,6 +495,51 @@ function renderProgramEditor() {
   const steps = view.steps.length ? view.steps : [{ label: "말씀", kind: "scripture", durationSeconds: 180, content: "" }];
   steps.forEach((step, index) => container.append(createProgramStepRow(step, index)));
   updateProgramStepControls();
+}
+
+function renderProgramLibrary(selectedId = $("#program-library-select")?.value) {
+  const select = $("#program-library-select");
+  if (!select) return;
+  select.replaceChildren();
+  const empty = document.createElement("option");
+  empty.value = "";
+  empty.textContent = "저장한 구성을 선택해주세요";
+  select.append(empty);
+  (state.snapshot?.programs || []).filter((program) => program.status === "draft").forEach((program) => {
+    const option = document.createElement("option");
+    option.value = program.id;
+    option.textContent = `${program.title} · ${program.steps.length}단계`;
+    select.append(option);
+  });
+  select.value = selectedId || "";
+}
+
+function loadProgramTemplate(id) {
+  if (state.templateSavePending) return;
+  const program = state.snapshot?.programs?.find((item) => item.id === id && item.status === "draft");
+  if (!program) return;
+  $("#program-title").value = program.title;
+  $("#program-mode").value = program.mode;
+  // A reusable copy must not silently reuse an old date or publish immediately.
+  $("#program-schedule").value = "";
+  const container = $("#program-steps");
+  container.replaceChildren();
+  program.steps.forEach((step, index) => container.append(createProgramStepRow(step, index)));
+  updateProgramStepControls();
+  setText($("#program-save-status"), "저장한 구성을 불러왔습니다. 시작 시각을 정한 뒤 게시해주세요. 현재 송출은 바뀌지 않았습니다.");
+}
+
+function confirmLoadProgramTemplate() {
+  if (state.templateSavePending) return;
+  const id = $("#program-library-select").value;
+  if (!id) { setText($("#program-save-status"), "불러올 구성을 먼저 선택해주세요."); return; }
+  state.confirmation = { type: "load-program-template", programId: id };
+  setText($("#admin-confirm-title"), "저장한 구성을 불러올까요?");
+  setText($("#admin-confirm-message"), "아직 보관하지 않은 편집 내용은 바뀝니다. 진행 중인 기도회와 기존 저장본은 변경되지 않습니다.");
+  setText($("#admin-confirm-button"), "불러오기");
+  const dialog = $("#admin-confirm-dialog");
+  if (typeof dialog.showModal === "function") dialog.showModal();
+  else dialog.setAttribute("open", "");
 }
 
 function fillDailyForm() {
@@ -1053,16 +1101,7 @@ async function saveSettings(event) {
   }
 }
 
-async function saveProgram(event) {
-  event.preventDefault();
-  const form = event.currentTarget;
-  const status = $("#program-save-status");
-  const running = ["live", "paused"].includes(state.snapshot?.liveSession?.status);
-  if (running && !ownsControllerLease()) {
-    setText(status, "진행 중인 기도회를 수정하려면 먼저 Live Control 제어권을 요청해주세요.");
-    $("#claim-controller-button")?.focus();
-    return;
-  }
+function readProgramSteps() {
   const rows = $$(".program-step", $("#program-steps"));
   const steps = rows.map((row) => ({
     id: row.dataset.stepId || createId(),
@@ -1073,7 +1112,49 @@ async function saveProgram(event) {
     duration_seconds: Number($("[name='minutes']", row).value) * 60,
     media_id: $("[name='mediaId']", row).value || null,
   }));
-  if (!steps.length || steps.some((step) => !step.label || !step.content || step.duration_seconds < 60)) {
+  return steps;
+}
+
+function validProgramSteps(steps) {
+  return steps.length > 0 && steps.length <= 12 && steps.every((step) => step.label && step.content
+    && Number.isInteger(step.duration_seconds) && step.duration_seconds >= 60 && step.duration_seconds <= 3600);
+}
+
+async function saveProgramTemplate(button) {
+  if (state.templateSavePending) return;
+  const status = $("#program-save-status");
+  const payload = { title: $("#program-title").value.trim(), mode: $("#program-mode").value, steps: readProgramSteps() };
+  if (!payload.title || !validProgramSteps(payload.steps)) {
+    setText(status, "기도회 이름과 각 단계의 이름·내용·시간을 확인해주세요."); return;
+  }
+  const key = JSON.stringify(payload);
+  if (state.templateRequest?.key !== key) state.templateRequest = { key, id: createId() };
+  state.templateSavePending = true;
+  button.disabled = true;
+  try {
+    setText(status, "기도회 구성을 보관하고 있습니다.");
+    const saved = await state.service.saveProgramTemplate({ ...payload, id: state.templateRequest.id });
+    state.snapshot.programs ||= [];
+    if (!state.snapshot.programs.some((program) => program.id === saved.id)) state.snapshot.programs.unshift(saved);
+    renderProgramLibrary(saved.id);
+    setText(status, "구성을 보관했습니다. 다른 관리자도 다시 불러올 수 있으며, 현재 송출은 바뀌지 않았습니다.");
+  } catch (error) {
+    setText(status, error.message || "구성을 보관하지 못했습니다. 다시 시도해주세요.");
+  } finally { state.templateSavePending = false; button.disabled = false; }
+}
+
+async function saveProgram(event) {
+  event.preventDefault();
+  if (state.templateSavePending) return;
+  const status = $("#program-save-status");
+  const running = ["live", "paused"].includes(state.snapshot?.liveSession?.status);
+  if (running && !ownsControllerLease()) {
+    setText(status, "진행 중인 기도회를 수정하려면 먼저 Live Control 제어권을 요청해주세요.");
+    $("#claim-controller-button")?.focus();
+    return;
+  }
+  const steps = readProgramSteps();
+  if (!validProgramSteps(steps)) {
     setText(status, "각 단계의 이름, 내용, 시간을 확인해주세요.");
     return;
   }
@@ -1292,6 +1373,8 @@ async function handleClick(event) {
       actionTarget.setAttribute("aria-expanded", String(sidebar.classList.contains("is-open")));
     }
     if (action === "edit-program") routeAdmin("program");
+    if (action === "save-program-template") await saveProgramTemplate(actionTarget);
+    if (action === "load-program-template") confirmLoadProgramTemplate();
     if (action === "add-program-step") {
       const container = $("#program-steps");
       container.append(createProgramStepRow({}, container.children.length));
@@ -1408,6 +1491,7 @@ $("#admin-confirm-dialog")?.addEventListener("close", async (event) => {
     await moderate(fakeButton);
   }
   if (state.confirmation?.type === "delete-media") await deleteMedia(state.confirmation.mediaId);
+  if (state.confirmation?.type === "load-program-template") loadProgramTemplate(state.confirmation.programId);
   if (state.confirmation?.type === "release-controller") await releaseController(state.confirmation.generation);
   if (state.confirmation?.type === "take-over-controller") await takeOverController(state.confirmation.generation);
   state.confirmation = null;

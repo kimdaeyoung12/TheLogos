@@ -2,7 +2,7 @@
 
 ## Source of truth
 - Status: Active
-- Last refreshed: 2026-09-02
+- Last refreshed: 2026-09-17
 - Primary product surfaces: Hugo homepage, article archive, individual article pages, informational pages, embedded interactive explainers, knowledge graph, ChristianDays app launcher, footer/navigation, and the unlisted retreat-prayer participant/Admin application under `/retreat-prayer/`.
 - Evidence reviewed: `layouts/index.html`, `layouts/_default/baseof.html`, `layouts/_default/list.html`, `layouts/posts/single.html`, `layouts/_default/single.html`, `layouts/_default/network.html`, `layouts/_default/about.html`, `layouts/shortcodes/interactiveframe.html`, `layouts/shortcodes/ai_summary.html`, `content/about.md`, `content/posts`, `assets/css/home.css`, `assets/css/archive.css`, `assets/css/main.css`, `assets/css/single.css`, `hugo.toml`, `static/images/og-default.png`, `static/christiandays-app/icon-192.png`, `static/retreat-prayer/`, `supabase/`, and the supplied Google Stitch project reference.
 
@@ -81,6 +81,7 @@ Live Prayer의 Presence는 홈 화면과 같은 따뜻한 빛·타원 궤도·�
 - Retreat prayer visual language: asymmetric editorial waiting-room composition, narrow reading measures in focus mode, projected 3D light constellation on Canvas with a zero-data/loading state, 8pt spacing, moderate radii, quiet tonal elevation, tabular time, and 120–500ms feedback/content transitions. Ambient motion uses slow drift only and becomes static under reduced motion.
 
 ## Components
+- Today's Prayer readability: heading 32–44px, scripture/topic 20–26px, line height 1.8, Korean keep-all with overflow fallback. Scope to `#view-today`; do not shrink Home or Live Prayer globally. Evidence: participant screenshot supplied 2026-09-17 and `assets/styles.css` ritual selectors.
 - Existing components to reuse: `ai_summary` shortcode, `interactiveframe` shortcode, article layout with responsive hash-driven TOC navigation, related-post logic, header/footer partials.
 - New/changed components: homepage atlas hero/search, standalone ChristianDays app launcher and wide-screen floating app dock, archive signal chips, discipline bento cards, archive filters/cards/search, article field-note header, related-reading cards, network graph controls, about page reading shell, footer discovery links.
 - Variants and states: iframe fallback link, responsive frame height with parent-child resize handshake, article TOC only when real section links exist, wide-screen floating TOC, narrow-screen compact TOC band, dark/light theme notification, homepage/archive/article light/dark states, archive empty search state, network node panel, subscription success/error states.

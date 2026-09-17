@@ -5,7 +5,7 @@ import {
   isLocalPreview,
   zonedDateKey,
 } from "./core.js?v=20260829-4";
-import { createLiveSync } from "./live-sync.js?v=20260917-2";
+import { createLiveSync } from "./live-sync.js?v=20260917-3";
 
 const MAX_ACTIVE_ADMINS = 10;
 
@@ -527,6 +527,17 @@ class PreviewService {
     return clone(this.state.settings);
   }
 
+  async saveProgramTemplate(payload) {
+    this.state.programs ||= [];
+    const existing = this.state.programs.find((program) => program.id === payload.id);
+    if (existing) return clone(existing);
+    const program = { id: payload.id, title: payload.title, mode: payload.mode,
+      steps: clone(payload.steps), status: "draft", scheduled_for: null, updated_at: new Date().toISOString() };
+    this.state.programs.unshift(program);
+    this.persist();
+    return clone(program);
+  }
+
   async saveProgram(payload) {
     const now = new Date().toISOString();
     const programId = payload.programId || this.state.liveSession.program_id || createId();
@@ -696,18 +707,17 @@ export class SupabaseService {
 
   async fetchPublicContent(serverNow = null, attempt = 0) {
     const effectiveNow = serverNow || await this.getServerTime();
-    const settingsResult = await this.supabase
+    const [settingsResult, revisionBefore] = await Promise.all([this.supabase
       .from("app_settings")
       .select("id, app_name, church_name, retreat_date, retreat_end_date, time_zone, daily_prayer_time, emergency_notice, updated_at")
       .eq("id", 1)
-      .maybeSingle();
+      .maybeSingle(), this.supabase
+        .from("content_revisions")
+        .select("revision")
+        .eq("id", 1)
+        .maybeSingle()]);
     if (settingsResult.error) throw settingsResult.error;
     const today = zonedDateKey(new Date(effectiveNow), settingsResult.data?.time_zone || this.config.timeZone);
-    const revisionBefore = await this.supabase
-      .from("content_revisions")
-      .select("revision")
-      .eq("id", 1)
-      .maybeSingle();
     if (revisionBefore.error) throw revisionBefore.error;
     const [dailyResult, requestsResult] = await Promise.all([
       this.supabase
@@ -928,6 +938,7 @@ export class SupabaseService {
 
   async subscribeParticipantUpdates(liveListener, contentListener, onLiveStatus = () => {}, onContentStatus = () => {}) {
     let active = true;
+    let transportConnected = false;
     let initialSettled = false;
     let needsRecovery = false;
     let contentReconciling = false;
@@ -936,7 +947,7 @@ export class SupabaseService {
     const liveSync = createLiveSync({
       fetchSession: () => this.fetchLiveSession(),
       onSession: liveListener,
-      onStatus: onLiveStatus,
+      onStatus: (status, error) => onLiveStatus(status === "connected" && !transportConnected ? "reconnecting" : status, error),
     });
 
     const reconcileContent = async () => {
@@ -992,10 +1003,13 @@ export class SupabaseService {
       .on("system", {}, (payload) => {
         if (payload?.extension !== "postgres_changes") return;
         if (payload.status === "ok") {
+          transportConnected = true;
           onLiveStatus("connected");
           onContentStatus("connected");
           if (!initialSettled) {
             initialSettled = true;
+            // Cover changes made between the initial HTTP load and subscribing.
+            liveSync.request();
             settleInitial();
           } else if (needsRecovery) {
             needsRecovery = false;
@@ -1004,6 +1018,7 @@ export class SupabaseService {
           return;
         }
         const systemError = new Error(payload?.message || "Realtime Postgres Changes subscription failed.");
+        transportConnected = false;
         systemError.code = "POSTGRES_CHANGES_UNAVAILABLE";
         needsRecovery = true;
         onLiveStatus(initialSettled ? "failed" : "reconnecting", systemError);
@@ -1013,7 +1028,7 @@ export class SupabaseService {
       .on(
         "postgres_changes",
         { event: "UPDATE", schema: "public", table: "live_sessions", filter: "id=eq.1" },
-        (payload) => liveSync.request(payload.new?.version),
+        (payload) => liveSync.receive(payload.new),
       )
       .on(
         "postgres_changes",
@@ -1022,6 +1037,7 @@ export class SupabaseService {
       )
       .subscribe((status, error) => {
         if (["CHANNEL_ERROR", "TIMED_OUT", "CLOSED"].includes(status)) {
+          transportConnected = false;
           needsRecovery = true;
           onLiveStatus("reconnecting", error);
           onContentStatus("reconnecting", error);
@@ -1051,7 +1067,7 @@ export class SupabaseService {
       .on(
         "postgres_changes",
         { event: "UPDATE", schema: "public", table: "live_sessions", filter: "id=eq.1" },
-        (payload) => liveSync.request(payload.new?.version)
+        (payload) => liveSync.receive(payload.new)
       )
       .subscribe((status) => {
         if (status === "SUBSCRIBED") liveSync.request();
@@ -1302,6 +1318,14 @@ export class SupabaseService {
       p_steps: payload.steps,
       p_lease_token: payload.leaseToken || null,
       p_expected_version: payload.expectedVersion ?? null,
+    });
+    if (error) throw error;
+    return data;
+  }
+
+  async saveProgramTemplate(payload) {
+    const { data, error } = await this.supabase.rpc("save_prayer_program_template", {
+      p_id: payload.id, p_title: payload.title, p_mode: payload.mode, p_steps: payload.steps,
     });
     if (error) throw error;
     return data;

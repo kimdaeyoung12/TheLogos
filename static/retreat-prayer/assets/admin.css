@@ -540,3 +540,14 @@
   .audit-row { grid-template-columns: 1fr; gap: 2px; padding: 10px 0; }
   .admin-toast { right: 12px; bottom: 12px; left: 12px; }
 }
+.program-library {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 16px;
+  margin-bottom: 28px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--line);
+}
+.program-library label { flex: 1 1 260px; min-width: 0; }
+.program-library p { flex-basis: 100%; margin: 0; font-size: 0.9rem; line-height: 1.6; }

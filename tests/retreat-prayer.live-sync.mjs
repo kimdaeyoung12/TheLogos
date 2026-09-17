@@ -8,7 +8,7 @@ const syncSource = await read('live-sync.js');
 const { createLiveSync, isCompleteLiveSession } = await import(uri(syncSource));
 const coreUri = uri(await read('core.js'));
 const { deriveLiveView } = await import(coreUri);
-const backend = (await read('backend.js')).replace('./core.js?v=20260829-4', coreUri).replace('./live-sync.js?v=20260917-2', uri(syncSource));
+const backend = (await read('backend.js')).replace('./core.js?v=20260829-4', coreUri).replace('./live-sync.js?v=20260917-3', uri(syncSource));
 const { SupabaseService } = await import(uri(backend));
 const flush = () => new Promise(resolve => setImmediate(resolve));
 const row = (version = 1) => ({ id: 1, status: 'live', mode: 'manual', version, stage_index: 1,
@@ -48,6 +48,24 @@ test('network error retries and stop cancels timer', async () => {
   const h = harness(async () => { throw new Error('offline'); });
   h.sync.request(2); await flush(); assert.equal(h.delivered.length, 0); assert.equal(h.timers.size, 1);
   assert.equal(h.statuses.at(-1), 'reconnecting'); h.sync.stop(); assert.equal(h.timers.size, 0);
+});
+
+test('complete realtime events render immediately without an HTTP request', () => {
+  let reads=0;const h=harness(async()=>{reads++;return row(1);});
+  h.sync.receive(row(2));h.sync.receive(row(1));
+  assert.equal(reads,0);assert.equal(h.delivered.length,1);assert.equal(h.delivered[0].version,2);h.sync.stop();
+});
+
+test('complete new event supersedes an in-flight older read without rollback or retry', async () => {
+  let resolve;const h=harness(()=>new Promise(r=>{resolve=r;}));
+  h.sync.receive({status:'live',version:2});h.sync.receive(row(3));resolve(row(2));await flush();
+  assert.equal(h.delivered.length,1);assert.equal(h.delivered[0].version,3);assert.equal(h.timers.size,0);h.sync.stop();
+});
+
+test('late failed read does not restart retries after a newer complete event', async () => {
+  let reject;const h=harness(()=>new Promise((_,r)=>{reject=r;}));
+  h.sync.receive({status:'live',version:2});h.sync.receive(row(3));reject(new Error('late network failure'));await flush();
+  assert.equal(h.delivered.length,1);assert.equal(h.statuses.at(-1),'connected');assert.equal(h.timers.size,0);h.sync.stop();
 });
 
 test('rapid events coalesce and stale fetch cannot flash an older stage', async () => {
@@ -94,6 +112,33 @@ test('participant renderer refuses incomplete newer state instead of destroying 
   ctx.receiveLiveSession(row(2)); assert.equal(renders, 1);
 });
 
+test('connection fallback reads once while pending and stops when realtime is healthy', async () => {
+  const app=await read('app.js');let reads=0,resolve;
+  const service={fetchLiveSession:()=>{reads++;return new Promise(r=>{resolve=r;});}};
+  const state={data:{},view:'live',service,realtimeReady:false,realtimeLiveHealthy:false,liveFallbackService:null};
+  const received=[];const ctx=vm.createContext({state,document:{hidden:false},receiveLiveSession:r=>received.push(r)});
+  vm.runInContext(app.slice(app.indexOf('async function pollLiveWhileConnecting('),app.indexOf('\nfunction handleContentRealtimeStatus(')),ctx);
+  const pending=ctx.pollLiveWhileConnecting();await ctx.pollLiveWhileConnecting();assert.equal(reads,1);
+  resolve(row(3));await pending;assert.equal(received.length,1);
+  state.realtimeReady=true;state.realtimeLiveHealthy=true;await ctx.pollLiveWhileConnecting();assert.equal(reads,1);
+  state.realtimeLiveHealthy=false;ctx.document.hidden=true;await ctx.pollLiveWhileConnecting();assert.equal(reads,1);
+  ctx.document.hidden=false;const stale=ctx.pollLiveWhileConnecting();state.service={};resolve(row(4));await stale;assert.equal(received.length,1);
+});
+
+test('initial Presence failure retries without restarting live subscription and stale retry is ignored', async () => {
+  const app=await read('app.js');let attempts=0;const timers=new Map();let id=0;
+  const state={service:{connectPresence:async()=>{attempts++;if(attempts===1)throw Error('timeout');return async()=>{};}},
+    presenceGeneration:0,presenceUpdateInFlight:0,presenceSnapshots:new Map(),sessionId:'test',tabId:'test'};
+  const ctx=vm.createContext({state,renderPresence(){},showConnection(){},handleError(){},
+    waitForRealtimeStagger:async()=>{},PRESENCE_STAGGER_MAX_MS:16000,
+    setTimeout:fn=>{timers.set(++id,fn);return id;},clearTimeout:key=>timers.delete(key)});
+  vm.runInContext(app.slice(app.indexOf('async function setPresenceContext('),app.indexOf('\nfunction showView(')),ctx);
+  await assert.rejects(ctx.setPresenceContext('live',{stagger:false}));assert.equal(timers.size,1);
+  const retry=[...timers.values()][0];timers.clear();retry();await flush();
+  assert.equal(attempts,2);assert.equal(state.presenceContext,'live');assert.equal(state.presenceUpdateInFlight,0);
+  state.presenceGeneration++;retry();await flush();assert.equal(attempts,2);
+});
+
 for (const participant of [true, false]) test(`${participant ? 'participant' : 'admin'} subscription uses full reads, never partial event rows`, async () => {
   const handlers = []; let statusHandler;
   const channel = { on(type, filter, fn) { handlers.push({type, filter, fn}); return this; }, subscribe(fn) { statusHandler = fn; return this; } };
@@ -107,8 +152,8 @@ for (const participant of [true, false]) test(`${participant ? 'participant' : '
   } else { stop = service.subscribeLive(r => delivered.push(r)); }
   const handler = handlers.find(h => h.filter.table === 'live_sessions');
   handler.fn({ new: { id: 1, status: 'live', version: 12, stage_index: 1 } });
-  await flush(); assert.equal(fetches, 1); assert.equal(delivered[0].program_snapshot.steps.length, 7);
-  await stop(); handler.fn({ new: { version: 13 } }); await flush(); assert.equal(fetches, 1);
+  await flush(); assert.equal(fetches, participant ? 2 : 1); assert.equal(delivered[0].program_snapshot.steps.length, 7);
+  await stop(); handler.fn({ new: { version: 13 } }); await flush(); assert.equal(fetches, participant ? 2 : 1);
 });
 
 test('announcement publish, replace and clear never replace prayer content with preparation state', async () => {
@@ -137,4 +182,17 @@ test('announcement publish, replace and clear never replace prayer content with 
     assert.equal(deriveLiveView(received).steps.length, 7);
   }
   await stop();
+});
+
+test('initial subscribe reconciles the startup gap and a data response cannot mark a broken socket healthy', async () => {
+  const handlers=[];let socketStatus;const statuses=[];const received=[];
+  const channel={on(type,filter,fn){handlers.push({type,filter,fn});return this;},subscribe(fn){socketStatus=fn;return this;}};
+  const service=new SupabaseService({}, {channel:()=>channel,removeChannel:async()=>{}});
+  service.fetchLiveSession=async()=>row(4);
+  const pending=service.subscribeParticipantUpdates(r=>received.push(r),()=>{},s=>statuses.push(s));
+  handlers.find(h=>h.type==='system').fn({extension:'postgres_changes',status:'ok'});
+  const stop=await pending;await flush();assert.equal(received.at(-1).version,4);
+  socketStatus('CHANNEL_ERROR');
+  handlers.find(h=>h.filter.table==='live_sessions').fn({new:row(5)});
+  assert.equal(received.at(-1).version,5);assert.equal(statuses.at(-1),'reconnecting');await stop();
 });

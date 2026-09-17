@@ -8,10 +8,10 @@
   <meta name="theme-color" content="#eef0eb">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self'; img-src 'self' data:; connect-src 'self' https://*.supabase.co wss://*.supabase.co; media-src 'self' blob: https://*.supabase.co; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
   <title>공동기도 운영 콘솔</title>
-  <link rel="stylesheet" href="../assets/styles.css?v=20260901-2">
-  <link rel="stylesheet" href="../assets/admin.css?v=20260917-1">
+  <link rel="stylesheet" href="../assets/styles.css?v=20260917-3">
+  <link rel="stylesheet" href="../assets/admin.css?v=20260917-3">
   <script src="../config.js?v=20260829-4" defer></script>
-  <script type="module" src="../assets/admin.js?v=20260917-2"></script>
+  <script type="module" src="../assets/admin.js?v=20260917-3"></script>
 </head>
 <body class="admin-app">
   <a class="skip-link" href="#admin-main">운영 화면으로 바로가기</a>
@@ -201,6 +201,11 @@
             </div>
           </div>
           <form id="program-form" class="admin-form-card program-form" method="post" action="./">
+            <div class="program-library">
+              <label>저장한 구성<select id="program-library-select"><option value="">저장한 구성을 선택해주세요</option></select></label>
+              <button class="button button--quiet" type="button" data-action="load-program-template">선택한 구성 불러오기</button>
+              <p>불러오기는 편집 내용만 바꿉니다. 시작 시각을 정하고 ‘기도회 구성 게시’를 눌러야 참여자 화면에 반영됩니다.</p>
+            </div>
             <div class="form-row form-row--three">
               <label>기도회 이름<input id="program-title" name="title" maxlength="120" required></label>
               <label>시작 시각 · Asia/Seoul<input id="program-schedule" name="scheduledFor" type="datetime-local" required></label>
@@ -218,6 +223,7 @@
             <div id="program-steps" class="program-steps"></div>
             <div class="form-actions">
               <p id="program-save-status" role="status"></p>
+              <button class="button button--quiet" type="button" data-action="save-program-template">새 구성으로 보관</button>
               <button class="button button--primary" type="submit">기도회 구성 게시</button>
             </div>
           </form>

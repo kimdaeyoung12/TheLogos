@@ -552,14 +552,14 @@ test("Realtime 준비가 실패해도 내용을 유지하고 멱등형 재설치
   assert.match(realtimeSetupSource, /if \(this\.inFlight\) return this\.inFlight/);
 });
 
-test("50명 규모의 동시 접속은 Realtime과 Presence를 각각 16초 구간에 분산한다", () => {
+test("실시간 연결과 Presence는 6초 분산하고 고정 16초 추가 대기를 없앤다", () => {
   assert.match(appSource, /const REALTIME_STAGGER_MAX_MS = 16_000/);
   assert.match(appSource, /const PRESENCE_STAGGER_MAX_MS = 16_000/);
   assert.match(appSource, /getRealtimeStaggerDelay\(scope, maximumDelayMs = REALTIME_STAGGER_MAX_MS\)/);
   assert.match(appSource, /waitForRealtimeStagger\(`presence:\$\{context\}`, minimumDelayMs, PRESENCE_STAGGER_MAX_MS\)/);
   assert.match(appSource, /updatePresence && state\.realtimeReady/);
   assert.match(appSource, /await waitForRealtimeStagger\("startup"\)/);
-  assert.match(appSource, /onSuccess:[\s\S]*?state\.realtimeReady = true;[\s\S]*?minimumDelayMs: REALTIME_STAGGER_MAX_MS/);
+  assert.match(appSource, /onSuccess:[\s\S]*?state\.realtimeReady = true;[\s\S]*?minimumDelayMs: 0/);
   assert.match(appSource, /state\.service\.updatePresenceContext\([\s\S]*?sessionId: state\.sessionId[\s\S]*?context/);
   assert.match(backendSource, /queuePresenceTrack\([\s\S]*?channel\.track[\s\S]*?updatePresenceContext\([\s\S]*?queuePresenceTrack/);
   assert.match(appSource, /delays: REALTIME_RETRY_DELAYS_MS\.map\(\(delay\) => delay \+ getRealtimeStaggerDelay\("retry"\)\)/);
@@ -833,7 +833,7 @@ test("제어권은 명시적 획득·반납·generation 승계만으로 바뀌�
   assert.match(adminScriptSource, /check: \(token\) => state\.service\.getControllerStatus\(token\)/);
   assert.match(adminScriptSource, /retreat-prayer-admin-controller-token:/);
   assert.match(adminScriptSource, /명시적으로 반납하거나 다른 Admin이 승계하기 전까지 제어권이 유지됩니다/);
-  assert.match(adminHtmlSource, /assets\/admin\.js\?v=20260917-2/);
+  assert.match(adminHtmlSource, /assets\/admin\.js\?v=20260917-3/);
   assert.match(adminScriptSource, /controller-lease\.js\?v=20260917-1/);
 });
 
@@ -952,7 +952,7 @@ test("#live 직접 진입도 선택창 없이 공동기도 화면으로 이어�
   assert.match(appSource, /showView\(route === "live" \? "home" : route,[\s\S]*?updatePresence: false/);
   assert.match(appSource, /if \(route === "live"\) enterLivePrayer\(\{ updatePresence: false \}\)/);
   assert.match(appSource, /void startRealtimeAfterStagger\(state\.realtimeCoordinator\)/);
-  assert.match(appSource, /onSuccess:[\s\S]*?setPresenceContext\(state\.view === "live" \? "live" : "space", \{[\s\S]*?minimumDelayMs: REALTIME_STAGGER_MAX_MS/);
+  assert.match(appSource, /onSuccess:[\s\S]*?setPresenceContext\(state\.view === "live" \? "live" : "space", \{[\s\S]*?minimumDelayMs: 0/);
   assert.doesNotMatch(appSource, /await setPresenceContext\("space"\)[\s\S]*?enterLivePrayer/);
 });
 
