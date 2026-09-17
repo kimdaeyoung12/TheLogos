@@ -12,7 +12,8 @@ import {
   setVisible,
   zonedDateKey,
 } from "./core.js?v=20260829-4";
-import { createPrayerService } from "./backend.js?v=20260901-2";
+import { createPrayerService } from "./backend.js?v=20260917-2";
+import { isCompleteLiveSession } from "./live-sync.js?v=20260917-2";
 import { PrayerPresenceCanvas } from "./presence-canvas.js?v=20260829-4";
 import { RealtimeSetupCoordinator } from "./realtime-setup.js?v=20260829-4";
 
@@ -743,6 +744,7 @@ function handleError(error) {
 }
 
 function receiveLiveSession(liveSession) {
+  if (!isCompleteLiveSession(liveSession)) return;
   const previousVersion = state.data?.liveSession?.version;
   if (Number(liveSession?.version ?? -1) < Number(previousVersion ?? -1)) return;
   state.data.liveSession = liveSession;

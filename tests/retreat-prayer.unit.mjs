@@ -833,7 +833,7 @@ test("제어권은 명시적 획득·반납·generation 승계만으로 바뀌�
   assert.match(adminScriptSource, /check: \(token\) => state\.service\.getControllerStatus\(token\)/);
   assert.match(adminScriptSource, /retreat-prayer-admin-controller-token:/);
   assert.match(adminScriptSource, /명시적으로 반납하거나 다른 Admin이 승계하기 전까지 제어권이 유지됩니다/);
-  assert.match(adminHtmlSource, /assets\/admin\.js\?v=20260917-1/);
+  assert.match(adminHtmlSource, /assets\/admin\.js\?v=20260917-2/);
   assert.match(adminScriptSource, /controller-lease\.js\?v=20260917-1/);
 });
 

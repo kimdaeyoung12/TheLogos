@@ -1,0 +1,140 @@
+import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+import test from 'node:test';
+import vm from 'node:vm';
+const read = (name) => readFile(new URL('../static/retreat-prayer/assets/' + name, import.meta.url), 'utf8');
+const uri = (text) => `data:text/javascript;base64,${Buffer.from(text).toString('base64')}`;
+const syncSource = await read('live-sync.js');
+const { createLiveSync, isCompleteLiveSession } = await import(uri(syncSource));
+const coreUri = uri(await read('core.js'));
+const { deriveLiveView } = await import(coreUri);
+const backend = (await read('backend.js')).replace('./core.js?v=20260829-4', coreUri).replace('./live-sync.js?v=20260917-2', uri(syncSource));
+const { SupabaseService } = await import(uri(backend));
+const flush = () => new Promise(resolve => setImmediate(resolve));
+const row = (version = 1) => ({ id: 1, status: 'live', mode: 'manual', version, stage_index: 1,
+  program_snapshot: { steps: Array.from({ length: 7 }, (_, index) => ({ label: `기도 ${index + 1}`, content: '긴 기도문 '.repeat(120), duration_seconds: 180 })) } });
+
+function harness(fetchSession) {
+  const delivered = [], statuses = [], timers = new Map(); let timerId = 0;
+  const sync = createLiveSync({ fetchSession, onSession: data => delivered.push(data), onStatus: status => statuses.push(status),
+    setTimer: fn => { timers.set(++timerId, fn); return timerId; }, clearTimer: id => timers.delete(id) });
+  return { sync, delivered, statuses, timers, retry() { const [id, fn] = timers.entries().next().value; timers.delete(id); fn(); } };
+}
+
+test('missing replication snapshot reproduces preparation view, full read retains seven stages', () => {
+  assert.equal(deriveLiveView(row()).steps.length, 7);
+  const incomplete = { ...row(2), program_snapshot: undefined };
+  assert.equal(deriveLiveView(incomplete).step, null);
+  assert.equal(isCompleteLiveSession(incomplete), false);
+});
+
+test('invalid snapshots, empty content and out-of-range index are rejected; completed is allowed', () => {
+  for (const snapshot of [undefined, null, {}, { steps: [] }, 'unchanged-toast-datum']) assert.equal(isCompleteLiveSession({ ...row(), program_snapshot: snapshot }), false);
+  assert.equal(isCompleteLiveSession({ ...row(), stage_index: 9 }), false);
+  assert.equal(isCompleteLiveSession({ ...row(), program_snapshot: { steps: [{content:''}] } }), false);
+  assert.equal(isCompleteLiveSession({ status: 'completed', version: 5 }), true);
+});
+
+test('failed or incomplete full read keeps last valid content and retries without another event', async () => {
+  let current = row(); const h = harness(async () => current);
+  h.sync.request(1); await flush();
+  current = { ...row(2), program_snapshot: null }; h.sync.request(2); await flush();
+  assert.equal(h.delivered.length, 1); assert.equal(h.timers.size, 1);
+  current = row(2); h.retry(); await flush();
+  assert.equal(h.delivered.at(-1).version, 2); h.sync.stop();
+});
+
+test('network error retries and stop cancels timer', async () => {
+  const h = harness(async () => { throw new Error('offline'); });
+  h.sync.request(2); await flush(); assert.equal(h.delivered.length, 0); assert.equal(h.timers.size, 1);
+  assert.equal(h.statuses.at(-1), 'reconnecting'); h.sync.stop(); assert.equal(h.timers.size, 0);
+});
+
+test('rapid events coalesce and stale fetch cannot flash an older stage', async () => {
+  let resolve; let calls = 0;
+  const h = harness(() => { calls++; return new Promise(r => { resolve = r; }); });
+  h.sync.request(2); for (let i = 3; i <= 50; i++) h.sync.request(i);
+  assert.equal(calls, 1); resolve(row(2)); await flush(); assert.equal(h.delivered.length, 0);
+  h.retry(); resolve(row(50)); await flush(); assert.equal(h.delivered[0].version, 50); assert.equal(calls, 2); h.sync.stop();
+});
+
+test('late response after unsubscribe is ignored', async () => {
+  let resolve; const h = harness(() => new Promise(r => { resolve = r; }));
+  h.sync.request(2); h.sync.stop(); resolve(row(2)); await flush();
+  assert.equal(h.delivered.length, 0); assert.equal(h.statuses.length, 0);
+});
+
+test('unversioned event during a read schedules another full read', async () => {
+  const resolvers = []; const h = harness(() => new Promise(r => resolvers.push(r)));
+  h.sync.request(); h.sync.request(); resolvers.shift()(row(1)); await flush();
+  assert.equal(resolvers.length, 1); resolvers.shift()(row(2)); await flush();
+  assert.equal(h.delivered.at(-1).version, 2); h.sync.stop();
+});
+
+test('50 simulated clients receive complete latest content with at most one concurrent read each', async () => {
+  let reads = 0; let inFlight = 0; let maxInFlight = 0;
+  const clients = Array.from({ length: 50 }, () => harness(async () => {
+    reads++; inFlight++; maxInFlight = Math.max(maxInFlight, inFlight);
+    await flush(); inFlight--; return row(10);
+  }));
+  for (const client of clients) for (let version = 2; version <= 10; version++) client.sync.request(version);
+  await flush(); await flush();
+  assert.equal(reads, 50); assert.equal(maxInFlight, 50);
+  for (const client of clients) { assert.equal(client.delivered.length, 1); assert.equal(client.delivered[0].version, 10); client.sync.stop(); }
+});
+
+test('participant renderer refuses incomplete newer state instead of destroying existing content', async () => {
+  const app = await read('app.js');
+  const state = { data: { liveSession: row() }, announcedMilestones: new Set() };
+  let renders = 0;
+  const ctx = vm.createContext({ state, isCompleteLiveSession, renderHome(){}, renderLive(){renders++;}, renderParticipantAnnouncement(){}, announce(){} });
+  vm.runInContext(app.slice(app.indexOf('function receiveLiveSession('), app.indexOf('\nfunction handleLiveRealtimeStatus(')), ctx);
+  ctx.receiveLiveSession({ status: 'live', version: 2, stage_index: 2 });
+  assert.equal(state.data.liveSession.version, 1); assert.equal(renders, 0);
+  ctx.receiveLiveSession(row(2)); assert.equal(renders, 1);
+});
+
+for (const participant of [true, false]) test(`${participant ? 'participant' : 'admin'} subscription uses full reads, never partial event rows`, async () => {
+  const handlers = []; let statusHandler;
+  const channel = { on(type, filter, fn) { handlers.push({type, filter, fn}); return this; }, subscribe(fn) { statusHandler = fn; return this; } };
+  const service = new SupabaseService({}, { channel: () => channel, removeChannel: async () => {} });
+  let fetches = 0; service.fetchLiveSession = async () => { fetches++; return row(12); };
+  const delivered = [];
+  let stop;
+  if (participant) {
+    const pending = service.subscribeParticipantUpdates(r => delivered.push(r), () => {});
+    handlers.find(h => h.type === 'system').fn({ extension: 'postgres_changes', status: 'ok' }); stop = await pending;
+  } else { stop = service.subscribeLive(r => delivered.push(r)); }
+  const handler = handlers.find(h => h.filter.table === 'live_sessions');
+  handler.fn({ new: { id: 1, status: 'live', version: 12, stage_index: 1 } });
+  await flush(); assert.equal(fetches, 1); assert.equal(delivered[0].program_snapshot.steps.length, 7);
+  await stop(); handler.fn({ new: { version: 13 } }); await flush(); assert.equal(fetches, 1);
+});
+
+test('announcement publish, replace and clear never replace prayer content with preparation state', async () => {
+  const handlers = [];
+  const channel = { on(type, filter, fn) { handlers.push({type, filter, fn}); return this; }, subscribe() { return this; } };
+  const service = new SupabaseService({}, { channel: () => channel, removeChannel: async () => {} });
+  let current = row(20); let received = current;
+  service.fetchLiveSession = async () => structuredClone(current);
+  const ready = service.subscribeParticipantUpdates(value => { received = value; }, () => {});
+  handlers.find(h => h.type === 'system').fn({ extension: 'postgres_changes', status: 'ok' });
+  const stop = await ready;
+  const update = handlers.find(h => h.filter.table === 'live_sessions').fn;
+  const initialContent = deriveLiveView(current).step.content;
+  for (const [index, message] of ['첫 공지', '바뀐 공지', ''].entries()) {
+    current = { ...current, version: 21 + index, announcement: message, announcement_id: message ? `notice-${index}` : null };
+    const { program_snapshot, ...replicationFields } = current;
+    // This is exactly the old raw-event replacement failure condition.
+    assert.equal(deriveLiveView(replicationFields).step, null);
+    update({ new: replicationFields });
+    assert.equal(deriveLiveView(received).step.content, initialContent);
+    await flush();
+    assert.equal(received.announcement, message);
+    assert.equal(received.announcement_id, current.announcement_id);
+    assert.equal(deriveLiveView(received).stageIndex, 1);
+    assert.equal(deriveLiveView(received).step.content, initialContent);
+    assert.equal(deriveLiveView(received).steps.length, 7);
+  }
+  await stop();
+});

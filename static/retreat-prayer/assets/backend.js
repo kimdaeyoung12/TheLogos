@@ -5,6 +5,7 @@ import {
   isLocalPreview,
   zonedDateKey,
 } from "./core.js?v=20260829-4";
+import { createLiveSync } from "./live-sync.js?v=20260917-2";
 
 const MAX_ACTIVE_ADMINS = 10;
 
@@ -932,6 +933,11 @@ export class SupabaseService {
     let contentReconciling = false;
     let contentReconcileRequested = false;
     let recoveryReconciling = false;
+    const liveSync = createLiveSync({
+      fetchSession: () => this.fetchLiveSession(),
+      onSession: liveListener,
+      onStatus: onLiveStatus,
+    });
 
     const reconcileContent = async () => {
       if (!active) return;
@@ -957,11 +963,8 @@ export class SupabaseService {
       if (!active || recoveryReconciling) return;
       recoveryReconciling = true;
       try {
-        const [liveSession, publicContent] = await Promise.all([
-          this.fetchLiveSession(),
-          this.fetchPublicContent(),
-        ]);
-        if (active && liveSession) liveListener(liveSession);
+        liveSync.request();
+        const publicContent = await this.fetchPublicContent();
         if (active && publicContent) contentListener(publicContent);
       } catch (error) {
         if (active) {
@@ -1010,7 +1013,7 @@ export class SupabaseService {
       .on(
         "postgres_changes",
         { event: "UPDATE", schema: "public", table: "live_sessions", filter: "id=eq.1" },
-        (payload) => liveListener(payload.new),
+        (payload) => liveSync.request(payload.new?.version),
       )
       .on(
         "postgres_changes",
@@ -1030,51 +1033,33 @@ export class SupabaseService {
       await ready;
     } catch (error) {
       active = false;
+      liveSync.stop();
       await this.supabase.removeChannel(channel);
       throw error;
     }
     return () => {
       active = false;
+      liveSync.stop();
       return this.supabase.removeChannel(channel);
     };
   }
 
   subscribeLive(listener, onStatus = () => {}) {
-    let active = true;
-    let reconciling = false;
-    let reconcileTimer = null;
-    const reconcile = async () => {
-      if (!active || reconciling) return;
-      reconciling = true;
-      try {
-        const current = await this.fetchLiveSession();
-        if (active && current) listener(current);
-        if (active) onStatus("connected");
-      } catch (error) {
-        if (active) {
-          onStatus("reconnecting", error);
-          clearTimeout(reconcileTimer);
-          reconcileTimer = setTimeout(reconcile, 5_000);
-        }
-      } finally {
-        reconciling = false;
-      }
-    };
+    const liveSync = createLiveSync({ fetchSession: () => this.fetchLiveSession(), onSession: listener, onStatus });
     const channel = this.supabase
       .channel("retreat-prayer:live-state", { config: { private: true } })
       .on(
         "postgres_changes",
         { event: "UPDATE", schema: "public", table: "live_sessions", filter: "id=eq.1" },
-        (payload) => listener(payload.new)
+        (payload) => liveSync.request(payload.new?.version)
       )
       .subscribe((status) => {
-        if (status === "SUBSCRIBED") reconcile();
+        if (status === "SUBSCRIBED") liveSync.request();
         if (["CHANNEL_ERROR", "TIMED_OUT", "CLOSED"].includes(status)) onStatus("reconnecting");
       });
     this.liveChannel = channel;
     return () => {
-      active = false;
-      clearTimeout(reconcileTimer);
+      liveSync.stop();
       return this.supabase.removeChannel(channel);
     };
   }
