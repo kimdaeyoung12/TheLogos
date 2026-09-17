@@ -7,7 +7,7 @@ import {
   zonedDateKey,
 } from "./core.js?v=20260829-4";
 import { createPrayerService } from "./backend.js?v=20260901-2";
-import { ControllerLeaseCoordinator } from "./controller-lease.js?v=20260901-2";
+import { ControllerLeaseCoordinator } from "./controller-lease.js?v=20260917-1";
 
 const config = globalThis.RETREAT_PRAYER_CONFIG || {};
 const MAX_ACTIVE_ADMINS = 10;
@@ -40,6 +40,7 @@ const state = {
   pendingAdminSession: null,
   confirmation: null,
   announcementDraftDirty: false,
+  liveActionPending: false,
 };
 
 const panelMeta = {
@@ -110,6 +111,7 @@ function classifyLeaseError(error) {
 }
 
 function syncLeaseState(snapshot) {
+  if (snapshot.token) storeControllerToken(snapshot.token);
   state.leaseToken = snapshot.token;
   state.leaseExpiresAt = snapshot.expiresAt;
   state.leaseStatus = snapshot.status;
@@ -256,7 +258,6 @@ function renderController() {
   setText($("#controller-detail"), detailMessage);
   setText($("#claim-controller-button"), ownsLease ? "상태 확인" : state.leaseStatus === "held" ? "제어권 승계" : "제어권 요청");
   setVisible($("#release-controller-button"), ownsLease);
-  $$('[data-live-action]').forEach((button) => { button.disabled = !ownsLease; });
   $("#controller-banner .status-dot")?.classList.toggle("status-dot--live", ownsLease);
   renderAnnouncement();
   renderOps();
@@ -317,7 +318,7 @@ function renderLive() {
   setText($("#preview-duration"), next ? `${Math.round(next.durationSeconds / 60)}분` : "—");
   setText($("#control-now"), step?.label || "—");
   setText($("#control-next"), next?.label || "기도회 종료");
-  const ownsLease = ownsControllerLease();
+  const ownsLease = ownsControllerLease() && !state.liveActionPending;
   const running = ["live", "paused"].includes(live?.status);
   $$('[data-live-action="start"]').forEach((button) => {
     setVisible(button, !running);
@@ -333,7 +334,10 @@ function renderLive() {
     button.disabled = !ownsLease || !running;
     button.textContent = live?.status === "paused" ? "계속 진행" : "일시정지";
   });
-  $$('[data-action="confirm-complete"]').forEach((button) => setVisible(button, running));
+  $$('[data-action="confirm-complete"]').forEach((button) => {
+    setVisible(button, running);
+    button.disabled = !ownsLease || !running;
+  });
   $(".mobile-emergency-controls")?.classList.toggle("is-start-only", !running);
   renderCueList(view);
   renderAnnouncement();
@@ -701,6 +705,10 @@ async function openConsole(loginResult) {
   state.snapshot = await state.service.getAdminSnapshot();
   state.profile ||= state.snapshot.profile;
   state.serverOffsetMs = Date.parse(state.snapshot.serverNow) - Date.now();
+  await hydrateControllerStatus().catch((error) => {
+    state.leaseStatus = "reconnecting";
+    state.leaseMessage = error.message || "제어권 상태를 확인하지 못했습니다.";
+  });
   if (state.mode === "production") {
     const accountResult = await state.service.manageAdmin("list").catch((error) => {
       if (state.profile?.role === "owner") toast(error.message || "Admin 계정 목록을 불러오지 못했습니다.", 4800);
@@ -708,11 +716,6 @@ async function openConsole(loginResult) {
     });
     state.snapshot.accounts = Array.isArray(accountResult) ? accountResult : accountResult.accounts || [];
   }
-  await hydrateControllerStatus().catch((error) => {
-    state.leaseStatus = "reconnecting";
-    state.leaseMessage = error.message || "제어권 상태를 확인하지 못했습니다.";
-    toast("제어권 상태를 다시 확인하고 있습니다. 자동으로 새 제어권을 요청하지 않습니다.", 4800);
-  });
   try {
     state.presenceDisconnect = await state.service.observePresence("live", (presence) => {
       state.presenceSynced = Boolean(presence.synced);
@@ -844,11 +847,13 @@ async function renewControllerLease() {
   const refreshPromise = service.getControllerStatus(null)
     .then((status) => {
       if (state.service !== service) return null;
+      if (state.leaseCoordinator?.hasToken()) return null;
       applyControllerStatus(status);
       return status;
     })
     .catch((error) => {
       if (state.service !== service) return null;
+      if (state.leaseCoordinator?.hasToken()) return null;
       state.leaseStatus = "reconnecting";
       state.leaseMessage = error.message || "제어권 상태를 확인하지 못했습니다.";
       renderController();
@@ -964,10 +969,13 @@ async function clearAnnouncement() {
 }
 
 async function applyLiveAction(button) {
+  if (state.liveActionPending) return;
   if (!ownsControllerLease()) return toast("먼저 Live Control 제어권을 요청해주세요.");
   let action = button.dataset.liveAction;
   if (action === "pause" && state.snapshot.liveSession.status === "paused") action = "resume";
   const payload = action === "extend" ? { seconds: Number(button.dataset.seconds) || 60 } : {};
+  state.liveActionPending = true;
+  renderLive();
   button.disabled = true;
   try {
     const result = await state.service.applyLiveAction(
@@ -976,7 +984,10 @@ async function applyLiveAction(button) {
       payload,
       state.snapshot.liveSession.version
     );
-    state.snapshot.liveSession = typeof result === "string" ? JSON.parse(result) : result;
+    const updated = typeof result === "string" ? JSON.parse(result) : result;
+    if (Number(updated?.version ?? -1) >= Number(state.snapshot.liveSession?.version ?? -1)) {
+      state.snapshot.liveSession = updated;
+    }
     renderLive();
     toast(action === "next" ? "다음 단계를 참여자 화면에 송출했습니다." : "공동기도 진행 상태를 변경했습니다.");
   } catch (error) {
@@ -987,13 +998,14 @@ async function applyLiveAction(button) {
       if (liveSession) state.snapshot.liveSession = liveSession;
       renderController();
       renderLive();
-      toast(`${originalMessage} 최신 진행 상태를 다시 확인했습니다. 제어권을 다시 요청해주세요.`, 5600);
+      toast(`${originalMessage} 최신 진행 상태를 확인했습니다. 현재 단계를 확인한 뒤 다시 조작해주세요.`, 5600);
     } catch {
       renderController();
-      toast(`${originalMessage} 최신 진행 상태도 확인하지 못했습니다. 연결 후 제어권을 다시 요청해주세요.`, 5600);
+      toast(`${originalMessage} 최신 진행 상태도 확인하지 못했습니다. 연결이 돌아온 뒤 현재 단계를 확인해주세요.`, 5600);
     }
   } finally {
-    button.disabled = false;
+    state.liveActionPending = false;
+    renderLive();
   }
 }
 

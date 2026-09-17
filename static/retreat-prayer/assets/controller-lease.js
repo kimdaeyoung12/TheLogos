@@ -88,6 +88,11 @@ export class ControllerLeaseCoordinator {
 
   restore(token) {
     if (!token) return Promise.resolve({ acquired: false, attempted: false, classification: "idle" });
+    if (this.token !== token) {
+      this.pause();
+      this.expiresAt = null;
+      this.details = null;
+    }
     this.token = token;
     return this.renew({ quiet: true });
   }
