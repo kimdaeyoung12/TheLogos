@@ -6,7 +6,7 @@ import {
   setVisible,
   zonedDateKey,
 } from "./core.js?v=20260829-4";
-import { createPrayerService } from "./backend.js?v=20260917-3";
+import { createPrayerService } from "./backend.js?v=20260929-1";
 import { ControllerLeaseCoordinator } from "./controller-lease.js?v=20260917-1";
 
 const config = globalThis.RETREAT_PRAYER_CONFIG || {};

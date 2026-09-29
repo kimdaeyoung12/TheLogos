@@ -833,7 +833,7 @@ test("제어권은 명시적 획득·반납·generation 승계만으로 바뀌�
   assert.match(adminScriptSource, /check: \(token\) => state\.service\.getControllerStatus\(token\)/);
   assert.match(adminScriptSource, /retreat-prayer-admin-controller-token:/);
   assert.match(adminScriptSource, /명시적으로 반납하거나 다른 Admin이 승계하기 전까지 제어권이 유지됩니다/);
-  assert.match(adminHtmlSource, /assets\/admin\.js\?v=20260917-3/);
+  assert.match(adminHtmlSource, /assets\/admin\.js\?v=20260929-1/);
   assert.match(adminScriptSource, /controller-lease\.js\?v=20260917-1/);
 });
 
@@ -989,5 +989,5 @@ test("공개 해제된 집중 기도제목은 복사된 본문까지 지우고 �
   assert.match(appSource, /function clearPersonalFocus\(\)[\s\S]*?personal-focus-title"\), ""/);
   assert.match(appSource, /if \(!request\) \{[\s\S]*?clearPersonalFocus\(\);[\s\S]*?showView\("requests"\)/);
   assert.match(appSource, /setInterval\(revalidatePublicContent, 60_000\)/);
-  assert.match(appSource, /visibilityState === "visible"\) revalidatePublicContent\(\)/);
+  assert.match(appSource, /visibilityState === "visible"\)\s*\{\s*revalidatePublicContent\(\);\s*void pollLiveWhileConnecting\(true\)/);
 });

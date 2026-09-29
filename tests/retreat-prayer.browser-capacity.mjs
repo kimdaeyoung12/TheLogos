@@ -15,9 +15,9 @@ let origin; let browser; let stateReads=0;
 const backend=await readFile(path.join(root,'assets/backend.js'),'utf8');
 const fixtureFactory=`export async function createPrayerService(){
  const content={settings:{time_zone:'Asia/Seoul',church_name:'검증 공동체',daily_prayer_time:null},dailyPrayer:null,requests:[],serverNow:new Date().toISOString()};
- const service={mode:'production',getServerTime:async()=>new Date().toISOString(),
- fetchPublicContent:async()=>content, fetchLiveSession:async()=>{const r=await fetch('/test-state');if(!r.ok)throw Error('offline');return r.json();},
- loadPublicData:async()=>({...content,liveSession:await service.fetchLiveSession(),media:[{id:'test-audio',kind:'upload',active:true,source_url:location.origin+'/test.wav'}]}),
+ const service={mode:'production',getServerTime:async()=>new Date().toISOString(),submitPrayerRequest:async()=>({ok:true}),
+ fetchPublicContent:async()=>({...content,serverNow:new Date().toISOString()}), fetchLiveSession:async()=>{const r=await fetch('/test-state');if(!r.ok)throw Error('offline');return r.json();},
+ loadPublicData:async()=>({...content,liveSession:await service.fetchLiveSession(),media:[{id:'test-audio',kind:'upload',active:true,source_url:location.origin+'/test.wav'},{id:'other-audio',kind:'upload',active:true,source_url:location.origin+'/test.wav?track=2'}]}),
  prepareRealtime:async()=>{},syncLive:async()=>service.fetchLiveSession(),
  connectPresence:async(_,cb)=>{cb({synced:true,count:50,status:'connected'});return()=>{};},
  updatePresenceContext:async(_,cb)=>cb({synced:true,count:50,status:'connected'}),
@@ -104,6 +104,49 @@ try{
  await phase('reload-ten-pages',async()=>{
   const durations=await Promise.all(pages.slice(0,10).map(async p=>{const t=Date.now();await p.reload();await p.waitForFunction(()=>document.querySelector('#live-stage-label')?.textContent==='검증 단계 4');return Date.now()-t;}));return stats(durations);
  });
+ if(process.env.OPERATIONAL_CHECKS==='1'){
+  // Reload may replace the EventSource; wait for subscriptions before sending.
+  await Promise.all(pages.map(p=>p.waitForFunction(()=>Boolean(globalThis.__testTransportStatus),null,{timeout:25000})));
+  await phase('same-track-keeps-playing',async()=>{
+   const p=pages[0],button=p.locator('#audio-toggle');
+   if(await button.getAttribute('aria-pressed')==='true')await button.click();await button.click();
+   await p.waitForFunction(()=>document.querySelector('#prayer-audio').currentTime>2);
+   const before=await p.evaluate(()=>document.querySelector('#prayer-audio').currentTime);
+   await send({stage:4});const after=await p.evaluate(()=>document.querySelector('#prayer-audio').currentTime);
+   assert.ok(after>=before);return{before,after};
+  });
+  await phase('music-loops-without-false-on-state',async()=>{
+   const p=pages[0];await p.waitForFunction(()=>document.querySelector('#prayer-audio').currentTime>8,null,{timeout:12000});
+   await p.waitForFunction(()=>document.querySelector('#prayer-audio').currentTime<2,null,{timeout:7000});
+   const result=await p.evaluate(()=>{const a=document.querySelector('#prayer-audio');return{loop:a.loop,ended:a.ended,paused:a.paused};});
+   assert.deepEqual(result,{loop:true,ended:false,paused:false});return result;
+  });
+  await phase('different-track-fades-in',async()=>{
+   steps[5].media_id='other-audio';await send({stage:5});const p=pages[0];
+   const first=await p.evaluate(()=>document.querySelector('#prayer-audio').volume);
+   assert.ok(first<0.3);
+   await p.waitForFunction(()=>document.querySelector('#prayer-audio').volume===1,null,{timeout:4000});
+   return{firstVolume:first,finalVolume:await p.evaluate(()=>document.querySelector('#prayer-audio').volume)};
+  });
+  await phase('cancel-fade-and-restart',async()=>{
+   await send({stage:4});const p=pages[0];await p.locator('#audio-toggle').click();await sleep(1700);
+   assert.equal(await p.evaluate(()=>document.querySelector('#prayer-audio').paused),true);
+   await p.locator('#audio-toggle').click();await p.waitForFunction(()=>{const a=document.querySelector('#prayer-audio');return !a.paused&&a.volume===1;});return{recovered:true};
+  });
+  await phase('healthy-socket-missed-event-recovers',async()=>{
+   live={...live,version:live.version+1,stage_index:6};const started=Date.now();
+   await Promise.all(pages.map(p=>p.waitForFunction(()=>document.querySelector('#live-stage-label').textContent==='검증 단계 7',null,{timeout:23000})));
+   return{recovered:count,ms:Date.now()-started};
+  });
+  await phase('anonymous-submit-resets-name-field',async()=>{
+   const p=pages[0];await p.goto(origin+'/retreat-prayer/#requests');
+   await p.locator('#view-requests [data-action="open-submit"]').click();await p.locator('#request-anonymous').check();
+   await p.locator('#request-body').fill('격리된 테스트 기도제목입니다.');await p.locator('#request-consent').check();await p.locator('#request-submit-button').click();
+   await p.waitForFunction(()=>document.querySelector('#request-form-status').textContent.includes('관리자에게 전달'));
+   const result=await p.evaluate(()=>({anonymous:document.querySelector('#request-anonymous').checked,nameDisabled:document.querySelector('#request-name').disabled}));
+   assert.deepEqual(result,{anonymous:false,nameDisabled:false});return result;
+  });
+ }
  report.blankPrayerScreens=(await Promise.all(pages.map(p=>p.evaluate(()=>globalThis.__blank)))).filter(Boolean).length;
  report.horizontalOverflow=(await Promise.all(pages.map(p=>p.evaluate(()=>document.documentElement.scrollWidth>innerWidth)))).filter(Boolean).length;
  report.stateReads=stateReads;report.pass=!report.errors.length&&!report.blankPrayerScreens&&!report.horizontalOverflow;

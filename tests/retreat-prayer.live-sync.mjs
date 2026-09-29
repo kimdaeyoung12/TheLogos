@@ -112,17 +112,20 @@ test('participant renderer refuses incomplete newer state instead of destroying 
   ctx.receiveLiveSession(row(2)); assert.equal(renders, 1);
 });
 
-test('connection fallback reads once while pending and stops when realtime is healthy', async () => {
+test('connection fallback is single-flight and periodically checks even a healthy socket', async () => {
   const app=await read('app.js');let reads=0,resolve;
   const service={fetchLiveSession:()=>{reads++;return new Promise(r=>{resolve=r;});}};
-  const state={data:{},view:'live',service,realtimeReady:false,realtimeLiveHealthy:false,liveFallbackService:null};
-  const received=[];const ctx=vm.createContext({state,document:{hidden:false},receiveLiveSession:r=>received.push(r)});
+  const state={data:{},view:'live',service,realtimeReady:false,realtimeLiveHealthy:false,liveFallbackService:null,lastLiveValidatedAt:Date.now()};
+  const received=[];const ctx=vm.createContext({state,document:{hidden:false},getRealtimeStaggerDelay:()=>0,receiveLiveSession:r=>{received.push(r);state.lastLiveValidatedAt=Date.now();}});
   vm.runInContext(app.slice(app.indexOf('async function pollLiveWhileConnecting('),app.indexOf('\nfunction handleContentRealtimeStatus(')),ctx);
   const pending=ctx.pollLiveWhileConnecting();await ctx.pollLiveWhileConnecting();assert.equal(reads,1);
   resolve(row(3));await pending;assert.equal(received.length,1);
   state.realtimeReady=true;state.realtimeLiveHealthy=true;await ctx.pollLiveWhileConnecting();assert.equal(reads,1);
-  state.realtimeLiveHealthy=false;ctx.document.hidden=true;await ctx.pollLiveWhileConnecting();assert.equal(reads,1);
-  ctx.document.hidden=false;const stale=ctx.pollLiveWhileConnecting();state.service={};resolve(row(4));await stale;assert.equal(received.length,1);
+  state.lastLiveValidatedAt=Date.now()-20000;
+  const recheck=ctx.pollLiveWhileConnecting();assert.equal(reads,2);resolve(row(4));await recheck;
+  const forced=ctx.pollLiveWhileConnecting(true);assert.equal(reads,3);resolve(row(5));await forced;
+  state.realtimeLiveHealthy=false;ctx.document.hidden=true;await ctx.pollLiveWhileConnecting();assert.equal(reads,3);
+  ctx.document.hidden=false;const stale=ctx.pollLiveWhileConnecting();state.service={};resolve(row(6));await stale;assert.equal(received.length,3);
 });
 
 test('initial Presence failure retries without restarting live subscription and stale retry is ignored', async () => {

@@ -9,6 +9,10 @@ import { createLiveSync } from "./live-sync.js?v=20260917-3";
 
 const MAX_ACTIVE_ADMINS = 10;
 
+// Keep elapsed network time separate from the participant device's wall clock.
+const monotonicNow = () => performance.now();
+const advanceServerTime = (sample) => new Date(sample.timeMs + monotonicNow() - sample.sampledAt).toISOString();
+
 const DEMO_REQUESTS = [
   {
     id: "demo-request-1",
@@ -707,6 +711,9 @@ export class SupabaseService {
 
   async fetchPublicContent(serverNow = null, attempt = 0) {
     const effectiveNow = serverNow || await this.getServerTime();
+    const clockSample = this.serverTimeSample?.value === effectiveNow
+      ? { ...this.serverTimeSample }
+      : { timeMs: Date.parse(effectiveNow), sampledAt: monotonicNow() };
     const [settingsResult, revisionBefore] = await Promise.all([this.supabase
       .from("app_settings")
       .select("id, app_name, church_name, retreat_date, retreat_end_date, time_zone, daily_prayer_time, emergency_notice, updated_at")
@@ -717,7 +724,7 @@ export class SupabaseService {
         .eq("id", 1)
         .maybeSingle()]);
     if (settingsResult.error) throw settingsResult.error;
-    const today = zonedDateKey(new Date(effectiveNow), settingsResult.data?.time_zone || this.config.timeZone);
+    const today = zonedDateKey(new Date(advanceServerTime(clockSample)), settingsResult.data?.time_zone || this.config.timeZone);
     if (revisionBefore.error) throw revisionBefore.error;
     const [dailyResult, requestsResult] = await Promise.all([
       this.supabase
@@ -748,13 +755,17 @@ export class SupabaseService {
       dailyPrayer: dailyResult.data,
       requests: requestsResult.data || [],
       contentRevision: Number(revisionAfter.data?.revision || 0),
-      serverNow: effectiveNow,
+      serverNow: advanceServerTime(clockSample),
     };
   }
 
   async loadPublicData(serverNow = null) {
+    let contentClockSample;
     const [publicContent, liveResult, mediaResult] = await Promise.all([
-      this.fetchPublicContent(serverNow),
+      this.fetchPublicContent(serverNow).then((content) => {
+        contentClockSample = { timeMs: Date.parse(content.serverNow), sampledAt: monotonicNow() };
+        return content;
+      }),
       this.supabase
         .from("live_sessions")
         .select("id, status, mode, scheduled_for, program_id, program_snapshot, stage_index, started_at, stage_started_at, paused_at, accumulated_pause_seconds, paused_remaining_seconds, announcement, announcement_id, announcement_created_at, media, version, updated_at")
@@ -769,6 +780,7 @@ export class SupabaseService {
     if (error) throw error;
     return {
       ...publicContent,
+      serverNow: advanceServerTime(contentClockSample),
       liveSession: liveResult.data,
       media: mediaResult.data || [],
     };
@@ -781,9 +793,16 @@ export class SupabaseService {
   }
 
   async getServerTime() {
+    const startedAt = monotonicNow();
     const { data, error } = await this.supabase.rpc("server_now");
     if (error) throw error;
-    return data;
+    const sampledAt = monotonicNow();
+    // Estimate one-way response latency; subsequent content reads must advance
+    // this sample rather than accidentally treating their duration as clock skew.
+    const timeMs = Date.parse(data) + (sampledAt - startedAt) / 2;
+    const value = new Date(timeMs).toISOString();
+    this.serverTimeSample = { value, timeMs, sampledAt };
+    return value;
   }
 
   async connectPresence({ sessionId, tabId, context }, onState) {

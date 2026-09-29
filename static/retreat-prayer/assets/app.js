@@ -12,10 +12,11 @@ import {
   setVisible,
   zonedDateKey,
 } from "./core.js?v=20260829-4";
-import { createPrayerService } from "./backend.js?v=20260917-3";
+import { createPrayerService } from "./backend.js?v=20260929-1";
 import { isCompleteLiveSession } from "./live-sync.js?v=20260917-3";
 import { PrayerPresenceCanvas } from "./presence-canvas.js?v=20260829-4";
 import { RealtimeSetupCoordinator } from "./realtime-setup.js?v=20260829-4";
+import { createAudioFade } from "./audio-fade.js?v=20260929-1";
 
 const config = globalThis.RETREAT_PRAYER_CONFIG || {};
 const REALTIME_STAGGER_MAX_MS = 16_000;
@@ -44,6 +45,7 @@ const state = {
   realtimeReady: false,
   realtimeLiveHealthy: false,
   liveFallbackService: null,
+  lastLiveValidatedAt: 0,
   restartingRealtime: false,
   bootGeneration: 0,
   presenceCanvas: null,
@@ -66,6 +68,7 @@ const state = {
 
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
+const audioFade = createAudioFade($("#prayer-audio"));
 
 const views = {
   loading: $("#view-loading"),
@@ -455,7 +458,9 @@ function renderLive() {
   $("#live-progress").value = view.progress;
 
   const media = getCurrentMedia(view);
-  const mediaKey = media ? `${view.stageIndex}:${media.id || media.source_url}` : `${view.stageIndex}:none`;
+  const mediaKey = media
+    ? JSON.stringify([media.id, media.source_url, media.kind, Number(media.start_seconds) || 0])
+    : "none";
   if (mediaKey !== state.activeMediaKey) {
     state.activeMediaKey = mediaKey;
     stopMediaPlayback();
@@ -600,6 +605,7 @@ function completePrayer(message) {
 function stopMediaPlayback() {
   const audio = $("#prayer-audio");
   audio.pause();
+  audioFade.cancel();
   audio.removeAttribute("src");
   audio.load();
 }
@@ -632,14 +638,22 @@ async function startConfiguredMedia(view) {
     return;
   }
   const audio = $("#prayer-audio");
-  audio.src = mediaConfig.source_url;
-  audio.currentTime = Number(mediaConfig.start_seconds) || 0;
-  await audio.play().catch(() => {
+  let fadeToken = null;
+  try {
+    fadeToken = audioFade.prepare();
+    audio.src = mediaConfig.source_url;
+    audio.currentTime = Number(mediaConfig.start_seconds) || 0;
+    await Promise.all([audio.play(), audioFade.whenReady()]);
+    audioFade.start(fadeToken);
+  } catch {
+    if (fadeToken !== null && !audioFade.isCurrent(fadeToken)) return;
+    audio.pause();
+    audioFade.cancel();
     state.audioEnabled = false;
     $("#audio-toggle")?.setAttribute("aria-pressed", "false");
     $("#audio-toggle")?.setAttribute("aria-label", "음악 켜기");
     showConnection("브라우저가 음악 재생을 막았습니다. 음악 버튼을 눌러 다시 시작해주세요.", { persistent: true, status: "warning" });
-  });
+  }
 }
 
 async function toggleAudio() {
@@ -703,6 +717,7 @@ async function submitPrayerRequest(event) {
       sessionId: state.sessionId,
     });
     form.reset();
+    $("#request-name").disabled = form.isAnonymous.checked;
     setText($("#request-character-count"), "0 / 800");
     showFormErrors({});
     setText($("#request-form-status"), "기도제목이 관리자에게 전달되었습니다. 검토 후 공동체 기도제목으로 공개됩니다.");
@@ -764,7 +779,8 @@ function receiveLiveSession(liveSession) {
   const previousVersion = state.data?.liveSession?.version;
   if (Number(liveSession?.version ?? -1) < Number(previousVersion ?? -1)) return;
   state.data.liveSession = liveSession;
-  state.announcedMilestones.clear();
+  state.lastLiveValidatedAt = Date.now();
+  if (previousVersion !== liveSession.version) state.announcedMilestones.clear();
   renderHome();
   renderLive();
   renderParticipantAnnouncement();
@@ -785,9 +801,12 @@ function handleLiveRealtimeStatus(status, error) {
   if (status === "connected") showConnection("공동기도 진행과 다시 연결되었습니다.", { connected: true });
 }
 
-async function pollLiveWhileConnecting() {
+async function pollLiveWhileConnecting(force = false) {
   if (!state.data || !["home", "live"].includes(state.view) || document.hidden
-    || (state.realtimeReady && state.realtimeLiveHealthy) || state.liveFallbackService) return;
+    || state.liveFallbackService) return;
+  const recheckAfterMs = 15_000 + getRealtimeStaggerDelay("live-recheck", 3_000);
+  if (!force && state.realtimeReady && state.realtimeLiveHealthy
+    && Date.now() - state.lastLiveValidatedAt < recheckAfterMs) return;
   const service = state.service;
   if (!service?.fetchLiveSession) return;
   state.liveFallbackService = service;
@@ -1030,10 +1049,24 @@ globalThis.addEventListener("offline", () => showConnection("인터넷 연결이
 globalThis.addEventListener("online", () => {
   showConnection("연결을 다시 확인하고 있습니다.", { connected: true });
   revalidatePublicContent({ reportError: true });
+  void pollLiveWhileConnecting(true);
   void state.realtimeCoordinator?.start();
 });
 document.addEventListener("visibilitychange", () => {
-  if (document.visibilityState === "visible") revalidatePublicContent();
+  if (document.visibilityState === "visible") {
+    revalidatePublicContent();
+    void pollLiveWhileConnecting(true);
+  }
+});
+
+$("#prayer-audio")?.addEventListener("error", () => {
+  if (!state.audioEnabled) return;
+  pauseMedia();
+  showConnection("음악을 불러오지 못했습니다. 연결을 확인한 뒤 음악 버튼을 눌러 다시 시작해주세요.", { persistent: true, status: "warning" });
+});
+$("#prayer-audio")?.addEventListener("ended", () => {
+  // Defensive fallback for browsers that do not loop a particular source.
+  pauseMedia();
 });
 globalThis.addEventListener("pagehide", () => {
   state.bootGeneration += 1;
