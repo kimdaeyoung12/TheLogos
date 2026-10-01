@@ -720,6 +720,17 @@ button {
   color: var(--muted);
 }
 
+.topic-feature h2 {
+  word-break: keep-all;
+}
+
+#home-topic,
+#today-topic {
+  white-space: pre-line;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+
 .text-link {
   display: inline-flex;
   align-items: center;
@@ -1319,11 +1330,15 @@ button {
 
 .personal-focus-content h1 {
   margin: 0;
+  max-width: 700px;
   font-family: "Iowan Old Style", "Noto Serif KR", Batang, serif;
-  font-size: clamp(2rem, 5vw, 4.45rem);
+  font-size: clamp(1.25rem, 2.4vw, 2rem);
   font-weight: 520;
-  letter-spacing: -0.055em;
-  line-height: 1.42;
+  letter-spacing: -0.025em;
+  line-height: 1.7;
+  white-space: pre-line;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
   text-wrap: balance;
 }
 
