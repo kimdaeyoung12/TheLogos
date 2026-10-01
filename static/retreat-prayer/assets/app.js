@@ -126,9 +126,8 @@ async function setPresenceContext(context, { stagger = true, minimumDelayMs = 0 
   if (!state.service) return;
   clearTimeout(state.presenceRetryTimer);
   state.presenceRetryTimer = null;
-  const generation = ++state.presenceGeneration;
-  state.presenceDesiredContext = context;
-  if (state.presenceContext === context && state.presenceDisconnect && state.presenceUpdateInFlight === 0) {
+  if (state.presenceDesiredContext === context && state.presenceContext === context
+    && state.presenceDisconnect && state.presenceUpdateInFlight === 0) {
     const snapshot = state.presenceSnapshots.get(context);
     if (snapshot) {
       state.presenceSynced = snapshot.synced;
@@ -138,6 +137,8 @@ async function setPresenceContext(context, { stagger = true, minimumDelayMs = 0 
     }
     return;
   }
+  const generation = ++state.presenceGeneration;
+  state.presenceDesiredContext = context;
   state.presenceSynced = false;
   state.presenceCount = null;
   state.presenceStatus = "connecting";
@@ -919,6 +920,9 @@ function createRealtimeCoordinator(service) {
       if (state.realtimeCoordinator !== coordinator) return;
       state.realtimeReady = true;
       setPresenceContext(state.view === "live" ? "live" : "space", {
+        // Startup/retry already spreads clients. Do not add a second wait
+        // after the live subscription and snapshot are ready.
+        stagger: false,
         minimumDelayMs: 0,
       }).catch(handleError);
     },

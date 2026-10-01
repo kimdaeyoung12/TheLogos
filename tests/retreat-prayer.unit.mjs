@@ -552,7 +552,8 @@ test("Realtime 준비가 실패해도 내용을 유지하고 멱등형 재설치
   assert.match(realtimeSetupSource, /if \(this\.inFlight\) return this\.inFlight/);
 });
 
-test("실시간 연결과 Presence는 6초 분산하고 고정 16초 추가 대기를 없앤다", () => {
+test("실시간 연결 분산을 유지하고 초기 Presence의 중복 대기를 없앤다", () => {
+  assert.match(appSource, /setPresenceContext\(state\.view === "live" \? "live" : "space", \{[\s\S]*?stagger: false/);
   assert.match(appSource, /const REALTIME_STAGGER_MAX_MS = 16_000/);
   assert.match(appSource, /const PRESENCE_STAGGER_MAX_MS = 16_000/);
   assert.match(appSource, /getRealtimeStaggerDelay\(scope, maximumDelayMs = REALTIME_STAGGER_MAX_MS\)/);
@@ -573,7 +574,7 @@ test("Presence 전환 대기 중 화면이 바뀌면 오래된 예약과 인원 
   assert.match(appSource, /const generation = \+\+state\.presenceGeneration;\s*state\.presenceDesiredContext = context/);
   assert.match(appSource, /state\.presenceSynced = false;\s*state\.presenceCount = null;[\s\S]*?await waitForRealtimeStagger/);
   assert.match(appSource, /generation !== state\.presenceGeneration \|\| state\.presenceDesiredContext !== context/);
-  assert.match(appSource, /state\.presenceContext === context && state\.presenceDisconnect && state\.presenceUpdateInFlight === 0[\s\S]*?state\.presenceSnapshots\.get\(context\)[\s\S]*?return/);
+  assert.match(appSource, /state\.presenceDesiredContext === context && state\.presenceContext === context\s*&& state\.presenceDisconnect && state\.presenceUpdateInFlight === 0[\s\S]*?state\.presenceSnapshots\.get\(context\)[\s\S]*?return/);
   assert.match(backendSource, /queuePresenceTrack\(channel, version,[\s\S]*?presenceContextVersion[\s\S]*?"superseded"/);
 });
 

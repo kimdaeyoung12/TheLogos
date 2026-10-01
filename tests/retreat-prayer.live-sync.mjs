@@ -142,6 +142,27 @@ test('initial Presence failure retries without restarting live subscription and 
   state.presenceGeneration++;retry();await flush();assert.equal(attempts,2);
 });
 
+test('same-context navigation preserves the active presence listener', async () => {
+  const app=await read('app.js');let listener,connects=0;
+  const state={service:{connectPresence:async(_,cb)=>{connects++;listener=cb;cb({synced:true,count:1,status:'connected'});return async()=>{};}},
+    presenceGeneration:0,presenceUpdateInFlight:0,presenceSnapshots:new Map(),sessionId:'test',tabId:'test'};
+  const ctx=vm.createContext({state,renderPresence(){},showConnection(){},handleError(){},waitForRealtimeStagger:async()=>{},PRESENCE_STAGGER_MAX_MS:6000,setTimeout,clearTimeout});
+  vm.runInContext(app.slice(app.indexOf('async function setPresenceContext('),app.indexOf('\nfunction showView(')),ctx);
+  await ctx.setPresenceContext('space',{stagger:false});const generation=state.presenceGeneration;
+  await ctx.setPresenceContext('space',{stagger:false});listener({synced:true,count:2,status:'connected'});
+  assert.equal(state.presenceCount,2);assert.equal(state.presenceGeneration,generation);assert.equal(connects,1);
+});
+
+test('returning to space cancels a delayed live presence transition', async () => {
+  const app=await read('app.js');let release,updates=0;
+  const state={service:{updatePresenceContext:async(_,cb)=>{updates++;cb({synced:true,count:3,status:'connected'});}},
+    presenceContext:'space',presenceDesiredContext:'space',presenceDisconnect:async()=>{},presenceGeneration:1,presenceUpdateInFlight:0,presenceSnapshots:new Map(),sessionId:'test'};
+  const ctx=vm.createContext({state,renderPresence(){},showConnection(){},handleError(){},waitForRealtimeStagger:()=>new Promise(r=>{release=r;}),PRESENCE_STAGGER_MAX_MS:6000,setTimeout,clearTimeout});
+  vm.runInContext(app.slice(app.indexOf('async function setPresenceContext('),app.indexOf('\nfunction showView(')),ctx);
+  const pending=ctx.setPresenceContext('live');await ctx.setPresenceContext('space',{stagger:false});release();await pending;
+  assert.equal(state.presenceContext,'space');assert.equal(state.presenceDesiredContext,'space');assert.equal(state.presenceCount,3);assert.equal(updates,1);
+});
+
 for (const participant of [true, false]) test(`${participant ? 'participant' : 'admin'} subscription uses full reads, never partial event rows`, async () => {
   const handlers = []; let statusHandler;
   const channel = { on(type, filter, fn) { handlers.push({type, filter, fn}); return this; }, subscribe(fn) { statusHandler = fn; return this; } };
