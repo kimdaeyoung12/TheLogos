@@ -1,7 +1,7 @@
 {{ define "main" }}
 {{- $publishDate := .PublishDate | default .Date -}}
 {{- $lastmod := .Lastmod | default $publishDate -}}
-{{- $authorName := .Params.author | default (.Site.Params.author | default "DaeYoung Kim") -}}
+{{- $authorName := .Params.author | default (.Site.Params.author | default "The Logos") -}}
 {{- $description := .Params.description | default (.Summary | plainify) -}}
 {{- $hideToc := or .Params.hide_toc .Params.hideToc (eq .Params.toc false) -}}
 {{- $toc := .TableOfContents -}}
@@ -36,7 +36,7 @@
 "headline" .Title
 "datePublished" ($publishDate.Format "2006-01-02")
 "dateModified" ($lastmod.Format "2006-01-02")
-"author" (dict "@type" "Person" "name" $authorName)
+"author" (dict "@type" "Organization" "name" $authorName)
 "url" .Permalink
 "wordCount" .WordCount
 "timeRequired" (printf "PT%dM" .ReadingTime)

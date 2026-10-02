@@ -9,6 +9,7 @@ mentions = ["Joanne Davila", "Romantic Competence", "Insight", "Mutuality", "Emo
 description = "통찰력, 상호성, 감정 조절이라는 세 가지 로맨틱 역량을 통해 건강한 관계를 함께 연습하는 방법을 돌아본다."
 summary = "좋은 관계는 우연히 완성되지 않는다. 통찰력, 상호성, 감정 조절을 함께 익히는 과정 속에서 사랑은 더 깊어진다."
 audio = "/audio/room-to-return-b2-19c0a318b99d.mp3"
+audio_title = "Room to Return — 돌아올 여백"
 +++
 
 {{< ai_summary >}}

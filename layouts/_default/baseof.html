@@ -179,7 +179,7 @@
     <meta name="description"
         content="{{- if .Description }}{{ .Description }}{{- else if .IsPage }}{{ .Summary | plainify | truncate 160 }}{{- else }}{{ site.Params.description }}{{- end -}}">
     <!-- Removed author.html call to fix build error -->
-    <meta name="author" content="{{ site.Params.author | default " The Logos" }}">
+    <meta name="author" content="{{ site.Params.author | default "The Logos" }}">
     <link rel="canonical"
         href="{{ if .Params.canonicalURL -}} {{ trim .Params.canonicalURL " " }} {{- else -}} {{ .Permalink }} {{- end }}">
 

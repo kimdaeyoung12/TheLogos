@@ -3,7 +3,7 @@
 
 {{ range where .Site.RegularPages "Params.audio" "!=" nil }}
 {{ $audioPath := .Params.audio }}
-{{ $songTitle := $audioPath | replaceRE "^/?(audio/)?" "" | replaceRE "\\.(mp3|wav)$" "" }}
+{{ $songTitle := default ($audioPath | replaceRE "^/?(audio/)?" "" | replaceRE "\\.(mp3|wav)$" "") .Params.audio_title }}
 {{ $playlist = $playlist | append (dict "title" $songTitle "audio" $audioPath "link" .RelPermalink) }}
 {{ end }}
 

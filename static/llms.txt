@@ -1,13 +1,13 @@
 # The Logos
 
-> AI-friendly Korean/English knowledge hub for deep learning and exploration.
+> 기술이 설명하지 못하는 삶을, 신앙과 철학으로 묻습니다.
 
 ## About This Site
 
 The Logos는 종교(Religion), 철학(Philosophy), 공학(Engineering)의 통섭적 사유를 담은 개인 지식 허브입니다. 
 신학적 성찰, 철학적 탐구, 기술적 분석을 통해 인간 지성의 본질과 세계의 원리를 탐색합니다.
 
-- **Author**: DaeYoung Kim
+- **Author**: The Logos
 - **Language**: Korean (Primary), English
 - **URL**: https://thelogos.dev/
 

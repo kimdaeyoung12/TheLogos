@@ -79,6 +79,4 @@ The Logos(https://thelogos.dev, 이하 "본 사이트")는 방문자의 개인�
 
 ## 9. 문의
 
-개인정보 처리방침에 관한 문의사항은 아래 이메일로 연락해 주십시오.
-
-- **Email**: [wwht32@gmail.com](mailto:wwht32@gmail.com)
+개인정보 처리방침에 관한 문의사항은 [About 페이지](/about/)에 안내된 The Logos 공식 채널을 이용해 주십시오.

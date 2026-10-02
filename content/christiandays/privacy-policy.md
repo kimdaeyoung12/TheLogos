@@ -9,7 +9,7 @@ description: "Privacy policy for the ChristianDays mobile application."
 
 **Effective date:** June 13, 2026  
 **App name:** ChristianDays  
-**Developer:** The Logos / DaeYoung Kim  
+**Developer:** The Logos
 **Contact:** [support@christiandays.app](mailto:support@christiandays.app)
 
 ChristianDays values user privacy. This Privacy Policy explains what information the ChristianDays mobile application collects, how it is used, how it is protected, and how users can contact us about privacy matters.

@@ -30,7 +30,7 @@
       <title>{{ .Title }}</title>
       <link>{{ .Permalink }}</link>
       <pubDate>{{ .PublishDate.Format "Mon, 02 Jan 2006 15:04:05 -0700" }}</pubDate>
-      <dc:creator>{{ .Params.author | default $.Site.Params.author | default "DaeYoung Kim" }}</dc:creator>
+      <dc:creator>{{ .Params.author | default $.Site.Params.author | default "The Logos" }}</dc:creator>
       {{- with .Params.categories }}
       {{- range . }}
       <category>{{ . }}</category>

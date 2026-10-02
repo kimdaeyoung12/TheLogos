@@ -1,6 +1,6 @@
 +++
-title = "Welcome"
-description = "AI-friendly Korean/English knowledge hub designed for fast crawling while remaining welcoming to human visitors."
+title = "The Logos"
+description = "기술이 설명하지 못하는 삶을, 신앙과 철학으로 묻습니다."
 +++
 
-Welcome to **The Logos**! This site is built with Hugo.
+기독교 신앙에 뿌리를 둔 엔지니어의 관점으로 한국어 에세이와 영어 음악을 연결합니다.

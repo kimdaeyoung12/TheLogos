@@ -78,6 +78,4 @@ The Logos는 종교, 철학, 공학을 주제로 한 개인 블로그입니다. 
 
 ## 9. 문의
 
-본 약관에 관한 문의사항은 아래 이메일로 연락해 주십시오.
-
-- **Email**: [wwht32@gmail.com](mailto:wwht32@gmail.com)
+본 약관에 관한 문의사항은 [About 페이지](/about/)에 안내된 The Logos 공식 채널을 이용해 주십시오.
