@@ -8,6 +8,8 @@ tags = ["AI", "LLM", "카오스", "혁신", "안티프래질", "창의성", "복
 mentions = ["Large Language Model", "Antifragile", "Black Swan", "Derek Thompson", "AlphaFold"]
 description = "AI를 불확실성을 줄이는 도구로만 사용할 때, 혁신에 필요한 탐색 공간과 우연한 연결이 어떻게 좁아질 수 있는지 살펴본다."
 summary = "AI의 문제는 지능 자체가 아니라, 우리가 그것으로 모든 변동성을 지우려 할 때 시작될 수 있다."
+audio = "/audio/keep-the-strange-alive-d12510c26fd9.mp3"
+audio_title = "Keep the Strange Alive"
 +++
 
 {{< ai_summary >}}
