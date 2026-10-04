@@ -7,6 +7,8 @@ categories = ["philosophy"]
 tags = ["AI", "존재론", "괴델", "자기부인", "안티프레질", "LLM", "철학"]
 mentions = ["Kurt Gödel", "Large Language Model", "Temperature", "RLHF", "Constitutional AI", "Self-Consistency", "Tree of Thoughts", "Antifragile"]
 description = "AI를 빛이 아니라 레이저형 지능으로 이해하고, 인간의 모순된 욕망과 존재론적 찢김이 왜 단순한 오류가 아니라 세계를 품는 방식인지 정리한다. 현재 AI가 자기 지식체계를 부인할 수 있는지, 그리고 인간의 자기부인과 무엇이 다른지 분석한다."
+audio = "/audio/more-than-a-line-f4538f2be4ba.mp3"
+audio_title = "More Than a Line"
 +++
 
 <style>
