@@ -3,6 +3,8 @@ name: Deploy Hugo site to GitHub Pages
 on:
   push:
     branches: [main]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -11,7 +13,7 @@ permissions:
   id-token: write
 
 concurrency:
-  group: "pages"
+  group: "pages-${{ github.event_name == 'pull_request' && github.event.pull_request.number || 'production' }}"
   cancel-in-progress: true
 
 jobs:
@@ -27,10 +29,26 @@ jobs:
       - name: Setup Bun
         uses: oven-sh/setup-bun@v1
         with:
-          bun-version: latest
+          bun-version: '1.4.4'
 
       - name: Install dependencies
-        run: bun install
+        run: bun install --frozen-lockfile
+
+      - name: Setup Node for tests
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+
+      - name: Verify JavaScript runtimes
+        run: |
+          test "$(node --version)" = "v22.23.4"
+          test "$(bun --version)" = "1.4.4"
+
+      - name: Test retreat prayer
+        run: npm run test:retreat-prayer
+
+      - name: Test CSS dependencies
+        run: npm run test:build-dependencies
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -40,14 +58,26 @@ jobs:
       - name: Clean emojis
         run: python scripts/clean_emojis.py
 
-      - name: Setup Hugo
-        uses: peaceiris/actions-hugo@v3
+      # Build with the patched Go standard library (CVE-2026-111943).
+      - name: Setup Go
+        uses: actions/setup-go@v5
         with:
-          hugo-version: '0.148.2'
-          extended: true
+          go-version: '1.27.3'
+          cache: false
+
+      - name: Build Hugo
+        env:
+          CGO_ENABLED: '1'
+          GOTOOLCHAIN: local
+          GOBIN: ${{ runner.temp }}/thelogos-hugo
+        run: |
+          go install -tags extended github.com/gohugoio/hugo@v0.168.0
+          "$GOBIN/hugo" env | tee "$RUNNER_TEMP/thelogos-hugo-env.txt"
+          grep -Fx 'GOVERSION="go1.27.3"' "$RUNNER_TEMP/thelogos-hugo-env.txt"
+          "$GOBIN/hugo" version | grep -F 'hugo v0.168.0+extended'
 
       - name: Build site
-        run: hugo --gc --minify
+        run: '"$RUNNER_TEMP/thelogos-hugo/hugo" --gc --minify'
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
@@ -57,6 +87,7 @@ jobs:
 
   # Deploy job
   deploy:
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

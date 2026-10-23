@@ -6,12 +6,13 @@
     "start": "hugo server",
     "build": "hugo --gc --minify",
     "clean-emojis": "python scripts/clean_emojis.py",
-    "test:retreat-prayer": "node --test tests/retreat-prayer.unit.mjs tests/retreat-prayer.admin-races.mjs tests/retreat-prayer.live-sync.mjs tests/retreat-prayer.audio-fade.mjs tests/retreat-prayer.clock.mjs"
+    "test:retreat-prayer": "node --test tests/retreat-prayer.unit.mjs tests/retreat-prayer.admin-races.mjs tests/retreat-prayer.live-sync.mjs tests/retreat-prayer.audio-fade.mjs tests/retreat-prayer.clock.mjs",
+    "test:build-dependencies": "node --test tests/build-dependencies.mjs"
   },
   "devDependencies": {
-    "autoprefixer": "^10.4.19",
-    "postcss": "^8.4.38",
-    "postcss-cli": "^11.0.0",
-    "tailwindcss": "^3.4.3"
+    "autoprefixer": "^10.6.1",
+    "postcss": "^8.5.31",
+    "postcss-cli": "^11.0.1",
+    "tailwindcss": "^3.4.19"
   }
 }
