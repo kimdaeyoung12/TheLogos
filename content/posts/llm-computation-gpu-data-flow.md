@@ -8,15 +8,19 @@ tags = ["LLM", "Transformer", "GPU", "Attention", "MoE", "KV Cache"]
 wide_content = true
 +++
 
-## 직접 따라가는 LLM 시각화
+## LLM 전체 구조 시각화 — Kimi K3 사례
 
-**토큰을 선택하고 ‘다음’ 또는 ‘재생’을 눌러 보세요.** 작은 교육용 Transformer의 임베딩·Q/K/V·인과 Attention·FFN·다음 토큰 분포가 실제 계산값과 함께 바뀝니다. **‘GPU · KV 캐시’** 보기에서는 Prefill과 Decode의 저장·재사용 흐름을 비교할 수 있습니다.
+전체 93층과 각 층의 연산을 탐색할 수 있습니다. 구조는 모델별 사례이며, 내부 숫자 실험은 교육용 축소 계산입니다.
 
-[시각화 전체 화면으로 열기 →](/interactive/llm-lab/)
+[전체 모델 시각화를 큰 화면으로 열기 →](/interactive/llm-spatial-explorer/)
 
-{{< interactiveframe src="/interactive/llm-lab/" title="토큰 계산 실험실: Transformer와 GPU KV 캐시 시각화" minheight="1100" >}}
+{{< rawhtml >}}
+<iframe src="/interactive/llm-spatial-explorer/" title="LLM 전체 구조 시각화 — Kimi K3 사례" loading="eager" allowfullscreen style="display:block;width:100%;height:900px;max-height:90vh;min-height:680px;border:1px solid #30465d;border-radius:12px;background:#080d17;margin:20px 0 36px;"></iframe>
+{{< /rawhtml >}}
 
-이 시각화는 학습하지 않은 1계층·1헤드 교육용 모델입니다. 숫자는 예시 가중치로 직접 계산한 값이며, 특정 제품의 내부 활성값이나 실제 GPU 성능·물리적 배치를 재현한 것이 아닙니다. 선택한 토큰 행과 연결을 강조하며, 생략한 구조와 계산 범위는 시각화 아래에서 확인할 수 있습니다.
+이 원본 시각화의 전체 모델 지도·회전·층 선택·GPU/하네스 보기와 수치 실험을 그대로 탐색할 수 있습니다. 실제 가중치나 내부 활성값을 실행·측정하는 화면은 아니며, 숫자 실험은 대표 한 층·단일 헤드·8차원으로 축소되어 있습니다.
+
+## 범용 동작 원리
 
 문장을 입력하면 모델 안에서는 무엇이 일어날까? 이 글은 **자기회귀 Transformer 계열 언어 모델의 대표적인 추론 경로**를 따라간다. 모든 LLM이 동일한 Attention, 메모리 구조, 병렬화 방식을 쓰는 것은 아니다. 특정 제품의 비공개 구현이나 모델별 수치는 다루지 않는다.
 
@@ -174,3 +178,7 @@ GPU:    데이터 읽기 → 병렬 연산 → 저장·재사용
 이 세 흐름을 구분하면 새로운 모델을 볼 때도 확인할 항목이 분명해진다. 어떤 토크나이저를 쓰는지, 문맥을 어떤 계산과 상태로 처리하는지, 무엇이 메모리를 차지하는지, 어떤 작업을 모델 밖에서 실행하는지를 각각 살펴보면 된다.
 
 교육용 시각화의 블록과 화살표는 계산 관계를 이해하는 도구다. 실제 칩의 물리적 배치, 실제 모델의 내부 활성값, 측정된 성능과는 구분해서 읽어야 한다.
+
+## 보조 학습
+
+기초 행렬 계산을 더 작게 나누어 보고 싶다면 [1계층 Transformer 토큰 계산 실험실](/interactive/llm-lab/)을 참고할 수 있습니다.
