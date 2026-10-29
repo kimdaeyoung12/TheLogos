@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>토큰 계산 실험실 | The Logos</title><meta name="description" content="작은 교육용 Transformer의 실제 수치와 Attention, GPU 메모리, KV 캐시를 단계별로 탐색합니다."><link rel="stylesheet" href="lab.css"></head>
+<body><main>
+ <header><div class="eyebrow">THE LOGOS / INTERACTIVE LAB</div><h1>한 토큰이 답변이 되기까지</h1><p>행렬의 한 행을 고르고, 그 숫자가 다음 계산으로 이어지는 과정을 따라가세요.</p><p class="disclaimer">학습하지 않은 교육용 모델 · 1계층 / 1헤드 / d=4 / 어휘 6개. 아래 수치는 브라우저에서 직접 계산하며 실제 제품의 활성값이나 성능 측정값이 아닙니다.</p></header>
+ <div class="views" aria-label="보기 선택"><button data-view="model" aria-pressed="true">01 모델의 계산</button><button data-view="gpu" aria-pressed="false">02 GPU · KV 캐시</button></div>
+ <section class="input"><div class="sectionline"><h2>입력 토큰</h2><span id="shape"></span></div><div id="tokens" class="tokens"></div><p class="hint">토큰을 누르면 해당 위치의 행과 Attention 연결이 강조됩니다. 이 실험실은 고정 어휘의 토큰 ID를 사용하며 실제 토크나이저는 생략합니다.</p></section>
+ <div id="gpu-controls" hidden><div class="views"><button data-mode="prefill" aria-pressed="true">Prefill · 입력 전체</button><button data-mode="decode" aria-pressed="false">Decode · 새 토큰 1개</button></div><p id="mode-note"></p></div>
+ <nav id="steps" class="steps" aria-label="계산 단계"></nav>
+ <div class="transport"><button id="prev" aria-label="이전 단계">← 이전</button><button id="play">▶ 재생</button><button id="next">다음 →</button><button id="reset">처음부터</button><span id="progress" role="status" aria-live="polite"></span></div>
+ <section class="explanation"><div class="eyebrow" id="step-label"></div><h2 id="step-title"></h2><code id="formula"></code><p id="why"></p></section>
+ <section id="canvas" aria-label="선택 단계의 텐서와 데이터 흐름"></section>
+ <p id="cell-detail" class="cell-detail" role="status" aria-live="polite">숫자 셀을 누르면 행·열·계산값을 자세히 볼 수 있습니다.</p>
+ <div class="legend"><span>▣ 강조 행 = 선택한 토큰</span><span>× = 미래 위치 차단</span><span>숫자 색의 진하기 = 절댓값 / Attention은 가중치</span></div>
+ <section id="next-token" hidden><button id="generate" class="primary">마지막 위치의 최상위 토큰 추가</button><p id="generation-note"></p></section>
+ <details><summary>이 실험실의 계산 범위와 생략한 것</summary><p>토큰 임베딩에 작은 sinusoidal 위치 벡터를 더합니다. Q·K 차원은 2, V와 잔차 차원은 4, FFN 중간 차원은 6입니다. 인과 Attention → 잔차 덧셈 → ReLU FFN → 잔차 덧셈 → 어휘 투영 → softmax를 계산합니다. 출력 투영 W_O, 정규화, 여러 헤드·계층, 학습·양자화·샘플링은 생략했습니다. 가중치는 고정된 교육용 숫자이며 생성 결과의 언어적 품질을 의미하지 않습니다.</p><p>GPU 보기는 계산에 필요한 데이터의 위치와 재사용을 설명하는 개념도입니다. 실제 칩 배치·메모리 주소·커널 스케줄·측정 속도를 재현하지 않습니다. 표시 바이트 수는 FP32 텐서 원소 수 × 4의 교육용 추산이며 할당·정렬 비용은 제외합니다. MoE는 본문의 별도 개념으로 다루고 이 작은 모델에는 포함하지 않습니다.</p></details>
+ <footer><a href="/posts/llm-computation-gpu-data-flow/" target="_top">설명 글과 출처로 돌아가기 ↗</a><span>모든 계산은 이 페이지 안에서 실행됩니다.</span></footer>
+ <noscript>JavaScript를 켜면 단계별 계산을 조작할 수 있습니다. 위 링크에서 같은 개념을 설명하는 본문을 읽을 수 있습니다.</noscript>
+</main><script type="module" src="lab.mjs"></script></body></html>

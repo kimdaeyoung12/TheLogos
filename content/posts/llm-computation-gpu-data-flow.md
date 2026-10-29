@@ -5,7 +5,18 @@ draft = false
 description = "토큰화·Attention·MoE·KV 캐시를 GPU 메모리와 서비스 실행의 관점으로 구분해 이해하는 LLM 추론 안내서."
 categories = ["engineering"]
 tags = ["LLM", "Transformer", "GPU", "Attention", "MoE", "KV Cache"]
+wide_content = true
 +++
+
+## 직접 따라가는 LLM 시각화
+
+**토큰을 선택하고 ‘다음’ 또는 ‘재생’을 눌러 보세요.** 작은 교육용 Transformer의 임베딩·Q/K/V·인과 Attention·FFN·다음 토큰 분포가 실제 계산값과 함께 바뀝니다. **‘GPU · KV 캐시’** 보기에서는 Prefill과 Decode의 저장·재사용 흐름을 비교할 수 있습니다.
+
+[시각화 전체 화면으로 열기 →](/interactive/llm-lab/)
+
+{{< interactiveframe src="/interactive/llm-lab/" title="토큰 계산 실험실: Transformer와 GPU KV 캐시 시각화" minheight="1100" >}}
+
+이 시각화는 학습하지 않은 1계층·1헤드 교육용 모델입니다. 숫자는 예시 가중치로 직접 계산한 값이며, 특정 제품의 내부 활성값이나 실제 GPU 성능·물리적 배치를 재현한 것이 아닙니다. 선택한 토큰 행과 연결을 강조하며, 생략한 구조와 계산 범위는 시각화 아래에서 확인할 수 있습니다.
 
 문장을 입력하면 모델 안에서는 무엇이 일어날까? 이 글은 **자기회귀 Transformer 계열 언어 모델의 대표적인 추론 경로**를 따라간다. 모든 LLM이 동일한 Attention, 메모리 구조, 병렬화 방식을 쓰는 것은 아니다. 특정 제품의 비공개 구현이나 모델별 수치는 다루지 않는다.
 
