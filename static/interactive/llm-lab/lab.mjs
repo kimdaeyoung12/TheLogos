@@ -17,8 +17,8 @@ function explanation(label,title,formula,why){$('step-label').textContent=label;
 function render(){
  matrices={};const m=forward(ids),t=Math.min(selected,ids.length-1),r=m.rows[t];
  const newId=argmax(m.rows.at(-1).p),dec=decodeCached(m,newId);
- $('shape').textContent=`S=${ids.length} · d=4 · Q/K=2 · V=4`;
  const shown=view==='gpu'&&mode==='decode'?[...ids,newId]:ids;
+ $('shape').textContent=`S=${shown.length}${view==='gpu'&&mode==='decode'?' (기존 '+ids.length+' + 새 1)':''} · d=4 · Q/K=2 · V=4`;
  $('tokens').innerHTML=shown.map((id,i)=>`<button data-token="${i}" aria-pressed="${i===selected}"><span>${vocab[id]}</span><small>${i===ids.length?'새 ':''}t=${i} · ID ${id}</small></button>`).join('');
  document.querySelectorAll('[data-view]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.view===view));
  document.querySelectorAll('[data-mode]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.mode===mode));
