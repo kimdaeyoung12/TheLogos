@@ -468,3 +468,7 @@ tags = ["LLM", "Architecture", "Transformer", "Machine Learning", "NLP"]
   lucide.createIcons();
 </script>
 {{< /rawhtml >}}
+
+## 함께 읽기
+
+[토큰에서 답변까지: LLM의 계산과 GPU 데이터 흐름]({{< ref "llm-computation-gpu-data-flow.md" >}})에서는 토큰화와 Attention을 시작으로 MoE, GPU 메모리, KV 캐시, 도구 실행 환경까지 구분해 설명합니다.
