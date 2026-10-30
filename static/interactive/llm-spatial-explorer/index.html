@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="dark">
-<title>Kimi K3 — 입체 연산 지도 · 토큰의 여정</title>
+<title>K3 통합 실험실 | Kimi K3 — 수식의 기하학 · 입체 연산 지도</title>
 <style>
 :root{--bg:#080d17;--surface:#0f1827;--surface2:#141f31;--panel:#111b2a;--line:#26344a;--line2:#344761;--ink:#eaf1fb;--muted:#a0afc1;--dim:#6b829a;--cyan:#56dbef;--violet:#aa9cff;--orange:#ffb878;--mint:#83ddbe;--pink:#ff94b7;--yellow:#f6dc84;--glow:0 0 23px rgba(86,219,239,.15);--radius:18px}
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(ellipse 900px 500px at 75% -12%,#183053 0,transparent 72%),linear-gradient(180deg,#0a111e 0,#080d17 680px);font-family:Inter,Pretendard,"Noto Sans KR","Malgun Gothic",system-ui,-apple-system,sans-serif;color:var(--ink);font-size:14px;line-height:1.65;letter-spacing:-.013em}button,input,select{font:inherit}button{cursor:pointer}a{color:var(--cyan)}.wrap{width:min(1440px,calc(100% - 64px));margin:auto}.topbar{height:74px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #223147;gap:16px}.brand{display:flex;gap:11px;align-items:center;letter-spacing:.02em;font-size:14px;font-weight:800}.brand-logo{width:32px;height:32px;display:grid;grid-template-columns:repeat(3,1fr);gap:3px;transform:rotate(-8deg)}.brand-logo i{background:var(--cyan);border-radius:2px;box-shadow:0 0 14px #50cee66b}.brand-logo i:nth-child(2),.brand-logo i:nth-child(6){background:var(--violet)}.brand-logo i:nth-child(4),.brand-logo i:nth-child(8){opacity:.24}.eyebrow{font-size:11px;text-transform:uppercase;letter-spacing:.18em;color:var(--cyan);font-weight:800}.mono{font-family:ui-monospace,Consolas,Menlo,monospace;letter-spacing:0}.pill{display:inline-flex;align-items:center;gap:7px;padding:5px 10px;border:1px solid #344960;border-radius:999px;background:#15253a;color:#bacadf;font-size:11px;font-weight:650;white-space:nowrap}.dot{width:7px;height:7px;background:var(--mint);border-radius:50%;box-shadow:0 0 10px var(--mint)}.hero{padding:46px 0 35px;display:grid;grid-template-columns:1.4fr .85fr;gap:35px;align-items:center}.hero h1{font-size:clamp(34px,4.1vw,60px);letter-spacing:-.061em;line-height:1.19;margin:15px 0 14px;font-weight:850}.gradient-text{background:linear-gradient(100deg,var(--cyan),#9bb3ff 52%,var(--violet));color:transparent;background-clip:text}.hero p{color:#b2c2d5;font-size:15px;line-height:1.85;max-width:750px;margin:0}.mini-terminal{border:1px solid #38506a;background:linear-gradient(150deg,#182b42,#101d30);border-radius:20px;padding:22px 24px;box-shadow:0 12px 35px #0004}.terminal-head{display:flex;justify-content:space-between;color:var(--muted);font-size:11px;margin-bottom:18px}.terminal-code{font-size:13px;color:#deedfb;line-height:2.3}.terminal-code b{color:var(--cyan);font-weight:700}.terminal-code em{color:var(--orange);font-style:normal}.terminal-code .arrow{color:var(--dim);margin:0 6px}.terminal-code .indent{margin-left:18px}.lede{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:0 0 28px}.lede-card{border:1px solid #25364b;border-radius:13px;padding:15px 17px;background:#101a29;display:flex;gap:13px;align-items:center}.lede-card span.num{font:700 22px ui-monospace,monospace;color:var(--cyan)}.lede-card strong{display:block;font-size:12px}.lede-card small{color:var(--muted);font-size:11px}.tabs{position:sticky;top:0;z-index:40;background:#0a111bed;backdrop-filter:blur(20px);display:flex;gap:6px;padding:10px 0;border-bottom:1px solid #233349;overflow:auto;scrollbar-width:thin}.tab{padding:12px 16px;border:1px solid transparent;border-radius:10px;color:#a7b7c9;background:transparent;white-space:nowrap;font-weight:700;font-size:13px}.tab:hover{background:#172537;color:#e6f1ff}.tab.active{color:var(--cyan);background:#10293a;border-color:#2a6176}.tab .tab-n{font-family:monospace;color:#637b94;margin-right:5px}.tab.active .tab-n{color:#7fcfda}.panel{display:none;padding:31px 0 65px;min-height:690px}.panel.active{display:block;animation:rise .24s ease-out}.section-head{display:flex;justify-content:space-between;gap:22px;align-items:end;margin-bottom:22px}.section-head h2{font-size:27px;letter-spacing:-.045em;line-height:1.35;margin:6px 0 5px}.section-head p{margin:0;color:var(--muted);max-width:820px;font-size:13px}.note-tag{display:inline-flex;border:1px solid #526076;color:#ccd8ea;border-radius:7px;padding:5px 9px;font-size:11px;white-space:nowrap}.card{background:linear-gradient(150deg,rgba(23,36,56,.86),rgba(13,22,36,.93));border:1px solid #2a3a50;border-radius:var(--radius);box-shadow:0 10px 28px #0002}.card-header{display:flex;justify-content:space-between;align-items:center;gap:10px;padding-bottom:14px;border-bottom:1px solid #2a3a50;margin-bottom:18px}.card-header h3,.card h3{margin:0;font-size:15px;letter-spacing:-.018em}.subtext{font-size:11px;color:var(--muted)}.kicker{display:block;color:var(--cyan);font:750 11px ui-monospace,monospace;letter-spacing:.12em;text-transform:uppercase;margin-bottom:6px}.t-cyan{color:var(--cyan)}.t-orange{color:var(--orange)}.t-violet{color:var(--violet)}.t-mint{color:var(--mint)}.btn{border:1px solid #36516b;background:#16263a;border-radius:10px;color:#d5e6f7;padding:9px 14px;font-weight:750;transition:.18s}.btn:hover{border-color:#69bfd6;background:#1c374d}.btn:focus-visible,.tab:focus-visible,.stage:focus-visible,.nav-chip:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}.btn.primary{border-color:#65d6e8;background:#20768a;color:white}.btn.primary:hover{background:#2b91a4}.btn.small{padding:6px 10px;font-size:11px}.btn.ghost{background:transparent}.btn.active,.select-btn.active{border-color:var(--cyan);color:var(--cyan);background:#12354a}.control-row{display:flex;align-items:center;flex-wrap:wrap;gap:8px}.control-row label{color:var(--muted);font-size:12px}.select,input[type=text],select{background:#111e2e;color:var(--ink);border:1px solid #3c5168;border-radius:9px;padding:8px 11px;min-height:38px}.select:focus,input:focus,select:focus{outline:1px solid var(--cyan);border-color:var(--cyan)}input[type=range]{accent-color:var(--cyan)}.hint{color:#9db0c4;font-size:12px;line-height:1.65}.notice{color:#bdd0e3;font-size:12px;padding:11px 14px;background:#16273b;border-left:3px solid #4ea6c2;border-radius:8px}.notice.warn{background:#2b261e;border-color:var(--orange)}.metric{font:800 26px ui-monospace,monospace;line-height:1.2;letter-spacing:-.035em}.metric small{font-size:12px;font-weight:600;color:var(--muted);margin-left:5px}.screen-reader{position:absolute;width:1px;height:1px;clip:rect(0,0,0,0);overflow:hidden;white-space:nowrap}
@@ -50,6 +50,241 @@ body.spatial-mode .hero,body.spatial-mode .lede{display:none}body.spatial-mode .
 @media(max-width:800px){body.spatial-mode .wrap{width:calc(100% - 22px)}.sp-main{grid-template-columns:1fr}.sp-scene{height:520px}.sp-inspector{height:auto;max-height:520px;border-left:0;border-top:1px solid #30465d;display:grid;grid-template-columns:1fr 1fr;gap:0 20px}.sp-inspector .sp-kicker,.sp-inspector h3,.sp-inspector .sp-shape,.sp-inspector .sp-jump{grid-column:1/-1}.sp-layerbar{grid-template-columns:1fr 90px;gap:8px}.sp-layerbar>div:first-child{grid-column:1/-1}.sp-layergrid{grid-template-columns:repeat(31,1fr)}.sp-legend{gap:8px;max-width:65%}.sp-hud{max-width:31%;font-size:9px}.sp-scenebtns{max-width:54%}.sp-scene-label small{display:none}.sp-transport .sp-timeline-caption{flex-basis:100%;margin-left:0}.sp-under{gap:8px}.sp-under select{max-width:100%}.sp-tokens{flex-basis:100%}.sp-topcontrols{gap:7px}}
 @media(max-width:480px){.sp-scene{height:440px}.sp-inspector{display:block;padding:17px;max-height:none}.sp-heading p{font-size:11px!important}.sp-scene .sp-scene-label{left:12px;top:12px;font-size:8px}.sp-scene .sp-scene-label strong{font-size:15px;max-width:140px}.sp-scenebtns{top:12px;right:10px;gap:3px;max-width:49%}.sp-scenebtns button{font-size:10px;padding:5px 7px}.sp-segment button{font-size:11px;padding:7px 9px}.sp-controls label{font-size:10px}.sp-legend{font-size:8px;left:10px;bottom:10px;max-width:65%}.sp-hud{right:8px;bottom:9px;font-size:8px;padding:5px 7px}.sp-layergrid{gap:2px}.sp-layergrid button{font-size:0;height:12px}.sp-card{padding:15px}.sp-matmul{grid-template-columns:55px 12px 1fr 12px 50px;gap:4px}.sp-smallmatrix button,.sp-smallmatrix span{font-size:8px}.sp-equation{font-size:10px}.sp-under label{font-size:10px}.sp-ranges{gap:8px}.sp-layerbar{padding:12px}.sp-experts{gap:1px}.sp-experts i{height:4px}.sp-bridge{display:block}.sp-bridge .btn{margin-top:9px}}
 
+/* Mathematical atlas: independent, offline, accessible SVG lessons. */
+body.math-mode .hero,body.math-mode .lede{display:none}body.math-mode .wrap{width:min(1840px,calc(100% - 40px))}body.math-mode .topbar{height:54px}body.math-mode .panel#math-atlas{padding:25px 0 45px}#math-atlas{--ma-bg:#090f1a;--ma-panel:#101b2b;--ma-border:#29394e;--ma-muted:#9cabbe;--ma-teal:#67dfcd;--ma-gold:#f4c477;--ma-purple:#bcabff;--ma-red:#fa8994;--ma-blue:#85b8ff}#math-atlas *{box-sizing:border-box}#math-atlas button,#math-atlas input,#math-atlas select{font:inherit}#math-atlas button{cursor:pointer}#math-atlas button:focus-visible,#math-atlas input:focus-visible,#math-atlas select:focus-visible,#ma-svg:focus-visible{outline:2px solid var(--ma-teal);outline-offset:3px}.ma-header{display:flex;justify-content:space-between;gap:20px;align-items:center;margin-bottom:18px}.ma-header h2{font-size:clamp(25px,2.7vw,39px);line-height:1.3;letter-spacing:-.05em;margin:7px 0 9px}.ma-header p{font-size:13px;color:#acbdd0;margin:0;max-width:970px}.ma-eyebrow{font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.18em;color:var(--ma-teal)}.ma-pill{padding:6px 9px;border-radius:5px;border:1px solid #426066;background:#153039;color:#b7e8e1;font:10px/1.4 ui-monospace,monospace;white-space:nowrap}.ma-header-actions{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end;max-width:280px}.ma-btn{background:#17283b;border:1px solid #39526b;color:#d8e5f4;border-radius:8px;padding:8px 12px;font-size:11px;font-weight:700;white-space:nowrap}.ma-btn:hover{border-color:#6fcdbc;background:#21424c}.ma-btn.primary{background:#66dbca;border-color:#82f3df;color:#08212b}.ma-btn.subtle{background:transparent}.ma-btn.active{border-color:#8fe6d6;color:#bdf9ea;background:#21484d}.ma-intro{display:flex;gap:15px;align-items:center;background:#142233;border:1px solid #30445d;border-radius:10px;padding:11px 16px;margin-bottom:16px;color:#aebfd1;font-size:11px;line-height:1.8}.ma-intro b{color:#dbe9f7}.ma-intro .ma-symbol{color:var(--ma-teal);font:26px/1 Georgia,serif}.ma-shell{display:grid;grid-template-columns:196px minmax(0,1fr);gap:15px;align-items:start}.ma-nav{border:1px solid #2b3f54;background:#0d1827;border-radius:13px;padding:12px 8px;position:sticky;top:70px;max-height:calc(100vh - 90px);overflow:auto;scrollbar-width:thin}.ma-nav-label{font-size:10px;color:#6f8a9e;letter-spacing:.08em;margin:5px 10px 9px}.ma-nav-group{color:#6f899d;font-size:9px;letter-spacing:.12em;padding:11px 10px 6px}.ma-nav button{width:100%;display:grid;grid-template-columns:23px 1fr;gap:5px;text-align:left;color:#a8bcd0;border:1px solid transparent;background:transparent;padding:9px 8px;border-radius:7px}.ma-nav button:hover{background:#1a2b3e;color:white}.ma-nav button.active{background:#1b3b43;color:#e1fff5;border-color:#3e7477}.ma-nav button span{font:10px ui-monospace,monospace;color:#6e9eaa;padding-top:3px}.ma-nav button b{font-size:11px;font-weight:700;display:block}.ma-nav button small{display:block;color:#7f97ae;font-size:9px;margin-top:2px}.ma-nav button.active small{color:#a0c4c7}.ma-nav-footer{margin:14px 7px 4px;padding-top:12px;border-top:1px solid #2c4055;font-size:10px;color:#8098af;line-height:1.8}.ma-mobile-nav{display:none;gap:7px;align-items:center;margin-bottom:12px}.ma-mobile-nav select{flex:1;width:100%;min-width:0;font-size:12px}.ma-workspace{min-width:0}.ma-lessonhead{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:12px}.ma-lessonhead h3{font-size:24px;letter-spacing:-.045em;margin:4px 0 4px;line-height:1.4}.ma-lessonhead p{margin:0;font-size:12px;color:#a8bdd0;line-height:1.8}.ma-lesson-number{color:#7392a8;font:10px ui-monospace,monospace;letter-spacing:.1em}.ma-head-nav{display:flex;gap:5px;margin-top:8px}.ma-head-nav button{padding:8px 10px}.ma-main{display:grid;grid-template-columns:minmax(0,1fr) 310px;gap:13px;align-items:start}.ma-blackboard{border:1px solid #30485e;border-radius:13px;overflow:hidden;background:#090f1a;box-shadow:0 14px 40px #0003;min-width:0}.ma-equationbar{padding:16px 20px 12px;min-height:89px;background:linear-gradient(110deg,#142232,#0d1624);border-bottom:1px solid #24374c}.ma-equation-label{font-size:9px;color:#728da5;letter-spacing:.1em;margin-bottom:5px}.ma-equation{font:21px/1.7 Cambria,"STIX Two Math","Times New Roman",serif;letter-spacing:.01em;color:#e1ecfa;overflow-wrap:anywhere}.ma-equation sub,.ma-equation sup{font-size:65%;line-height:0}.ma-equation .in{color:var(--ma-teal)}.ma-equation .weight{color:var(--ma-gold)}.ma-equation .out{color:var(--ma-purple)}.ma-equation .err{color:var(--ma-red)}.ma-stage{overflow-x:auto;scrollbar-width:thin;scrollbar-color:#365868 #0b1421;position:relative}.ma-stage svg{width:100%;height:auto;display:block;min-height:300px;touch-action:pan-y}.ma-stage svg [data-drag]{cursor:grab;touch-action:none}.ma-stage svg [data-drag]:active{cursor:grabbing}.ma-graphhint{display:flex;justify-content:space-between;gap:12px;padding:8px 16px;font-size:10px;color:#829fb8;border-top:1px solid #1c2c40}.ma-graphhint b{color:#a7d4d1;font-weight:500}.ma-subtitle{display:grid;grid-template-columns:27px 1fr;gap:10px;padding:13px 17px;background:#142434;border-top:1px solid #2b4056;min-height:65px;align-items:start}.ma-subtitle>span{display:grid;place-items:center;border-radius:50%;background:#25444e;color:#a2f0df;width:24px;height:24px;font:11px ui-monospace,monospace}.ma-subtitle p{font-size:12px;line-height:1.85;color:#c5d7e8;margin:0}.ma-player{padding:12px 15px;background:#0f1c2b;border-top:1px solid #2b4056;display:flex;gap:8px;align-items:center;flex-wrap:wrap}.ma-player .ma-btn{padding:7px 11px}.ma-player input[type=range]{flex:1;min-width:100px;accent-color:#68dcc9;max-width:none}.ma-player label{font-size:10px;color:#8ca5bb;display:flex;gap:4px;align-items:center;white-space:nowrap}.ma-player select{font-size:10px;padding:4px 5px;min-height:28px}.ma-player output{font:10px ui-monospace,monospace;color:#83d2c8}.ma-steprows{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;padding:0 15px 12px;background:#0f1c2b}.ma-steprows button{padding:7px 5px;border-radius:5px;border:1px solid #2c455b;background:#132438;color:#90a7be;font-size:10px;text-align:left}.ma-steprows button.active{border-color:#5caba5;background:#1b3a43;color:#bdfbf0}.ma-manipulate{padding:16px 17px;border-top:1px solid #294055;background:#142132}.ma-controltop{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:11px;margin-bottom:11px;color:#bbcdde}.ma-controltop .ma-btn{font-size:10px;padding:5px 9px}.ma-controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 18px}.ma-field{min-width:0}.ma-field label{font-size:11px;color:#a7bfd1;display:flex;justify-content:space-between;gap:6px}.ma-field output{color:#91e4d6;font:11px ui-monospace,monospace}.ma-field input[type=range]{width:100%;accent-color:var(--ma-teal);height:20px;margin:5px 0 0}.ma-field select{width:100%;font-size:11px;margin:5px 0 0;min-height:32px;padding:5px 8px}.ma-presets{display:flex;gap:6px;flex-wrap:wrap;margin-top:13px}.ma-presets button{font-size:10px;border:1px solid #3b4f66;background:#1b2c40;color:#b7cbdd;border-radius:6px;padding:6px 8px}.ma-presets button:hover{border-color:#c3ad7a;color:#ffe3b3}.ma-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:12px 0 0}.ma-metric{padding:10px 11px;border:1px solid #30435a;background:#132135;border-radius:8px;min-width:0}.ma-metric small{font-size:9px;color:#8ea9bd;display:block}.ma-metric b{font:700 15px/1.8 ui-monospace,monospace;color:#b7efdf;display:block;overflow-wrap:anywhere}.ma-metric span{font-size:9px;color:#7594ae;display:block}.ma-inspector{border:1px solid #30445c;border-radius:12px;background:linear-gradient(160deg,#142338,#101b2b);overflow:hidden;min-width:0}.ma-inspector-block{padding:17px 18px;border-bottom:1px solid #293c52}.ma-inspector-block:last-child{border-bottom:none}.ma-inspector-block h4{margin:0 0 9px;color:#edf5ff;font-size:12px;font-weight:750}.ma-inspector-block p{margin:0;color:#afc1d5;font-size:11px;line-height:1.95}.ma-k3label{font:9px ui-monospace,monospace;color:#f2c47f;letter-spacing:.1em;display:block;margin-bottom:6px}.ma-where{background:#1b2b3c}.ma-where p{color:#ccdae7}.ma-terms{display:flex;gap:5px;flex-wrap:wrap;margin:0 0 10px}.ma-terms button{border:1px solid #43546b;background:#1b2d42;border-radius:5px;color:#b5ccdf;padding:5px 8px;font:14px Cambria,serif}.ma-terms button.active{color:#8ef0db;border-color:#60afab;background:#1c434b}.ma-term-detail{min-height:65px}.ma-caution{border-left:2px solid #b8976b;padding-left:10px!important;font-size:10px!important;color:#c0b9ad!important}.ma-gpu{font-size:10px!important}.ma-test{border:1px solid #426066;border-radius:8px;background:#16303a;padding:12px;margin:12px 0 0}.ma-test p{font-size:11px;color:#c5e4e3}.ma-test button{margin-top:9px;font-size:10px}.ma-test-result{margin-top:8px!important;color:#a1e4d8!important;font-size:10px!important}.ma-interpret{display:grid;grid-template-columns:1.12fr 1fr;gap:13px;margin-top:14px}.ma-note-card{border:1px solid #2f435b;background:#111e30;border-radius:10px;padding:17px 18px;min-width:0}.ma-note-card h4{font-size:12px;margin:0 0 7px;color:#d7e7f4}.ma-note-card p{font-size:11px;color:#a6bed1;line-height:1.9;margin:0}.ma-note-card strong{color:#d8e7f5}.ma-location-map{display:flex;align-items:center;gap:4px;flex-wrap:wrap;margin:11px 0 8px}.ma-location-map button{background:#182c3f;border:1px solid #375268;border-radius:5px;padding:5px 7px;color:#9db8ca;font-size:9px}.ma-location-map button.active{background:#2e4b49;border-color:#89b5a0;color:#b4f5dc}.ma-location-map i{font-style:normal;color:#507187;font-size:10px}.ma-proof{border:1px solid #31445a;border-radius:10px;padding:15px 18px;margin-top:14px;color:#abc0d1;font-size:11px;background:#0f1d2f}.ma-proof summary{cursor:pointer;font-weight:700;color:#d4e3ef}.ma-proof-content{margin-top:13px;line-height:1.9;overflow-x:auto}.ma-proof-content code{color:#b3f1de;white-space:pre-wrap}.ma-proof-content table{border-collapse:collapse;width:100%;font-size:11px;margin:8px 0}.ma-proof-content th,.ma-proof-content td{border-bottom:1px solid #33465e;padding:8px;text-align:left}.ma-sources{margin-top:18px;padding:18px 20px;border:1px solid #2e435a;border-radius:12px;background:#0c1b2b;font-size:11px;color:#97b0c4;line-height:1.9}.ma-sources summary{cursor:pointer;color:#c6d9e8;font-weight:700}.ma-sources a{color:#85d9cf;overflow-wrap:anywhere}.ma-sources .ma-sourcegrid{display:grid;grid-template-columns:1fr 1fr;gap:10px 24px;padding-top:14px}.ma-sources .ma-sourcegrid>div{border-top:1px solid #273b50;padding-top:9px}.ma-sources b{color:#c5d8e6}.ma-source-ref{color:#8ccac8;font-size:10px;margin-top:10px!important}.ma-source-ref a{color:#99d7d4}.ma-limitline{font-size:10px;color:#708ca4;margin:13px 1px 0;line-height:1.9}.ma-live-status{font-size:10px;color:#8dd1c4;min-height:16px}.ma-stage .ma-drag-halo{opacity:.25}.ma-stage .ma-drag-halo:hover{opacity:.65}.ma-toast{position:fixed;bottom:25px;left:50%;transform:translateX(-50%);z-index:150;background:#183849;color:#d2fff1;border:1px solid #5faca5;border-radius:9px;box-shadow:0 8px 40px #0008;padding:12px 19px;font-size:12px;max-width:90vw}.ma-toast[hidden]{display:none}
+@media(min-width:1750px){.ma-main{grid-template-columns:minmax(0,1fr) 350px}.ma-shell{grid-template-columns:210px minmax(0,1fr)}.ma-equation{font-size:24px}.ma-inspector-block p{font-size:12px}}
+@media(max-width:1330px){.ma-shell{grid-template-columns:165px minmax(0,1fr)}.ma-main{grid-template-columns:minmax(0,1fr) 275px}.ma-inspector-block{padding:14px}.ma-equationbar{padding:14px}.ma-equation{font-size:18px}.ma-nav button small{display:none}.ma-nav button b{font-size:10px}.ma-header h2{font-size:30px}}
+@media(max-width:1100px){.ma-main{grid-template-columns:1fr}.ma-inspector{display:grid;grid-template-columns:1fr 1fr}.ma-inspector-block{border-right:1px solid #293c52}.ma-shell{grid-template-columns:175px minmax(0,1fr)}.ma-stage svg{min-height:0}.ma-header-actions{max-width:180px}.ma-interpret{grid-template-columns:1fr}}
+@media(max-width:760px){body.math-mode .wrap{width:calc(100% - 24px)}body.math-mode .panel#math-atlas{padding-top:20px}.ma-header{display:block}.ma-header h2{font-size:27px}.ma-header p{font-size:12px}.ma-header-actions{justify-content:flex-start;max-width:100%;margin-top:13px}.ma-intro{align-items:flex-start;font-size:10px}.ma-shell{grid-template-columns:1fr}.ma-nav{display:none}.ma-mobile-nav{display:flex}.ma-lessonhead h3{font-size:21px}.ma-head-nav{display:none}.ma-lessonhead p{font-size:11px}.ma-equation{font-size:19px}.ma-stage svg{min-width:760px;width:100%;min-height:0}.ma-graphhint{font-size:9px}.ma-graphhint .ma-desktop-hint{display:none}.ma-graphhint .ma-small-hint{display:inline}.ma-inspector{grid-template-columns:1fr}.ma-subtitle{padding:12px;min-height:84px}.ma-subtitle p{font-size:11px}.ma-player{gap:6px;padding:11px}.ma-steprows{padding:0 11px 11px;gap:4px}.ma-steprows button{font-size:9px}.ma-controls{gap:11px}.ma-metrics{gap:6px}.ma-metric{padding:8px}.ma-metric b{font-size:12px}.ma-metric small{font-size:8px}.ma-sources .ma-sourcegrid{grid-template-columns:1fr}.ma-equationbar{min-height:85px}.ma-inspector-block{padding:17px}.ma-inspector-block p{font-size:12px}.ma-small-hint{display:inline!important}.ma-player select{max-width:70px}.ma-intro .ma-symbol{font-size:20px}.ma-manipulate{padding:14px}.ma-proof{padding:13px}.ma-stage.ma-fit svg{min-width:0}.ma-stage.ma-fit{overflow:hidden}}
+.ma-small-hint{display:none}
+@media(prefers-reduced-motion:reduce){#math-atlas *{scroll-behavior:auto!important;transition:none!important}}
+/* Keep the mobile SVG scroll area inside its grid cell. */
+.ma-visualcol,.ma-main>*{min-width:0}.ma-main{min-width:0}.ma-stage{max-width:100%}
+@media(max-width:1100px){.ma-main{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:760px){.ma-shell,.ma-inspector{grid-template-columns:minmax(0,1fr)}.ma-controls{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+
+/* Unified workspace: one selection, three synchronized explanations. */
+.u-legacy-tab{display:none!important}
+body.unified-mode{background:radial-gradient(ellipse 1000px 420px at 18% -5%,#182d3a,transparent 70%),#0b111b}
+body.unified-mode .hero,body.unified-mode .lede{display:none}
+body.unified-mode .wrap{width:min(1840px,calc(100% - 36px))}
+body.unified-mode .topbar{height:46px}
+body.unified-mode #primary-tabs{position:relative;padding:7px 0;gap:3px;background:transparent}
+body.unified-mode #primary-tabs .tab{font-size:11px;padding:8px 12px}
+body.unified-mode #primary-tabs .tab[data-tab=unified]{margin-left:auto;background:#163b40;border-color:#337a78;color:#aff8e9}
+#unified{--u-accent:#8ee7cc;--u-line:#2b4051;--u-muted:#94aab9;padding:20px 0 40px!important;min-height:0}
+#unified *{box-sizing:border-box}
+#unified button:focus-visible,#unified select:focus-visible,#unified input:focus-visible,#unified summary:focus-visible{outline:2px solid #b3f6df;outline-offset:3px}
+#unified .u-titlebar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:15px}
+#unified .u-eyebrow{font:700 9px ui-monospace,monospace;letter-spacing:.17em;color:var(--u-accent)}
+#unified h2.u-title{font-size:28px;letter-spacing:-.045em;margin:3px 0 2px;line-height:1.35}
+#unified .u-lead{font-size:12px;color:#a4b9c7;margin:0}
+#unified .u-headtools{display:flex;align-items:center;gap:7px;flex-wrap:wrap;justify-content:flex-end}
+.u-btn{border:1px solid #3c5669;background:#142737;color:#d4e6ed;border-radius:8px;padding:8px 11px;font-size:11px;font-weight:650;cursor:pointer;white-space:nowrap}
+.u-btn:hover{border-color:#6bbaaa;background:#1b3642}
+.u-btn.primary{background:#9cead5;color:#102b2b;border-color:#b5f6e5}
+.u-btn.ghost{background:transparent;color:#a9bccb}
+.u-switch{display:inline-flex;border:1px solid #304757;border-radius:8px;padding:3px;background:#0c1925;gap:2px}
+.u-switch button{background:none;border:0;border-radius:5px;color:#94aabc;padding:6px 9px;font-size:10px;cursor:pointer}
+.u-switch button.active{background:#2b4a53;color:#c5f9ea}
+.u-badge{font:10px ui-monospace,monospace;color:#9fe0ca;white-space:nowrap;background:#15332f;border:1px solid #2d5a4c;padding:5px 8px;border-radius:5px}
+.u-navbox{border:1px solid var(--u-line);border-radius:11px;background:#101c29;overflow:hidden;margin-bottom:14px}
+.u-navhead{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 12px;border-bottom:1px solid #243744}
+.u-navhead p{font-size:10px;color:#93abb9;margin:0}
+.u-navhead p b{color:#c7e6de;font-weight:600}
+.u-route{display:flex;overflow-x:auto;gap:4px;padding:9px 10px;scrollbar-width:thin;scrollbar-color:#3d5e70 transparent}
+.u-route button{flex:1;min-width:74px;padding:7px 6px;background:#122331;border:1px solid #2c4556;border-radius:7px;color:#adbfca;font-size:10px;line-height:1.5;cursor:pointer;white-space:nowrap;position:relative}
+.u-route button span{display:block;font:9px ui-monospace,monospace;color:#6f919d;margin-bottom:3px}
+.u-route button.active{background:#214e4c;color:#d2fff1;border-color:#86d4be;box-shadow:0 0 0 1px #95eacf15}
+.u-route button.active span{color:#b1edda}
+.u-route button:not(.active):hover{background:#1a3540;border-color:#57958b}
+.u-route.u-path button{min-width:70px;font-size:9px}
+.u-context{display:flex;align-items:center;gap:12px;justify-content:space-between;padding:0 3px 11px}
+.u-context h3{font-size:16px;letter-spacing:-.025em;margin:0;color:#e5f5f3}
+.u-context p{font-size:11px;color:#9db2c0;margin:3px 0 0}
+.u-context .u-marker{font:10px ui-monospace,monospace;display:block;color:#82d7c4;margin-bottom:3px}
+.u-nextprev{display:flex;gap:5px;flex-shrink:0}
+.u-workspace{display:grid;grid-template-columns:minmax(0,0.39fr) minmax(0,0.61fr);gap:13px;align-items:start}
+.u-panel{border:1px solid #334a5c;border-radius:13px;overflow:hidden;background:#10202e;min-width:0}
+.u-panelhead{height:47px;padding:9px 13px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #2c4253;background:#122635;gap:8px}
+.u-panelhead h4{font-size:12px;margin:0;color:#e2f1ef;letter-spacing:-.01em}
+.u-panelhead h4 span{font:9px ui-monospace,monospace;letter-spacing:.1em;color:#7ebba9;margin-right:6px}
+.u-panelhead small{font-size:9px;color:#93abba;display:block;margin-top:2px}
+.u-panelhead .u-switch button{padding:5px 6px;font-size:9px}
+#unified #spatial,#unified #math-atlas{display:block!important;padding:0!important;min-height:0!important;animation:none!important}
+#unified #spatial>*{display:none!important}
+#unified #spatial>.sp-main{display:block!important;border:0;border-radius:0;box-shadow:none;background:none}
+#unified .sp-scene{height:clamp(350px,29.5vw,450px);border:0;border-radius:0}
+#unified .sp-inspector{display:none}
+#unified .sp-scene .sp-scene-label{left:15px;top:12px;font-size:9px;letter-spacing:.06em}
+#unified .sp-scene-label strong{font-size:16px;line-height:1.4}
+#unified .sp-scene-label small{font-size:9px;max-width:340px;display:block}
+#unified .sp-scenebtns{top:auto;bottom:12px;right:12px;max-width:80%;gap:3px}
+#unified .sp-scenebtns button{font-size:9px;padding:5px 7px}
+#unified #sp-kda,#unified #sp-mla{display:none}
+#unified .sp-legend{display:none}
+#unified .sp-hud{bottom:48px;right:12px;font-size:9px;padding:5px 7px}
+.u-selected{padding:12px 15px;background:#142b35;border-top:1px solid #2d4b58;min-height:88px}
+.u-selected .u-label{font-size:9px;color:#81c6b7;letter-spacing:.06em}
+.u-selected strong{font-size:13px;display:block;margin:3px 0 5px;line-height:1.45;color:#d1efe8}
+.u-selected p{font-size:11px;color:#b2cad1;line-height:1.75;margin:0}
+.u-selected code{font:10px/1.7 ui-monospace,monospace;color:#bce9d9;white-space:pre-wrap;display:block;padding-top:5px;overflow-wrap:anywhere}
+.u-stagepath{display:flex;gap:5px;align-items:center;margin:9px 0 0;color:#82adad;font-size:9px;flex-wrap:wrap}
+.u-stagepath b{font-weight:500;padding:3px 6px;border:1px solid #3a5b63;border-radius:5px;background:#18303c;color:#bfdbdf}
+.u-settings{border-top:1px solid #29414e;padding:0 13px}
+.u-settings summary{font-size:10px;color:#a1c7cd;padding:11px 2px;cursor:pointer}
+#unified .u-settings .sp-under{padding:7px 0;border:0;background:transparent;gap:5px;display:flex;flex-wrap:wrap}
+#unified .u-settings .sp-under label{font-size:9px}
+#unified .u-settings .sp-under select{font-size:10px;width:100%;max-width:100%}
+#unified .u-settings .sp-tokens{flex-basis:100%}
+#unified .u-settings .sp-tokens button{font-size:10px;padding:4px 7px}
+#unified .u-settings .sp-layerbar{display:flex;padding:8px 0 12px;flex-wrap:wrap;gap:7px}
+#unified .u-settings .sp-layergrid{order:3;flex-basis:100%;grid-template-columns:repeat(31,1fr)}
+#unified .u-settings .sp-layerbar>div:first-child{flex:1}
+#unified .u-settings .sp-layerbar small{font-size:9px}
+#unified .u-settings .sp-layergrid button{font-size:7px}
+#unified .u-settings .sp-layer-input input{font-size:10px}
+#unified #math-atlas>.ma-header,#unified #math-atlas>.ma-intro,#unified #math-atlas>.ma-mobile-nav,#unified #math-atlas>.ma-sources,#unified #math-atlas>.ma-limitline{display:none!important}
+#unified .ma-shell,#unified .ma-main{display:block!important;border:0;background:transparent;box-shadow:none}
+#unified .ma-nav,#unified .ma-lessonhead,#unified .ma-inspector,#unified .ma-interpret,#unified .ma-proof,#unified .ma-steprows{display:none!important}
+#unified .ma-workspace{padding:0;min-width:0}
+#unified .ma-blackboard{border:0;border-radius:0;box-shadow:none}
+#unified .ma-equationbar{padding:10px 14px 8px;min-height:59px;border-bottom:1px solid #293c4b}
+#unified .ma-equation-label{font-size:8px;margin-bottom:3px;color:#819caf;letter-spacing:.05em}
+#unified .ma-equation{font-size:15px;line-height:1.7;min-height:25px;overflow-wrap:anywhere;white-space:normal}
+#unified .ma-stage{height:auto;min-height:0;overflow:hidden}
+#unified #ma-svg{width:100%;min-width:0!important;display:block;height:auto;max-height:390px;aspect-ratio:880/450}
+#unified .ma-graphhint{padding:5px 13px;font-size:9px;min-height:0;gap:6px}
+#unified .ma-small-hint{display:none}
+#unified .ma-subtitle{padding:9px 13px;min-height:51px;gap:9px;font-size:11px;border-top:1px solid #273e4a}
+#unified .ma-subtitle p{font-size:11px;line-height:1.6}
+#unified .ma-subtitle>span{width:22px;height:22px;font-size:10px;flex-shrink:0}
+#unified .ma-player{padding:7px 11px;gap:7px;flex-wrap:nowrap;min-height:0}
+#unified .ma-player .ma-btn{font-size:10px;padding:6px 8px;white-space:nowrap}
+#unified .ma-player label{font-size:9px;white-space:nowrap}
+#unified .ma-player select{font-size:9px;padding:3px 5px;min-height:24px}
+#unified #ma-progress{min-width:20px;flex:1}
+#unified #ma-progress-out{font-size:9px;min-width:29px}
+#unified .ma-manipulate{padding:9px 13px;background:#101f2b;border-top:1px solid #293e4d}
+#unified .ma-controltop{margin:0 0 7px;display:flex;justify-content:space-between}
+#unified .ma-controltop b{font-size:10px;color:#a8c7cd}
+#unified .ma-controltop button{font-size:9px;padding:2px 5px}
+#unified .ma-controls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px 13px}
+#unified .ma-field{margin:0;min-width:0}
+#unified .ma-field label{font-size:10px;margin-bottom:2px;line-height:1.5}
+#unified .ma-field output{font-size:10px}
+#unified .ma-field input{margin:2px 0;width:100%;height:16px}
+#unified .ma-field select{font-size:10px;min-height:29px;padding:3px 6px;max-width:100%;width:100%}
+#unified .ma-presets{display:none}
+#unified .ma-controls .u-secondary{display:none}
+#unified .u-controls-expanded .ma-controls .u-secondary{display:block}
+#unified .u-controls-expanded .ma-presets{display:flex;font-size:10px;margin-top:7px;gap:5px;flex-wrap:wrap}
+#unified .ma-presets button{font-size:9px;padding:5px 7px}
+#unified .ma-metrics{margin:0;gap:0;display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid #263e4a;background:#0d1c29}
+#unified .ma-metric{border:0;border-right:1px solid #263e4a;border-radius:0;background:transparent;padding:8px 12px;min-width:0;min-height:0}
+#unified .ma-metric:nth-child(n+4){display:none}
+#unified .ma-metric small{font-size:9px;color:#8cacb9}
+#unified .ma-metric b{font:700 16px/1.4 ui-monospace,monospace;color:#a5e9d4;margin:2px 0;overflow-wrap:anywhere}
+#unified .ma-metric span{font-size:9px;line-height:1.35}
+.u-service{padding:23px 20px;background:radial-gradient(ellipse at 50% 15%,#182e3e,#101c2b);min-height:535px}
+.u-service .u-service-kind{font:10px ui-monospace,monospace;color:#91dcca;letter-spacing:.15em}
+.u-service h3{font-size:23px;line-height:1.45;margin:10px 0 14px}
+.u-service .u-service-diagram{display:flex;align-items:center;gap:13px;min-height:155px;margin:12px 0}
+.u-service .u-service-node{flex:1;padding:23px 9px;background:#1c3c48;border:1px solid #568c8b;border-radius:11px;text-align:center;min-height:96px;display:grid;align-content:center;color:#ddfff4;font-size:13px;position:relative}
+.u-service .u-service-node small{display:block;font:9px ui-monospace,monospace;color:#99c8bf;margin-bottom:8px}
+.u-service .u-service-arrow{font-size:23px;color:#85dbc1;animation:u-flow 1.7s infinite}
+@keyframes u-flow{50%{opacity:.35;transform:translateX(3px)}}
+.u-service code{white-space:pre-wrap;display:block;padding:16px;background:#0b1927;border:1px solid #325365;border-radius:8px;color:#aee9d6;font:12px/1.9 ui-monospace,monospace;overflow-wrap:anywhere}
+.u-service p{font-size:12px;color:#b3cad5;line-height:1.9}
+.u-service .u-service-note{font-size:10px;color:#91b2bf;border-left:2px solid #628e9b;padding:8px 11px;margin-top:18px}
+.u-overview{display:grid;grid-template-columns:1fr 1.15fr 1.1fr;gap:11px;margin-top:13px}
+.u-overview article{padding:13px 15px;border:1px solid #2c4352;border-radius:10px;background:#111f2d;min-width:0}
+.u-overview article h4{font-size:10px;margin:0 0 7px;color:#87d6bf;font-weight:650;letter-spacing:.03em}
+.u-overview article p{font-size:11px;line-height:1.8;color:#b9cfda;margin:0}
+.u-caveat{font-size:10px!important;color:#8ba7b6!important;line-height:1.8!important;margin:11px 3px 16px!important}
+.u-caveat b{color:#b5cfd3;font-weight:600}
+.u-detail{border:1px solid #2a4255;border-radius:10px;margin-top:9px;background:#10202e;overflow:hidden}
+.u-detail>summary{cursor:pointer;padding:13px 16px;color:#c5dde5;font-size:12px;font-weight:600}
+.u-detail>summary small{font-size:10px;font-weight:400;color:#7e9aaa;margin-left:10px}
+.u-detail-body{padding:0 16px 17px;border-top:1px solid #2a4051}
+.u-detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;padding-top:16px}
+#unified .u-detail .ma-inspector{display:block!important;max-height:none;height:auto;border:1px solid #2c4355;border-radius:9px;padding:10px;overflow:visible}
+#unified .u-detail .ma-proof{display:block!important;margin:0;border:1px solid #2c4355;border-radius:9px}
+#unified .u-detail .ma-proof-content{overflow-x:auto}
+#unified .u-detail .ma-inspector-block{padding:12px}
+#unified .u-detail .ma-inspector-block p{font-size:12px}
+#unified .u-detail .ma-interpret{display:grid!important;margin-top:15px}
+#unified .u-detail .sp-inspector{display:block;height:auto;max-height:none;overflow:visible;border:0;padding:15px}
+#unified .u-detail .sp-bottom{grid-template-columns:1fr 1fr}
+#unified .u-detail #kimi{display:block!important;padding:18px 0!important}
+#unified .u-detail #kimi>.section-head:first-child,#unified .u-detail #kimi .k3-kpi,#unified .u-detail #kimi .sp-bridge{display:none}
+#unified .u-detail .ma-sources{display:block!important;font-size:12px;margin-top:12px}
+#unified .u-detail .sp-sourcebox{font-size:12px}
+#unified .u-status{display:flex;justify-content:space-between;gap:12px;color:#7897a8;font-size:9px;margin:13px 3px 0}
+#unified [hidden]{display:none!important}
+body.unified-mode>.wrap>.ref,body.unified-mode>.wrap>.footer{display:none}
+@media(min-width:1700px){#unified .sp-scene{height:449px}#unified #ma-svg{max-height:399px}}
+@media(max-width:1250px){.u-workspace{grid-template-columns:minmax(0,.4fr) minmax(0,.6fr)}#unified .sp-scene{height:340px}#unified .ma-equation{font-size:13px}#unified h2.u-title{font-size:24px}.u-panelhead small{display:none}#unified .ma-controls{gap:6px 9px}#unified .ma-field label{font-size:9px}}
+@media(max-width:980px){.u-workspace{grid-template-columns:1fr}.u-overview{grid-template-columns:1fr 1fr}.u-overview article:last-child{grid-column:span 2}#unified .sp-scene{height:350px}#unified #ma-svg{max-height:none}.u-detail-grid{grid-template-columns:1fr}#unified .u-detail .sp-bottom{grid-template-columns:1fr}#unified .u-titlebar{align-items:flex-start}.u-headtools .u-badge{display:none}}
+@media(max-width:600px){body.unified-mode .wrap{width:calc(100% - 20px)}body.unified-mode .topbar .pill{font-size:8px}body.unified-mode .topbar{height:43px}body.unified-mode #primary-tabs .tab{font-size:10px;padding:7px 9px}#unified{padding-top:15px!important}#unified .u-titlebar{display:block}#unified h2.u-title{font-size:23px}#unified .u-lead{font-size:11px}#unified .u-headtools{justify-content:flex-start;margin-top:11px}.u-navhead{padding:7px 8px}.u-navhead p{display:none}.u-route{padding:7px;gap:4px}.u-route button{min-width:77px;padding:6px}.u-context{align-items:flex-start;gap:6px}.u-context h3{font-size:14px}.u-context p{font-size:10px}.u-nextprev .u-btn{padding:5px 7px;font-size:10px}.u-context .u-marker{font-size:9px}.u-panelhead{height:43px;padding:8px 10px}.u-panelhead h4{font-size:11px}.u-panelhead .u-switch button{font-size:9px;padding:5px}.u-panelhead h4 span{font-size:8px}#unified .sp-scene{height:315px}.u-selected{padding:10px 12px;min-height:0}.u-selected p{font-size:10px}.u-selected strong{font-size:12px}#unified .ma-equationbar{padding:9px 11px;min-height:58px}#unified .ma-equation{font-size:12px}#unified .ma-stage{overflow-x:auto}#unified #ma-svg{min-width:660px!important;width:100%;height:auto;max-height:none;aspect-ratio:880/450}#unified .ma-stage.ma-fit #ma-svg{min-width:0!important}#unified .ma-small-hint{display:inline}#unified .ma-desktop-hint{display:none}#unified .ma-subtitle p{font-size:10px}#unified .ma-controls{grid-template-columns:repeat(2,minmax(0,1fr))}#unified .ma-player label{display:none}#unified .ma-metric{padding:8px}#unified .ma-metric b{font-size:13px}#unified .ma-metric span{font-size:8px}.u-overview{grid-template-columns:1fr}.u-overview article:last-child{grid-column:auto}.u-overview article{padding:12px}.u-detail>summary{font-size:11px;padding:12px}.u-detail>summary small{display:none}.u-detail-body{padding:0 9px 12px}.u-service{padding:18px 12px;min-height:380px}.u-service h3{font-size:19px}.u-service .u-service-diagram{gap:7px;min-height:123px}.u-service .u-service-node{font-size:10px;padding:15px 6px}.u-service .u-service-arrow{font-size:17px}.u-service code{font-size:10px;padding:11px}.u-service p{font-size:11px}.u-status{flex-direction:column;gap:3px}#unified .u-detail .ma-sourcegrid,#unified .u-detail .ma-interpret{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){.u-service-arrow{animation:none!important}}
+/* Compact desktop framing: show both visualizations and the three key explanations together. */
+@media(min-width:981px){
+ body.unified-mode .topbar{height:36px}
+ body.unified-mode #primary-tabs{padding:5px 0}
+ body.unified-mode #primary-tabs .tab{padding:6px 10px;font-size:10px}
+ #unified{padding-top:12px!important}
+ #unified .u-titlebar{margin-bottom:10px}
+ #unified .u-eyebrow{font-size:8px;line-height:1.4}
+ #unified h2.u-title{font-size:25px;line-height:1.25;margin:3px 0}
+ #unified .u-lead{font-size:11px;line-height:1.5}
+ .u-navhead{padding:5px 9px}
+ .u-navhead .u-switch{padding:2px}
+ .u-navhead .u-switch button{padding:3px 7px;line-height:1.5}
+ .u-navbox{margin-bottom:9px}
+ .u-route{padding:6px 7px}
+ .u-route button{padding:5px 5px;font-size:10px;line-height:1.3}
+ .u-route button span{font-size:8px;margin-bottom:3px}
+ .u-context{padding-bottom:9px}
+ .u-context h3{font-size:15px;line-height:1.45}
+ .u-context p{font-size:10px;line-height:1.5;margin-top:3px}
+ .u-context .u-marker{font-size:9px;line-height:1.5;margin-bottom:2px}
+ .u-panelhead{height:40px;padding:6px 12px}
+ #unified .sp-scene{height:360px}
+ #unified .ma-equationbar{min-height:51px;padding:7px 12px 5px}
+ #unified .ma-equation{font-size:14px;line-height:1.6;min-height:22px}
+ #unified #ma-svg{max-height:330px}
+ #unified .ma-graphhint{padding:4px 12px;font-size:9px;line-height:1.5}
+ #unified .ma-subtitle{min-height:44px;padding:7px 12px}
+ #unified .ma-player{padding:5px 11px}
+ #unified .ma-player .ma-btn{padding:5px 8px}
+ #unified .ma-manipulate{padding:7px 12px}
+ #unified .ma-controltop{margin-bottom:4px}
+ #unified .ma-field label{font-size:10px;line-height:1.4}
+ #unified .ma-field input{height:15px;margin:0}
+ #unified .ma-metric{padding:6px 11px}
+ #unified .ma-metric small{font-size:9px;line-height:1.3;display:block}
+ #unified .ma-metric b{font-size:15px;line-height:1.3;display:block;margin:2px 0}
+ #unified .ma-metric span{font-size:8px;line-height:1.3;display:block}
+ .u-selected{min-height:0;padding:10px 13px}
+ .u-selected p{font-size:11px;line-height:1.65}
+ .u-selected strong{margin:3px 0;font-size:12px}
+ .u-selected code{font-size:10px;line-height:1.5}
+ .u-overview{margin-top:10px;gap:10px}
+ .u-overview article{padding:11px 13px}
+ .u-overview article h4{margin-bottom:5px}
+ .u-overview article p{font-size:11px;line-height:1.7}
+ .u-service{min-height:500px}
+}
+@media(min-width:981px){
+ #unified .u-titlebar .u-eyebrow,#unified .u-titlebar .u-lead{display:none}
+ #unified .u-titlebar{min-height:35px}
+ #unified .u-context p{display:none}
+ #unified .u-context{padding-bottom:10px}
+ #unified .u-controls-expanded .ma-metric:nth-child(n+4){display:block}
+}
+
 </style>
 </head>
 <body>
@@ -73,9 +308,45 @@ body.spatial-mode .hero,body.spatial-mode .lede{display:none}body.spatial-mode .
  <button type="button" class="tab" data-tab="attention" aria-selected="false"><span class="tab-n">03</span> 의미 · Attention</button>
  <button type="button" class="tab" data-tab="routing" aria-selected="false"><span class="tab-n">04</span> 라우팅 · OSI 7계층</button>
  <button type="button" class="tab" data-tab="calculator" aria-selected="false"><span class="tab-n">05</span> 용량 · 병목 계산기</button>
- <button type="button" class="tab" data-tab="kimi" aria-selected="false"><span class="tab-n">06</span> Kimi K3 · 심층 추론 실험실</button>
-<button type="button" class="tab" data-tab="spatial" role="tab" aria-selected="false"><span class="tab-n">07</span>K3 입체 연산 지도</button></nav>
+ <button type="button" class="tab u-legacy-tab" data-tab="kimi" aria-selected="false"><span class="tab-n">06</span> Kimi K3 · 심층 추론 실험실</button>
+<button type="button" class="tab u-legacy-tab" data-tab="spatial" role="tab" aria-selected="false"><span class="tab-n">07</span>K3 입체 연산 지도</button><button type="button" class="tab u-legacy-tab" data-tab="math-atlas" aria-selected="false"><span class="tab-n">08</span>수식의 기하학</button><button type="button" class="tab" data-tab="unified" aria-selected="false"><span class="tab-n">06</span>K3 통합 실험실</button></nav>
 <main>
+<section class="panel" id="unified" aria-label="K3 통합 추론 실험실">
+ <div class="u-titlebar">
+  <div><div class="u-eyebrow">ONE OPERATION · THREE PERSPECTIVES</div><h2 class="u-title">K3, 한 화면에서 이해하기.</h2><p class="u-lead">입체도에서 위치를 찾고, 수식의 움직임을 보고, 계산의 목적을 연결합니다.</p></div>
+  <div class="u-headtools"><span class="u-badge">06 + 07 + 08 통합</span><button class="u-btn primary" id="u-tour">▶ 처음부터 따라가기</button><button class="u-btn ghost" id="u-details-button">상세 설명 ↓</button></div>
+ </div>
+ <div class="u-navbox">
+  <div class="u-navhead"><div class="u-switch" aria-label="탐색 방법"><button class="active" data-u-mode="math">핵심 연산 13개</button><button data-u-mode="path">요청 → 응답 17단계</button></div><p><b>선택 한 번 → 입체도·수식·설명 동시 전환</b> · 연산 목록은 실행 순서가 아닙니다.</p></div>
+  <nav class="u-route" id="u-math-route" aria-label="수학 연산 선택"></nav>
+  <nav class="u-route u-path" id="u-path-route" aria-label="요청부터 응답까지의 개념적 흐름" hidden></nav>
+ </div>
+ <div class="u-context"><div><span class="u-marker" id="u-marker"></span><h3 id="u-lesson-title"></h3><p id="u-lesson-lead"></p></div><div class="u-nextprev"><button class="u-btn ghost" id="u-prev" aria-label="이전 연산">← 이전</button><button class="u-btn" id="u-next" aria-label="다음 연산">다음 →</button></div></div>
+ <div class="u-workspace">
+  <section class="u-panel" id="u-structure-card" aria-label="선택한 연산의 구조적 위치">
+   <div class="u-panelhead"><div><h4><span>WHERE / 07</span> 지금 어디에서?</h4><small>블록을 클릭하면 오른쪽 수식도 바뀝니다.</small></div><div class="u-switch" aria-label="구조 보기"><button data-u-view="layer">한 층</button><button data-u-view="model">전체</button><button data-u-view="hardware">GPU</button></div></div>
+   <div id="u-spatial-mount"></div>
+   <div class="u-selected" aria-live="polite"><span class="u-label">선택한 연산 블록</span><strong id="u-selected-name"></strong><p id="u-selected-text"></p><code id="u-selected-formula"></code><div class="u-stagepath" id="u-stagepath"></div></div>
+   <details class="u-settings" id="u-settings"><summary>층·토큰·입력 예시 조절 <span style="color:#6f99a8">· 입체도의 축소 수치 모형</span></summary><div id="u-settings-mount"></div></details>
+  </section>
+  <section class="u-panel" id="u-math-card" aria-label="선택한 연산의 수식과 시각적 의미">
+   <div class="u-panelhead"><div><h4><span id="u-how-label">HOW / 08</span> <span id="u-how-title" style="font:inherit;letter-spacing:0;color:inherit">무엇이 어떻게 바뀌나?</span></h4></div><button class="u-btn ghost" id="u-controls-toggle" style="font-size:10px;padding:5px 8px">추가 변수 펼치기</button></div>
+   <div id="u-math-mount"></div><div id="u-service" class="u-service" hidden></div>
+  </section>
+ </div>
+ <div class="u-overview" aria-live="polite">
+  <article><h4>WHY / 06　왜 필요한 계산인가?</h4><p id="u-why"></p></article>
+  <article><h4>MEANING　문맥과 출력에는 어떤 의미인가?</h4><p id="u-meaning"></p></article>
+  <article><h4>HARDWARE　GPU·소프트웨어에서는?</h4><p id="u-hardware"></p></article>
+ </div>
+ <p class="u-caveat"><b>연산 위치와 해설은 동기화됩니다.</b> 입체도의 8차원 모형과 오른쪽 기하학의 축소 모형은 서로 다른 예시이므로 숫자가 같지는 않습니다. 오른쪽 슬라이더는 오른쪽 계산만 바꿉니다. 실제 K3를 실행하거나 내부 활성값을 측정하는 화면이 아닙니다.</p>
+ <details class="u-detail" id="u-math-detail"><summary>수식의 기호 · 숫자 전개 · 연산의 상세 의미 <small>현재 선택한 연산에 맞춰 함께 바뀝니다.</small></summary><div class="u-detail-body"><div class="u-detail-grid"><div id="u-inspector-mount"></div><div id="u-proof-mount"></div></div><div id="u-interpret-mount"></div></div></details>
+ <details class="u-detail" id="u-spatial-detail"><summary>입체도 상세 정보 · 한 칸의 곱셈 · Expert 수치 실험 <small>기존 07의 세부 기능</small></summary><div class="u-detail-body" id="u-spatial-detail-mount"></div></details>
+ <details class="u-detail" id="u-legacy-detail"><summary>심층 추론 실험실 전체 · GPU 통신 · 하네스 <small>기존 06의 실험과 해설을 그대로 보관</small></summary><div class="u-detail-body" id="u-legacy-mount"></div></details>
+ <details class="u-detail" id="u-source-detail"><summary>출처 · 교육용 모형의 범위와 한계 <small>기존 자료의 출처와 모델링 범위</small></summary><div class="u-detail-body" id="u-source-mount"><p class="u-caveat">이번 버전은 기존 학습 자료의 화면 구성과 탐색 동작을 통합한 것입니다. 모델 사양이나 인용 자료를 새로 검증한 버전은 아닙니다.</p></div></details>
+ <div class="u-status"><span>연산 선택 → 입체 위치 → 수식의 변화 → 목적·출력·하드웨어</span><span>단일 HTML · 오프라인 · 교육용 수치 실험</span></div>
+</section>
+
 <section class="panel active" id="journey" aria-label="전체 데이터 여정">
  <div class="section-head"><div><span class="kicker">The end-to-end trace</span><h2>입력부터 답변까지, 한 번의 추론을 재생</h2><p>단계를 누르거나 자동 재생하면 데이터의 타입·저장 위치·전송 경로가 함께 바뀝니다. 동작 순서는 전형적인 Decoder-only LLM 추론의 <strong>개념적 요약</strong>입니다.</p></div><span class="note-tag">9 단계 · 시뮬레이션</span></div>
  <div class="card control-bar">
@@ -170,6 +441,36 @@ S새 = S̄ + β·k·오차 ; 출력 = q·S새</div><div class="k3-output" id="k3
  <details class="sp-sourcebox"><summary>검증 범위 · 생략한 연산 · 출처 확인 (2026-10-29)</summary><div class="sp-disclosure">공식 구조: 93층, 69 KDA + 24 Gated MLA, 7,168 hidden, 3,584 latent, 896 routed / 16 selected / 2 shared, 첫 층 Dense, 마지막 93층 MLA. 12층 단위 AttnRes 묶음.<br>교육용 계산: 임의 가중치, JavaScript 배정밀도, 토큰 경계·ID, 8차원 hidden / 4차원 attention 및 latent / 3차원 MLA cache, 고정된 예시 ShortConv, 가상 이전 블록 표현, 8개 후보 어휘. 실제 tokenizer·다중 헤드·전체 계층·양자화 커널·GPU 병렬 스케줄러·하네스는 실행하지 않습니다. Prefill/Decode 전환은 처리 범위와 캐시 재사용을 도식화하며, 소형 수치 실험은 짧은 입력 전체를 재계산합니다.<br>이미지/동영상 입력은 이 탐색기에서 제외했습니다. 도구 실행과 네트워크 흐름은 도식이며 외부 요청을 보내지 않습니다. 시각 배치는 연산 그래프의 설명용 정리이며 실제 커널 실행 순서나 시간 비율과 같지 않습니다.<br>참고 사이트의 입체 텐서 탐색 방식을 참고했고, 코드·그래픽은 별도로 구현했습니다. K3는 단순 GPT 구조와 다르므로 KDA/MLA/AttnRes/LatentMoE 경로로 재구성했습니다.</div><a href="https://bbycroft.net/llm" target="_blank" rel="noopener noreferrer">Brendan Bycroft · LLM Visualization</a><a href="https://huggingface.co/moonshotai/Kimi-K3/raw/main/config.json" target="_blank" rel="noopener noreferrer">공식 config.json · 실제 층 순서와 차원</a><a href="https://arxiv.org/html/2607.24653v2#S2" target="_blank" rel="noopener noreferrer">Kimi K3 기술보고서 §2 · 2026-08-07</a><a href="https://arxiv.org/html/2607.24653v2#S5.SS4" target="_blank" rel="noopener noreferrer">기술보고서 §5.4 · 추론·캐시</a><a href="https://docs.nvidia.com/cuda/cuda-c-programming-guide/" target="_blank" rel="noopener noreferrer">NVIDIA · CUDA 메모리·실행 모델</a></details>
  <div class="sp-modal" id="sp-help-modal" hidden role="dialog" aria-modal="true" aria-labelledby="sp-help-title"><div class="sp-dialog"><button class="btn" id="sp-help-close">닫기 ×</button><h3 id="sp-help-title">시각화 읽는 법</h3><p><b>1. 큰 구조 → 작은 연산.</b> 「전체 93층」에서 층을 선택한 뒤 「한 층 펼치기」로 이동합니다. 청록은 KDA, 보라는 MLA입니다. 아래 93칸 지도가 현재 위치를 표시합니다.</p><p><b>2. 블록과 숫자를 선택.</b> 블록을 클릭하면 오른쪽에 목적·수식·입출력 형태가 나옵니다. 숫자 칸은 예시 활성값입니다. 아래 행렬 실험에서 출력 칸을 누르면 어떤 곱셈이 합쳐졌는지 확인할 수 있습니다.</p><p><b>3. 같은 데이터의 다른 관점.</b> 「GPU·하네스 경로」는 같은 모델 연산을 메모리와 통신 관점으로 보여줍니다. 모델 Router, GPU 통신, 도구 선택은 서로 다른 과정입니다.</p><p><b>4. 경로 재생.</b> 기존 17단계 설명과 연결되어 각 단계의 위치로 이동합니다. KDA/MLA/MoE는 매번 한 차례만 실행되는 단계가 아니라 층마다 반복되는 구성요소입니다.</p><p><code>드래그</code> 회전 · <code>Shift + 드래그</code> 이동 · <code>휠</code> 확대 · <code>방향키</code> 회전 · <code>＋/−</code> 확대 · <code>0</code> 시점 초기화. 터치 한 손가락 회전, 두 손가락 확대.</p><p>이것은 <b>실제 K3의 내부 활성값 측정 화면이 아닙니다.</b> 공개된 구조를 지도 삼아, 임의의 작은 행렬로 작동 원리를 계산하는 학습 도구입니다.</p></div></div>
 </section>
+
+<section class="panel" id="math-atlas" aria-label="Kimi K3 수식의 기하학 인터랙티브 실험실">
+ <div class="ma-header"><div><span class="ma-eyebrow">KIMI K3 / THE GEOMETRY OF INFERENCE</span><h2>수식이 움직이면, 의미가 보인다.</h2><p>숫자 표를 외우는 대신, 벡터가 <b>회전하고 · 모이고 · 기억을 수정하고 · 선택되는 과정</b>을 직접 봅니다.</p></div><div class="ma-header-actions"><span class="ma-pill">13개 연산 장면 · 오프라인</span><button class="ma-btn" id="ma-back-spatial">입체 연산 지도 ↗</button></div></div>
+ <div class="ma-intro"><span class="ma-symbol">∑</span><div><b>93층 = 93개의 별개 공식이 아닙니다.</b> 같은 종류의 연산이 서로 다른 학습 가중치로 반복됩니다. 아래는 그 연산을 2차원·소수 토큰으로 펼친 학습용 모형입니다. 그림의 축을 실제 K3의 ‘로봇 지식’·‘추론 능력’ 축으로 해석하지 마세요.</div></div>
+ <div class="ma-mobile-nav"><button class="ma-btn" id="ma-mobile-prev" aria-label="이전 연산">←</button><select id="ma-scene-select" aria-label="시각화 연산 선택"></select><button class="ma-btn" id="ma-mobile-next" aria-label="다음 연산">→</button></div>
+ <div class="ma-shell"><nav class="ma-nav" id="ma-nav" aria-label="수학 연산별 장면"></nav><div class="ma-workspace">
+  <div class="ma-lessonhead"><div><span class="ma-lesson-number" id="ma-number"></span><h3 id="ma-title"></h3><p id="ma-subhead"></p></div><div class="ma-head-nav"><button class="ma-btn" id="ma-prev" aria-label="이전 장면">← 이전</button><button class="ma-btn" id="ma-next">다음 →</button></div></div>
+  <div class="ma-main"><div class="ma-visualcol">
+   <div class="ma-blackboard"><div class="ma-equationbar"><div class="ma-equation-label">FORMULA ↔ GEOMETRY · 아래 해설의 기호를 누르면 뜻을 확인합니다</div><div class="ma-equation" id="ma-equation"></div></div>
+    <div class="ma-stage" id="ma-stage"><svg id="ma-svg" viewBox="0 0 880 450" role="img" tabindex="0" aria-labelledby="ma-svg-title ma-svg-desc"></svg></div>
+    <div class="ma-graphhint"><span id="ma-interaction-hint"></span><b><span class="ma-desktop-hint">선명한 점 = 드래그 가능</span><span class="ma-small-hint">그림 좌우 스크롤 · <button id="ma-fit" class="ma-btn" style="font-size:9px;padding:2px 5px">전체 맞춤</button></span></b></div>
+    <div class="ma-subtitle" aria-live="polite"><span id="ma-phase-no">4</span><p id="ma-caption"></p></div>
+    <div class="ma-player"><button class="ma-btn primary" id="ma-play">▶ 설명 재생</button><button class="ma-btn subtle" id="ma-rewind" aria-label="처음으로 되감기">↺</button><input id="ma-progress" type="range" min="0" max="1000" step="1" value="1000" aria-label="수식 전개 진행도"><output id="ma-progress-out">100%</output><label>속도 <select id="ma-speed" aria-label="설명 재생 속도"><option value="0.6">천천히</option><option value="1" selected>보통</option><option value="1.6">빠르게</option></select></label></div><div class="ma-steprows" id="ma-steps" role="group" aria-label="연산 전개 단계"></div>
+    <div class="ma-manipulate"><div class="ma-controltop"><b>직접 바꾸고, 결과를 비교하세요</b><button class="ma-btn subtle" id="ma-reset">기준값 복원</button></div><div class="ma-controls" id="ma-controls"></div><div class="ma-presets" id="ma-presets"></div></div>
+   </div><div class="ma-metrics" id="ma-metrics" aria-live="polite"></div>
+  </div><aside class="ma-inspector" id="ma-inspector" aria-label="수식의 의미와 Kimi K3 대응"></aside></div>
+  <div class="ma-interpret"><article class="ma-note-card"><h4>이 연산은 모델의 어디에 있나요?</h4><div class="ma-location-map" id="ma-location"></div><p id="ma-location-desc"></p><button class="ma-btn subtle" id="ma-goto-block" style="margin-top:10px">입체도에서 이 연산 찾기 ↗</button></article><article class="ma-note-card"><h4>그림을 문장의 의미로 읽는 방법</h4><p id="ma-semantic"></p><p class="ma-limitline" style="margin-top:9px">색은 구분용입니다. 유사한 색·가까운 점이 실제 K3에서 같은 의미라는 증거는 아닙니다.</p></article></div>
+  <details class="ma-proof" id="ma-proof"><summary>수식 전개 · 정확한 숫자 · 생략한 세부 사항</summary><div class="ma-proof-content" id="ma-proof-content"></div></details>
+ </div></div>
+ <details class="ma-sources"><summary>출처 · 실제 K3와 축소 모형의 차이 · 읽는 순서</summary><div class="ma-sourcegrid">
+ <div><b>[S1] Moonshot AI — Kimi K3 기술보고서</b><br>v2, 2026-08-07. §2.1 KDA·Gated MLA, §2.2 AttnRes, §2.3 Stable LatentMoE, 부록 B SiTU-GLU.<br><a href="https://arxiv.org/html/2607.24653v2" target="_blank" rel="noopener">arxiv.org/html/2607.24653v2</a></div>
+ <div><b>[S2] 공식 모델 설정</b><br>2026-10-30 확인. hidden_size=7168, KDA 69층·MLA 24층, ShortConv 폭 4, kv_lora_rank=512, 896중 16 Expert, SiTU cap 4·25.<br><a href="https://huggingface.co/moonshotai/Kimi-K3/raw/main/config.json" target="_blank" rel="noopener">moonshotai/Kimi-K3/config.json</a></div>
+ <div><b>[S3] 3Blue1Brown — Linear transformations and matrices</b><br>2016-08-07. 행렬을 공간의 변형으로 설명하는 접근을 참고했습니다.<br><a href="https://www.3blue1brown.com/lessons/linear-transformations/" target="_blank" rel="noopener">3blue1brown.com / linear-transformations</a></div>
+ <div><b>[S4] 3Blue1Brown — Dot products and duality</b><br>2016-08-24. 내적을 투영과 스케일로 해석하는 관점.<br><a href="https://www.3blue1brown.com/lessons/dot-products/" target="_blank" rel="noopener">3blue1brown.com / dot-products</a></div>
+ <div><b>[S5] 3Blue1Brown — Attention in transformers, step-by-step</b><br>2024-04-07. Q·K·V와 문맥 혼합을 시각적으로 설명하는 접근.<br><a href="https://www.3blue1brown.com/lessons/attention/" target="_blank" rel="noopener">3blue1brown.com / attention</a></div>
+ <div><b>범위와 한계</b><br>직접 작성한 SVG·JavaScript입니다. 채널의 영상·이미지를 복제하거나 실제 모델 가중치를 불러오지 않습니다. 13개 장면은 각각의 연산 원리를 분리한 실험이며, 마지막 ‘연결 실험’만 그 화면 내부의 작은 경로를 연속 계산합니다. 기존 입체도와는 연산 위치를 연결하지만 수치 상태는 별개입니다.</div>
+ </div><p style="margin-top:16px">권장 순서: 02 행렬곱 → 05 내적 → 06 MLA → 08 KDA → 11 MoE → 13 연결 실험. 식은 모두 열벡터 표기(y=Wx)입니다. 앞선 입체도의 행벡터 표기(xW)와는 전치로 대응합니다. 단일 HTML이므로 인터넷은 출처 링크를 열 때만 필요합니다.</p></details>
+ <p class="ma-limitline">수학적 비유의 한계: 기하학은 수치 연산을 설명하지만, 실제 모델의 각 좌표가 어떤 개념을 담는지 해독한 결과는 아닙니다. 높은 토큰 확률도 사실성·안전성·작업 성공을 보장하지 않습니다.</p>
+</section>
+<div class="ma-toast" id="ma-toast" role="status" hidden></div>
 
 </main>
 <section class="ref"><span class="kicker">Technical sources · 원문 참고</span><h2>공식 문서 및 원전</h2><div class="source-list"><a class="source-link" target="_blank" rel="noopener noreferrer" href="https://docs.nvidia.com/cuda/cuda-c-programming-guide/">NVIDIA — CUDA C++ Programming Guide: Memory Hierarchy (공식 기술 문서)</a><a class="source-link" target="_blank" rel="noopener noreferrer" href="https://developer.nvidia.com/blog/cuda-refresher-cuda-programming-model/">NVIDIA — CUDA Refresher: Programming Model (2020-06-26)</a><a class="source-link" target="_blank" rel="noopener noreferrer" href="https://resources.nvidia.com/en-us-hopper-architecture">NVIDIA — H100 Tensor Core GPU Architecture Whitepaper</a><a class="source-link" target="_blank" rel="noopener noreferrer" href="https://research.google/pubs/attention-is-all-you-need/">Vaswani et al. — Attention Is All You Need (2017)</a><a class="source-link" target="_blank" rel="noopener noreferrer" href="https://docs.vllm.ai/en/latest/design/prefix_caching/">vLLM — Automatic Prefix Caching / KV block management (공식 문서)</a><a class="source-link" target="_blank" rel="noopener noreferrer" href="https://github.com/huggingface/transformers/blob/main/docs/source/en/tokenizer_summary.md">Hugging Face — Tokenization algorithms (공식 문서)</a><a class="source-link" target="_blank" rel="noopener noreferrer" href="https://developer.nvidia.com/blog/nvidia-nvlink-and-nvidia-nvswitch-supercharge-large-language-model-inference/">NVIDIA — NVLink and NVSwitch for Multi-GPU LLM Inference (2024)</a><a class="source-link" target="_blank" rel="noopener noreferrer" href="https://developer.nvidia.com/blog/scaling-ai-inference-across-multiple-gpus-using-nvidia-tensorrt-with-multi-device-inference-support/">NVIDIA — TensorRT Multi-Device / NCCL parallelism (2026-06-25)</a><a class="source-link" target="_blank" rel="noopener noreferrer" href="https://www.ethercat.org/en/technology.html">EtherCAT Technology Group — EtherCAT protocol / EtherType 0x88A4 (공식 설명)</a><a class="source-link" target="_blank" rel="noopener noreferrer" href="https://reference.opcfoundation.org/specs/OPC-10000-6/7">OPC Foundation — OPC UA Part 6 / TCP transport mapping (공식 규격)</a><a class="source-link" target="_blank" rel="noopener noreferrer" href="https://technav.ieee.org/topic/static-memory/">IEEE Technology Navigator — Static Memory / SRAM (기술 개요)</a><a class="source-link" target="_blank" rel="noopener noreferrer" href="https://arxiv.org/abs/1706.03762">arXiv — Transformer original paper (2017-06-12)</a></div><p class="ref-note">이 웹은 외부 JavaScript 라이브러리·API 호출·로그인 없이 로컬에서도 작동합니다. 토큰 ID, 벡터, Attention 수치, Expert 확률, 네트워크 경로 점멸과 애니메이션은 교육용 가상 예시이며 실시간 모델 실행·실측 GPU 추적값이 아닙니다. 메모리 계산은 가정에 따른 산술 근사입니다. 최종 확인일: 2026-10-28.</p></section>
@@ -555,7 +856,7 @@ function inspect(){const n=getNode(s.node)||nodes[0],key=n.key,m=meta[key]||meta
  if(matrixData?.length&&matrixData[0]?.length){const rows=Math.min(8,matrixData.length),cols=Math.min(8,matrixData[0].length);s.cell[0]=clamp(s.cell[0],0,rows-1);s.cell[1]=clamp(s.cell[1],0,cols-1);matrixHTML=`<div><h4>이 블록의 실제 축소 계산값</h4><div class="sp-matrix" id="${matrixId}" style="grid-template-columns:repeat(${cols},1fr)">${matrixData.slice(0,rows).map((r,i)=>r.slice(0,cols).map((v,j)=>{const active=i===s.cell[0]&&j===s.cell[1];return `<button data-cell="${i},${j}" class="${active?'active':''}" style="background:${tint(n.color,clamp(.07+Math.abs(v)*.12,0,.28),.65)}" title="[${i}, ${j}] = ${v}">${Number(v).toFixed(2)}</button>`;}).join('')).join('')}</div><div class="sp-cell-readout" id="sp-cell-readout">[${s.cell.join(', ')}] = ${Number(matrixData[s.cell[0]][s.cell[1]]).toFixed(6)}<br>숫자 칸을 누르면 다른 좌표를 확인합니다.</div></div>`;}
  const dynamic=key==='state'&&s.view==='layer'?`<div class="sp-shape">선택 토큰 t=${s.token} · ${esc(s.tokens[s.token])}<br>α=${s.alpha.toFixed(2)}, β=${s.beta.toFixed(2)}<br>이전 정보에 대한 예측 오차 e =<br>[${calc.errs[s.token]?.map(v=>v.toFixed(3)).join(', ')||'—'}]</div>`:key==='expert'&&n.expert!==undefined?`<div class="sp-shape">Expert ID ${n.expert}<br>현재 혼합 비중 ${(n.p*100).toFixed(3)}%</div>`:key==='router'?`<div class="sp-shape">선택 토큰: ${esc(s.tokens[s.token])}<br>활성 ${TOPK} / ${EXPERTS} · 비중 합 ${calc.router[s.token].pick.reduce((a,p)=>a+p.p,0).toFixed(6)}</div>`:'';
  let title=m.name,shape=m.shape;if(n.layer){title=`${n.layer}층 · ${n.id.startsWith('ffn')?(n.layer===1?'Dense FFN':'Stable LatentMoE'):(isMLA(n.layer)?'Gated MLA':'KDA')}`;shape=`공식 층 배치 ${n.layer} / 93\n입력과 출력 hidden = 7,168`;}
- $s('sp-inspector').innerHTML=`<span class="sp-kicker">${m.kind}</span><h3>${title}</h3><div class="sp-shape">${esc(shape).replaceAll('\n','<br>')}</div><div><p>${m.text}</p><div class="sp-formula">${esc(m.formula)}</div></div><div><h4>왜 필요한가 · 출력에 주는 영향</h4><p>${m.why}</p></div>${matrixHTML}${dynamic}<div><h4>GPU·메모리에서는</h4><p>${m.hw}</p><p class="sp-caution">${m.caution}</p></div><button class="btn sp-jump" id="sp-inspect-legacy">기존 실험실 ${String(m.legacy+1).padStart(2,'0')}단계 해설 열기 ↗</button>`;
+ $s('sp-inspector').innerHTML=`<span class="sp-kicker">${m.kind}</span><h3>${title}</h3><div class="sp-shape">${esc(shape).replaceAll('\n','<br>')}</div><div><p>${m.text}</p><div class="sp-formula">${esc(m.formula)}</div></div><div><h4>왜 필요한가 · 출력에 주는 영향</h4><p>${m.why}</p></div>${matrixHTML}${dynamic}<div><h4>GPU·메모리에서는</h4><p>${m.hw}</p><p class="sp-caution">${m.caution}</p></div><button class="btn sp-jump" id="sp-inspect-legacy">기존 실험실 ${String(m.legacy+1).padStart(2,'0')}단계 해설 열기 ↗</button><button class="btn sp-jump" data-ma-from-spatial="true" style="border-color:#64bcb2;color:#9df1df">이 수식을 기하학으로 펼치기 ↗</button>`;
  $s('sp-inspect-legacy').addEventListener('click',()=>openLegacy(m.legacy));
 }
 function renderProbs(){const ps=calc.filtered[s.token],raw=calc.probs[s.token];$s('sp-probs').innerHTML=ps.map((v,i)=>`<div class="sp-bar ${v===0?'off':''}"><span>${esc(words[i])}</span><i><span style="width:${v*100}%"></span></i><span>${(v*100).toFixed(1)}%</span></div>`).join('');
@@ -581,7 +882,7 @@ function renderUI(){
  $s('sp-trace-caption').textContent=`${String(s.step+1).padStart(2,'0')} / 17 · ${k3Steps[s.step].name} · 개념적 탐색 순서`;
  document.querySelectorAll('[data-sp-step]').forEach(b=>b.classList.toggle('active',+b.dataset.spStep===s.step));
  $s('sp-play').textContent=s.playing?'Ⅱ 일시 정지':'▶ 경로 재생';
- inspect();renderMath();renderProbs();
+ inspect();renderMath();renderProbs();document.dispatchEvent(new CustomEvent('k3:spatial-change'));
 }
 function refresh(){compute();layout();renderUI();draw(performance.now());}
 function selectNode(n){if(!n)return;stopPlay();if(n.layer&&n.layer!==s.layer){s.layer=n.layer;compute();layout();}s.node=n.id;s.cell=[0,0];if(n.key==='q'){s.math='q';s.mathCol=0;}else if(n.key==='latent'){s.math='down';s.mathCol=0;}else if(n.key==='head'){s.math='head';s.mathCol=0;}const m=meta[n.key];if(m)s.step=m.legacy;renderUI();syncLegacy(s.step);}
@@ -592,7 +893,7 @@ function gotoStep(i,notify=true){s.step=clamp(i,0,16);let view='layer',id='state
  const b=$s('sp-steprail').querySelector('[data-sp-step="'+s.step+'"]');if(b){const rail=$s('sp-steprail');rail.scrollTo({left:clamp(b.offsetLeft-rail.offsetLeft-rail.clientWidth/2,0,rail.scrollWidth),behavior:s.reduced?'instant':'smooth'});}
 }
 function openLegacy(i){stopPlay();syncLegacy(i);document.querySelector('.tab[data-tab="kimi"]').click();setTimeout(()=>{$s('k3-position').closest('.k3-board')?.scrollIntoView({behavior:s.reduced?'instant':'smooth',block:'start'});},70);}
-function openSpatial(i){document.querySelector('.tab[data-tab="spatial"]').click();if(Number.isInteger(i))gotoStep(i);setTimeout(()=>{$s('primary-tabs').scrollIntoView({behavior:s.reduced?'instant':'smooth',block:'start'});draw(performance.now());},80);}
+function openSpatial(i){if(window.K3Unified){window.K3Unified.openSpatial(i);return;}document.querySelector('.tab[data-tab="spatial"]').click();if(Number.isInteger(i))gotoStep(i);setTimeout(()=>{$s('primary-tabs').scrollIntoView({behavior:s.reduced?'instant':'smooth',block:'start'});draw(performance.now());},80);}
 function inside(p,ps){let yes=false;for(let i=0,j=ps.length-1;i<ps.length;j=i++){const a=ps[i],b=ps[j];if((a.y>p.y)!==(b.y>p.y)&&p.x<(b.x-a.x)*(p.y-a.y)/(b.y-a.y)+a.x)yes=!yes;}return yes;}
 function hitAt(x,y){for(let i=hits.length-1;i>=0;i--){const h=hits[i],r=h.rect;if(x>=r.x-2&&x<=r.x+r.w+2&&y>=r.y-2&&y<=r.y+r.h+2)return h;}return null;}
 function getCell(n,x,y){if(!n.data?.length)return[0,0];const p0=project(n.x-n.w/2,n.y+n.h/2,n.z+n.d/2),p1=project(n.x+n.w/2,n.y+n.h/2,n.z+n.d/2),p2=project(n.x-n.w/2,n.y-n.h/2,n.z+n.d/2);const a=p1.x-p0.x,b=p2.x-p0.x,c=p1.y-p0.y,d=p2.y-p0.y,det=a*d-b*c;if(Math.abs(det)<1e-6)return[0,0];const u=((x-p0.x)*d-(y-p0.y)*b)/det,v=((y-p0.y)*a-(x-p0.x)*c)/det;return[clamp(Math.floor(v*n.data.length),0,n.data.length-1),clamp(Math.floor(u*n.data[0].length),0,Math.min(15,n.data[0].length-1))];}
@@ -641,12 +942,599 @@ document.addEventListener('visibilitychange',()=>{visible=!document.hidden;if(vi
 new ResizeObserver(()=>draw(performance.now())).observe($s('sp-scene'));
 function loop(now){if(visible&&$s('spatial').classList.contains('active')){if(s.playing&&now-s.lastAdvance>+$s('sp-speed').value){if(s.step>=16)stopPlay();else{gotoStep(s.step+1);s.lastAdvance=now;}}if(now-lastFrame>33){draw(now);lastFrame=now;}}requestAnimationFrame(loop);}
 // Expose read-only diagnostic snapshots and navigation for reproducible tests.
-window.K3Spatial={open:openSpatial,goto:gotoStep,setView,debug:()=>({view:s.view,layer:s.layer,kind:type(),step:s.step,token:s.token,tokens:s.tokens.slice(),node:s.node,zoom:s.zoom,pitch:s.pitch,yaw:s.yaw,alpha:s.alpha,beta:s.beta,bias:s.bias,playing:s.playing,selectedExperts:s.layer===1?[]:calc.router[s.token].pick.map(v=>({id:v.id,p:v.p,raw:v.raw})),probabilities:calc.filtered[s.token].slice(),logits:calc.logits[s.token].slice(),state:calc.states[s.token]||null,matrix:mathData(),camera:{...cam},nodes:nodes.map(n=>({id:n.id,x:project(n.x,n.y,n.z).x,y:project(n.x,n.y,n.z).y})),fullLayers:Array.from({length:93},(_,i)=>({layer:i+1,kind:isMLA(i+1)?'MLA':'KDA'}))})};
+window.K3Spatial={selection:()=>{const n=getNode(s.node)||nodes[0];return{node:n.id,operation:n.key,view:s.view,layer:s.layer,kind:type(),step:s.step,token:s.token,meta:{...(meta[n.key]||meta.next)}};},pause:stopPlay,open:openSpatial,goto:gotoStep,setView,focusOperation:(key)=>{key=({scores:'attn',weighted:'attn',sampling:'sample'})[key]||key;let n=getNode(s.node);if(!n||n.key!==key)n=nodes.find(n=>n.id===key)||nodes.find(n=>n.key===key);if(!n){setView(['tokens','embedding','head','sample'].includes(key)?'model':'layer');n=nodes.find(n=>n.key===key);}if(n){s.node=n.id;renderUI();draw(performance.now());}return !!n;},debug:()=>({view:s.view,layer:s.layer,kind:type(),step:s.step,token:s.token,tokens:s.tokens.slice(),node:s.node,operation:(getNode(s.node)||nodes[0]).key,zoom:s.zoom,pitch:s.pitch,yaw:s.yaw,alpha:s.alpha,beta:s.beta,bias:s.bias,playing:s.playing,selectedExperts:s.layer===1?[]:calc.router[s.token].pick.map(v=>({id:v.id,p:v.p,raw:v.raw})),probabilities:calc.filtered[s.token].slice(),logits:calc.logits[s.token].slice(),state:calc.states[s.token]||null,matrix:mathData(),camera:{...cam},nodes:nodes.map(n=>({id:n.id,x:project(n.x,n.y,n.z).x,y:project(n.x,n.y,n.z).y})),fullLayers:Array.from({length:93},(_,i)=>({layer:i+1,kind:isMLA(i+1)?'MLA':'KDA'}))})};
 compute();layout();renderUI();document.body.classList.add('spatial-mode');document.querySelectorAll('.tab').forEach(b=>{const active=b.dataset.tab==='spatial';b.classList.toggle('active',active);b.setAttribute('aria-selected',String(active));});document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id==='spatial'));
 syncLegacy(s.step);draw(performance.now());const activeTab=document.querySelector('.tab[data-tab="spatial"]');if(innerWidth<800)$s('primary-tabs').scrollLeft=activeTab.offsetLeft-20;requestAnimationFrame(loop);
 })();
 
 </script>
-<script>window.K3Spatial.setView('model');</script>
+<script>
+
+(function(){
+'use strict';
+const LESSONS = [
+{ id:'embedding', nav:'임베딩', short:'주소 → 공간의 한 점', group:'01 · 표현의 기초', title:'토큰의 번호는 주소, 벡터는 출발점', lead:'ID가 크다고 더 강한 의미가 아닙니다. 선택한 행을 그대로 읽으면 벡터 하나가 됩니다.',
+ formula:'<span class="out">x</span> = <span class="weight">E</span><sup>⊤</sup><span class="in">e<sub>ID</sub></span> = <span class="weight">E</span>[ID, :]<sup>⊤</sup>',
+ terms:[['ID','사전의 주소입니다. 두 ID의 숫자 차이는 의미적 거리와 관계없습니다.'],['E','학습된 임베딩 표입니다. 이 화면에서는 여섯 개의 임의 2차원 벡터를 사용합니다.'],['e_ID','해당 토큰 위치만 1인 원-핫 벡터입니다. Eᵀ와 곱하면 그 행만 남습니다.'],['x','이 토큰이 문맥 처리에 들어가기 전의 출발 벡터입니다.']],
+ where:'입력 직후 · 토큰 ID → Embedding. 실제 K3는 163,840개 사전 항목과 7,168차원 표현을 사용합니다. [S2]',
+ why:'문자열을 미분 가능한 수치 연산에 넣기 위한 출발 표현입니다. 같은 토큰의 기본 임베딩은 같지만, 이후 문맥 혼합을 거치면 표현이 달라집니다.',
+ caution:'단어 단위 토큰·ID·좌표는 가상 값입니다. 실제 BPE 분할이나 실제 의미 임베딩을 표시하지 않습니다.',
+ hardware:'GPU는 E에서 지정된 행을 읽는 gather 연산을 합니다. 개념적으로 원-핫 곱과 같지만 거대한 원-핫 행렬을 실제로 만들 필요는 없습니다.',
+ semantic:'이 그림은 “로봇”이 어느 방향의 실제 의미 축에 놓이는지 보여주는 것이 아닙니다. 학습 가능한 벡터가 있어야 이후 Q·K·V와 Expert가 그 패턴을 계산할 수 있다는 뜻입니다.',
+ steps:[['주소 선택','먼저 정수 ID로 임베딩 표의 한 행을 선택합니다. ID 크기는 좌표가 아닙니다.'],['행 읽기','원-핫 벡터에서 선택된 위치만 1입니다. 다른 행은 0배가 되어 사라집니다.'],['좌표로 펼치기','선택된 두 숫자를 가로·세로 좌표로 읽으면 평면의 점 하나가 됩니다.'],['문맥 전의 출발점','같은 토큰은 같은 기본 임베딩에서 출발합니다. 문맥 의존성은 다음 연산에서 생깁니다.']],
+ controls:[{key:'token',label:'선택할 가상 토큰',options:['로봇','컵','볼트','집다','조이다','확인'],value:0}],
+ presets:[{label:'다른 ID 선택',values:{token:2}},{label:'동일 토큰 다시 조회',values:{token:0}}],
+ quiz:['“컵”을 두 문장에서 쓰면 기본 임베딩도 즉시 달라질까요?','아닙니다. 같은 토큰 ID의 기본 임베딩은 같습니다. 문맥에 따른 변화는 이후 Attention 등에서 발생합니다.'],
+ proof:'E를 행별 토큰, 열별 특징으로 저장하면 Eᵀeᵢ = Σⱼ E[j,:]ᵀ·1[j=i] = E[i,:]ᵀ입니다. 조회는 이 수학적 선택 연산과 같습니다. 실제 입력에는 역할·도구 정의 등의 특수 토큰도 들어갑니다.',source:'S2·S5', legacy:3, spatial:'embedding', location:'입력'},
+{ id:'linear',nav:'행렬곱',short:'격자가 변형되는 이유',group:null,title:'행렬곱은 공간의 눈금을 바꾼다',lead:'가중치의 열은 기저벡터가 도착할 곳입니다. 벡터의 끝점이나 슬라이더를 움직여 보세요.',
+ formula:'<span class="out">y</span> = <span class="weight">W</span><span class="in">x</span> = <span class="in">x₁</span><span class="weight">w₁</span> + <span class="in">x₂</span><span class="weight">w₂</span>',
+ terms:[['x','현재 입력 데이터입니다. 학습된 가중치와 다르게 토큰마다 달라집니다.'],['W','공간을 늘리고, 기울이고, 회전하거나 압축하는 선형 변환입니다. 일반적으로 회전행렬은 아닙니다.'],['w₁, w₂','W의 두 열입니다. e₁=(1,0), e₂=(0,1)이 이동할 위치를 결정합니다.'],['y','변환된 두 기저를 입력 좌표만큼 곱해 더한 결과입니다.']],
+ where:'Q·K·V 투영, 출력 투영, MoE down/up, LM Head에 공통으로 쓰입니다. 실제로는 직사각형의 고차원 행렬입니다.',
+ why:'같은 입력을 현재 연산이 사용할 특징 공간으로 바꿉니다. “어디를 조회할지”와 “무엇을 보낼지”에 서로 다른 W를 쓰므로 Q·K·V가 달라집니다.',
+ caution:'회전은 선형변환의 한 종류입니다. 로봇 좌표 회전과 달리 학습된 W는 길이·각도를 보존할 필요가 없습니다. 순수 선형층을 여러 개 쌓기만 하면 하나의 행렬곱으로 합칠 수 있습니다.',
+ hardware:'연속된 곱셈과 누산을 큰 타일로 묶어 처리합니다. 이 장면의 격자 이동은 수학적 비유이며 GPU 내부 물리 배치를 뜻하지 않습니다.',
+ semantic:'Q용 W와 V용 W가 다르면 같은 “컵” 벡터도 서로 다른 표현으로 바뀝니다. 각 가중치 하나가 곧 특정 단어의 뜻인 것은 아니며, 여러 연산이 결합된 결과가 중요합니다.',
+ steps:[['원래 격자','청록 x는 원래 좌표계에 있습니다. 두 단위벡터 e₁, e₂가 기준 눈금입니다.'],['기저 이동','W의 첫째 열은 e₁의 도착점, 둘째 열은 e₂의 도착점입니다. 격자 전체가 함께 움직입니다.'],['두 성분 더하기','y=x₁w₁+x₂w₂. 한 벡터를 다른 벡터 끝에 이어 붙이는 것이 덧셈입니다.'],['변환 결과','보라 y는 이 선형변환의 결과입니다. det W가 0이면 평면이 선으로 눌려 정보를 잃습니다.']],
+ controls:[{key:'a',label:'W₁₁ · 첫 열의 x',min:-2,max:2,step:.05,value:1.2},{key:'b',label:'W₁₂ · 둘째 열의 x',min:-2,max:2,step:.05,value:.65},{key:'c',label:'W₂₁ · 첫 열의 y',min:-2,max:2,step:.05,value:.35},{key:'d',label:'W₂₂ · 둘째 열의 y',min:-2,max:2,step:.05,value:.9},{key:'x',label:'입력 x₁',min:-2,max:2,step:.05,value:1.1},{key:'y',label:'입력 x₂',min:-2,max:2,step:.05,value:.8}],
+ presets:[{label:'순수 회전 90°',values:{a:0,b:-1,c:1,d:0}},{label:'기울이기',values:{a:1,b:1,c:0,d:1}},{label:'한 차원으로 붕괴',values:{a:1,b:1,c:.5,d:.5}},{label:'항등행렬',values:{a:1,b:0,c:0,d:1}}],
+ quiz:['W가 회전행렬이 아니어도 LLM에서 쓸 수 있을까요?','그렇습니다. 길이·각도 보존보다 유용한 특징 변환을 학습하는 것이 목적입니다. 차원을 줄이는 직사각형 행렬도 사용합니다.'],
+ proof:'W=[[a,b],[c,d]], x=[x₁,x₂]ᵀ → y=[ax₁+bx₂, cx₁+dx₂]ᵀ. det W=ad−bc는 2차원 면적의 부호 있는 배율입니다. 표시되는 중간 격자는 (1−τ)I+τW를 이용한 시각적 보간이며 모델이 이 중간행렬을 실제로 순서대로 실행하는 것은 아닙니다.',source:'S3·S1',legacy:5,spatial:'q',location:'투영'},
+{ id:'norm',nav:'정규화',short:'길이와 방향 분리',group:null,title:'방향은 두고, 크기의 기준을 맞춘다',lead:'RMSNorm과 L2 정규화는 비슷해 보여도 길이 기준이 다릅니다. γ까지 바꾸면 방향도 달라질 수 있습니다.',
+ formula:'<span class="out">y</span> = <span class="weight">γ</span> ⊙ <span class="in">x</span> / √(mean(<span class="in">x²</span>) + ε)',
+ terms:[['RMS','좌표 제곱의 평균에 제곱근을 씌운 크기 기준입니다. 2D에서는 ||x||₂/√2입니다.'],['γ','좌표별로 다시 크기를 조정하는 학습 파라미터입니다. 모든 좌표에 동일하지 않으면 방향도 바뀔 수 있습니다.'],['ε','분모가 0에 너무 가까워지지 않게 하는 작은 양수입니다. 이 실험은 10⁻⁵를 사용합니다.'],['L2','벡터의 유클리드 길이로 나눕니다. KDA의 Q·K는 이 방식으로 정규화됩니다.']],
+ where:'K3의 여러 RMSNorm 및 KDA Q·K의 L2Norm. KDA 출력은 head-wise RMSNorm 뒤 게이트를 통과합니다. [S1 §2.1]',
+ why:'큰 수치가 후속 계산을 과도하게 지배하는 것을 조절합니다. RMSNorm은 평균을 빼지 않으며 LayerNorm과 같지 않습니다.',
+ caution:'“정규화는 방향을 항상 보존한다”는 말은 γ가 균일한 경우에만 성립합니다. ε가 유의미하거나 원래 벡터가 0이면 단순한 원 위의 점 해석도 달라집니다.',
+ hardware:'각 토큰 벡터에 대한 제곱합 reduction, 역제곱근, 좌표별 곱셈입니다. 메모리 읽기와 element-wise 커널을 결합해 실행할 수 있습니다.',
+ semantic:'큰 활성값이 무조건 중요한 개념이라는 오해를 막아야 합니다. 정규화는 의미를 지우는 명령이 아니라 후속 층이 읽을 표현의 수치적 척도를 조절하는 연산입니다.',
+ steps:[['원래 길이','청록 벡터는 입력입니다. 같은 방향에서도 크기는 얼마든지 달라질 수 있습니다.'],['크기 계산','RMS는 좌표 제곱의 평균에 제곱근을 취합니다. L2 길이와 √d만큼 다릅니다.'],['같은 기준으로','γ 적용 전 RMSNorm 벡터는 대략 반지름 √2, L2Norm 벡터는 반지름 1의 원에 놓입니다.'],['좌표별 재조정','γ₁과 γ₂를 다르게 하면 보라 결과가 원에서 벗어나며 방향도 바뀔 수 있습니다.']],
+ controls:[{key:'x',label:'입력 x₁',min:-3,max:3,step:.05,value:2.2},{key:'y',label:'입력 x₂',min:-3,max:3,step:.05,value:1.2},{key:'g1',label:'γ₁',min:.1,max:2,step:.05,value:1},{key:'g2',label:'γ₂',min:.1,max:2,step:.05,value:1},{key:'mode',label:'정규화 방식',options:['RMSNorm','L2 정규화'],value:0}],
+ presets:[{label:'입력 0.5배',action:'doubleNorm'},{label:'γ를 비대칭으로',values:{g1:.5,g2:1.8}},{label:'L2 단위원',values:{mode:1,g1:1,g2:1}}],
+ quiz:['입력의 모든 좌표를 같은 양수 배율로 늘리면 결과는?','γ가 같고 ε의 영향이 작으면 정규화 결과는 거의 같습니다. 이것은 큰 벡터가 무조건 더 큰 영향을 주지 못하게 하는 성질입니다.'],
+ proof:'2차원에서 RMS(x)=√((x₁²+x₂²)/2). γ=(1,1), ε→0이면 ||RMSNorm(x)||₂=√2이고 ||L2Norm(x)||₂=1입니다. RMSNorm은 x−mean(x)를 계산하지 않습니다. 여기서는 L2에도 수치 안정화를 위해 ε를 더합니다.',source:'S1 §2.1·§2.3; S2',legacy:5,spatial:'norm',location:'정규화'},
+{ id:'conv',nav:'ShortConv',short:'최근 순서를 섞기',group:'02 · 토큰과 기억',title:'같은 토큰도, 앞의 순서가 바꾸는 값',lead:'과거 네 칸의 가중합은 작은 FIR 필터처럼 동작합니다. 아직 오지 않은 미래 값은 포함하지 않습니다.',
+ formula:'<span class="out">ũ<sub>t</sub></span> = Σ<sub>j=0…3</sub> <span class="weight">c<sub>j</sub></span><span class="in">u<sub>t−j</sub></span> ;  Swish(ũ) = ũ · σ(ũ)',
+ terms:[['uₜ','Q·K·V의 선형 투영 뒤, 현재 위치의 한 채널 값입니다.'],['cⱼ','해당 채널의 짧은 합성곱 가중치입니다. 이 예시는 네 탭이며 양수·음수 모두 가능합니다.'],['t−j','현재와 과거만 봅니다. 미래 t+1의 값은 이 결과에 영향을 주지 않습니다.'],['Swish','u·sigmoid(u)입니다. 선형 가중합 다음에 비선형 응답을 추가합니다.']],
+ where:'KDA의 Q·K·V 생성: 선형 투영 → ShortConv → Swish. Q·K는 이어서 L2Norm. 실제 kernel_size=4. [S1 식2, S2]',
+ why:'최근 토큰의 순서를 국소적으로 섞습니다. K3의 MLA는 NoPE이지만 전체 모델이 순서를 모르는 것은 아닙니다. KDA의 순차 갱신과 ShortConv가 순서에 민감합니다.',
+ caution:'한 채널의 필터만 보여줍니다. 실제 입력은 여러 채널이고 채널별 필터가 적용됩니다. 네 값은 토큰 자체가 아니라 이미 투영된 수치입니다.',
+ hardware:'이전 채널 값 몇 개를 버퍼에서 읽어 곱하고 합산합니다. Decode에서는 짧은 상태 버퍼를 재사용할 수 있습니다.',
+ semantic:'“로봇이 컵을 집는다”와 “컵이 로봇을 집는다”는 단어 목록이 같아도 순서가 다릅니다. 순서를 반영하는 수치 경로는 필요하지만, 이 작은 필터만으로 문법을 완전히 이해하는 것은 아닙니다.',
+ steps:[['현재 위치','네 칸의 창이 현재 t=3과 과거 0·1·2를 덮습니다. 오른쪽의 t=4는 미래입니다.'],['곱하기','각 채널 값에 위치별 필터 계수를 곱합니다. 순서를 바꾸면 다른 계수와 만납니다.'],['합산하기','네 곱의 합이 현재 시점의 합성곱 결과입니다. 음수 계수는 일부 정보를 상쇄할 수 있습니다.'],['비선형 응답','Swish를 적용합니다. 미래 값을 바꿔도 현재 출력은 같고, 과거 순서를 바꾸면 달라집니다.']],
+ controls:[{key:'c0',label:'현재 계수 c₀',min:-1,max:1,step:.05,value:.65},{key:'c1',label:'직전 계수 c₁',min:-1,max:1,step:.05,value:.25},{key:'now',label:'현재 u₃',min:-2,max:2,step:.05,value:1.2},{key:'future',label:'미래 u₄ · 사용 안 함',min:-2,max:2,step:.05,value:-.7},{key:'reverse',label:'과거 세 값의 순서',options:['기본 순서','과거 순서 뒤집기'],value:0}],
+ presets:[{label:'미래 값만 변경',values:{future:1.8}},{label:'과거 순서 뒤집기',values:{reverse:1}},{label:'직전과 차이 보기',values:{c0:1,c1:-1}}],
+ quiz:['오른쪽 미래 막대를 바꾸면 현재 출력도 바뀌나요?','아닙니다. 현재 t=3에서는 u₄가 인과적 계산 범위 밖입니다. 채널의 현재·과거 값만 들어갑니다.'],
+ proof:'표시 계수 c₂=0.15, c₃=0.05는 고정입니다. ũ₃=c₀u₃+c₁u₂+0.15u₁+0.05u₀. Swish(ũ₃)=ũ₃/(1+exp(−ũ₃)). “직전과 차이 보기”에서도 고정된 두 작은 과거 탭은 남습니다.',source:'S1 식2; S2',legacy:5,spatial:'q',location:'KDA'},
+{ id:'dot',nav:'내적 · Q/K',short:'방향과 크기의 일치',group:null,title:'내적은 “얼마나 같은 방향인가”를 숫자로 만든다',lead:'벡터의 각도를 돌려 투영의 길이를 확인하세요. 내적은 각도뿐 아니라 두 벡터의 길이에도 영향을 받습니다.',
+ formula:'<span class="out">score</span> = <span class="in">q</span><sup>⊤</sup><span class="weight">k</span> / √d<sub>k</sub> = ‖q‖‖k‖cosθ / √d<sub>k</sub>',
+ terms:[['q','지금 조회할 정보를 결정하는 Query입니다. 질문 문장을 그대로 저장한 검색어는 아닙니다.'],['k','어떤 특징에 반응할지 결정하는 Key입니다. 실제 GPU 주소가 아닙니다.'],['cosθ','정규화된 방향의 일치도입니다. 직각이면 0, 반대 방향이면 음수입니다.'],['√dₖ','차원이 커질 때 점수 분산이 커지는 것을 완화하는 스케일입니다. 이 그림은 실제 계산 dₖ=2입니다.']],
+ where:'Gated MLA의 토큰 간 score. KDA는 L2 정규화된 Q·K를 쓰지만 이 점수에 시간축 Softmax를 씌우는 같은 구조는 아닙니다.',
+ why:'내용에 따라 정보를 선택할 수 있도록 두 학습된 표현을 비교합니다. 값이 높으면 상대적으로 더 큰 Attention 가중치를 받을 가능성이 커집니다.',
+ caution:'raw 내적은 코사인 유사도와 같지 않습니다. 큰 길이만으로도 커집니다. 키와 쿼리의 높은 점수가 “사실이다” 또는 “원인이다”를 뜻하지 않습니다.',
+ hardware:'여러 쿼리와 키의 내적을 묶으면 QKᵀ 행렬곱이 됩니다. 그 뒤 스케일·mask·Softmax가 이어집니다.',
+ semantic:'“TCP 오차”를 읽을 때 관련 문맥을 끌어오는 기준이 학습된 공간에서 만들어집니다. 실제로는 한 단어의 사전적 유사성보다 과제에 필요한 관계를 포착할 수 있습니다.',
+ steps:[['두 벡터','청록 q를 조회 방향으로 놓고 금색 k를 회전시킵니다.'],['수선 내려보기','k의 끝에서 q 방향으로 수선을 내립니다. 이 투영의 부호와 길이가 핵심입니다.'],['길이까지 곱하기','투영 길이에 ||q||를 곱하면 qᵀk입니다. 길이를 키우면 각도가 같아도 점수가 달라집니다.'],['스케일과 비교','dₖ=2의 √2로 나눈 score입니다. 다른 키 점수와 함께 Softmax에 들어가 상대적 비중이 됩니다.']],
+ controls:[{key:'theta',label:'두 벡터 각도 θ',min:-180,max:180,step:1,value:35,unit:'°'},{key:'qn',label:'Query 길이 ‖q‖',min:.2,max:2.6,step:.05,value:1.8},{key:'kn',label:'Key 길이 ‖k‖',min:.2,max:2.6,step:.05,value:1.4},{key:'normalized',label:'비교 방식',options:['원래 내적','두 벡터를 L2 정규화'],value:0}],
+ presets:[{label:'직각 → 0',values:{theta:90}},{label:'반대 방향',values:{theta:180}},{label:'방향만 비교',values:{normalized:1}}],
+ quiz:['내적 점수가 큰 것이 무조건 더 가까운 각도라는 뜻인가요?','아닙니다. 정규화하지 않은 내적은 두 벡터 길이의 곱도 포함합니다. L2 정규화했을 때 내적이 코사인과 같아집니다.'],
+ proof:'qᵀk=Σᵢqᵢkᵢ=||q||||k||cosθ. 독립·평균0·분산1 성분이라는 단순 가정에서는 qᵀk의 분산이 dₖ로 커지므로 √dₖ로 나눠 분산을 조절합니다. 이것은 엄격한 실제 활성값 분포 보장이 아니라 스케일 설계의 직관입니다. 오른쪽은 다른 두 키 점수 0.4, −0.2를 고정한 가상 경쟁입니다.',source:'S4·S5',legacy:6,spatial:'scores',location:'MLA'},
+{ id:'attention',nav:'MLA · 가중평균',short:'정보의 무게중심',group:null,title:'Attention의 결과는 Value들의 무게중심',lead:'Query를 돌리면 점수와 비중이 바뀌고, 결과 점이 세 Value 사이에서 이동합니다.',
+ formula:'<span class="weight">a<sub>j</sub></span> = softmax<sub>j</sub>(q<sup>⊤</sup>k<sub>j</sub>/√d + m<sub>j</sub>), &nbsp; <span class="out">o</span> = Σ<sub>j</sub><span class="weight">a<sub>j</sub></span><span class="in">v<sub>j</sub></span>',
+ terms:[['Q/K','서로 비교해 “어디를 얼마나 볼지” 결정합니다. Value의 좌표와 같은 공간일 필요는 없습니다.'],['mⱼ','미래를 가릴 때 −∞를 더합니다. exp(−∞)=0이므로 그 위치의 비중은 0이 됩니다.'],['aⱼ','0 이상이고 합이 1인 비중입니다. 상대적 score를 정보 혼합 비중으로 바꿉니다.'],['vⱼ','실제로 취합할 내용 벡터입니다. 출력은 각 vⱼ를 해당 비중으로 더한 값입니다.']],
+ where:'Gated MLA의 핵심 조회·취합. 실제 K3는 잠재 KV를 사용하며, 이 그림은 한 헤드의 조회 원리만 따로 펼칩니다. [S1 §2.1.2]',
+ why:'현재 토큰이 다른 토큰의 정보를 상황에 맞게 가져오도록 합니다. 모든 과거를 같은 비율로 평균하는 것보다 입력에 적응할 수 있습니다.',
+ caution:'무게중심 설명은 한 헤드의 ungated 가중합에 해당합니다. 이후 게이트·출력 투영·AttnRes를 통과한 최종 벡터는 이 삼각형 안에 있을 필요가 없습니다.',
+ hardware:'QKᵀ → 인과 mask → Softmax → AV. 효율적인 Attention 커널은 이 전체 score 행렬을 HBM에 쓰지 않고 타일별로 계산할 수도 있습니다.',
+ semantic:'정보를 읽는 기준 K와 실제 전달 내용 V를 분리한 것이 중요합니다. 예를 들어 어떤 위치를 참조할지와 거기서 어느 속성을 가져올지는 서로 다른 변환으로 학습됩니다.',
+ steps:[['조회 방향','왼쪽 q가 세 Key를 비교합니다. 오른쪽 Value들은 실제로 섞일 내용입니다.'],['점수에서 비중','score의 지수값을 합으로 나누면 합이 1인 비중이 됩니다.'],['미래 차단','세 번째 토큰을 미래로 설정하면 그 비중은 정확히 0입니다. 나머지 비중은 다시 합이 1이 됩니다.'],['정보의 무게중심','보라 o는 Value들의 무게중심입니다. Query를 돌리면 어느 정보에 가까워지는지 보입니다.']],
+ controls:[{key:'angle',label:'Query 방향',min:-180,max:180,step:1,value:45,unit:'°'},{key:'strength',label:'Query 길이 · 선택 집중도',min:.2,max:5,step:.05,value:2.4},{key:'mask',label:'세 번째 위치의 상태',options:['세 위치 모두 과거·현재','세 번째는 미래 → 차단'],value:0}],
+ presets:[{label:'균등에 가깝게',values:{strength:.2}},{label:'두 번째에 집중',values:{angle:65,strength:5}},{label:'미래 차단',values:{mask:1}}],
+ quiz:['Value 셋의 삼각형 밖으로 이 가중합이 나갈 수 있나요?','이 그림의 Softmax 가중합만으로는 나갈 수 없습니다. 비중이 모두 비음수이고 합이 1이기 때문입니다. 뒤에 별도의 변환을 적용하면 달라집니다.'],
+ proof:'aⱼ=exp(sⱼ−max s)/Σᵣexp(sᵣ−max s)로 계산해 overflow를 줄입니다. Σaⱼ=1, aⱼ≥0이므로 o는 Value들의 convex hull 안에 있습니다. 실제 K3의 NoPE MLA도 causal mask는 유지합니다. 위치 인코딩이 없다는 말은 미래 토큰을 읽는다는 뜻이 아닙니다.',source:'S1 §2.1.2; S5',legacy:6,spatial:'weighted',location:'MLA'},
+{ id:'latent',nav:'잠재 압축',short:'남기는 방향·잃는 방향',group:null,title:'차원을 줄이면, 어떤 차이는 구별되지 않는다',lead:'2D를 숫자 하나에 담으면 같은 투영값을 가진 여러 입력이 겹칩니다. 다시 늘려도 자동으로 복원되지 않습니다.',
+ formula:'<span class="in">z</span> = <span class="weight">D</span>x, &nbsp; <span class="out">y</span> = <span class="weight">U</span>z ; &nbsp; rank(UD) ≤ 1 &nbsp; <small>(2→1→2 모형)</small>',
+ terms:[['D','고차원 입력을 작은 잠재 공간으로 보내는 down-projection입니다. 이 그림은 1×2입니다.'],['z','압축 후 남은 좌표입니다. 입력과 같은 차원이나 같은 의미 축일 필요가 없습니다.'],['U','잠재 좌표를 다음 연산에 필요한 공간으로 펼칩니다. D의 역행렬이라고 보장되지 않습니다.'],['null(D)','D와 곱하면 0이 되는 입력 방향입니다. 이 방향의 변화는 z에 나타나지 않습니다.']],
+ where:'MLA: c=Wc x, k=Uk c, v=Uv c. LatentMoE: 7,168→3,584 잠재 공간에서 Expert를 처리. 이 화면은 공통인 저차원 경로의 기하학입니다.',
+ why:'작은 표현을 저장하거나 통신하면 메모리와 통신량을 줄일 수 있습니다. 무엇을 남길지는 학습으로 정해지며 단순 무손실 압축과는 다릅니다.',
+ caution:'실제 MLA가 x를 원래대로 복원한다는 설명이 아닙니다. k·v를 계산하는 데 필요한 표현을 만들며, MoE에서는 D와 U 사이에 비선형 Expert가 있습니다.',
+ hardware:'작은 잠재 벡터를 캐시하거나 Expert에 전송하고, 필요할 때 학습된 투영으로 계산합니다. 이 구조가 모든 캐시·통신 비용을 없애지는 않습니다.',
+ semantic:'학습은 다음 계산에 유용한 차이는 남기고 덜 필요한 차이는 줄이는 방향을 찾을 수 있습니다. 하지만 손실 가능성을 없애지는 못하며, 그 정확한 내용은 실제 가중치를 분석해야 합니다.',
+ steps:[['입력의 두 자유도','청록 x는 평면의 어디든 움직일 수 있습니다. 금색 축은 D가 읽는 방향입니다.'],['한 좌표로 눌리기','축에 투영한 숫자 z 하나만 남습니다. 축에 수직인 차이는 구분되지 않습니다.'],['다시 펼치기','U가 정한 방향으로 z를 펼칩니다. 결과는 U의 열공간인 하나의 선 위에 있습니다.'],['복원과 구별','버려진 방향으로 입력을 이동해도 z와 출력은 같습니다. 차원을 다시 늘린다고 원래 정보가 돌아오지 않습니다.']],
+ controls:[{key:'theta',label:'D가 읽는 방향',min:-90,max:90,step:1,value:30,unit:'°'},{key:'phi',label:'U가 펼치는 방향',min:-90,max:90,step:1,value:30,unit:'°'},{key:'x',label:'입력 x₁',min:-2.3,max:2.3,step:.05,value:1.2},{key:'y',label:'입력 x₂',min:-2.3,max:2.3,step:.05,value:1.5}],
+ presets:[{label:'버려진 방향으로 이동',action:'nullmove'},{label:'D와 다른 U',values:{phi:-55}},{label:'x축만 보관',values:{theta:0,phi:0}}],
+ quiz:['차원을 다시 늘리면 버렸던 정보가 자동으로 복구될까요?','아닙니다. 같은 z로 압축된 서로 다른 x를 이 경로만으로는 구분할 수 없습니다. 실제 모델은 다른 경로와 학습된 표현을 함께 활용합니다.'],
+ proof:'D=[cosθ,sinθ], U=[cosφ,sinφ]ᵀ. n=[−sinθ,cosθ]ᵀ이면 Dn=0. 따라서 D(x+λn)=Dx이고 U D(x+λn)=UDx입니다. U=Dᵀ로 맞춘 경우에만 이 모형은 직교투영이 됩니다. 일반 학습된 down/up은 직교투영도 역변환도 아닙니다.',source:'S1 §2.1.2·§2.3; S2',legacy:8,spatial:'latent',location:'잠재'},
+{ id:'kda',nav:'KDA · Delta rule',short:'기억의 오차를 고치기',group:null,title:'기억은 누적만 하지 않고, 틀린 방향을 고친다',lead:'읽어 본 예측과 새 Value의 차이를 구하고, 그 오차를 Key 방향에 기록합니다. β=0과 β=1을 비교하세요.',
+ formula:'S̄ = Diag(<span class="weight">α</span>)S ; &nbsp; <span class="err">e</span> = <span class="in">v</span> − S̄<sup>⊤</sup>k ; &nbsp; <span class="out">S′</span> = S̄ + <span class="weight">β</span>k<span class="err">e</span><sup>⊤</sup>',
+ terms:[['S','Key 채널×Value 채널의 상태행렬입니다. 학습 가중치가 아니라 이 입력 문맥의 추론 상태입니다.'],['α','이전 상태의 각 행을 얼마나 유지할지 정합니다. 실제로는 입력 의존적이며 여기서는 직접 조작합니다.'],['e','현재 Key로 읽은 예측 S̄ᵀk와 새 Value의 차이입니다. 이 차이만 수정합니다.'],['βkeᵀ','Key 방향에 오차를 쓰는 rank-1 업데이트입니다. β가 클수록 한 번의 수정이 강합니다.'],['q','갱신한 상태에서 읽을 방향입니다. 그림은 갱신 정확도를 보기 위해 q=k로 읽습니다.']],
+ where:'KDA의 핵심 상태 갱신, 69개 KDA층에 반복되는 연산 종류입니다. 실제 Q·K는 L2 정규화됩니다. [S1 식1·2]',
+ why:'매번 모든 과거 토큰을 직접 읽지 않고, 고정 크기 상태를 갱신하며 문맥 정보를 유지합니다. 새 정보를 무조건 더하는 대신 기존 예측과의 충돌을 조절합니다.',
+ caution:'이 그림은 2×2 상태, q=k, 한 번의 쓰기입니다. 실제로는 여러 헤드·토큰이 상태를 갱신하고 서로 간섭할 수 있습니다. β=1도 모든 과거 정보를 정확히 기억한다는 보장은 아닙니다.',
+ hardware:'상태행렬의 감쇠, 내적, 외적, 덧셈을 수행합니다. Prefill에서는 chunk 병렬형 계산으로 같은 갱신을 효율화할 수 있습니다.',
+ semantic:'“오차 보정”은 숫자 기억의 예측 오차를 고치는 뜻입니다. 실제 사실을 검증하거나 모델이 자기 오류를 자각한다는 뜻이 아닙니다. 서보의 오차 기반 수정과 수학적 모양은 닮지만 제어 목표는 다릅니다.',
+ steps:[['기억을 읽기','왼쪽 S는 이전 기억입니다. 같은 k 방향으로 읽으면 현재 기억이 예측하는 Value를 얻습니다.'],['필요한 만큼 유지','α₁·α₂가 상태행렬의 행을 각각 감쇠합니다. 유지율이 다르면 보존되는 특징도 다릅니다.'],['차이 계산','붉은 e는 새 Value에서 현재 예측을 뺀 벡터입니다. 전체 새 값을 무조건 더하지 않습니다.'],['Key 방향으로 수정','S′=S̄+βkeᵀ. k가 단위벡터이면 같은 Key의 예측은 정확히 β만큼 목표 쪽으로 이동합니다.']],
+ controls:[{key:'alpha1',label:'첫 Key 채널 보존 α₁',min:0,max:1,step:.01,value:.85},{key:'alpha2',label:'둘째 Key 채널 보존 α₂',min:0,max:1,step:.01,value:.65},{key:'beta',label:'기억 수정 강도 β',min:0,max:1,step:.01,value:.65},{key:'theta',label:'정규화된 Key 방향',min:-90,max:180,step:1,value:35,unit:'°'},{key:'vx',label:'새 Value v₁',min:-1.8,max:1.8,step:.05,value:1.15},{key:'vy',label:'새 Value v₂',min:-1.8,max:1.8,step:.05,value:.85}],
+ presets:[{label:'β=0 · 쓰기 중지',values:{beta:0}},{label:'β=1 · 이 Key 오차 제거',values:{beta:1}},{label:'망각 없이 수정',values:{alpha1:1,alpha2:1}},{label:'첫 채널만 잊기',values:{alpha1:0,alpha2:1}}],
+ quiz:['β=1이면 이 그림에서 같은 Key의 예측은 새 Value와 같아질까요?','네. ||k||₂=1이므로 S′ᵀk=S̄ᵀk+β(v−S̄ᵀk)입니다. β=1이면 v가 됩니다. 다른 Key 방향의 기억까지 모두 정확하다는 뜻은 아닙니다.'],
+ proof:'S′ = S̄+βk(v−S̄ᵀk)ᵀ = (I−βkkᵀ)Diag(α)S + βkvᵀ. ||k||²=1일 때 S′ᵀk=(1−β)S̄ᵀk+βv. 잔여 오차는 (1−β)e입니다. 상태를 고칠 뿐 모델의 W 가중치를 업데이트하는 학습 단계는 아닙니다. α=0,1 및 β=0,1은 경계 효과를 보여주는 교육용 극한값입니다.',source:'S1 식1·2',legacy:5,spatial:'state',location:'KDA'},
+{ id:'gate',nav:'게이트 · SiTU',short:'통과량과 폭주 제한',group:'03 · 깊이와 채널',title:'비선형 함수는 무엇을 통과시킬지 바꾼다',lead:'Attention의 sigmoid 게이트와 Expert의 SiTU-GLU를 비교하세요. 비선형성 때문에 전체가 하나의 행렬곱으로 합쳐지지 않습니다.',
+ formula:'SiTU(g,u) = [<span class="weight">4 tanh(g/4)</span> · <span class="in">σ(g)</span>] · [<span class="weight">25 tanh(u/25)</span>]',
+ terms:[['σ(g)','0과 1 사이의 입력 의존적 게이트입니다. 큰 음수에서는 닫히고 큰 양수에서는 열립니다.'],['tanh','큰 양수·음수를 각각 ±1에 가깝게 제한하는 부드러운 비선형 함수입니다.'],['4·25','K3 SiTU의 두 soft-cap 상수입니다. 내부 원소별 곱의 절댓값은 100 이하입니다.'],['⊙','같은 좌표끼리 곱합니다. 벡터 내적이나 행렬곱과 다릅니다.']],
+ where:'KDA/MLA의 출력 게이트, 그리고 FFN/Expert의 SiTU-GLU. K3 SiTU soft-cap은 gate=4, up=25. [S1 식6·7·12; S2]',
+ why:'입력 내용에 따라 정보 통과량을 달리하고, SiTU는 큰 활성값의 곱이 무한히 커지는 현상을 제한합니다. 저정밀도 연산의 극단값 위험을 완화하려는 설계입니다.',
+ caution:'SiTU 그래프는 실제 두 입력 g,u 중 g=u=x인 대각선 단면입니다. |100| 상한은 GLU 내부 곱에만 해당하며, 그 뒤의 가중치 투영이나 전체 모델 출력의 상한은 아닙니다.',
+ hardware:'sigmoid·tanh 등 원소별 비선형 함수와 곱셈, 전후 선형 투영입니다. 실제 구현에서는 연산을 하나의 커널로 합칠 수 있습니다.',
+ semantic:'게이트가 닫히면 특정 채널의 정보가 덜 전달됩니다. 이것을 “모델이 해당 내용을 믿지 않는다”는 확률로 해석하면 안 됩니다. gate는 학습된 수치 제어 신호입니다.',
+ steps:[['선형 입력','먼저 학습된 투영으로 얻은 g와 u가 있습니다. SiTU 단면에서는 둘을 같은 x로 놓습니다.'],['게이트 만들기','σ(g)가 입력에 따라 변합니다. Attention 모드에서는 이 값이 내용 벡터에 곱해집니다.'],['부드러운 상한','SiTU는 두 선형 인자를 각각 4·tanh(g/4), 25·tanh(u/25)로 제한합니다.'],['곱과 비교','SiTU는 원점 근처에서 SwiGLU와 비슷하고 큰 양수에서 상한에 접근합니다. 제한이 정확도 향상을 항상 보장하는 것은 아닙니다.']],
+ controls:[{key:'mode',label:'볼 연산',options:['Attention · sigmoid 게이트','Expert · SiTU 단면'],value:1},{key:'input',label:'입력 x · 단면 g=u',min:-6,max:60,step:.1,value:6},{key:'incoming',label:'Attention 내용 값 v',min:-2,max:2,step:.05,value:1.2},{key:'zoom',label:'그래프 범위',options:['넓게 · 상한 확인','원점 근처 확대'],value:0}],
+ presets:[{label:'큰 양수 · 포화',values:{mode:1,input:60,zoom:0}},{label:'원점 근처 비교',values:{mode:1,input:1.5,zoom:1}},{label:'게이트 닫기',values:{mode:0,input:-6}},{label:'게이트 열기',values:{mode:0,input:6}}],
+ quiz:['SiTU-GLU가 100 이하이면 Expert 최종 출력도 100 이하인가요?','아닙니다. 다음 출력 행렬이 다시 크기를 바꿉니다. 상한은 두 capped branch를 곱한 내부 원소에만 적용됩니다.'],
+ proof:'softcap(x,b)=b·tanh(x/b). |tanh|≤1이고 0≤σ≤1이므로 |SiTU(g,u)|≤4×25=100. g,u가 작으면 tanh(g/4)≈g/4, tanh(u/25)≈u/25이므로 SiTU≈gσ(g)u=SwiGLU. 실제 Expert에는 서로 다른 Wg·Wu와 출력 Wdown이 있습니다.',source:'S1 식6·7·12, 부록B; S2',legacy:9,spatial:'gate',location:'비선형'},
+{ id:'residual',nav:'AttnRes',short:'깊이 방향의 정보 선택',group:null,title:'같은 토큰의 이전 표현을 다시 꺼내 쓴다',lead:'시간축의 다른 토큰이 아니라 깊이축의 이전 블록들을 섞습니다. 단순 누적 합과 위치를 비교해 보세요.',
+ formula:'<span class="weight">a<sub>i</sub></span> = softmax<sub>i</sub>(w<sup>⊤</sup>RMSNorm(b<sub>i</sub>)), &nbsp; <span class="out">h</span> = Σ<sub>i</sub><span class="weight">a<sub>i</sub></span><span class="in">b<sub>i</sub></span>',
+ terms:[['bᵢ','같은 토큰에 대한 이전 블록의 표현입니다. b₀는 임베딩이 포함되는 출처입니다.'],['w','현재 계층에 학습된 pseudo-query입니다. 과거 표현에 따라 상대적인 점수가 변합니다.'],['RMSNorm','점수 계산 시 큰 크기의 블록이 단순히 크다는 이유로 우세해지는 것을 완화합니다.'],['aᵢ','깊이 방향 출처별 비중입니다. Value로 더하는 bᵢ 자체는 이 정규화된 key와 다릅니다.']],
+ where:'K3의 Block Attention Residuals. 12층 단위 블록 합·현재 블록 부분합·임베딩을 출처로 사용합니다. [S1 §2.2]',
+ why:'이전 표현을 계속 같은 벡터에 누적하기만 하지 않고, 현재 층에서 필요한 비중으로 다시 접근할 수 있게 합니다.',
+ caution:'화면의 세 점은 세 개의 임의 출처입니다. 각 블록이 “문법·논리·사실”을 전담한다고 알려진 것이 아닙니다. 단순 잔차 합 비교는 위치 감각을 위한 별도 경로입니다.',
+ hardware:'이미 계산한 블록 요약을 읽고, key 정규화·내적·Softmax·가중합을 계산합니다. 블록 단위 보관은 모든 층 출력을 따로 보관하는 비용을 줄입니다.',
+ semantic:'한 문장의 초기에 잡힌 특징을 후반의 층이 다시 활용할 수 있는 경로입니다. 이전 계층의 “답변”을 투표하는 구조가 아니라 같은 토큰의 내부 표현들을 혼합합니다.',
+ steps:[['깊이축의 출처','각 b는 같은 토큰을 서로 다른 처리 깊이에서 표현한 벡터입니다.'],['정규화해 점수','크기를 조절한 key와 학습된 w의 내적으로 출처를 비교합니다.'],['깊이별 비중','Softmax로 어느 출처를 얼마나 사용할지 정합니다. w 방향을 돌리면 비중이 달라집니다.'],['원래 표현 혼합','비중은 정규화된 key에서 구하지만 Value로는 원래 b를 합칩니다. 점수와 내용의 역할을 구별하세요.']],
+ controls:[{key:'angle',label:'pseudo-query w 방향',min:-180,max:180,step:1,value:65,unit:'°'},{key:'strength',label:'w 크기',min:0,max:3,step:.05,value:1.4},{key:'scale',label:'첫 출처 b₀ 크기',min:.3,max:2,step:.05,value:1},{key:'sum',label:'단순 누적 합 함께 보기',options:['숨기기','표시하기'],value:1}],
+ presets:[{label:'균등한 비중',values:{strength:0}},{label:'첫 출처만 2배',values:{scale:2}},{label:'다른 깊이 강조',values:{angle:-150,strength:3}}],
+ quiz:['b₀를 같은 방향으로 2배 키우면 점수와 최종 값이 모두 같을까요?','점수는 RMSNorm 때문에 거의 같지만, Value로 쓰는 b₀는 커지므로 최종 혼합 벡터는 달라질 수 있습니다.'],
+ proof:'aᵢ ∝ exp(wᵀRMSNorm(bᵢ)), h=Σaᵢbᵢ. 양수 c에 대해 RMSNorm(cb)≈RMSNorm(b)이지만, 가중합의 Value cb는 바뀝니다. 실험의 “단순 합”은 b₀+b₁+b₂입니다. 실제 전체 잔차망과 학습 성능을 비교한 실험은 아닙니다.',source:'S1 식8–10',legacy:7,spatial:'depth',location:'깊이'},
+{ id:'moe',nav:'MoE 라우터',short:'선택과 혼합은 다르다',group:null,title:'먼저 Expert를 고르고, 그 뒤 결과를 섞는다',lead:'라우팅 bias를 바꾸면 선택 경계가 바뀝니다. 선택된 Expert의 혼합 비중은 bias를 뺀 점수로 계산합니다.',
+ formula:'s=σ(W<sub>r</sub>x), &nbsp; <span class="weight">T</span>=Top-k(s+b), &nbsp; p<sub>j</sub>=s<sub>j</sub>/Σ<sub>r∈T</sub>s<sub>r</sub>, &nbsp; <span class="out">u</span>=Σ<sub>j∈T</sub>p<sub>j</sub>E<sub>j</sub>(z)',
+ terms:[['s','sigmoid로 만든 각 Expert의 원래 점수입니다. 전체 Expert에 대한 Softmax가 아닙니다.'],['b','Top-k 선택에만 더하는 bias입니다. 실제 K3의 최종 bias는 추론 시 고정됩니다.'],['T','현재 토큰을 처리할 Expert 집합입니다. 실제 K3는 896개 중 16개이고 여기서는 6개 중 2개입니다.'],['pⱼ','선택된 Expert의 원래 s를 합으로 나눈 비중입니다. b를 여기에 다시 더하지 않습니다.'],['Eⱼ(z)','선택된 Expert의 출력 벡터입니다. 비중만 고르는 것으로 계산이 끝나지 않습니다.']],
+ where:'Stable LatentMoE의 routed branch. 실제 shared Expert 2개는 별도 경로이며 화면에서는 routed 선택만 확대합니다. [S1 식11·13]',
+ why:'모든 Expert를 계산하지 않고 입력별 일부만 활성화해 모델 용량을 활용합니다. 한편 어느 Expert가 선택되는지에 따라 통신·부하도 달라집니다.',
+ caution:'6개 Expert와 Top-k 슬라이더는 교육용입니다. 실제 K3 설정을 바꾸는 도구가 아닙니다. E1을 “로봇 전문가”처럼 사람의 직무로 고정해 해석할 근거는 없습니다.',
+ hardware:'선택 ID에 따라 텐서를 모아 해당 Expert의 행렬곱을 실행합니다. 다른 GPU에 있으면 dispatch/combine 통신이 필요합니다. IP 라우팅과는 다른 선택입니다.',
+ semantic:'전문성은 인간이 붙인 분야 이름보다 학습된 특징 패턴과 연산에 가깝습니다. 작은 입력 변화가 Top-k 경계를 넘으면 사용되는 연산 경로가 불연속적으로 바뀔 수 있습니다.',
+ steps:[['Expert 점수','현재 x에서 6개 sigmoid score를 계산합니다. 막대의 원래 점수와 선택 점수를 구분하세요.'],['Top-k 선택','선택용 s+b로 순위를 매깁니다. E3 bias만 올리면 경계가 움직입니다.'],['선택된 경로만 계산','선택된 Expert가 자신의 함수를 실행합니다. 여기서는 서로 다른 작은 SiTU FFN입니다.'],['원래 점수로 결합','혼합 p는 원래 s로 정규화합니다. 선택된 출력들의 가중합이 보라 u입니다.']],
+ controls:[{key:'x',label:'입력 특징 x₁',min:-2,max:2,step:.05,value:1.2},{key:'y',label:'입력 특징 x₂',min:-2,max:2,step:.05,value:.5},{key:'bias',label:'E3 선택 bias · 실험용',min:-.7,max:.7,step:.01,value:0},{key:'topk',label:'가상 모형의 선택 수',options:['Top-1','Top-2','Top-3'],value:1}],
+ presets:[{label:'E3 선택 촉진',values:{bias:.6}},{label:'E3 선택 억제',values:{bias:-.6}},{label:'다른 입력 방향',values:{x:-.8,y:1.4}}],
+ quiz:['E3의 bias를 크게 올리면 혼합 비중에도 직접 더해질까요?','아닙니다. bias는 선택 집합에 영향을 주지만 선택 뒤의 p는 원래 sigmoid 점수로 계산합니다. 선택 집합이 바뀌면 분모는 달라집니다.'],
+ proof:'선택 = argtopk(s+b). 혼합 = sⱼ/Σselected s. 이 모형 Expert는 서로 다른 2×2 Wg, Wu, Wo를 사용한 SiTU FFN입니다. z=x로 두어 잠재 압축과 shared branch는 생략합니다. 실제 K3에는 latent RMSNorm, up-projection, shared 출력 합이 추가됩니다.',source:'S1 식11·13; S2',legacy:8,spatial:'router',location:'MoE'},
+{ id:'output',nav:'출력 · 확률',short:'점수에서 토큰까지',group:'04 · 출력과 연결',title:'벡터가 점수가 되고, 확률이 하나의 토큰이 된다',lead:'Temperature는 확률을 바꾸고, Top-p는 후보를 줄입니다. 마지막에는 누적확률 구간에서 토큰 하나를 고릅니다.',
+ formula:'<span class="in">z</span>=W<sub>LM</sub>h ; &nbsp; <span class="out">p<sub>i</sub></span>=exp(z<sub>i</sub>/T)/Σ<sub>j</sub>exp(z<sub>j</sub>/T) ; &nbsp; token ∼ p',
+ terms:[['z','어휘별 logit입니다. 양수·음수 모두 가능하며 확률 자체가 아닙니다.'],['T','Temperature. 낮으면 분포가 뾰족해지지만, 모델이 사실을 더 잘 알게 되는 것은 아닙니다.'],['Top-p','확률이 큰 후보부터 누적해 p 이상이 되는 최소 집합을 남긴 뒤 다시 정규화합니다.'],['u','0~1의 균등 난수를 누적확률 구간에 넣으면 해당 토큰을 샘플링할 수 있습니다.']],
+ where:'최종 정규화 → LM Head → 샘플링 → 토큰 ID. 실제 K3는 163,840개 후보이며 여기서는 여섯 후보만 사용합니다.',
+ why:'내부 벡터를 다음에 출력할 토큰의 조건부 분포로 읽어 냅니다. 다음 토큰이 선택되면 문맥에 추가하고 같은 추론 과정을 반복합니다.',
+ caution:'후보 단어와 확률은 임의 가중치로 계산한 예시입니다. Temperature·Top-p 설정만으로 사실성이나 추론 정확도를 보장할 수 없습니다.',
+ hardware:'LM Head는 행렬곱이고, 이후 정규화·후보 필터링·선택이 이어집니다. 토큰은 텍스트로 디코딩되어 스트리밍되며 토큰·HTTP 청크·패킷은 일대일이 아닙니다.',
+ semantic:'모델의 최종 선택은 “진리인지”를 직접 판정하는 장치가 아니라 문맥에 조건부인 다음 토큰 선택입니다. 근거 조회·테스트·검증 같은 하네스가 별도로 필요한 이유입니다.',
+ steps:[['어휘 방향으로 읽기','마지막 벡터 h와 각 후보의 출력 가중치 내적이 logit입니다.'],['확률로 바꾸기','Temperature로 스케일한 뒤 Softmax를 적용하면 합이 1인 확률이 됩니다.'],['후보 제한','Top-p 집합 밖 후보는 0이 되고 남은 확률을 다시 정규화합니다.'],['하나 선택하기','아래 0~1 구간에서 u가 닿은 후보를 선택합니다. 같은 확률 분포에서도 u가 바뀌면 다른 결과가 나올 수 있습니다.']],
+ controls:[{key:'x',label:'최종 hidden h₁',min:-2,max:2,step:.05,value:1.1},{key:'y',label:'최종 hidden h₂',min:-2,max:2,step:.05,value:.4},{key:'temp',label:'Temperature T',min:.15,max:2,step:.05,value:.9},{key:'topp',label:'Top-p',min:.2,max:1,step:.01,value:.9},{key:'u',label:'샘플링 위치 u',min:.001,max:.999,step:.001,value:.42}],
+ presets:[{label:'차갑게 · 집중',values:{temp:.2}},{label:'넓게 · 분산',values:{temp:2,topp:1}},{label:'다른 난수로 선택',action:'sample'}],
+ quiz:['Temperature를 낮추면 반드시 더 정확해지나요?','아닙니다. 이미 높은 logit의 후보를 더 집중적으로 고르는 효과입니다. 틀린 후보가 가장 높다면 그 오류에 더 확신하는 모양이 될 수 있습니다.'],
+ proof:'Softmax는 같은 상수 c를 모든 logit에 더해도 변하지 않습니다. 수치적으로 exp((zᵢ−max z)/T)를 사용합니다. Top-p는 누적합이 임계값 이상이 되는 후보까지 포함합니다. 역누적분포 샘플링은 마지막 확률 합이 정확히 1에 가깝게 정규화되어야 합니다.',source:'S2·S5',legacy:12,spatial:'sample',location:'출력'},
+{ id:'pipeline',nav:'연결 실험',short:'변화가 출력까지 전파',group:null,title:'한 수치의 변화가 마지막 후보 분포까지 흐른다',lead:'독립 장면들을 이해했다면, 작은 연산 경로를 연결해 보세요. 막대의 윤곽은 기준값, 채워진 막대는 현재값입니다.',
+ formula:'x → <span class="in">KDA</span> → <span class="weight">gate</span> → AttnRes → Top-2 <span class="weight">FFN</span> → <span class="out">logit → p</span>',
+ terms:[['기준값','이 장면의 기본 입력·파라미터로 계산한 분포입니다. 실제 K3의 성능 기준이나 정답이 아닙니다.'],['개입','α·β·gate·router bias·T 중 한 값을 바꿔 수학적 영향 경로를 비교합니다.'],['TV 거리','두 확률분포 차이의 절댓값 합의 절반입니다. 변화량이지 품질 점수가 아닙니다.'],['연결 범위','고정된 세 토큰·2D 표현·한 KDA 블록·세 FFN 중 Top-2·여섯 출력의 작은 모형입니다.']],
+ where:'여러 연산의 관계를 설명하는 교육용 합성 경로입니다. K3 한 층 또는 93층 전체의 정확한 복제·실행이 아닙니다.',
+ why:'식의 국소적 의미와 마지막 출력의 영향을 구별합니다. 작은 내부 변화가 정규화로 줄어들거나 Top-k 경계에서 크게 바뀔 수도 있습니다.',
+ caution:'실제 K3 가중치·학습·토크나이저는 없습니다. 93층, 다중 헤드, ShortConv, 잠재 압축, shared Expert, 양자화, 하네스는 이 연결 모형에서 생략합니다. 결과 변화가 답변 개선을 뜻하지 않습니다.',
+ hardware:'각 상자는 논리적 계산입니다. 실 GPU에서는 커널 결합·캐시·병렬 실행이 적용되며 이 그림의 이동 시간은 실제 지연시간이 아닙니다.',
+ semantic:'벡터가 어떻게 최종 분포로 연결되는지를 확인하는 인과적 수치 실험입니다. 학습되지 않은 모형이므로 후보의 한국어 의미와 높은 확률 사이에 검증된 관계는 없습니다.',
+ steps:[['같은 입력에서 출발','세 토큰의 임의 임베딩은 고정합니다. 기준 분포와 비교할 조건을 같게 만듭니다.'],['상태와 게이트','KDA가 정보를 쓰고 읽고, 출력 게이트가 통과량을 바꿉니다.'],['깊이·Expert 혼합','두 출처를 AttnRes로 섞은 뒤 세 가상 Expert 중 두 개를 골라 FFN 출력을 결합합니다.'],['분포 차이 확인','최종 정규화와 LM Head를 거쳐 후보 확률이 됩니다. 변화량은 확인할 수 있지만 품질 개선은 이 모형으로 판단할 수 없습니다.']],
+ controls:[{key:'alpha',label:'KDA 보존율 α',min:0,max:1,step:.01,value:.85},{key:'beta',label:'KDA 수정 강도 β',min:0,max:1,step:.01,value:.65},{key:'gate',label:'출력 gate 추가 배율',min:0,max:1,step:.01,value:1},{key:'bias',label:'세 번째 Expert 선택 bias',min:-.7,max:.7,step:.01,value:0},{key:'temp',label:'출력 Temperature',min:.15,max:2,step:.05,value:.9}],
+ presets:[{label:'기억 쓰기 중지',values:{beta:0}},{label:'Attention 경로 차단',values:{gate:0}},{label:'Expert 경계 변경',values:{bias:.65}},{label:'온도만 변경',values:{temp:1.8}}],
+ quiz:['분포가 크게 바뀌었다면 모형이 더 좋아진 것일까요?','아닙니다. 여기에는 정답·학습·평가가 없습니다. 보여주는 것은 내부 수치 변화가 출력 분포에 미치는 영향뿐입니다. 실제 품질은 별도 과제와 검증이 필요합니다.'],
+ proof:'이 화면은 임의 2D 임베딩 세 개를 RMSNorm하고, 고정된 Q/K/V 투영 뒤 KDA를 순서대로 갱신합니다. sigmoid 게이트 후 embedding과 readout을 두 출처 AttnRes로 혼합합니다. 세 개의 작은 SiTU FFN에서 Top-2를 고른 뒤 가중합, final RMSNorm, 6후보 LM Head, Softmax를 계산합니다. TV(p,q)=0.5Σᵢ|pᵢ−qᵢ|. 기준값은 항상 초기 파라미터의 계산 결과입니다.',source:'S1·S2 (연산 유형); 연결 구조는 자체 교육 모형',legacy:11,spatial:'head',location:'전체'}
+];
+
+/* All visible numbers are recomputed from these small, deterministic models. */
+const C={bg:'#090f1a',grid:'#22344a',axis:'#52677e',text:'#dbe8f7',muted:'#8ba4bc',teal:'#67dfcd',gold:'#f4c477',purple:'#bcabff',red:'#fa8994',blue:'#85b8ff',green:'#9adea3',white:'#f1f7ff'};
+const colors=[C.teal,C.gold,C.purple,C.blue,C.red,C.green];
+const NAMES=['로봇','컵','볼트','집다','조이다','확인'];
+const E=[[1.5,.5],[.8,1.6],[1.5,-.8],[-1,1.1],[-1.4,-.9],[.1,-1.7]];
+const WORDS=['보정','측정','확인','이동','대기','완료'];
+const WH=[[1.2,.3],[.4,1.15],[-.7,.9],[-1.15,-.3],[.15,-1.1],[.85,-.6]];
+const $m=id=>document.getElementById(id);
+const clampM=(v,a,b)=>Math.max(a,Math.min(b,v));
+const deg=v=>v*Math.PI/180;
+const dotM=(a,b)=>a.reduce((s,v,i)=>s+v*b[i],0);
+const addM=(a,b)=>a.map((v,i)=>v+b[i]);
+const subM=(a,b)=>a.map((v,i)=>v-b[i]);
+const mulM=(a,k)=>a.map(v=>v*k);
+const normM=v=>Math.hypot(...v);
+const unitM=v=>{const n=normM(v);return n>1e-12?mulM(v,1/n):v.map(()=>0)};
+const rmsM=v=>{const den=Math.sqrt(dotM(v,v)/v.length+1e-5);return mulM(v,1/den)};
+const mvM=(M,v)=>M.map(row=>dotM(row,v));
+const tmvM=(M,v)=>M[0].map((_,j)=>M.reduce((s,row,i)=>s+row[j]*v[i],0));
+const sigmoidM=x=>1/(1+Math.exp(-clampM(x,-700,700)));
+const swishM=x=>x*sigmoidM(x);
+const situM=(g,u)=>4*Math.tanh(g/4)*sigmoidM(g)*25*Math.tanh(u/25);
+const softM=a=>{const mx=Math.max(...a);if(!Number.isFinite(mx))return a.map(()=>0);const e=a.map(v=>Number.isFinite(v)?Math.exp(v-mx):0),s=e.reduce((s,v)=>s+v,0);return e.map(v=>v/s)};
+const mixM=(vs,w)=>vs[0].map((_,j)=>vs.reduce((s,v,i)=>s+w[i]*v[j],0));
+const vecAngle=(degVal,len=1)=>[len*Math.cos(deg(degVal)),len*Math.sin(deg(degVal))];
+const interpM=(a,b,t)=>a.map((v,i)=>v+(b[i]-v)*t);
+const fixedM=(n,d=3)=>Math.abs(n)<.5*10**(-d)?(0).toFixed(d):Number(n).toFixed(d);
+const vstr=(v,d=2)=>'['+v.map(x=>fixedM(x,d)).join(', ')+']';
+const safeM=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const expertM=(z,j)=>{const a=.6+j*.18,b=(j%2?-.55:.4),c=Math.sin(j*1.7)*.7;const g=mvM([[a,b],[c,.8-j*.06]],z),u=mvM([[.8,.25-j*.12],[-.3+j*.1,1.1]],z),m=g.map((v,i)=>situM(v,u[i]));return mvM([[Math.cos(j*.7),-.55*Math.sin(j*.7)],[.6*Math.sin(j*.7),Math.cos(j*.7)]],m)};
+const routeM=(x,bias=0,n=6,k=2)=>{const dirs=Array.from({length:n},(_,i)=>vecAngle(i*(n===6?60:120)-15,1.2));const raw=dirs.map(w=>sigmoidM(dotM(w,x)));const scored=raw.map((v,i)=>v+(i===2?bias:0));const pick=scored.map((v,i)=>({v,i})).sort((a,b)=>b.v-a.v||a.i-b.i).slice(0,k).map(v=>v.i);const den=pick.reduce((s,i)=>s+raw[i],0);const weights=raw.map((v,i)=>pick.includes(i)?v/den:0);const vals=Array.from({length:n},(_,i)=>expertM(x,i));return{raw,scored,pick,weights,vals,out:mixM(vals,weights),dirs}};
+function topPM(prob,p){let cumulative=0,ids=[];for(const x of prob.map((p,i)=>({p,i})).sort((a,b)=>b.p-a.p||a.i-b.i)){ids.push(x.i);cumulative+=x.p;if(cumulative>=p-1e-12)break;}const den=ids.reduce((s,i)=>s+prob[i],0);return{ids,filtered:prob.map((p,i)=>ids.includes(i)?p/den:0)}}
+function sampleM(probs,u){let t=0;for(let i=0;i<probs.length;i++){t+=probs[i];if(u<t)return i}return probs.length-1}
+function kdaM(p){const prev=[[.55,-.2],[.15,.45]],k=vecAngle(p.theta),v=[p.vx,p.vy],dec=prev.map((r,i)=>mulM(r,i===0?p.alpha1:p.alpha2)),pred=tmvM(dec,k),err=subM(v,pred),delta=k.map(ki=>mulM(err,p.beta*ki)),next=dec.map((r,i)=>addM(r,delta[i])),read=tmvM(next,k);return{prev,k,v,dec,pred,err,delta,next,read,before:tmvM(prev,k)}}
+function pipelineM(p){
+ const emb=[[1.25,.35],[.55,1.1],[.9,-.45]],normal=emb.map(rmsM),WQ=[[.85,.25],[-.35,.75]],WK=[[.7,-.25],[.35,.85]],WV=[[.65,.35],[-.3,.8]],WG=[[.55,-.2],[.15,.4]];
+ let S=[[0,0],[0,0]],last=null;
+ normal.forEach(x=>{const q=unitM(mvM(WQ,x).map(swishM)),k=unitM(mvM(WK,x).map(swishM)),v=mvM(WV,x).map(swishM),dec=S.map(r=>mulM(r,p.alpha)),pred=tmvM(dec,k),err=subM(v,pred);S=dec.map((r,i)=>addM(r,mulM(err,p.beta*k[i])));last={q,k,v,read:tmvM(S,q),S:S.map(r=>r.slice()),x}});
+ const gate=mvM(WG,last.x).map(v=>sigmoidM(v)*p.gate),readNorm=rmsM(last.read),gated=readNorm.map((v,i)=>v*gate[i]),sources=[emb[2],gated],depthp=softM(sources.map(b=>dotM([.5,.35],rmsM(b)))),h=mixM(sources,depthp),hn=rmsM(h),r=routeM(hn,p.bias,3,2),final=rmsM(r.out),logits=mvM(WH,final),prob=softM(logits.map(v=>v/p.temp));
+ return{emb,normal,last,gate,gated,depthp,h,hn,route:r,final,logits,prob};
+}
+const DEFAULT_PIPE={alpha:.85,beta:.65,gate:1,bias:0,temp:.9};
+const baselinePipe=pipelineM(DEFAULT_PIPE);
+function computeM(id,p){
+ switch(id){
+ case'embedding':return{token:p.token,x:E[p.token].slice(),onehot:E.map((_,i)=>i===p.token?1:0)};
+ case'linear':{const W=[[p.a,p.b],[p.c,p.d]],x=[p.x,p.y];return{W,x,y:mvM(W,x),w1:[p.a,p.c],w2:[p.b,p.d],det:p.a*p.d-p.b*p.c}}
+ case'norm':{const x=[p.x,p.y],den=Math.sqrt(dotM(x,x)/(p.mode?1:2)+1e-5),pre=mulM(x,1/den),out=pre.map((v,i)=>v*(i?p.g2:p.g1));return{x,den,pre,out,rms:Math.sqrt(dotM(x,x)/2),mode:p.mode}}
+ case'conv':{let past=[.4,-.7,.9];if(p.reverse)past.reverse();const data=[...past,p.now,p.future,.2],coef=[p.c0,p.c1,.15,.05],terms=coef.map((v,j)=>v*data[3-j]),sum=terms.reduce((s,v)=>s+v,0);return{data,coef,terms,sum,out:swishM(sum)}}
+ case'dot':{const q=vecAngle(15,p.normalized?1:p.qn),k=vecAngle(15+p.theta,p.normalized?1:p.kn),raw=dotM(q,k),score=raw/Math.sqrt(2),qu=unitM(q),projected=mulM(qu,dotM(qu,k)),probs=softM([score,.4,-.2]);return{q,k,raw,score,projected,probs,cos:Math.cos(deg(p.theta))}}
+ case'attention':{const q=vecAngle(p.angle,p.strength),keys=[vecAngle(-30,1.4),vecAngle(65,1.4),vecAngle(165,1.4)],vals=[[1.65,.1],[-.6,1.65],[-1.25,-1.4]],scores=keys.map((v,i)=>p.mask&&i===2?-Infinity:dotM(q,v)/Math.sqrt(2)),a=softM(scores),out=mixM(vals,a);return{q,keys,vals,scores,a,out}}
+ case'latent':{const x=[p.x,p.y],D=vecAngle(p.theta),U=vecAngle(p.phi),z=dotM(D,x),proj=mulM(D,z),out=mulM(U,z),nullv=vecAngle(p.theta+90);return{x,D,U,z,proj,out,nullv,lost:subM(x,proj)}}
+ case'kda':return kdaM(p);
+ case'gate':{const x=p.input,sig=sigmoidM(x),gate=4*Math.tanh(x/4)*sig,up=25*Math.tanh(x/25),situ=gate*up,swi=x*sig*x;return{x,sig,gate,up,situ,swi,out:p.mode?situ:sig*p.incoming}}
+ case'residual':{const bs=[[1.35*p.scale,.2*p.scale],[-.55,1.6],[-1.2,-.85]],w=vecAngle(p.angle,p.strength),keys=bs.map(rmsM),scores=keys.map(v=>dotM(w,v)),a=softM(scores),out=mixM(bs,a),sum=bs.reduce(addM,[0,0]);return{bs,w,keys,scores,a,out,sum}}
+ case'moe':return{...routeM([p.x,p.y],p.bias,6,p.topk+1),x:[p.x,p.y]};
+ case'output':{const h=[p.x,p.y],logits=mvM(WH,h),prob=softM(logits.map(v=>v/p.temp)),f=topPM(prob,p.topp);return{h,logits,prob,...f,selected:sampleM(f.filtered,p.u)}}
+ case'pipeline':{const d=pipelineM(p);return{...d,base:baselinePipe,tv:d.prob.reduce((s,v,i)=>s+Math.abs(v-baselinePipe.prob[i]),0)/2}}
+ }
+}
+function metricsM(id,d,p){switch(id){
+case'embedding':return[['選択 ID'.replace('選択','선택'),'#'+(1200+p.token*137),'ID 크기는 의미가 아닙니다'],['읽은 벡터',vstr(d.x),'표의 한 행 그대로'],['기본 벡터 차원','2D 모형','실제 K3 hidden: 7,168']];
+case'linear':return[['출력 y',vstr(d.y),'두 기저의 선형결합'],['det W',fixedM(d.det),'0이면 평면이 붕괴'],['길이 비율',normM(d.x)>0?fixedM(normM(d.y)/normM(d.x)):'—','항상 1일 필요는 없습니다']];
+case'norm':return[['분모',fixedM(d.den),p.mode?'L2 길이 + ε':'RMS 크기 + ε'],['정규화 전 → 후',fixedM(normM(d.x),2)+' → '+fixedM(normM(d.out),2),'벡터 L2 길이'],['최종 y',vstr(d.out),'γ 적용 후 좌표']];
+case'conv':return[['선형 합',fixedM(d.sum),'현재·과거 네 탭'],['Swish 결과',fixedM(d.out),'합에 비선형 적용'],['미래 값의 기여','0.000','인과적 범위 밖']];
+case'dot':return[['cos θ',fixedM(d.cos),'방향만의 일치'],['내적 qᵀk',fixedM(d.raw),'길이의 영향 포함'],['선택 비중',fixedM(d.probs[0]*100,1)+'%','다른 두 점수와의 경쟁']];
+case'attention':return[['비중 합',fixedM(d.a.reduce((a,b)=>a+b,0),6),'mask 이후에도 1'],['가중합 o',vstr(d.out),'Value들의 무게중심'],['세 번째 비중',fixedM(d.a[2]*100,1)+'%',p.mask?'미래 차단':'참조 가능한 위치']];
+case'latent':return[['남긴 좌표 z',fixedM(d.z),'2 → 1'],['최종 y',vstr(d.out),'U 방향으로 다시 펼침'],['수직 성분 크기',fixedM(normM(d.lost)),'D가 구별하지 못한 차이']];
+case'kda':return[['갱신 전 오차',fixedM(normM(d.err)),'‖v − S̄ᵀk‖₂'],['갱신 후 오차',fixedM(normM(subM(d.v,d.read))),'정규화 Key / q=k'],['오차 잔존 비율',fixedM(1-p.beta),'이 조건에서 1−β']];
+case'gate':return p.mode?[['capped gate',fixedM(d.gate),'4 tanh(g/4) σ(g)'],['capped up',fixedM(d.up),'25 tanh(u/25)'],['내부 곱',fixedM(d.situ),'|GLU 내부 곱| ≤ 100']]:[['sigmoid',fixedM(d.sig),'0 ≤ σ ≤ 1'],['내용 값 v',fixedM(p.incoming),'가중평균과 별도'],['전달값',fixedM(d.out),'σ(g) × v']];
+case'residual':return[['깊이 비중 합',fixedM(d.a.reduce((a,b)=>a+b,0),6),'세 출처를 혼합'],['가중합 h',vstr(d.out),'정규화 전 Value 사용'],['첫 출처 비중',fixedM(d.a[0]*100,1)+'%','key 정규화로 크기 억제']];
+case'moe':return[['선택된 Expert',d.pick.map(i=>'E'+(i+1)).join(' · '),'선택 기준은 s+b'],['혼합 비중 합',fixedM(d.weights.reduce((a,b)=>a+b,0),6),'원래 s만으로 정규화'],['혼합 출력 u',vstr(d.out),'선택된 FFN의 가중합']];
+case'output':return[['확률 합',fixedM(d.filtered.reduce((a,b)=>a+b,0),6),'Top-p 후 재정규화'],['남은 후보',d.ids.length+' / 6','실제 K3 어휘가 아닙니다'],['선택된 토큰',WORDS[d.selected],'u='+fixedM(p.u)]];
+case'pipeline':return[['기준과 TV 거리',fixedM(d.tv,4),'0=동일, 1=완전 분리'],['현재 Expert',d.route.pick.map(i=>'E'+(i+1)).join(' · '),'가상 Top-2'],['최대확률 후보',WORDS[d.prob.indexOf(Math.max(...d.prob))],'높은 확률 ≠ 정답']];
+}}
+
+let dragSpaces={};
+const easeM=t=>{t=clampM(t,0,1);return t*t*(3-2*t)};
+const phaseM=(t,a,b)=>easeM((t-a)/(b-a));
+const textM=(x,y,s,color=C.text,size=13,anchor='start',weight=500,extra='')=>`<text x="${x}" y="${y}" fill="${color}" font-family="system-ui,Malgun Gothic,sans-serif" font-size="${size}" text-anchor="${anchor}" font-weight="${weight}" ${extra}>${safeM(s)}</text>`;
+const mathtextM=(x,y,s,color=C.text,size=19,anchor='start')=>`<text x="${x}" y="${y}" fill="${color}" font-family="Cambria,Times New Roman,serif" font-size="${size}" text-anchor="${anchor}">${safeM(s)}</text>`;
+const rectM=(x,y,w,h,fill='#122234',stroke='#30465f',r=8,extra='')=>`<rect x="${x}" y="${y}" width="${Math.max(0,w)}" height="${Math.max(0,h)}" rx="${r}" fill="${fill}" stroke="${stroke}" ${extra}/>`;
+const lineM=(x1,y1,x2,y2,color=C.axis,width=1.5,dash='',opacity=1)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${color}" stroke-width="${width}" opacity="${opacity}" ${dash?`stroke-dasharray="${dash}"`:''}/>`;
+function rawArrowM(x1,y1,x2,y2,col=C.teal,width=2.5,opacity=1,dash='') {const ang=Math.atan2(y2-y1,x2-x1),s=8,ax=x2-s*Math.cos(ang),ay=y2-s*Math.sin(ang);return `<g opacity="${opacity}">${lineM(x1,y1,ax,ay,col,width,dash)}<path d="M${x2},${y2} L${ax+4*Math.sin(ang)},${ay-4*Math.cos(ang)} L${ax-4*Math.sin(ang)},${ay+4*Math.cos(ang)} Z" fill="${col}"/></g>`}
+const plotM=(x,y,w,h,xmin=-2.5,xmax=2.5,ymin=-2.5,ymax=2.5)=>({x,y,w,h,xmin,xmax,ymin,ymax});
+const pointM=(P,v)=>[P.x+(v[0]-P.xmin)/(P.xmax-P.xmin)*P.w,P.y+P.h-(v[1]-P.ymin)/(P.ymax-P.ymin)*P.h];
+function axesM(P,title='',xlab='특징 1',ylab='특징 2',ticks=true){let s='';if(title)s+=textM(P.x,P.y-22,title,C.muted,12,'start',600);const x0=pointM(P,[0,0])[0],y0=pointM(P,[0,0])[1];for(let x=Math.ceil(P.xmin);x<=P.xmax;x++){const px=pointM(P,[x,0])[0];s+=lineM(px,P.y,px,P.y+P.h,C.grid,x===0?1.7:.8,'',x===0?1:.7);if(ticks&&x!==0&&Math.abs(x)<=5)s+=textM(px,clampM(y0+16,P.y+12,P.y+P.h+16),x,C.muted,10,'middle')};for(let y=Math.ceil(P.ymin);y<=P.ymax;y++){const py=pointM(P,[0,y])[1];s+=lineM(P.x,py,P.x+P.w,py,C.grid,y===0?1.7:.8,'',y===0?1:.7);if(ticks&&y!==0&&Math.abs(y)<=5)s+=textM(clampM(x0-8,P.x+12,P.x+P.w-5),py+3,y,C.muted,10,'end')};s+=textM(P.x+P.w,P.y+P.h+29,xlab,C.muted,10,'end');if(ylab)s+=textM(P.x-4,P.y-7,ylab,C.muted,10);return s;}
+function vectorM(P,v,col,label='',opts={}){const a=pointM(P,opts.from||[0,0]),b=pointM(P,v);let s=rawArrowM(...a,...b,col,opts.width||2.6,opts.opacity??1,opts.dash||'');if(label)s+=textM(b[0]+(opts.dx??9),b[1]+(opts.dy??-9),label,col,opts.size||14,opts.anchor||'start',650,'paint-order="stroke" stroke="#090f1a" stroke-width="4"');return s}
+function handleM(P,v,col,label='',drag='',key='input',dx=10,dy=-10){const [x,y]=pointM(P,v);if(drag)dragSpaces[key]=P;return `<g ${drag?`data-drag="${drag}" data-plot="${key}" role="presentation"`:''}><circle cx="${x}" cy="${y}" r="16" fill="transparent"/>${drag?`<circle class="ma-drag-halo" cx="${x}" cy="${y}" r="10" fill="${col}"/>`:''}<circle cx="${x}" cy="${y}" r="4.6" fill="${col}" stroke="#0c1624" stroke-width="2"/>${label?textM(x+dx,y+dy,label,col,12,'start',650,'paint-order="stroke" stroke="#090f1a" stroke-width="4"'):''}</g>`;}
+function polyM(P,vs,fill='#54adbb',stroke=C.axis,opacity=.1){return `<polygon points="${vs.map(v=>pointM(P,v).join(',')).join(' ')}" fill="${fill}" fill-opacity="${opacity}" stroke="${stroke}" stroke-width="1.2" stroke-dasharray="4 4"/>`}
+function capsuleM(x,y,label,value,col=C.teal,w=190){return rectM(x,y,w,60,'#111f30','#2c4359',8)+textM(x+13,y+20,label,C.muted,10)+mathtextM(x+13,y+45,value,col,20)}
+function matrixM(x,y,M,title,col=C.purple,cell=49,alpha=1){let s=`<g opacity="${alpha}">`+textM(x,y-14,title,C.muted,11);M.forEach((row,i)=>row.forEach((v,j)=>{const amount=clampM(Math.abs(v),0,1);s+=rectM(x+j*cell,y+i*cell,cell-4,cell-4,v>=0?'#16413e':'#472934',v>=0?'#3d7d72':'#895360',5,`fill-opacity="${.35+.5*amount}"`)+textM(x+j*cell+(cell-4)/2,y+i*cell+26,fixedM(v,2),v>=0?C.teal:C.red,12,'middle',650)}));return s+'</g>'}
+function barsM(x,y,w,vals,names,colours=colors,opts={}){let s='';const max=opts.max||Math.max(...vals.map(Math.abs),1e-8),row=opts.row||41;vals.forEach((v,i)=>{const yy=y+i*row,col=colours[i%colours.length];s+=textM(x,yy+13,names[i],C.muted,11);s+=rectM(x+55,yy,w-105,16,'#1c2d42','none',3);const bw=(w-105)*clampM(Math.abs(v)/max,0,1);s+=rectM(x+55,yy,bw,16,col,'none',3,`opacity="${opts.dim?.includes(i)?.28:.85}"`);s+=textM(x+w-2,yy+13,opts.percent?fixedM(v*100,1)+'%':fixedM(v,2),col,11,'end');});return s}
+function graphPathM(P,fn,xmin=P.xmin,xmax=P.xmax,n=180){let d='';for(let i=0;i<=n;i++){const x=xmin+(xmax-xmin)*i/n,y=fn(x),p=pointM(P,[x,clampM(y,P.ymin-50*(P.ymax-P.ymin),P.ymax+50*(P.ymax-P.ymin))]);d+=(i?' L':'M')+p[0].toFixed(2)+','+p[1].toFixed(2);}return d}
+function chartAxesM(P,title='',xStep=10,yStep=20){let s=textM(P.x,P.y-17,title,C.muted,12);for(let x=Math.ceil(P.xmin/xStep)*xStep;x<=P.xmax;x+=xStep){const px=pointM(P,[x,0])[0];s+=lineM(px,P.y,px,P.y+P.h,C.grid,1)+textM(px,P.y+P.h+18,x,C.muted,10,'middle')}for(let y=Math.ceil(P.ymin/yStep)*yStep;y<=P.ymax;y+=yStep){const py=pointM(P,[0,y])[1];s+=lineM(P.x,py,P.x+P.w,py,y===0?C.axis:C.grid,1)+textM(P.x-10,py+3,y,C.muted,10,'end')}return s;}
+function visualM(id,d,p,t){dragSpaces={};const fade=.25+.75*phaseM(t,.48,1);let s='';
+if(id==='embedding'){
+ s+=textM(40,40,'사전의 주소로 한 행을 선택',C.muted,13);s+=textM(70,72,'ID',C.muted,11)+textM(175,72,'토큰',C.muted,11)+textM(288,72,'e_ID',C.muted,11)+textM(390,72,'E[ID,:]',C.muted,11);
+ E.forEach((v,i)=>{const y=88+i*44,sel=i===p.token;s+=rectM(40,y,420,36,sel?'#193b43':'#111d2d',sel?C.teal:'#27394c',6)+textM(62,y+23,1200+i*137,sel?C.teal:C.muted,12)+textM(173,y+23,NAMES[i],sel?C.text:C.muted,13)+textM(306,y+23,sel?'1':'0',sel?C.gold:'#637d94',13,'middle')+mathtextM(365,y+24,vstr(v),sel?C.purple:C.muted,16)});
+ const P=plotM(550,85,280,265,-2.2,2.2,-2.2,2.2);s+=axesM(P,'선택된 행을 좌표로 읽기');E.forEach((v,i)=>{s+=handleM(P,v,i===p.token?C.teal:'#446176',NAMES[i],'','',8,i===1?-13:17)});s+=vectorM(P,mulM(d.x,phaseM(t,.25,.8)),C.teal,'x');s+=rawArrowM(465,106+p.token*44,530,185,C.gold,2,phaseM(t,.15,.5),'5 5');s+=textM(42,400,'ID 사이의 차이 ≠ 의미의 차이',C.gold,13)+textM(552,400,'한 좌표 = 한 개념, 이라고 단정할 수 없음',C.muted,11);
+}
+if(id==='linear'){
+ const bound=Math.max(2.7,...d.y.map(v=>Math.abs(v)*1.25),...d.w1.map(v=>Math.abs(v)*1.3),...d.w2.map(v=>Math.abs(v)*1.3)),P=plotM(70,65,470,310,-bound,bound,-bound*.66,bound*.66);s+=axesM(P,'W가 바꾸는 격자 · 열벡터 관점','특징 1','특징 2',false);const u=phaseM(t,.04,.65),A=[[1+u*(p.a-1),u*p.b],[u*p.c,1+u*(p.d-1)]];
+ s+=`<defs><clipPath id="ma-linear-clip"><rect x="70" y="65" width="470" height="310"/></clipPath></defs><g clip-path="url(#ma-linear-clip)">`;
+ for(let i=-4;i<=4;i+=.5){const a=pointM(P,mvM(A,[i,-4])),b=pointM(P,mvM(A,[i,4])),c=pointM(P,mvM(A,[-4,i])),e=pointM(P,mvM(A,[4,i]));s+=lineM(...a,...b,'#48676b',i===0?1.8:.8,'',i===0?.8:.48)+lineM(...c,...e,'#48676b',i===0?1.8:.8,'',i===0?.8:.48)}s+='</g>';
+ s+=polyM(P,[[0,0],mvM(A,[1,0]),mvM(A,[1,1]),mvM(A,[0,1])],C.gold,C.gold,.1);
+ s+=vectorM(P,d.x,C.teal,'x',{dash:'5 5',opacity:.6});s+=handleM(P,d.x,C.teal,'','vector','input');
+ const w1=mvM(A,[1,0]),w2=mvM(A,[0,1]),v=mvM(A,d.x);s+=vectorM(P,w1,C.gold,'w₁',{dx:-18,dy:-12})+vectorM(P,w2,C.blue,'w₂',{dx:-28,dy:-12});
+ const part=mulM(w1,p.x);s+=vectorM(P,part,C.gold,'x₁w₁',{opacity:phaseM(t,.45,.7),dy:24,size:11});s+=vectorM(P,v,C.blue,'x₂w₂',{from:part,opacity:phaseM(t,.55,.9),dx:10,dy:24,size:11});s+=vectorM(P,v,C.purple,'y',{width:3.3})+handleM(P,v,C.purple);
+ s+=matrixM(615,75,d.W,'학습 가중치 W',C.gold,62);s+=capsuleM(604,235,'입력 x → 출력 y',vstr(d.x)+' →',C.teal,225)+mathtextM(620,319,vstr(d.y),C.purple,23);s+=textM(605,363,'det W = '+fixedM(d.det),C.gold,14);s+=textM(70,416,'회전·늘이기·기울이기·압축은 모두 선형변환의 예입니다.',C.muted,12);
+}
+if(id==='norm'){
+ const nb=Math.max(3.4,Math.abs(d.x[0])*1.15,Math.abs(d.x[1])*1.6,Math.abs(d.out[0])*1.15,Math.abs(d.out[1])*1.6),P=plotM(70,60,440,320,-nb,nb,-nb*320/440,nb*320/440);s+=axesM(P,'정규화 전·후 비교');const r=p.mode?1:Math.sqrt(2),origin=pointM(P,[0,0]),rx=r*P.w/(P.xmax-P.xmin),ry=r*P.h/(P.ymax-P.ymin);s+=`<ellipse cx="${origin[0]}" cy="${origin[1]}" rx="${rx}" ry="${ry}" fill="#2d6961" fill-opacity=".08" stroke="${C.teal}" stroke-dasharray="5 5"/><ellipse cx="${origin[0]}" cy="${origin[1]}" rx="${rx*p.g1}" ry="${ry*p.g2}" fill="none" stroke="${C.purple}" stroke-dasharray="2 7" opacity=".65"/>`;
+ s+=vectorM(P,d.x,C.teal,'입력 x',{opacity:.7})+handleM(P,d.x,C.teal,'','vector','input');const normalized=interpM(d.x,d.pre,phaseM(t,.16,.58)),final=interpM(normalized,d.out,phaseM(t,.62,1));s+=vectorM(P,d.pre,C.gold,'γ 적용 전',{dash:'4 4',opacity:phaseM(t,.2,.5),dx:9,dy:20,size:11})+vectorM(P,final,C.purple,'최종 y',{width:3.5});s+=handleM(P,final,C.purple);
+ s+=capsuleM(565,75,p.mode?'L2 길이':'RMS 크기',fixedM(d.den),C.gold,260)+capsuleM(565,155,'γ 적용 전',vstr(d.pre),C.teal,260)+capsuleM(565,235,'γ = '+vstr([p.g1,p.g2]),vstr(d.out),C.purple,260);s+=textM(565,338,'실선 입력 → 점선 기준원 → 보라 결과',C.muted,11)+textM(565,364,'γ가 비대칭이면 방향도 달라집니다.',C.gold,12);s+=textM(70,420,p.mode?'L2 정규화: 반지름 약 1의 원':'RMSNorm: γ=1이면 2D 길이는 약 √2',C.muted,12);
+}
+if(id==='conv'){
+ s+=textM(44,38,'한 채널 · 현재 t=3 · 현재와 과거 네 값만 참조',C.muted,13);s+=rectM(35,64,492,166,'#143139','#3e7974',8,`fill-opacity=".32"`);s+=textM(45,85,'인과적 창',C.teal,11);const base=172,scale=48;
+ d.data.forEach((v,i)=>{const x=82+i*125,future=i>3,yy=base-v*scale;s+=lineM(x-38,base,x+38,base,C.axis,1);s+=rectM(x-21,Math.min(base,yy),42,Math.abs(yy-base),future?'#536079':C.teal,'none',4,`opacity="${future?.4:.9}"`);s+=textM(x,base+45,'u'+i,C.muted,12,'middle')+textM(x,Math.min(base,yy)-10,fixedM(v,2),future?C.muted:C.teal,12,'middle');if(future)s+=textM(x,102,'미래 · 제외',C.red,10,'middle')});
+ const cy=275;d.terms.forEach((v,j)=>{const x=43+j*165;const coeff=d.coef[j],input=d.data[3-j];s+=rectM(x,cy,150,67,'#122236','#2f4a61',7)+textM(x+12,cy+20,'c'+j+' × u'+(3-j),C.muted,11)+mathtextM(x+12,cy+45,fixedM(coeff,2)+'×'+fixedM(input,2),C.gold,17)+textM(x+12,cy+62,'= '+fixedM(v),C.teal,10);if(j<3)s+=mathtextM(x+153,cy+43,'+',C.muted,20)});s+=rawArrowM(690,307,730,307,C.purple,2,phaseM(t,.45,.8));s+=capsuleM(735,275,'합 → Swish',fixedM(d.out),C.purple,111);s+=textM(43,385,'선형 합 = '+fixedM(d.sum)+'     →     Swish = '+fixedM(d.out),C.text,16)+textM(43,420,'미래 u₄를 바꿔도 왼쪽의 네 곱과 현재 출력은 그대로입니다.',C.muted,12);
+}
+if(id==='dot'){
+ const P=plotM(65,70,425,305,-2.8,2.8,-2,2);s+=axesM(P,'투영 길이 × Query 길이');const a=pointM(P,d.k),b=pointM(P,d.projected);s+=lineM(...a,...b,C.gold,1.6,'5 5',phaseM(t,.2,.55));s+=vectorM(P,d.projected,C.gold,'투영',{opacity:phaseM(t,.2,.55),width:5,dx:10,dy:25,size:11});s+=vectorM(P,d.q,C.teal,'q')+vectorM(P,d.k,C.gold,'k');s+=handleM(P,d.k,C.gold,'','anglekey','input');
+ const origin=pointM(P,[0,0]),rr=38,a0=deg(15),a1=deg(15+p.theta),path=[];for(let i=0;i<=50;i++){const ang=a0+(a1-a0)*i/50;path.push([origin[0]+rr*Math.cos(ang),origin[1]-rr*Math.sin(ang)])};s+=`<path d="M${path.map(v=>v.join(',')).join(' L')}" fill="none" stroke="${C.muted}" stroke-width="1.4"/>`;s+=textM(origin[0]+52,origin[1]-33,'θ='+p.theta+'°',C.muted,11);
+ s+=capsuleM(550,64,'||q|| × ||k|| × cos θ',fixedM(d.raw),C.gold,280)+capsuleM(550,144,'score = 내적 / √2',fixedM(d.score),C.purple,280);s+=textM(550,238,'다른 두 점수는 고정: 0.4 / −0.2',C.muted,11)+barsM(550,257,280,d.probs,['현재 k','다른 k','다른 k'],[C.teal,'#546784','#546784'],{max:1,percent:true,row:38});s+=textM(65,420,'각도는 같아도 길이가 달라지면 raw 내적은 달라집니다.',C.muted,12);
+}
+if(id==='attention'){
+ const P=plotM(45,100,245,245,-2.5,2.5,-2.5,2.5),R=plotM(575,100,255,245,-2.2,2.2,-2.2,2.2);s+=axesM(P,'QUERY / KEY · 조회 기준','','',false)+axesM(R,'VALUE · 전달할 내용','','',false);s+=polyM(R,d.vals,C.purple,C.purple,.06);
+ d.keys.forEach((v,i)=>{s+=vectorM(P,v,colors[i],'k'+(i+1),{opacity:p.mask&&i===2?.22:.9,dy:i===1?-11:20,size:12})});const qVis=mulM(unitM(d.q),Math.min(2.2,normM(d.q)*.62));s+=vectorM(P,qVis,C.white,'q',{width:3.2,dy:20})+handleM(P,qVis,C.white,'','query','input');
+ s+=textM(328,86,'Softmax 비중',C.muted,12);d.a.forEach((a,i)=>{const y=131+i*70;s+=textM(327,y-9,Number.isFinite(d.scores[i])?'score '+fixedM(d.scores[i],2):'미래 mask: −∞',p.mask&&i===2?C.red:C.muted,10);s+=rectM(327,y,190,17,'#1c2d41','none',4)+rectM(327,y,190*a*phaseM(t,.2,.7),17,colors[i],'none',4);s+=textM(517,y+34,fixedM(a*100,1)+'%',colors[i],12,'end');s+=handleM(R,d.vals[i],colors[i],'v'+(i+1),'','',9,i===0?18:-10);const av=mulM(d.vals[i],a),start=d.vals.slice(0,i).reduce((acc,v,j)=>addM(acc,mulM(v,d.a[j])),[0,0]);s+=vectorM(R,addM(start,av),colors[i],'',{from:start,opacity:phaseM(t,.45,.85),width:1.8});});s+=vectorM(R,mulM(d.out,phaseM(t,.5,.9)),C.white,'o',{width:3.3,dx:10,dy:22})+handleM(R,d.out,C.white);s+=textM(45,393,'K는 어디를 볼지, V는 무엇을 가져올지.',C.gold,13)+textM(575,393,'Σaⱼ = '+fixedM(d.a.reduce((s,v)=>s+v,0),3),C.teal,14)+textM(45,424,'오른쪽의 무게중심은 출력 게이트·Wₒ를 통과하기 전입니다.',C.muted,11);
+}
+if(id==='latent'){
+ const P=plotM(45,105,270,245,-2.6,2.6,-2.3,2.3),R=plotM(575,105,270,245,-2.6,2.6,-2.3,2.3);s+=axesM(P,'입력 공간 · 2차원','','',false)+axesM(R,'U의 열공간 · 최대 1차원','','',false);s+=vectorM(P,mulM(d.D,2.3),C.gold,'D 방향',{width:1.7,dy:19,size:11})+vectorM(P,mulM(d.D,-2.3),C.gold,'',{width:1.7});s+=vectorM(P,d.x,C.teal,'x')+handleM(P,d.x,C.teal,'','vector','input');const xx=pointM(P,d.x),pp=pointM(P,d.proj);s+=lineM(...xx,...pp,C.red,1.5,'5 5',phaseM(t,.1,.5))+handleM(P,d.proj,C.gold,'남는 성분','','',9,22);s+=textM(352,115,'압축 좌표 z',C.muted,12);s+=lineM(440,150,440,330,C.axis,2);for(let a=-2;a<=2;a++)s+=lineM(435,240-a*40,445,240-a*40,C.muted,1)+textM(425,244-a*40,a,C.muted,10,'end');const cy=240-d.z*40;s+=`<circle cx="440" cy="${cy}" r="7" fill="${C.gold}"/>`+textM(453,cy+4,fixedM(d.z),C.gold,13);s+=rawArrowM(323,208,380,208,C.gold,2,phaseM(t,.18,.48));s+=rawArrowM(499,208,562,208,C.purple,2,phaseM(t,.5,.8));s+=vectorM(R,mulM(d.U,2.3),C.gold,'U  방향',{width:1.5,dy:18,size:11})+vectorM(R,mulM(d.U,-2.3),C.gold,'',{width:1.5});s+=vectorM(R,mulM(d.out,phaseM(t,.3,.9)),C.purple,'y',{width:3.5})+handleM(R,d.out,C.purple);s+=textM(45,400,'붉은 점선 방향을 바꿔도 z는 바뀌지 않습니다.',C.red,12)+textM(575,400,'U는 D의 역행렬이 아닐 수 있습니다.',C.muted,11);
+}
+if(id==='kda'){
+ const P=plotM(485,65,345,285,-2.5,2.5,-2.06,2.06);s+=axesM(P,'같은 Key에서 읽은 Value 공간');s+=vectorM(P,d.pred,C.gold,'이전 예측',{width:2.3,dx:9,dy:20,size:11});s+=vectorM(P,d.v,C.teal,'새 v',{width:2.3})+handleM(P,d.v,C.teal,'','value','input');const interp=interpM(d.pred,d.read,phaseM(t,.45,1));s+=vectorM(P,d.v,C.red,'오차 e',{from:d.pred,opacity:phaseM(t,.32,.65),dx:-54,dy:26,size:12})+vectorM(P,interp,C.purple,'수정 후',{width:4,dx:-61,dy:-14,size:12})+handleM(P,interp,C.purple);s+=lineM(...pointM(P,interp),...pointM(P,d.v),C.teal,1,'4 4',.4);
+ s+=matrixM(36,65,d.prev,'이전 상태 S',C.purple,50)+matrixM(190,65,d.dec,'행별 감쇠 S̄',C.gold,50,.35+.65*phaseM(t,.12,.4));s+=rawArrowM(144,113,177,113,C.gold,2);s+=textM(38,204,'k = '+vstr(d.k)+' · ||k||=1',C.muted,11);s+=matrixM(36,251,d.delta,'β k eᵀ · rank-1 수정',C.red,50,.25+.75*phaseM(t,.4,.75))+matrixM(190,251,d.next,'갱신 상태 S′',C.purple,50,.25+.75*phaseM(t,.6,1));s+=rawArrowM(144,299,177,299,C.purple,2);s+=mathtextM(490,395,'S′ᵀk = (1−β) S̄ᵀk + βv',C.purple,22);s+=textM(37,420,'행 = Key 채널 · 열 = Value 채널',C.muted,11)+textM(490,424,'현재 Key에 한정된 보간 · 모든 기억의 완전 복원은 아님',C.muted,11);
+}
+if(id==='gate'){
+ if(p.mode===0){const P=plotM(65,78,475,255,-8,8,-.05,1.1);s+=chartAxesM(P,'σ(x) = 1 / (1 + exp(−x))',2,.25);s+=`<path d="${graphPathM(P,sigmoidM)}" stroke="${C.gold}" stroke-width="3" fill="none"/>`;const x=clampM(p.input,-8,8);const [cx,cy]=pointM(P,[x,d.sig]);s+=lineM(cx,P.y+P.h,cx,cy,C.muted,1,'4 4')+handleM(P,[x,d.sig],C.teal,'σ='+fixedM(d.sig),'gatex','input',12,-11);s+=capsuleM(600,84,'들어온 내용 v',fixedM(p.incoming),C.teal,225)+capsuleM(600,173,'통과 비율 σ',fixedM(d.sig),C.gold,225)+capsuleM(600,262,'전달 결과',fixedM(d.out),C.purple,225);s+=textM(65,395,'σ는 정보의 통과율입니다. 사실일 확률이 아닙니다.',C.muted,13);if(p.input>8)s+=textM(65,423,'현재 x='+fixedM(p.input,1)+'은 표시 구간 오른쪽 밖이며, 게이트는 거의 1입니다.',C.gold,11);
+ }else{const P=p.zoom?plotM(65,75,475,285,-6,8,-3,65):plotM(65,75,475,285,-8,65,-5,110);s+=chartAxesM(P,'g=u=x인 대각선 단면',p.zoom?2:10,p.zoom?10:20);s+=`<defs><clipPath id="ma-gate-clip"><rect x="${P.x}" y="${P.y}" width="${P.w}" height="${P.h}"/></clipPath></defs><g clip-path="url(#ma-gate-clip)"><path d="${graphPathM(P,x=>x*sigmoidM(x)*x)}" stroke="${C.red}" stroke-width="2" stroke-dasharray="6 4" fill="none"/><path d="${graphPathM(P,x=>situM(x,x))}" stroke="${C.teal}" stroke-width="3" fill="none"/></g>`;if(!p.zoom){const yy=pointM(P,[0,100])[1];s+=lineM(P.x,yy,P.x+P.w,yy,C.gold,1,'4 5')+textM(P.x+P.w-4,yy-8,'상한 100',C.gold,11,'end')};const vx=clampM(p.input,P.xmin,P.xmax),vy=situM(vx,vx);s+=handleM(P,[vx,vy],C.white,'','gatex','input');s+=capsuleM(596,82,'capped gate',fixedM(d.gate),C.gold,235)+capsuleM(596,164,'capped up',fixedM(d.up),C.blue,235)+capsuleM(596,246,'SiTU 내부 곱',fixedM(d.situ),C.teal,235);s+=textM(70,398,'━ SiTU-GLU',C.teal,13)+textM(242,398,'┄ SwiGLU · 큰 값은 화면 밖',C.red,12)+textM(70,426,'각 branch는 실제로 서로 다른 투영 Wg·Wu에서 옵니다. 이 그림은 g=u인 단면만 비교합니다.',C.muted,11);if(p.input<P.xmin||p.input>P.xmax)s+=textM(596,350,'현재 x='+fixedM(p.input,1)+' · 확대 구간 밖',C.gold,11);
+ }
+}
+if(id==='residual'){
+ const bound=Math.max(2.2,...d.bs.flat().map(Math.abs),...(p.sum?d.sum.map(Math.abs):[]))+.3,P=plotM(55,80,410,285,-bound,bound,-bound*.7,bound*.7);s+=axesM(P,'같은 토큰 · 서로 다른 깊이의 표현','','',false);s+=polyM(P,d.bs,C.purple,C.purple,.07);d.bs.forEach((v,i)=>{s+=vectorM(P,v,colors[i],'b'+i,{width:1.5,dy:i===0?20:-10,size:12});s+=handleM(P,v,colors[i]);});s+=vectorM(P,mulM(d.out,phaseM(t,.35,.9)),C.white,'h',{width:3.5,dy:24})+handleM(P,d.out,C.white);if(p.sum)s+=vectorM(P,d.sum,C.red,'단순 합',{dash:'5 5',width:1.8,dy:-18,size:11});s+=textM(525,64,'깊이별 선택 비중',C.muted,13)+barsM(525,86,300,d.a,['b₀','b₁','b₂'],colors,{max:1,percent:true,row:51});s+=capsuleM(525,261,'학습된 pseudo-query w',vstr(d.w),C.gold,300);s+=textM(525,350,'점수는 정규화된 b로, Value는 원래 b로.',C.gold,12);s+=textM(55,414,'시간축 Attention과 같은 가중합 수학을, 깊이축의 출처 선택에 적용합니다.',C.muted,12);
+}
+if(id==='moe'){
+ const P=plotM(40,100,190,200,-2.3,2.3,-2.3,2.3);s+=axesM(P,'입력 x','','',false);s+=vectorM(P,d.x,C.teal,'x')+handleM(P,d.x,C.teal,'','vector','input');s+=textM(280,55,'s 원래 점수',C.muted,11)+textM(433,55,'s+b 선택 점수',C.muted,11)+textM(602,55,'선택된 Expert의 출력',C.muted,12);
+ const B=Math.max(.4,...d.vals.flat().map(Math.abs))*1.45,R=plotM(620,94,220,236,-B,B,-B,B);s+=axesM(R,'','','',false);const selected=d.pick.map(i=>d.vals[i]);if(selected.length>1)s+=polyM(R,selected,C.purple,C.purple,.08);
+ d.raw.forEach((v,i)=>{const yy=82+i*47,on=d.pick.includes(i);s+=rectM(263,yy-2,303,38,on?'#243d3e':'#111d2e',on?'#6f9e8f':'#273b4f',6)+textM(273,yy+22,'E'+(i+1),on?C.text:C.muted,12);s+=rectM(313,yy+6,84*v,11,colors[i],'none',2)+textM(405,yy+16,fixedM(v,2),colors[i],10,'end');s+=rectM(431,yy+6,73*clampM(d.scored[i],0,1.7)/1.7,11,on?C.gold:'#52677e','none',2)+textM(556,yy+17,fixedM(d.scored[i],2),on?C.gold:C.muted,10,'end');s+=handleM(R,d.vals[i],on?colors[i]:'#3c5069','E'+(i+1),'','',i%2?6:-21,i%2?18:-9);if(on)s+=textM(602,361+d.pick.indexOf(i)*22,'E'+(i+1)+'  p='+fixedM(d.weights[i],3),colors[i],11);});s+=vectorM(R,mulM(d.out,phaseM(t,.4,.9)),C.white,'u',{width:3.6,dx:10,dy:22});s+=textM(40,357,'E3 bias = '+fixedM(p.bias),C.gold,13)+textM(40,382,'Top-'+(p.topk+1)+' / 6',C.teal,13)+textM(40,422,'p에는 bias를 넣지 않습니다. 선택 경계가 바뀌면 혼합할 Expert 집합이 바뀝니다.',C.muted,12);
+}
+if(id==='output'){
+ s+=textM(43,42,'LM Head · 후보별 내적',C.muted,12)+textM(335,42,'logit · 음수도 가능',C.muted,12)+textM(589,42,'Top-p 후 확률',C.muted,12);const P=plotM(40,93,230,210,-2.2,2.2,-2,2);s+=axesM(P,'','','',false);WH.forEach((v,i)=>s+=vectorM(P,v,colors[i],'',{width:1.2,opacity:.28}));s+=vectorM(P,d.h,C.white,'h')+handleM(P,d.h,C.white,'','vector','input');
+ const maxLog=Math.max(1,...d.logits.map(Math.abs));d.logits.forEach((v,i)=>{const yy=77+i*36,cx=441,bw=v/maxLog*75;s+=textM(323,yy+12,WORDS[i],colors[i],11)+lineM(cx,yy-1,cx,yy+19,C.axis,1)+rectM(Math.min(cx,cx+bw),yy,Math.abs(bw),16,colors[i],'none',3)+textM(550,yy+12,fixedM(v,2),C.muted,10,'end');s+=rectM(602,yy,175,16,'#1b2c41','none',3)+rectM(602,yy,175*d.filtered[i]*phaseM(t,.2,.7),16,colors[i],'none',3)+textM(835,yy+12,fixedM(d.filtered[i]*100,1)+'%',colors[i],11,'end');});
+ s+=textM(42,345,'재정규화한 누적확률 · 길이 = 선택될 확률',C.muted,12);let cum=0;d.filtered.forEach((v,i)=>{if(!v)return;const x=42+cum*790,w=v*790;s+=rectM(x,364,w,31,colors[i],'#0a1421',0,`opacity="${i===d.selected?.9:.4}"`);if(w>42)s+=textM(x+w/2,384,WORDS[i],i===d.selected?'#0a1520':C.text,12,'middle',650);cum+=v});const ux=42+p.u*790;s+=lineM(ux,352,ux,403,C.white,2)+textM(ux,423,'u='+fixedM(p.u),C.white,11,'middle')+textM(833,423,'선택: '+WORDS[d.selected],C.purple,14,'end');
+}
+if(id==='pipeline'){
+ const nodes=[{title:'입력·정규화',val:vstr(d.normal[2]),color:C.teal},{title:'KDA 읽기',val:vstr(d.last.read),color:C.teal},{title:'출력 gate',val:vstr(d.gated),color:C.gold},{title:'AttnRes',val:vstr(d.h),color:C.blue},{title:'Expert Top-2',val:d.route.pick.map(i=>'E'+(i+1)).join(' + '),color:C.gold},{title:'최종 벡터',val:vstr(d.final),color:C.purple}];
+ s+=textM(37,32,'하나의 작은 계산 그래프 · 장식이 아니라 아래 값으로 연속 계산합니다',C.muted,12);nodes.forEach((n,i)=>{const x=35+i*139,active=t>=i/7;s+=rectM(x,58,124,76,active?'#182c3c':'#111b2b',active?n.color:'#2b4056',8)+textM(x+10,81,n.title,active?n.color:C.muted,11,'start',650)+mathtextM(x+10,112,n.val,active?C.text:C.muted,15);if(i<5)s+=rawArrowM(x+127,95,x+136,95,n.color,2,active?1:.3)});
+ s+=textM(41,180,'출력 후보의 확률',C.text,14)+textM(545,180,'윤곽: 기준값    채움: 현재값',C.muted,11);const ys=210,H=160,bw=82,gap=43,pmax=Math.max(.45,...d.prob,...d.base.prob)*1.06;d.prob.forEach((v,i)=>{const x=56+i*(bw+gap),base=d.base.prob[i],hh=v/pmax*H,bh=base/pmax*H;s+=lineM(x-8,ys+H,x+bw+8,ys+H,C.axis,1);s+=rectM(x,ys+H-bh,bw,bh,'none','#687a92',4,`stroke-width="1.8" stroke-dasharray="4 4"`);s+=rectM(x+8,ys+H-hh*phaseM(t,.25,.95),bw-16,hh*phaseM(t,.25,.95),colors[i],'none',4,`opacity=".78"`);s+=textM(x+bw/2,Math.min(ys+H-hh,ys+H-bh)-11,fixedM(v*100,1)+'%',colors[i],12,'middle')+textM(x+bw/2,ys+H+23,WORDS[i],C.muted,12,'middle')});s+=textM(41,435,'TV 거리 = '+fixedM(d.tv,4)+'   ·   출력 변화량이지 품질·정확도 점수가 아닙니다.',C.gold,12);
+}
+return `<title id="ma-svg-title">${safeM(LESSONS.find(l=>l.id===id).title)}</title><desc id="ma-svg-desc">조작 가능한 교육용 수학 그림입니다. 동일한 수치와 설명은 그림 아래와 오른쪽 텍스트로도 제공됩니다.</desc><rect x="0" y="0" width="880" height="450" fill="${C.bg}"/>`+s;
+}
+
+const stateM={scene:'linear',params:Object.fromEntries(LESSONS.map(l=>[l.id,Object.fromEntries(l.controls.map(c=>[c.key,c.value]))])),progress:1,playing:false,last:0,speed:1,phase:3,term:0,seed:872931,from:null};
+let dataM=null,dragM=null,frameM=0;
+const activeLessonM=()=>LESSONS.find(l=>l.id===stateM.scene);
+const currentParamsM=()=>stateM.params[stateM.scene];
+const activePanelM=()=>!document.hidden&&$m('math-atlas').classList.contains('active');
+function formatControlM(c,v){return c.options?c.options[v]:(Number.isInteger(c.step)&&c.step>=1?String(v):fixedM(v,c.step<.01?3:2))+(c.unit||'')}
+function controlsM(){const l=activeLessonM(),p=currentParamsM();$m('ma-controls').innerHTML=l.controls.map(c=>`<div class="ma-field"><label for="ma-field-${c.key}">${safeM(c.label)}${c.options?'':`<output id="ma-val-${c.key}">${formatControlM(c,p[c.key])}</output>`}</label>${c.options?`<select id="ma-field-${c.key}" data-ma-param="${c.key}" aria-label="${safeM(c.label)}">${c.options.map((s,i)=>`<option value="${i}" ${p[c.key]===i?'selected':''}>${safeM(s)}</option>`).join('')}</select>`:`<input type="range" id="ma-field-${c.key}" data-ma-param="${c.key}" min="${c.min}" max="${c.max}" step="${c.step}" value="${p[c.key]}" aria-label="${safeM(c.label)}">`}</div>`).join('');$m('ma-presets').innerHTML=l.presets.map((x,i)=>`<button type="button" data-ma-preset="${i}">${safeM(x.label)}</button>`).join('')}
+function syncControlsM(){const l=activeLessonM(),p=currentParamsM();l.controls.forEach(c=>{const input=$m('ma-field-'+c.key);if(input)input.value=p[c.key];const v=$m('ma-val-'+c.key);if(v)v.textContent=formatControlM(c,p[c.key]);})}
+function sourceAnchorM(l){const links={S1:'https://arxiv.org/html/2607.24653v2',S2:'https://huggingface.co/moonshotai/Kimi-K3/raw/main/config.json',S3:'https://www.3blue1brown.com/lessons/linear-transformations/',S4:'https://www.3blue1brown.com/lessons/dot-products/',S5:'https://www.3blue1brown.com/lessons/attention/'};const key=['S1','S4','S5','S3','S2'].find(k=>l.source.includes(k))||'S1';return `<span class="ma-source-ref">근거: ${safeM(l.source)}<br><a href="${links[key]}" target="_blank" rel="noopener">관련 원문 확인 ↗</a></span>`;}
+function inspectorM(){const l=activeLessonM();$m('ma-inspector').innerHTML=`<div class="ma-inspector-block ma-where"><span class="ma-k3label">K3에서의 위치</span><p>${safeM(l.where)}</p>${sourceAnchorM(l)}</div><div class="ma-inspector-block"><h4>수식의 기호를 눌러 읽기</h4><div class="ma-terms">${l.terms.map((term,i)=>`<button data-ma-term="${i}" class="${i===stateM.term?'active':''}" aria-pressed="${i===stateM.term}">${safeM(term[0])}</button>`).join('')}</div><p class="ma-term-detail" id="ma-term-detail">${safeM(l.terms[stateM.term][1])}</p></div><div class="ma-inspector-block"><h4>왜 이 계산을 하는가?</h4><p>${safeM(l.why)}</p><div class="ma-test"><p>${safeM(l.quiz[0])}</p><button class="ma-btn subtle" id="ma-answer">해설 확인</button><p class="ma-test-result" id="ma-answer-text" hidden>${safeM(l.quiz[1])}</p></div></div><div class="ma-inspector-block"><h4>GPU에서는</h4><p class="ma-gpu">${safeM(l.hardware)}</p></div><div class="ma-inspector-block"><p class="ma-caution">${safeM(l.caution)}</p></div>`;}
+const locationsM=[['입력','embedding'],['투영','linear'],['정규화','norm'],['KDA','kda'],['MLA','attention'],['잠재','latent'],['비선형','gate'],['깊이','residual'],['MoE','moe'],['출력','output']];
+function layoutLessonM(){const l=activeLessonM(),idx=LESSONS.indexOf(l);stateM.term=0;$m('ma-number').textContent=String(idx+1).padStart(2,'0')+' / 13 · '+l.nav;$m('ma-title').textContent=l.title;$m('ma-subhead').textContent=l.lead;$m('ma-equation').innerHTML=l.formula;$m('ma-scene-select').value=l.id;$m('ma-semantic').textContent=l.semantic;$m('ma-location-desc').textContent=l.id==='pipeline'?'현재는 여러 연산을 연결한 별도의 모형입니다. 실제 93층 전체를 계산한 결과가 아닙니다.':'입체도에서는 같은 연산의 위치를 찾고, 여기서는 그 연산의 기하학을 펼칩니다. 두 화면의 축소 수치는 별개입니다.';$m('ma-location').innerHTML=locationsM.map(([name,id],i)=>`${i?'<i>→</i>':''}<button data-ma-location="${id}" class="${l.location===name?'active':''}">${name}</button>`).join('');$m('ma-steps').innerHTML=l.steps.map((x,i)=>`<button data-ma-phase="${i}" class="${stateM.phase===i?'active':''}">${String(i+1).padStart(2,'0')} ${safeM(x[0])}</button>`).join('');controlsM();inspectorM();document.querySelectorAll('[data-ma-scene]').forEach(b=>{b.classList.toggle('active',b.dataset.maScene===l.id);b.setAttribute('aria-current',b.dataset.maScene===l.id?'step':'false')});$m('ma-proof').open=false;const hints={embedding:'가상 토큰을 선택해 같은 행을 조회합니다.',linear:'청록 점 드래그 → 입력 x 변경',norm:'청록 점 드래그 → 방향·크기 변경',conv:'미래 값 슬라이더와 현재 출력을 비교',dot:'금색 끝점 드래그 → θ 변경',attention:'흰 Query 끝점 드래그 → 방향 변경',latent:'청록 점 드래그 → 압축 후 결과 비교',kda:'새 v 끝점 드래그 → 기억이 수정될 목표 변경',gate:'곡선 위 점 드래그 → 입력 x 변경',residual:'w 방향 슬라이더 → 깊이 비중 변경',moe:'청록 점 드래그 → 선택 Expert 변경',output:'흰 h 끝점 드래그 → 후보 점수 변경',pipeline:'슬라이더 하나만 바꿔 기준 분포와 비교'};$m('ma-interaction-hint').textContent=hints[l.id];}
+function numericProofM(l,d,p){let rows=[];const push=(name,val)=>rows.push([name,typeof val==='string'?val:JSON.stringify(val,(_,v)=>typeof v==='number'?Number(v.toFixed(6)):v)]);
+switch(l.id){
+case'embedding':push('원-핫 e_ID',d.onehot);push('선택된 E 행',d.x);break;
+case'linear':push('W',d.W);push('x',d.x);push('x₁ w₁',mulM(d.w1,p.x));push('x₂ w₂',mulM(d.w2,p.y));push('y',d.y);break;
+case'norm':push('입력',d.x);push('분모',d.den);push('γ 적용 전',d.pre);push('최종 출력',d.out);break;
+case'conv':push('시계열 u₀…u₅',d.data);push('현재→과거 순서 계수',d.coef);push('각 곱',d.terms);push('선형 합',d.sum);push('Swish 출력',d.out);break;
+case'dot':push('q',d.q);push('k',d.k);push('내적',d.raw);push('내적 / √2',d.score);push('세 점수의 Softmax',d.probs);break;
+case'attention':push('Q',d.q);push('K',d.keys);push('V',d.vals);push('scores',d.scores.map(v=>Number.isFinite(v)?v:'−∞'));push('a',d.a);push('ΣaV',d.out);break;
+case'latent':push('D',d.D);push('U',d.U);push('z',d.z);push('D가 구별 못 하는 성분',d.lost);push('출력',d.out);break;
+case'kda':push('이전 상태 S',d.prev);push('감쇠 S̄',d.dec);push('예측 S̄ᵀk',d.pred);push('오차 e',d.err);push('외적 수정 βkeᵀ',d.delta);push('갱신 S′',d.next);push('q=k로 읽기',d.read);break;
+case'gate':push('σ(x)',d.sig);push('capped gate',d.gate);push('capped up',d.up);push('SiTU 내부 곱',d.situ);push('SwiGLU 대각선 단면',d.swi);break;
+case'residual':push('원래 출처 b',d.bs);push('정규화 key',d.keys);push('깊이 비중',d.a);push('가중합',d.out);break;
+case'moe':push('원래 score s',d.raw);push('선택 score s+b',d.scored);push('선택 ID (0부터)',d.pick);push('혼합 p',d.weights);push('각 FFN 출력',d.vals);push('가중합',d.out);break;
+case'output':push('logits',d.logits);push('Softmax 확률',d.prob);push('Top-p 후보 ID (0부터)',d.ids);push('재정규화 확률',d.filtered);push('선택된 후보',WORDS[d.selected]);break;
+case'pipeline':push('KDA 상태',d.last.S);push('KDA readout',d.last.read);push('gate 후',d.gated);push('깊이 비중',d.depthp);push('AttnRes 후',d.h);push('Router 원래 score',d.route.raw);push('Expert 혼합 후',d.route.out);push('최종 hidden',d.final);push('logits',d.logits);push('현재 확률',d.prob);push('기준 확률',d.base.prob);break;
+}
+return `<p>${safeM(l.proof)}</p><table><thead><tr><th>계산 항목</th><th>이 화면의 실제 계산값 · 소수 6자리 표시</th></tr></thead><tbody>${rows.map(([k,v])=>`<tr><td>${safeM(k)}</td><td><code>${safeM(v)}</code></td></tr>`).join('')}</tbody></table><p>표시 반올림 전 수치로 연산합니다. JavaScript의 부동소수점 계산이며 실제 GPU의 BF16·MXFP4 수치 오차는 재현하지 않습니다.</p>`;}
+function updateFormulaM(){const p=currentParamsM();if(stateM.scene==='gate')$m('ma-equation').innerHTML=p.mode?activeLessonM().formula:'<span class="out">y</span> = <span class="weight">σ(g)</span> ⊙ <span class="in">v</span> ; &nbsp; σ(g) = 1 / (1+e<sup>−g</sup>)';if(stateM.scene==='norm')$m('ma-equation').innerHTML=p.mode?'<span class="out">y</span> = <span class="weight">γ</span> ⊙ <span class="in">x</span> / √(Σxᵢ² + ε) &nbsp; <small>(γ는 비교를 위한 추가 배율)</small>':activeLessonM().formula;}
+function recomputeM(){dataM=computeM(stateM.scene,currentParamsM());const p=currentParamsM();$m('ma-metrics').innerHTML=metricsM(stateM.scene,dataM,p).map(([name,val,note])=>`<div class="ma-metric"><small>${safeM(name)}</small><b>${safeM(val)}</b><span>${safeM(note)}</span></div>`).join('');$m('ma-proof-content').innerHTML=numericProofM(activeLessonM(),dataM,p);updateFormulaM();drawM();document.dispatchEvent(new CustomEvent('k3:math-values'));}
+function drawM(){const l=activeLessonM();$m('ma-svg').innerHTML=visualM(stateM.scene,dataM,currentParamsM(),stateM.progress);const ph=Math.min(3,Math.floor(stateM.progress*4));if(ph!==stateM.phase||$m('ma-caption').textContent!==l.steps[ph][1]){stateM.phase=ph;$m('ma-phase-no').textContent=ph+1;$m('ma-caption').textContent=l.steps[ph][1];document.querySelectorAll('[data-ma-phase]').forEach(b=>b.classList.toggle('active',+b.dataset.maPhase===ph))}$m('ma-progress').value=Math.round(stateM.progress*1000);$m('ma-progress-out').textContent=Math.round(stateM.progress*100)+'%';$m('ma-play').textContent=stateM.playing?'Ⅱ 수식 일시 정지':'▶ 수식 전개';}
+function setSceneM(id){if(!LESSONS.some(l=>l.id===id))id='linear';stateM.scene=id;stateM.playing=false;stateM.progress=1;stateM.phase=3;layoutLessonM();recomputeM();document.dispatchEvent(new CustomEvent('k3:math-scene',{detail:{id:stateM.scene}}));}
+function openMathM(id){if(window.K3Unified){window.K3Unified.openScene(id||stateM.scene);return;}setSceneM(id||stateM.scene);const tab=document.querySelector('.tab[data-tab="math-atlas"]');tab.click();document.body.classList.add('math-mode');if(innerWidth<800)$m('primary-tabs').scrollLeft=tab.offsetLeft-16;}
+function changeSceneM(delta){const i=LESSONS.findIndex(l=>l.id===stateM.scene);setSceneM(LESSONS[(i+delta+LESSONS.length)%LESSONS.length].id);}
+function setParamsM(vals){const l=activeLessonM(),p=currentParamsM();for(const [key,value] of Object.entries(vals)){const c=l.controls.find(c=>c.key===key);if(!c||!Number.isFinite(+value))continue;p[key]=clampM(+value,c.options?0:c.min,c.options?c.options.length-1:c.max);if(c.options)p[key]=Math.round(p[key]);}syncControlsM();recomputeM();}
+function pauseM(){stateM.playing=false;$m('ma-play').textContent='▶ 수식 전개';}
+function playM(){if(stateM.playing){pauseM();return}if(stateM.progress>=.999)stateM.progress=0;stateM.playing=true;stateM.last=performance.now();drawM();}
+function toastM(text){$m('ma-toast').textContent=text;$m('ma-toast').hidden=false;clearTimeout(toastM.timer);toastM.timer=setTimeout(()=>$m('ma-toast').hidden=true,3600);}
+function presetM(index){const l=activeLessonM(),pr=l.presets[index],p=currentParamsM();if(!pr)return;pauseM();stateM.progress=1;if(pr.values)setParamsM(pr.values);else if(pr.action==='doubleNorm')setParamsM({x:p.x*.5,y:p.y*.5});else if(pr.action==='nullmove'){const n=vecAngle(p.theta+90),cur=[p.x,p.y];let lambda=.65;const ok=z=>z.every(v=>v>=-2.3&&v<=2.3);if(!ok(addM(cur,mulM(n,lambda))))lambda=-.65;while(!ok(addM(cur,mulM(n,lambda)))&&Math.abs(lambda)>.00001)lambda*=.5;const next=addM(cur,mulM(n,lambda));setParamsM({x:next[0],y:next[1]});toastM('D에 수직인 방향으로 이동했습니다. z와 출력은 그대로입니다.');}else if(pr.action==='sample'){stateM.seed=(Math.imul(stateM.seed,1664525)+1013904223)>>>0;setParamsM({u:clampM(stateM.seed/4294967296,.001,.999)});}drawM();}
+const keyToSceneM={input:'embedding',tokens:'embedding',embedding:'embedding',norm:'norm',q:'linear',k:'linear',v:'linear',qkv:'conv',state:'kda',read:'kda',gate:'gate',projection:'linear',scores:'dot',softmax:'attention',weighted:'attention',kv:'latent',latent:'latent',down:'latent',up:'latent',depth:'residual',router:'moe',expert:'moe',shared:'moe',merge:'moe',head:'output',sampling:'output',next:'pipeline',hbm:'linear',sm:'linear',network:'pipeline'};
+function sceneFromSpatialM(){const d=window.K3Spatial?.debug();if(!d)return'linear';if(d.operation&&keyToSceneM[d.operation])return keyToSceneM[d.operation];const key=Object.keys(keyToSceneM).find(k=>String(d.node).toLowerCase().includes(k));return key?keyToSceneM[key]:'linear';}
+function gotoSpatialM(){if(window.K3Unified){window.K3Unified.openScene(stateM.scene);return;}pauseM();document.body.classList.remove('math-mode');const l=activeLessonM();window.K3Spatial.open(l.legacy);if(window.K3Spatial.focusOperation)window.K3Spatial.focusOperation(l.spatial);}
+// Build navigation once. The original seven screens are kept intact.
+$m('ma-nav').innerHTML='<div class="ma-nav-label">연산의 수학적 의미</div>'+LESSONS.map((l,i)=>(l.group?`<div class="ma-nav-group">${safeM(l.group)}</div>`:'')+`<button data-ma-scene="${l.id}"><span>${String(i+1).padStart(2,'0')}</span><div><b>${safeM(l.nav)}</b><small>${safeM(l.short)}</small></div></button>`).join('')+'<div class="ma-nav-footer">청록: 입력·내용<br>금색: 가중치·선택<br>보라: 결과 · 붉은색: 차이<br><br>처음에는 02 → 05 → 06 → 08 순서로 보세요.</div>';
+$m('ma-scene-select').innerHTML=LESSONS.map((l,i)=>`<option value="${l.id}">${String(i+1).padStart(2,'0')} · ${safeM(l.nav)} — ${safeM(l.short)}</option>`).join('');
+$m('ma-nav').addEventListener('click',e=>{const b=e.target.closest('[data-ma-scene]');if(b)setSceneM(b.dataset.maScene)});
+$m('ma-scene-select').addEventListener('change',e=>setSceneM(e.target.value));
+['ma-prev','ma-mobile-prev'].forEach(id=>$m(id).addEventListener('click',()=>changeSceneM(-1)));['ma-next','ma-mobile-next'].forEach(id=>$m(id).addEventListener('click',()=>changeSceneM(1)));
+$m('ma-controls').addEventListener('input',e=>{if(e.target.matches('[data-ma-param]')){pauseM();stateM.progress=1;setParamsM({[e.target.dataset.maParam]:+e.target.value});}});
+$m('ma-presets').addEventListener('click',e=>{const b=e.target.closest('[data-ma-preset]');if(b)presetM(+b.dataset.maPreset)});
+$m('ma-reset').addEventListener('click',()=>{pauseM();stateM.progress=1;stateM.params[stateM.scene]=Object.fromEntries(activeLessonM().controls.map(c=>[c.key,c.value]));syncControlsM();recomputeM();});
+$m('ma-play').addEventListener('click',playM);$m('ma-rewind').addEventListener('click',()=>{pauseM();stateM.progress=0;drawM()});$m('ma-progress').addEventListener('input',e=>{pauseM();stateM.progress=+e.target.value/1000;drawM()});$m('ma-speed').addEventListener('change',e=>stateM.speed=+e.target.value);
+$m('ma-steps').addEventListener('click',e=>{const b=e.target.closest('[data-ma-phase]');if(b){pauseM();stateM.progress=[.05,.36,.67,1][+b.dataset.maPhase];drawM()}});
+$m('ma-inspector').addEventListener('click',e=>{const b=e.target.closest('[data-ma-term]');if(b){stateM.term=+b.dataset.maTerm;$m('ma-term-detail').textContent=activeLessonM().terms[stateM.term][1];document.querySelectorAll('[data-ma-term]').forEach(btn=>{const active=+btn.dataset.maTerm===stateM.term;btn.classList.toggle('active',active);btn.setAttribute('aria-pressed',active);});}if(e.target.id==='ma-answer'){$m('ma-answer-text').hidden=!$m('ma-answer-text').hidden;e.target.textContent=$m('ma-answer-text').hidden?'해설 확인':'해설 접기';}});
+$m('ma-location').addEventListener('click',e=>{const b=e.target.closest('[data-ma-location]');if(b)setSceneM(b.dataset.maLocation)});
+$m('ma-goto-block').addEventListener('click',gotoSpatialM);$m('ma-back-spatial').addEventListener('click',()=>{pauseM();document.body.classList.remove('math-mode');document.querySelector('.tab[data-tab="spatial"]').click();});
+$m('ma-fit').addEventListener('click',()=>{$m('ma-stage').classList.toggle('ma-fit');$m('ma-fit').textContent=$m('ma-stage').classList.contains('ma-fit')?'크게 보기':'전체 맞춤'});
+const svgM=$m('ma-svg');
+function pointerM(e,P){const pos=new DOMPoint(e.clientX,e.clientY).matrixTransform(svgM.getScreenCTM().inverse());return[P.xmin+(pos.x-P.x)/P.w*(P.xmax-P.xmin),P.ymax-(pos.y-P.y)/P.h*(P.ymax-P.ymin)]}
+svgM.addEventListener('pointerdown',e=>{const target=e.target.closest('[data-drag]');if(!target)return;const P=dragSpaces[target.dataset.plot];if(!P)return;dragM={kind:target.dataset.drag,P};pauseM();stateM.progress=1;svgM.setPointerCapture(e.pointerId);e.preventDefault();});
+svgM.addEventListener('pointermove',e=>{if(!dragM)return;const v=pointerM(e,dragM.P);if(dragM.kind==='vector')setParamsM({x:v[0],y:v[1]});else if(dragM.kind==='value')setParamsM({vx:v[0],vy:v[1]});else if(dragM.kind==='anglekey'){let theta=Math.atan2(v[1],v[0])*180/Math.PI-15;while(theta>180)theta-=360;while(theta< -180)theta+=360;setParamsM({theta:Math.round(theta)});}else if(dragM.kind==='query')setParamsM({angle:Math.round(Math.atan2(v[1],v[0])*180/Math.PI)});else if(dragM.kind==='gatex')setParamsM({input:v[0]});e.preventDefault();});
+function endDragM(){dragM=null}svgM.addEventListener('pointerup',endDragM);svgM.addEventListener('pointercancel',endDragM);
+svgM.addEventListener('keydown',e=>{if(e.code==='Space'){e.preventDefault();playM()}if(e.key==='ArrowRight'||e.key==='ArrowLeft'){e.preventDefault();pauseM();stateM.progress=clampM(stateM.progress+(e.key==='ArrowRight'?.05:-.05),0,1);drawM()}});
+document.querySelectorAll('.tab').forEach(tab=>tab.addEventListener('click',()=>{const active=tab.dataset.tab==='math-atlas';document.body.classList.toggle('math-mode',active);if(!active)pauseM();},true));
+document.addEventListener('click',e=>{const b=e.target.closest('[data-ma-from-spatial]');if(b){stateM.from=window.K3Spatial?.debug()?.operation;openMathM(sceneFromSpatialM());}});
+const legacyBridge=document.createElement('div');legacyBridge.className='sp-bridge';legacyBridge.innerHTML='<p><b>새로 추가된 수식의 기하학</b><br>지금 선택한 블록이 벡터·정보를 어떻게 바꾸는지 움직이는 그림으로 봅니다. 두 화면의 교육용 수치는 별개입니다.</p><button class="btn primary" data-ma-from-spatial="true">선택 블록의 수학 펼치기 ↗</button>';$m('spatial').querySelector('.sp-topcontrols').before(legacyBridge);
+const kimiBridge=document.createElement('div');kimiBridge.className='sp-bridge';kimiBridge.innerHTML='<p><b>공식만으로 이해하기 어렵다면</b><br>행렬곱·MLA·KDA·AttnRes·MoE를 직접 움직여 의미를 확인합니다.</p><button class="btn" id="ma-from-kimi">수식의 기하학 열기 ↗</button>';$m('kimi').querySelector('.k3-board').after(kimiBridge);$m('ma-from-kimi').addEventListener('click',()=>openMathM('linear'));
+function verifyM(){const cases=[];const check=(name,result)=>cases.push({name,pass:!!result});const close=(a,b,tol=1e-8)=>Math.abs(a-b)<tol;const equal=(a,b)=>a.length===b.length&&a.every((x,i)=>close(x,b[i]));
+check('임베딩 조회',equal(computeM('embedding',{token:2}).x,E[2]));check('항등행렬',equal(computeM('linear',{a:1,b:0,c:0,d:1,x:1.2,y:-.8}).y,[1.2,-.8]));check('직각 내적 0',Math.abs(computeM('dot',{theta:90,qn:1.8,kn:1.4,normalized:0}).raw)<1e-10);const att=computeM('attention',{angle:50,strength:3,mask:1});check('미래 Attention 0',att.a[2]===0);check('Attention 합 1',close(att.a.reduce((s,v)=>s+v,0),1));const kp={alpha1:.85,alpha2:.65,beta:1,theta:35,vx:1.15,vy:.85},kd=kdaM(kp);check('KDA beta=1 현재 Key 오차0',equal(kd.read,kd.v));const kz=kdaM({...kp,beta:0});check('KDA beta=0 쓰기 없음',equal(kz.next.flat(),kz.dec.flat()));const r=routeM([1.2,.5],.65,6,2);check('MoE 선택 수2',r.pick.length===2);check('MoE 비중 합1',close(r.weights.reduce((s,v)=>s+v,0),1));check('SiTU 내부 상한',[-100,-3,0,3,100].every(g=>[-100,0,100].every(u=>Math.abs(situM(g,u))<=100+1e-8)));const pr=[.5,.25,.15,.1],tp=topPM(pr,.7);check('Top-p 정확 경계',tp.ids.join(',')==='0,1');check('Top-p 합1',close(tp.filtered.reduce((s,v)=>s+v,0),1));const co={c0:.65,c1:.25,now:1.2,future:-.7,reverse:0};check('ShortConv 미래 차단',close(computeM('conv',co).out,computeM('conv',{...co,future:1.8}).out));check('연결 모형 기준 동일',equal(pipelineM(DEFAULT_PIPE).prob,baselinePipe.prob));check('연결 모형 게이트 효과',pipelineM({...DEFAULT_PIPE,gate:0}).prob.some((v,i)=>Math.abs(v-baselinePipe.prob[i])>1e-5));return cases;}
+window.K3Math={lessons:()=>LESSONS.map(l=>({...l})),pause:pauseM,play:playM,open:openMathM,setScene:setSceneM,setParams:setParamsM,preset:presetM,verify:verifyM,list:()=>LESSONS.map(l=>({id:l.id,title:l.title})),debug:()=>({scene:stateM.scene,params:{...currentParamsM()},progress:stateM.progress,playing:stateM.playing,data:JSON.parse(JSON.stringify(dataM)),controls:activeLessonM().controls.map(c=>({...c})),from:stateM.from}),compute:(id,p)=>computeM(id,p)};
+function animateM(now){if(stateM.playing&&activePanelM()){const dt=Math.min(100,now-stateM.last);stateM.progress=clampM(stateM.progress+dt/16500*stateM.speed,0,1);if(stateM.progress>=1)stateM.playing=false;if(now-frameM>32){drawM();frameM=now}}stateM.last=now;requestAnimationFrame(animateM)}
+document.addEventListener('visibilitychange',()=>stateM.last=performance.now());
+setSceneM('linear');openMathM('linear');requestAnimationFrame(animateM);
+
+})();
+</script>
+<script>
+/* Unified controller. Original numerical experiments remain independent. */
+(() => {
+ 'use strict';
+ const $ = id => document.getElementById(id);
+ const S = window.K3Spatial, M = window.K3Math;
+ if (!S || !M) { $('unified').innerHTML='<p>시각화 초기화에 실패했습니다. 페이지를 새로 열어 주세요.</p>'; return; }
+ const esc = v => String(v ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const lessons = M.lessons();
+ const byId = Object.fromEntries(lessons.map(l=>[l.id,l]));
+ const stages = k3Steps;
+ const state={mode:'math',scene:'kda',stage:5,service:false,busy:false,timer:null,expanded:false,lastSpatial:'',active:true};
+ const sceneStage={embedding:3,linear:5,norm:5,conv:5,dot:6,attention:6,latent:8,kda:5,gate:5,residual:7,moe:8,output:12,pipeline:10};
+ const stageScene={3:'embedding',5:'kda',6:'attention',7:'residual',8:'moe',10:'pipeline',11:'output',12:'output'};
+ const keyScene={embedding:'embedding',norm:'norm',q:'linear',k:'linear',v:'linear',qkv:'conv',state:'kda',read:'kda',attn:'attention',scores:'dot',weighted:'attention',cache:'latent',kv:'latent',latent:'latent',down:'latent',up:'latent',gate:'gate',depth:'residual',router:'moe',expert:'gate',shared:'moe',combine:'moe',dense:'gate',next:'pipeline',head:'output',sample:'output',tensor:'linear'};
+ const keyStep={input:0,tokens:2,hbm:9,l2:9,smem:9,peer:9,runtime:13,harness:14,detok:15,browser:16};
+ const panel = $('unified');
+ function move(node,target){if(typeof node==='string')node=document.querySelector(node);if(node)$(target).appendChild(node);}
+ // Reparent live elements rather than duplicate them; all original IDs and listeners remain valid.
+ move('#spatial','u-spatial-mount');
+ move('#math-atlas','u-math-mount');
+ move('#spatial .sp-under','u-settings-mount');
+ move('#spatial .sp-layerbar','u-settings-mount');
+ move('#ma-inspector','u-inspector-mount');
+ move('#ma-proof','u-proof-mount');
+ move('#math-atlas .ma-interpret','u-interpret-mount');
+ move('#sp-inspector','u-spatial-detail-mount');
+ move('#spatial .sp-bottom','u-spatial-detail-mount');
+ [...$('spatial').children].filter(n=>n.classList.contains('sp-card')).forEach(n=>move(n,'u-spatial-detail-mount'));
+ move('#spatial .sp-sourcebox','u-source-mount');
+ move('#math-atlas .ma-sources','u-source-mount');
+ move('#kimi','u-legacy-mount');
+ $('ma-play').textContent='▶ 수식 전개';
+ $('u-math-route').innerHTML=lessons.map((l,i)=>`<button type="button" data-u-scene="${l.id}" title="${esc(l.title)}"><span>${String(i+1).padStart(2,'0')}</span>${esc(l.nav)}</button>`).join('');
+ $('u-path-route').innerHTML=stages.map((s,i)=>`<button type="button" data-u-step="${i}" title="${esc(s.title)}"><span>${String(i+1).padStart(2,'0')}</span>${esc(s.name)}</button>`).join('');
+ function guard(fn){const previous=state.busy;state.busy=true;try{return fn();}finally{state.busy=previous;}}
+ function activate(){
+  document.body.classList.remove('math-mode','spatial-mode');document.body.classList.add('unified-mode');
+  document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',['unified','spatial','math-atlas'].includes(p.id)));
+  document.querySelectorAll('.tab').forEach(b=>{const on=b.dataset.tab==='unified';b.classList.toggle('active',on);b.setAttribute('aria-selected',String(on));});
+  state.active=true;requestAnimationFrame(()=>window.dispatchEvent(new Event('resize')));
+ }
+ function setMode(mode){state.mode=mode==='path'?'path':'math';$('u-math-route').hidden=state.mode!=='math';$('u-path-route').hidden=state.mode!=='path';document.querySelectorAll('[data-u-mode]').forEach(b=>{b.classList.toggle('active',b.dataset.uMode===state.mode);b.setAttribute('aria-pressed',String(b.dataset.uMode===state.mode))});updateNav();}
+ function stopTour(){if(state.timer)clearInterval(state.timer);state.timer=null;$('u-tour').textContent='▶ 처음부터 따라가기';}
+ function updateNav(){
+  document.querySelectorAll('[data-u-scene]').forEach(b=>{const a=!state.service&&b.dataset.uScene===state.scene;b.classList.toggle('active',a);b.setAttribute('aria-current',a?'step':'false');});
+  document.querySelectorAll('[data-u-step]').forEach(b=>{const a=+b.dataset.uStep===state.stage;b.classList.toggle('active',a);b.setAttribute('aria-current',a?'step':'false');});
+  const rail=$(state.mode==='math'?'u-math-route':'u-path-route'),btn=rail.querySelector('.active');
+  if(btn){const x=btn.offsetLeft-rail.offsetLeft;if(x<rail.scrollLeft||x+btn.offsetWidth>rail.scrollLeft+rail.clientWidth)rail.scrollLeft=Math.max(0,x-rail.clientWidth/2+btn.offsetWidth/2);}
+ }
+ function compactControls(){
+  const fields=[...$('ma-controls').children];fields.forEach((f,i)=>f.classList.toggle('u-secondary',i>=3));
+  $('u-math-card').classList.toggle('u-controls-expanded',state.expanded);
+  const n=Math.max(0,fields.length-3);
+  $('u-controls-toggle').hidden=state.service;
+  $('u-controls-toggle').textContent=state.expanded?'변수·비교 실험 접기':n?`추가 변수 ${n}개 · 비교 실험`:'비교 실험 펼치기';
+  $('u-controls-toggle').setAttribute('aria-expanded',String(state.expanded));
+ }
+ function syncSelected(){
+  const d=S.selection(),m=d.meta||{};
+  $('u-selected-name').textContent=m.name||d.operation||'연산';
+  $('u-selected-text').textContent=m.text||'';
+  const formula=String(m.formula||'').split('\n');$('u-selected-formula').textContent=formula.slice(0,3).join('\n');
+  $('u-stagepath').innerHTML=stages[state.stage].nodes.map((n,i)=>`${i?'<span>→</span>':''}<b>${esc(n)}</b>`).join('');
+  document.querySelectorAll('[data-u-view]').forEach(b=>{b.classList.toggle('active',b.dataset.uView===d.view);b.setAttribute('aria-pressed',String(b.dataset.uView===d.view));});
+  state.lastSpatial=[d.node,d.operation,d.layer].join(':');
+ }
+ function showLesson(id,{spatial=true,stage=null,gateMode=null}={}){
+  const l=byId[id]||byId.linear;state.scene=l.id;state.stage=stage===null?sceneStage[l.id]:stage;state.service=false;state.expanded=false;
+  guard(()=>{
+   M.setScene(l.id);
+   if(l.id==='gate'&&gateMode!==null)M.setParams({mode:gateMode});
+   const gateType=l.id==='gate'?M.debug().params.mode:0;
+   if(l.id==='gate'&&stage===null)state.stage=gateType?8:5;
+   if(spatial){
+    S.pause();S.goto(state.stage);
+    if(l.id==='output')S.focusOperation(state.stage===11?'head':'sample');
+    else if(l.id==='gate')S.focusOperation(gateType?'expert':'gate');
+    else if(l.id!=='pipeline')S.focusOperation(l.spatial);
+   }
+  });
+  $('u-math-mount').hidden=false;$('u-service').hidden=true;
+  $('u-how-label').textContent='HOW / 08';$('u-how-title').textContent='무엇이 어떻게 바뀌나?';
+  $('u-marker').textContent=`06 해설 ${String(state.stage+1).padStart(2,'0')} / 17 · ${stages[state.stage].name}  ↔  08 수식 ${String(lessons.indexOf(l)+1).padStart(2,'0')} / 13`;
+  $('u-lesson-title').textContent=l.title;$('u-lesson-lead').textContent=l.lead;
+  $('u-why').textContent=l.why;$('u-meaning').textContent=l.semantic;$('u-hardware').textContent=l.hardware;
+  compactControls();updateNav();syncSelected();
+ }
+ function showService(i,{spatial=true}={}){
+  state.stage=Math.max(0,Math.min(16,i));state.service=true;const st=stages[state.stage];
+  guard(()=>{M.pause();S.pause();if(spatial)S.goto(state.stage);});
+  $('u-math-mount').hidden=true;$('u-service').hidden=false;$('u-controls-toggle').hidden=true;
+  $('u-how-label').textContent='FLOW / 06';$('u-how-title').textContent='모델 안팎의 데이터 흐름';
+  $('u-marker').textContent=`06 해설 ${String(state.stage+1).padStart(2,'0')} / 17 · ${st.sub}  ↔  07 데이터 경로`;
+  $('u-lesson-title').textContent=st.title.replace(/^\d+\.\s*/,'');
+  $('u-lesson-lead').textContent='이 단계는 수식 연산만이 아니라, 데이터 구성·실행·통신 과정을 보여줍니다.';
+  $('u-service').innerHTML=`<span class="u-service-kind">${esc(st.kind)} / CONCEPTUAL FLOW</span><h3>${esc(st.name)}</h3><div class="u-service-diagram">${st.nodes.map((n,j)=>`${j?'<span class="u-service-arrow" aria-hidden="true">→</span>':''}<div class="u-service-node"><small>${['INPUT','PROCESS','OUTPUT'][j]}</small>${esc(n)}</div>`).join('')}</div><code>${esc(st.formula).replaceAll('\\n','\n')}</code><p>${esc(st.text)}</p><div class="u-service-note">개념도입니다. 실제 서버·도구 호출이나 네트워크 전송을 실행하지 않습니다. 각 단계의 소요 시간은 재현하지 않습니다.</div>`;
+  $('u-why').textContent=st.why.replace(/^왜 필요한가\?\s*/,'');$('u-meaning').textContent=st.quality.replace(/^품질:\s*/,'');$('u-hardware').textContent=st.hw;
+  updateNav();syncSelected();
+ }
+ function selectScene(id,options={}){if(!options.autoplay)stopTour();showLesson(id,options);}
+ function selectStage(i,options={}){i=Math.max(0,Math.min(16,i));if(!options.autoplay)stopTour();if(stageScene[i])showLesson(stageScene[i],{stage:i,spatial:options.spatial!==false});else showService(i,options);}
+ function nudge(delta){stopTour();if(state.mode==='path')selectStage((state.stage+delta+17)%17);else{const idx=lessons.findIndex(l=>l.id===state.scene);selectScene(lessons[(idx+delta+lessons.length)%lessons.length].id);}}
+ function spatialChanged(){
+  if(state.busy||!state.active)return;
+  const d=S.selection(),signature=[d.node,d.operation,d.layer].join(':');
+  if(signature===state.lastSpatial){syncSelected();return;}
+  stopTour();const op=d.operation;
+  if(keyScene[op])showLesson(keyScene[op],{spatial:false,stage:op==='gate'?(d.kind==='MLA'?6:5):(d.meta?.legacy??d.step),gateMode:op==='gate'?0:['expert','dense'].includes(op)?1:null});
+  else if(keyStep[op]!==undefined)showService(keyStep[op],{spatial:false});
+  else if(d.view==='model'&&String(d.node).startsWith('layer'))showLesson(d.kind==='MLA'?'attention':'kda',{spatial:false,stage:d.kind==='MLA'?6:5});
+  else syncSelected();
+ }
+ document.addEventListener('k3:spatial-change',spatialChanged);
+ document.addEventListener('k3:math-scene',e=>{if(state.busy||!state.active)return;stopTour();showLesson(e.detail.id);});
+ document.addEventListener('k3:math-values',()=>{
+  if(state.busy||!state.active||state.service||state.scene!=='gate')return;
+  const mode=M.debug().params.mode,d=S.selection(),op=mode?'expert':'gate';
+  if(d.operation===op)return;
+  state.stage=mode?8:(d.kind==='MLA'?6:5);
+  guard(()=>{S.goto(state.stage);S.focusOperation(op);});
+  const l=byId.gate;
+  $('u-marker').textContent=`06 해설 ${String(state.stage+1).padStart(2,'0')} / 17 · ${stages[state.stage].name}  ↔  08 수식 ${String(lessons.indexOf(l)+1).padStart(2,'0')} / 13`;
+  updateNav();syncSelected();
+ });
+
+ // Legacy tab/bridge links now open the same workspace rather than separate panels.
+ document.addEventListener('click',e=>{
+  const tab=e.target.closest('.tab');if(!tab)return;
+  if(['kimi','spatial','math-atlas'].includes(tab.dataset.tab)){
+   e.preventDefault();e.stopImmediatePropagation();activate();
+   if(tab.dataset.tab==='kimi'){selectStage(k3Index);$('u-legacy-detail').open=true;}
+   else if(tab.dataset.tab==='math-atlas')showLesson(M.debug().scene);
+   else syncSelected();
+  }
+ },true);
+ document.querySelectorAll('.tab').forEach(tab=>tab.addEventListener('click',()=>{
+  if(tab.dataset.tab==='unified'){activate();}
+  else if(!['kimi','spatial','math-atlas'].includes(tab.dataset.tab)){
+   state.active=false;stopTour();M.pause();S.pause();document.body.classList.remove('unified-mode');
+  }
+ }));
+ panel.addEventListener('click',e=>{
+  const scene=e.target.closest('[data-u-scene]');if(scene){selectScene(scene.dataset.uScene);return;}
+  const step=e.target.closest('[data-u-step]');if(step){selectStage(+step.dataset.uStep);return;}
+  const mode=e.target.closest('[data-u-mode]');if(mode){setMode(mode.dataset.uMode);return;}
+  const view=e.target.closest('[data-u-view]');if(view){
+   stopTour();guard(()=>{S.setView(view.dataset.uView);if(view.dataset.uView==='hardware')S.focusOperation(state.service?{0:'input',9:'peer',13:'runtime',14:'harness',15:'detok',16:'browser'}[state.stage]||'tensor':'tensor');else if(view.dataset.uView==='layer'&&!state.service)S.focusOperation(byId[state.scene].spatial);});syncSelected();
+  }
+ });
+ $('u-prev').addEventListener('click',()=>nudge(-1));$('u-next').addEventListener('click',()=>nudge(1));
+ $('u-controls-toggle').addEventListener('click',()=>{state.expanded=!state.expanded;compactControls();});
+ $('u-tour').addEventListener('click',()=>{
+  if(state.timer){stopTour();return;}setMode('path');selectStage(0,{autoplay:true});$('u-tour').textContent='Ⅱ 전체 흐름 멈추기';
+  state.timer=setInterval(()=>{if(state.stage>=16){stopTour();return;}selectStage(state.stage+1,{autoplay:true});},6500);
+ });
+ $('u-details-button').addEventListener('click',()=>{const target=state.service?$('u-legacy-detail'):$('u-math-detail');target.open=true;target.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth',block:'start'});});
+ // When navigating to a new operation, detailed content follows it as well.
+ document.addEventListener('visibilitychange',()=>{if(document.hidden){stopTour();M.pause();}});
+ window.K3Unified={
+  openScene(id){activate();setMode('math');selectScene(id);},
+  openStage(i){activate();setMode('path');selectStage(Number.isInteger(i)?i:state.stage);},
+  openSpatial(i){activate();if(Number.isInteger(i))selectStage(i);else syncSelected();},
+  debug:()=>({mode:state.mode,scene:state.scene,stage:state.stage,service:state.service,busy:state.busy,playing:!!state.timer,active:state.active,spatial:S.selection(),math:M.debug().scene}),
+  verify:()=>({mathTests:M.verify(),hasOneCanvas:document.querySelectorAll('#sp-canvas').length===1,hasOneMath:document.querySelectorAll('#ma-svg').length===1}),
+ };
+ guard(()=>{S.pause();M.pause();});activate();setMode('math');showLesson('kda');
+ requestAnimationFrame(()=>{window.scrollTo(0,0);$('primary-tabs').scrollLeft=$('primary-tabs').scrollWidth;window.dispatchEvent(new Event('resize'));});
+})();
+
+</script>
 </body>
 </html>

@@ -8,17 +8,23 @@ tags = ["LLM", "Transformer", "GPU", "Attention", "MoE", "KV Cache"]
 wide_content = true
 +++
 
-## LLM 전체 구조 시각화 — Kimi K3 사례
+## LLM 전체 구조와 수식 통합 실험실 — Kimi K3 사례
 
-전체 93층과 각 층의 연산을 탐색할 수 있습니다. 구조는 모델별 사례이며, 내부 숫자 실험은 교육용 축소 계산입니다.
+전체 모델의 입체 구조, 수식의 변화, 계산의 목적을 한 화면에서 연결해 탐색합니다. **연산을 선택하면 구조도·수식·해설이 함께 바뀝니다.**
 
-[전체 모델 시각화를 큰 화면으로 열기 →](/interactive/llm-spatial-explorer/)
+[통합 실험실을 큰 화면으로 열기 →](/interactive/llm-spatial-explorer/)
 
 {{< rawhtml >}}
-<iframe src="/interactive/llm-spatial-explorer/" title="LLM 전체 구조 시각화 — Kimi K3 사례" loading="eager" allowfullscreen style="display:block;width:100%;height:900px;max-height:90vh;min-height:680px;border:1px solid #30465d;border-radius:12px;background:#080d17;margin:20px 0 36px;"></iframe>
+<iframe src="/interactive/llm-spatial-explorer/" title="LLM 전체 구조와 수식 통합 실험실 — Kimi K3 사례" loading="eager" allowfullscreen style="display:block;width:100%;height:900px;max-height:90vh;min-height:680px;border:1px solid #30465d;border-radius:12px;background:#080d17;margin:20px 0 36px;"></iframe>
 {{< /rawhtml >}}
 
-이 원본 시각화의 전체 모델 지도·회전·층 선택·GPU/하네스 보기와 수치 실험을 그대로 탐색할 수 있습니다. 실제 가중치나 내부 활성값을 실행·측정하는 화면은 아니며, 숫자 실험은 대표 한 층·단일 헤드·8차원으로 축소되어 있습니다.
+### 이렇게 탐색하세요
+
+- **전체 모델에서 위치 찾기:** 구조 보기의 ‘전체’를 누르면 93층 지도를 볼 수 있습니다. ‘한 층’과 ‘GPU’로 전환해 계산 구조와 하드웨어 관점을 비교하고, ‘층·토큰·입력 예시 조절’에서 대상을 바꿉니다.
+- **수식의 변화 살펴보기:** ‘핵심 연산 13개’에서 연산을 고르고 ‘수식 전개’를 재생합니다. 슬라이더를 움직이면 해당 수식의 축소 계산과 시각적 변화가 함께 갱신됩니다. ‘수식의 기호 · 숫자 전개 · 연산의 상세 의미’를 펼치면 계산 근거를 더 자세히 볼 수 있습니다.
+- **요청부터 응답까지 따라가기:** ‘요청 → 응답 17단계’ 또는 ‘처음부터 따라가기’로 모델 계산과 메모리·통신·하네스의 역할을 연결해서 봅니다. 13개 연산 목록은 실제 실행 순서를 뜻하지 않습니다.
+
+구조는 Kimi K3의 모델별 사례입니다. **실제 가중치를 실행하거나 내부 활성값을 측정하는 화면은 아닙니다.** 입체도의 8차원 모형과 수식 기하학의 축소 모형은 서로 다른 예시이며, 수식 쪽 슬라이더는 그쪽 계산만 바꿉니다. 연산 위치와 해설의 연결을 살펴보되 두 모형의 숫자가 같다고 해석하지 않아야 합니다. 모바일에서는 큰 화면 링크로 열면 탐색하기 편합니다.
 
 ## 범용 동작 원리
 
