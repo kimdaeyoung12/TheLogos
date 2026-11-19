@@ -1,26 +1,26 @@
 begin;
 create schema if not exists yeobaek_private;
 revoke all on schema yeobaek_private from public, anon, authenticated;
-create table yeobaek_private.settings (
+create table if not exists yeobaek_private.settings (
   singleton boolean primary key default true check (singleton),
   salt uuid not null default gen_random_uuid()
 );
-insert into yeobaek_private.settings default values;
-create table yeobaek_private.dreams (
+insert into yeobaek_private.settings default values on conflict do nothing;
+create table if not exists yeobaek_private.dreams (
   request_id uuid primary key,
   notebook bytea not null,
   source_bucket bytea not null,
   body text not null check (char_length(body) between 5 and 400),
   created_at timestamptz not null default now()
 );
-create index on yeobaek_private.dreams (created_at);
-create index on yeobaek_private.dreams (notebook,created_at desc);
-create index on yeobaek_private.dreams (source_bucket,created_at desc);
+create index if not exists yeobaek_dreams_date on yeobaek_private.dreams (created_at);
+create index if not exists yeobaek_dreams_notebook on yeobaek_private.dreams (notebook,created_at desc);
+create index if not exists yeobaek_dreams_bucket on yeobaek_private.dreams (source_bucket,created_at desc);
 alter table yeobaek_private.dreams enable row level security;
 alter table yeobaek_private.settings enable row level security;
 revoke all on all tables in schema yeobaek_private from public, anon, authenticated;
 
-create function public.yeobaek_save(book_key text, entry_id uuid, dream text, website text default '')
+create or replace function public.yeobaek_save(book_key text, entry_id uuid, dream text, website text default '')
 returns text language plpgsql security definer set search_path = '' as $$
 declare
   msg text := btrim(dream);
@@ -47,7 +47,7 @@ begin
   insert into yeobaek_private.dreams(request_id,notebook,source_bucket,body) values(entry_id,owner_hash,bucket,msg);
   return 'saved';
 end $$;
-create function public.yeobaek_read(book_key text)
+create or replace function public.yeobaek_read(book_key text)
 returns table(body text, created_at timestamptz)
 language sql stable security definer set search_path='' as $$
  select d.body,d.created_at from yeobaek_private.dreams d
