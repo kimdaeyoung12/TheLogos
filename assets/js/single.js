@@ -126,6 +126,7 @@
         initArticleSharing();
     }
 
+    window.addEventListener('articleContentReady',initArticlePage);
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', initArticlePage, { once: true });
     } else {

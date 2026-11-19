@@ -247,6 +247,5 @@
 {{- $single_css := resources.Get "css/single.css" | minify | fingerprint -}}
 <link rel="stylesheet" href="{{ $single_css.Permalink }}" integrity="{{ $single_css.Data.Integrity }}">
 
-{{- $single_js := resources.Get "js/single.js" | minify | fingerprint -}}
-<script src="{{ $single_js.Permalink }}" integrity="{{ $single_js.Data.Integrity }}"></script>
+
 {{ end }}

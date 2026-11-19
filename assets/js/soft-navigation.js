@@ -156,6 +156,7 @@
                 }
             }
 
+            window.dispatchEvent(new Event('articleContentReady'));
             await reinitializePageScripts();
 
             requestAnimationFrame(() => {

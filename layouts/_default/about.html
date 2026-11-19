@@ -51,6 +51,5 @@
 <link rel="stylesheet" href="/css/about-3d.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="/js/about-3d.js"></script>
-{{- $single_js := resources.Get "js/single.js" | minify | fingerprint -}}
-<script src="{{ $single_js.Permalink }}" integrity="{{ $single_js.Data.Integrity }}"></script>
+
 {{ end }}

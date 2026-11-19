@@ -226,6 +226,8 @@
     {{- $tilt := resources.Get "js/tilt-3d.js" | fingerprint }}
     <script src="{{ $tilt.Permalink }}"></script>
 
+{{- $single_js := resources.Get "js/single.js" | minify | fingerprint -}}
+<script src="{{ $single_js.Permalink }}" integrity="{{ $single_js.Data.Integrity }}"></script>
     {{- /* Soft Navigation */}}
     {{- $soft_nav := resources.Get "js/soft-navigation.js" | fingerprint }}
     <script src="{{ $soft_nav.Permalink }}" integrity="{{ $soft_nav.Data.Integrity }}"></script>
