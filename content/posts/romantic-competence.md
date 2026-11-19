@@ -2,11 +2,12 @@
 title = "사랑은 감정이 아니라, 연습되는 역량이기도 하다"
 date = 2026-07-11T00:00:00+09:00
 draft = false
+image = "/images/posts/romantic-competence-cover.jpg"
 slug = "romantic-competence"
 categories = ["writing"]
 tags = ["사랑", "관계", "로맨틱 역량", "감정 조절", "상호성"]
 mentions = ["Joanne Davila", "Romantic Competence", "Insight", "Mutuality", "Emotion Regulation"]
-description = "통찰력, 상호성, 감정 조절이라는 세 가지 로맨틱 역량을 통해 건강한 관계를 함께 연습하는 방법을 돌아본다."
+description = "갈등 속에서 내 감정을 알아차리고 상대의 입장을 묻는 연습을 통해, 오래가는 관계의 조건을 살펴봅니다."
 summary = "좋은 관계는 우연히 완성되지 않는다. 통찰력, 상호성, 감정 조절을 함께 익히는 과정 속에서 사랑은 더 깊어진다."
 audio = "/audio/room-to-return-b2-19c0a318b99d.mp3"
 audio_title = "Room to Return — 돌아올 여백"

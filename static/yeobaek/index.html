@@ -1,14 +1,16 @@
 <!doctype html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#0c382c">
-<title>꿈 노트 · 여백 | The Logos</title><meta name="description" content="당신의 공백을 꿈으로 채우세요. 돌아와 읽고 싶은 꿈을 한 문장으로 남기는 여백의 비공개 노트.">
-<link rel="stylesheet" href="dream.css"><script src="dream.js" defer></script></head>
-<body><header><a href="/">THE LOGOS</a><a href="#start">여백의 시작 글</a></header>
-<main><section class="hero"><img src="mark.png" width="78" height="78" alt="여백"><h1>당신의 공백을<br>꿈으로 채우세요</h1><p>언젠가 해 보고 싶은 일 하나와,<br>그쪽으로 내일 내디딜 작은 걸음을 적어 보세요.</p></section>
+<title>꿈 노트 · 여백 | The Logos</title><meta name="description" content="당신의 공백을 꿈으로 채우세요. 내 꿈을 비공개로 기록하고, 함께 나눈 꿈을 주제별로 읽어 보세요.">
+<link rel="stylesheet" href="dream.css"><link rel="stylesheet" href="atlas.css"><script src="dream.js" defer></script><script src="territories.js" defer></script><script src="atlas.js" defer></script></head>
+<body><header><a href="/">THE LOGOS</a><a href="#atlas">함께 나눈 꿈 ↓</a></header>
+<main><section class="hero"><img src="mark.png" width="78" height="78" alt="여백"><h1>당신의 공백을<br>꿈으로 채우세요</h1><p>언젠가 해 보고 싶은 일 하나와,<br>그쪽으로 내일 내디딜 작은 걸음을 적어 보세요.</p><div class="hero-actions"><a href="#write">내 꿈 쓰기</a><a href="#atlas">꿈 지도 둘러보기 ↓</a></div></section>
+<section id="atlas" class="sheet" aria-labelledby="atlas-title"><h2 id="atlas-title">함께 나눈 꿈</h2><p>같은 주제로 공개한 꿈이 많을수록 그 주제의 땅이 넓어집니다. 지도에서 한 곳을 골라 그 안의 꿈을 읽어 보세요.</p>
+<div id="atlas-map">꿈 지도를 불러오는 중입니다.</div><div id="topic-chart" role="group" aria-label="주제별 공개 꿈 수"></div><p id="atlas-status" role="status"></p><ul id="gallery"></ul><button id="more-dreams" hidden>다음 꿈 12개 보기</button><button id="atlas-refresh">다시 불러오기</button><noscript>꿈 지도를 보려면 자바스크립트를 켜 주세요.</noscript></section>
 <section class="sheet" aria-labelledby="write"><h2 id="write">내 꿈 한 줄</h2>
 <form><label for="dream">어떤 하루를 만들어 보고 싶나요?</label><textarea id="dream" required minlength="5" maxlength="400" rows="4" placeholder="언젠가 동네에 작은 책방을 열고 싶다. 토요일엔 좋아하는 책 세 권으로 친구를 초대해야지."></textarea>
 <div class="trap" aria-hidden="true"><label>Website<input id="website" tabindex="-1" autocomplete="off"></label></div>
 <div class="actions"><small id="count">0 / 400</small><button type="submit">내 꿈 저장하기</button></div>
-<p class="fine">로그인 없이 저장됩니다. 다른 방문자에게는 공개되지 않으며 사이트 운영자는 저장소를 관리합니다. 같은 브라우저에서 다시 읽을 수 있어요. 브라우저 데이터를 지우면 이 노트에 다시 접근할 수 없습니다. 이름과 연락처는 적지 마세요.</p>
+<p class="fine">로그인 없이 저장됩니다. 처음에는 나만 볼 수 있습니다. 저장 후 직접 공개한 문장만 꿈 지도에 표시됩니다. 사이트 운영자는 저장소를 관리합니다. 같은 브라우저에서 다시 읽을 수 있어요. 브라우저 데이터를 지우면 이 노트에 다시 접근할 수 없습니다. 이름과 연락처는 적지 마세요.</p>
 <p id="status" role="status"></p></form><noscript>꿈을 저장하려면 자바스크립트를 켜 주세요.</noscript>
 <h2>내가 남긴 꿈</h2><p id="history-status" role="status">노트를 불러오는 중입니다.</p><div id="entries"></div></section>
 <article id="start"><small>여백의 시작 글</small><h2>답장을 지우고 나서 생긴 자리</h2>

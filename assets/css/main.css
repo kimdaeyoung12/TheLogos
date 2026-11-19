@@ -151,3 +151,17 @@ html:not(.dark) .header {
     .d-desktop-none { display: none !important; }
     .d-mobile-block { display: block !important; }
 }
+
+
+*,*::before,*::after{box-sizing:border-box}
+body{font-family:var(--font-family-base)}
+.header .nav>div,.header .nav>div>a,#menu{display:flex;align-items:center;gap:1rem}
+.header .nav a{text-decoration:none;color:inherit}
+.header .nav h2{margin:0;font:700 1.25rem/1.2 system-ui;white-space:nowrap}
+.header button{background:transparent;color:inherit;border:1px solid var(--border-color);border-radius:6px;cursor:pointer;min-height:38px}
+.header .nav>div:first-child .material-symbols-outlined{display:none}
+.header .mobile-menu-toggle .material-symbols-outlined{display:none}
+#mobile-menu {background:var(--bg-secondary);color:var(--text-primary);padding:1rem 1.5rem;gap:1rem}
+#mobile-menu a{color:inherit}
+@media(max-width:767px){#menu,#network-btn,#subscribe-btn{display:none}.header .nav{padding:0 12px}.header .nav>div{gap:6px}}
+@media(min-width:768px){#mobile-menu-toggle{display:none}}

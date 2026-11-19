@@ -2,6 +2,7 @@
 title = "토큰에서 답변까지: LLM의 계산과 GPU 데이터 흐름"
 date = 2026-10-29T11:05:00+09:00
 draft = false
+image = "/images/posts/llm-computation-gpu-data-flow-cover.jpg"
 description = "토큰화·Attention·MoE·KV 캐시를 GPU 메모리와 서비스 실행의 관점으로 구분해 이해하는 LLM 추론 안내서."
 categories = ["engineering"]
 tags = ["LLM", "Transformer", "GPU", "Attention", "MoE", "KV Cache"]

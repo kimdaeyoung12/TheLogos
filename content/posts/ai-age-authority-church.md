@@ -5,7 +5,7 @@ draft = false
 categories = ["religion"]
 tags = ["AI", "교회", "진리", "권위", "해석"]
 mentions = ["Logos", "Church", "Artificial Intelligence", "Authority", "Chaos"]
-description = "AI가 성경 해석과 지식 생산의 도구가 되는 시대에, 교회가 권위의 기준을 어디에 두어야 하는지 묻습니다."
+description = "설교와 해석에 AI가 참여할 때, 교회가 답변을 검토하고 책임질 기준을 성경과 공동체 안에서 찾습니다."
 +++
 
 {{< ai_summary >}}

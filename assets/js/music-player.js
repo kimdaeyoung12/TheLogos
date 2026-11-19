@@ -26,7 +26,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let isDragging = false;
     let playlist = [];
     let currentIndex = 0;
-    let hasAutoplayStarted = false;
     let isInitialized = false;
 
     // --- 1. Data Initialization ---
@@ -148,6 +147,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Audio Events
     audio.addEventListener('play', () => {
+        playerContainer.hidden = false;
+        document.body.classList.add('audio-active');
         isPlaying = true;
         updateUIState(true);
         localStorage.setItem('music-player-index', currentIndex);
@@ -173,13 +174,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     audio.addEventListener('ended', () => {
-        if (playlist.length > 1) {
-            playNext();
-        }
-    });
-
-    audio.addEventListener('error', (e) => {
-        console.warn("Audio error encountered, skipping to next track", e);
         if (playlist.length > 1) {
             playNext();
         }
@@ -247,20 +241,17 @@ document.addEventListener('DOMContentLoaded', () => {
     async function playAudio() {
         try {
             await audio.play();
-            hasAutoplayStarted = true;
             playerContainer.classList.remove('awaiting-interaction');
-            removeFallbackListeners();
+
         } catch (error) {
+            if (error.name === 'AbortError') return;
             if (error.name !== 'NotAllowedError') {
                 console.warn("Playback prevented:", error);
             }
             isPlaying = false;
             updateUIState(false);
 
-            if (!hasAutoplayStarted) {
-                playerContainer.classList.add('awaiting-interaction');
-                addFallbackListeners();
-            }
+            window.location.assign(audio.src);
         }
     }
 
@@ -321,52 +312,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     isInitialized = true;
 
-    // Initial Autoplay Attempt
-    setTimeout(() => {
-        if (playerContainer.style.display !== 'none' && !isPlaying) {
-            playAudio();
-        }
-    }, 800);
-
-    // --- 5. Fallback Interaction Handling ---
-    function onUserInteraction() {
-        if (!hasAutoplayStarted && !isPlaying) {
-            playAudio();
-        }
-    }
-
-    function addFallbackListeners() {
-        ['click', 'touchstart', 'keydown', 'scroll'].forEach(evt =>
-            document.addEventListener(evt, onUserInteraction, { once: true, passive: true })
-        );
-    }
-
-    function removeFallbackListeners() {
-        ['click', 'touchstart', 'keydown', 'scroll'].forEach(evt =>
-            document.removeEventListener(evt, onUserInteraction)
-        );
-    }
-
-    addFallbackListeners();
-
-    // --- 7. Soft Navigation Support ---
-    window.addEventListener('softNavigate', (e) => {
-        const { playerData } = e.detail;
-        if (!playerData || !playerData.initialAudio) return;
-
-        const initialAudio = playerData.initialAudio;
-        if (playlist.length > 0) {
-            const cleanPath = (p) => p.replace(/^\/?(audio\/)?/, '').replace(/^\//, '');
-            const target = cleanPath(initialAudio);
-            const foundIndex = playlist.findIndex(track => cleanPath(track.audio) === target);
-
-            if (foundIndex !== -1 && foundIndex !== currentIndex) {
-                console.log(`Soft navigation to new track: ${initialAudio}`);
-                loadTrack(foundIndex, true);
-            }
-        }
+    document.addEventListener('click', event => {
+        const link = event.target.closest('a[data-play-track]');
+        if (!link || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+        const idx = playlist.findIndex(track => track.audio === link.dataset.playTrack);
+        if (idx < 0) return;
+        event.preventDefault();
+        loadTrack(idx, true);
     });
-
     if (playlist.length > 1) {
         audio.loop = false;
     }

@@ -20,6 +20,7 @@ async function refresh() {
     });
     byId("entries").replaceChildren(...notes);
     byId("history-status").textContent = notes.length ? "최근 기록부터 최대 100개를 보여 드립니다." : "첫 꿈을 기다리고 있어요.";
+    try { await sharingControls(notes); } catch { byId("history-status").textContent += " 공개 설정을 불러오지 못했습니다."; }
   } catch { byId("history-status").textContent = "기록을 불러오지 못했습니다. 잠시 후 새로고침해 주세요."; }
 }
 input.oninput = () => { byId("count").textContent = input.value.length + " / 400"; };
@@ -29,7 +30,7 @@ try {
     book = Array.from(crypto.getRandomValues(new Uint8Array(32)), n=>n.toString(16).padStart(2,"0")).join("");
     localStorage.setItem("yeobaek-notebook-v1",book);
   }
-  refresh();
+  window.addEventListener("DOMContentLoaded",refresh);
 } catch { button.disabled=true; byId("history-status").textContent="이 브라우저에서 사이트 저장 공간을 허용한 뒤 다시 열어 주세요."; }
 form.onsubmit = async event => {
   event.preventDefault(); if(button.disabled)return;

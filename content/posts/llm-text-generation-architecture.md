@@ -1,6 +1,7 @@
 +++
 title = "LLM 텍스트 생성 아키텍처"
 date = 2026-05-13T21:23:50+09:00
+description = "문장을 토큰으로 나누는 순간부터 다음 단어가 선택되기까지, 어텐션과 KV 캐시가 맡는 일을 따라갑니다."
 draft = false
 categories = ["engineering"]
 tags = ["LLM", "Architecture", "Transformer", "Machine Learning", "NLP"]

@@ -7,7 +7,7 @@
 {{ $playlist = $playlist | append (dict "title" $songTitle "audio" $audioPath "link" .RelPermalink) }}
 {{ end }}
 
-<div id="music-player" class="music-player-bar glass-bar" tabindex="0" aria-label="Music player"
+<div hidden id="music-player" class="music-player-bar glass-bar" tabindex="0" aria-label="Music player"
     data-playlist='{{ $playlist | jsonify }}' {{ if .Params.audio
     }}data-initial-audio="{{ .Params.audio }}" {{ end }}>
 
@@ -90,7 +90,7 @@
         <ul id="playlist-list"></ul>
     </div>
 
-    <audio id="bgm-audio" preload="auto" loop>
+    <audio id="bgm-audio" preload="none" loop>
         <source src="" type="audio/mpeg">
     </audio>
 </div>

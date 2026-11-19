@@ -41,6 +41,7 @@
 
             // Skip if it has a file extension that isn't HTML (e.g., .pdf, .zip)
             const path = url.pathname;
+            if (/^\/(yeobaek|christiandays-app)\//.test(path) || path.endsWith('.xml')) return false;
             const nonHtmlExtensions = /\.(pdf|zip|png|jpg|jpeg|gif|svg|mp3|mp4|doc|docx|xls|xlsx)$/i;
             if (nonHtmlExtensions.test(path)) return false;
 
@@ -139,6 +140,7 @@
             // by the html element, so navigation cannot restore a stale body theme.
             document.title = title;
             document.body.className = bodyClass;
+            if (document.querySelector('#music-player:not([hidden])')) document.body.classList.add('audio-active');
 
             // Update URL
             if (pushState) {

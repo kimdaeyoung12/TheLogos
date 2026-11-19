@@ -6,7 +6,7 @@ slug = "vla-token-flow"
 categories = ["engineering"]
 tags = ["VLA", "Vision-Language-Action", "LLM", "Transformer", "KV Cache", "Robotics", "Token Flow"]
 mentions = ["OpenVLA", "RT-2", "PaLM-E", "RMSNorm", "KV Cache", "Transformer"]
-description = "LLM과 VLA의 입력·출력 차이를 토큰 흐름, Transformer layer, Norm, Attention, KV cache, action decoding 관점에서 비교하는 인터랙티브 시각화다."
+description = "카메라 영상과 언어 지시가 로봇의 행동 토큰으로 바뀌는 과정을 단계별로 펼쳐 봅니다."
 summary = "LLM과 VLA의 입력·출력 차이를 토큰 흐름, Transformer layer, Norm, Attention, KV cache, action decoding 관점에서 비교한다."
 wide_content = true
 +++

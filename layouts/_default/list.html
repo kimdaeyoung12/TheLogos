@@ -14,23 +14,23 @@
 
 <section class="archive-page">
     <header class="archive-hero">
-        <p class="archive-eyebrow">The Logos Archive</p>
-        <h1>Articles</h1>
+        <p class="archive-eyebrow">The Logos</p>
+        <h1>전체 글</h1>
         <p class="archive-lead">
             신학, 철학, 공학, 짧은 산문을 하나의 지식 지도처럼 탐색합니다. 글의 주제와 태그,
             AI 요약, 인터랙티브 해설 여부를 먼저 보고 깊게 들어갈 수 있습니다.
         </p>
 
         <form class="archive-search" role="search" onsubmit="return false;">
-            <label class="sr-only" for="search-input">Search articles</label>
+            <label class="sr-only" for="search-input">글 검색</label>
             <span aria-hidden="true">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <circle cx="11" cy="11" r="8"></circle>
                     <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                 </svg>
             </span>
-            <input type="search" id="search-input" placeholder="Search by title, tag, idea..." autocomplete="off">
-            <button type="button" id="search-clear" class="archive-search__clear" hidden aria-label="Clear search">
+            <input type="search" id="search-input" placeholder="제목·소개·태그로 검색" autocomplete="off">
+            <button type="button" id="search-clear" class="archive-search__clear" hidden aria-label="검색어 지우기">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <line x1="18" y1="6" x2="6" y2="18"></line>
                     <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -39,7 +39,7 @@
         </form>
     </header>
 
-    <nav class="archive-filters" aria-label="Article categories">
+    <nav class="archive-filters" aria-label="분야 선택">
         <button class="archive-filter is-active filter-btn" type="button" data-category="all">
             <span class="archive-filter__icon" aria-hidden="true">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -48,8 +48,8 @@
                 </svg>
             </span>
             <span>
-                <strong>All</strong>
-                <small>{{ len $posts }} essays</small>
+                <strong>전체</strong>
+                <small>{{ len $posts }}편</small>
             </span>
         </button>
 
@@ -93,7 +93,7 @@
         {{- $hasAiSummary := in .RawContent "ai_summary" -}}
         {{- $hasInteractive := in .RawContent "interactiveframe" -}}
         <article class="archive-card timeline-item" data-category="{{ $category }}"
-            data-search="{{ printf "%s %s %s %s" .Title (.Summary | plainify) $tagText $catName | lower | htmlEscape }}"
+            data-search="{{ printf "%s %s %s %s" .Title (partial "card-description.html" .) $tagText $catName | lower | htmlEscape }}"
             style="--cat-color: {{ $catColor }};">
             <div class="archive-card__topline"></div>
             <div class="archive-card__meta">
@@ -103,15 +103,12 @@
             <h2 class="archive-card__title">
                 <a href="{{ .RelPermalink }}">{{ .Title }}</a>
             </h2>
-            <p class="archive-card__field">
-                {{- with $detail -}}{{ .line }}{{- else -}}Essay from The Logos archive.{{- end -}}
-            </p>
-            <p class="archive-card__summary">{{ .Summary | plainify | htmlUnescape | truncate 156 }}</p>
+            <p class="archive-card__summary">{{ partial "card-description.html" . }}</p>
 
             <div class="archive-card__signals" aria-label="Article signals">
-                {{- if $hasAiSummary -}}<span>AI Summary</span>{{- end -}}
-                {{- if $hasInteractive -}}<span>Interactive</span>{{- end -}}
-                <span>{{ .ReadingTime }} min</span>
+                {{- if $hasAiSummary -}}<span>AI 요약</span>{{- end -}}
+                {{- if $hasInteractive -}}<span>인터랙티브</span>{{- end -}}
+                <span>{{ with .Params.experience_minutes }}체험 약 {{ . }}분{{ else }}읽기 {{ .ReadingTime }}분{{ end }}</span>
             </div>
 
             {{- with .Params.tags }}
@@ -126,8 +123,8 @@
     </div>
 
     <div id="archive-empty" class="archive-empty" hidden>
-        <p>No matching articles.</p>
-        <button type="button" id="archive-reset">Reset filters</button>
+        <p>조건에 맞는 글이 없습니다.</p>
+        <button type="button" id="archive-reset">검색 조건 지우기</button>
     </div>
 </section>
 

@@ -282,3 +282,5 @@ body {
         transition: none;
     }
 }
+
+#music-player[hidden]{display:none!important}body.audio-active{padding-bottom:110px}html:has(body.audio-active){scroll-padding-bottom:110px}

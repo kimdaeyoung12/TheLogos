@@ -100,7 +100,7 @@ for (const scenario of ['new-deployment', 'db-reset', 'existing-upgrade']) {
          'admin_profiles:DELETE','admin_profiles:INSERT','admin_profiles:SELECT','admin_profiles:UPDATE',
          'prayer_requests:INSERT','prayer_requests:SELECT'].map(s => { const [relname,op]=s.split(':');return {relname,op}; }));
     }
-    for (const test of ['retreat_prayer_security.test.sql','retreat_prayer_event_quota.test.sql','retreat_prayer_grants.test.sql']) {
+    for (const test of ['retreat_prayer_security.test.sql','retreat_prayer_event_quota.test.sql','retreat_prayer_grants.test.sql','yeobaek_sharing.test.sql']) {
       try { await db.exec(await read('supabase/tests/' + test)); }
       catch(e) { throw new Error(`${scenario}/${test}: ${e.message}`, {cause:e}); }
     }

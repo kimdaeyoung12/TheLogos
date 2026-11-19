@@ -1,0 +1,18 @@
+feature = "romantic-competence"
+question = "좋은 관계는 어떻게 오래 이어질까?"
+video = "https://www.youtube.com/watch?v=FI7q3GdZOZQ"
+
+[[paths]]
+question = "AI는 어떻게 계산하고, 어디에서 멈출까?"
+posts = ["llm-computation-gpu-data-flow", "vla-token-flow", "ai-laser-ontological-tearing"]
+reasons = ["문장이 한 토큰씩 만들어지는 계산을 따라갑니다.", "같은 계산이 로봇의 행동으로 이어지는 과정을 봅니다.", "계산을 넘어 지능이 자기 판단을 돌아볼 수 있는지 묻습니다."]
+
+[[paths]]
+question = "불확실한 세계에서 무엇을 믿을 수 있을까?"
+posts = ["random_walk", "kalman_filter", "deflated_sharpe_ratio"]
+reasons = ["동전 던지기 같은 우연이 남기는 패턴을 봅니다.", "잡음이 섞인 관측으로 현재 위치를 추정합니다.", "여러 번의 실험에서 우연히 나온 좋은 결과를 구별합니다."]
+
+[[paths]]
+question = "신앙은 오늘의 기술과 공동체를 어떻게 읽을까?"
+posts = ["christian-history-flow", "ai-age-authority-church", "algorithmic-age-christian-community"]
+reasons = ["시대마다 교회가 무엇을 고백했는지 살펴봅니다.", "AI가 답하는 시대에 해석의 권위가 어디에 있는지 묻습니다.", "추천 알고리즘 속에서 공동체가 판단하는 방식을 생각합니다."]

@@ -14,11 +14,11 @@
         <!-- Desktop Nav -->
         <nav id="menu" class="hidden md:flex items-center gap-8">
             <a class="text-sm font-medium hover:text-design-primary transition-colors text-gray-700 dark:text-gray-300 drop-shadow-sm"
-                href="{{ "" | absLangURL }}">Home</a>
+                href="{{ "" | absLangURL }}">홈</a>
             <a class="text-sm font-medium hover:text-design-primary transition-colors text-gray-700 dark:text-gray-300 drop-shadow-sm"
-                href="{{ "posts/" | absLangURL }}">Articles</a>
+                href="{{ "posts/" | absLangURL }}">글 검색</a>
             <a class="text-sm font-medium hover:text-design-primary transition-colors text-gray-700 dark:text-gray-300 drop-shadow-sm"
-                href="{{ "about/" | absLangURL }}">About</a>
+                href="{{ "about/" | absLangURL }}">소개</a>
         </nav>
 
         <!-- Right Side Actions -->
@@ -26,7 +26,7 @@
             <!-- Theme Toggle -->
             <button id="theme-toggle"
                 class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-gray-700 dark:text-white"
-                aria-label="Toggle Theme">
+                aria-label="테마 변경">
                 <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
@@ -49,14 +49,14 @@
             <!-- Network Button - Desktop only -->
             <a id="network-btn" href="{{ "network/" | absLangURL }}"
                 class="hidden md:flex bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-white text-sm font-bold h-9 px-4 rounded-lg items-center justify-center transition-all border border-gray-200 dark:border-white/10">
-                Network
+                지식지도
             </a>
 
             <!-- Subscribe Button - Desktop only -->
             <button id="subscribe-btn"
                 onclick="const el = document.getElementById('subscribe'); if(el) { el.scrollIntoView({behavior:'smooth'}); } else { window.location.href='/#subscribe'; }"
                 class="hidden md:flex bg-design-primary hover:bg-design-primary/90 text-white text-sm font-bold h-9 px-5 rounded-lg items-center justify-center transition-all shadow-lg shadow-design-primary/30 active:scale-95 border-none cursor-pointer">
-                Subscribe
+                구독
             </button>
 
             <!-- Mobile Menu Toggle Button -->
@@ -73,10 +73,10 @@
     <div id="mobile-menu"
         class="hidden md:hidden flex-col bg-white dark:bg-design-background-dark border-t border-gray-100 dark:border-white/5 py-4 px-6 gap-4"
         aria-hidden="true">
-        <a class="text-base font-medium text-gray-700 dark:text-gray-300" href="{{ "" | absLangURL }}">Home</a>
-        <a class="text-base font-medium text-gray-700 dark:text-gray-300" href="{{ "posts/" | absLangURL }}">Articles</a>
-        <a class="text-base font-medium text-gray-700 dark:text-gray-300" href="{{ "about/" | absLangURL }}">About</a>
-        <a class="text-base font-medium text-gray-700 dark:text-gray-300" href="{{ "network/" | absLangURL }}">Network</a>
+        <a class="text-base font-medium text-gray-700 dark:text-gray-300" href="{{ "" | absLangURL }}">홈</a>
+        <a class="text-base font-medium text-gray-700 dark:text-gray-300" href="{{ "posts/" | absLangURL }}">글 검색</a>
+        <a class="text-base font-medium text-gray-700 dark:text-gray-300" href="{{ "about/" | absLangURL }}">소개</a>
+        <a class="text-base font-medium text-gray-700 dark:text-gray-300" href="{{ "network/" | absLangURL }}">지식지도</a>
     </div>
 </header>
 

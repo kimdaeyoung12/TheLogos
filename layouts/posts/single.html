@@ -13,12 +13,7 @@
 {{- $category = index . 0 | lower -}}
 {{- end -}}
 
-{{- $categoryDetails := dict
-    "religion" (dict "line" "Truth, authority, scripture, and Christian community." "note" "진리와 권위가 오늘의 공동체 안에서 어떻게 해석되는지 묻습니다.")
-    "philosophy" (dict "line" "Being, contradiction, perception, and the limits of reason." "note" "존재, 모순, 시간, 인식의 경계에서 사유의 구조를 추적합니다.")
-    "engineering" (dict "line" "AI, probability, systems, control, and model behavior." "note" "모델, 확률, 제어, 시스템을 통해 보이지 않는 구조를 설명합니다.")
-    "writing" (dict "line" "Short prose that turns ordinary life into conceptual traces." "note" "일상의 장면을 관계, 기억, 믿음, 실패 같은 개념으로 남깁니다.")
--}}
+
 {{- $categoryData := index .Site.Data.categories $category -}}
 {{- $categoryName := $category | humanize -}}
 {{- $categoryColor := "#7d8794" -}}
@@ -26,7 +21,6 @@
 {{- $categoryName = $categoryData.name -}}
 {{- $categoryColor = $categoryData.color -}}
 {{- end -}}
-{{- $categoryDetail := index $categoryDetails $category -}}
 
 {{- $scratch := newScratch -}}
 {{- $schema := dict
@@ -38,8 +32,7 @@
 "dateModified" ($lastmod.Format "2006-01-02")
 "author" (dict "@type" "Organization" "name" $authorName)
 "url" .Permalink
-"wordCount" .WordCount
-"timeRequired" (printf "PT%dM" .ReadingTime)
+"timeRequired" (printf "PT%dM" (.Params.experience_minutes | default .ReadingTime))
 -}}
 {{- $scratch.Set "schema" $schema -}}
 {{- with .Params.categories }}
@@ -70,6 +63,7 @@
 {{- if and (eq (len ($scratch.Get "images")) 0) .Params.featuredImage -}}
 {{- $scratch.Set "images" (slice (.Params.featuredImage | absURL)) -}}
 {{- end -}}
+{{- if not (len ($scratch.Get "images")) }}{{ $scratch.Set "images" (slice $publisherLogo) }}{{ end }}
 {{- if gt (len ($scratch.Get "images")) 0 -}}
 {{- $scratch.Set "schema" (merge ($scratch.Get "schema") (dict "image" ($scratch.Get "images"))) -}}
 {{- end -}}
@@ -108,10 +102,10 @@
     <header class="article-header">
         <nav class="breadcrumb" aria-label="Breadcrumb">
             <ol class="breadcrumb-list">
-                <li class="breadcrumb-item"><a href="{{ "/" | absURL }}">Home</a></li>
+                <li class="breadcrumb-item"><a href="{{ "/" | absURL }}">홈</a></li>
                 <li class="breadcrumb-item">
                     <span class="breadcrumb-separator">/</span>
-                    <a href="{{ "posts/" | absURL }}">Articles</a>
+                    <a href="{{ "posts/" | absURL }}">전체 글</a>
                 </li>
                 <li class="breadcrumb-item current">
                     <span class="breadcrumb-separator">/</span>
@@ -123,17 +117,15 @@
         <div class="header-container">
             <div class="article-category">
                 <span class="category-badge">{{ $categoryName }}</span>
-                {{- with $categoryDetail -}}
-                <span class="category-line">{{ .line }}</span>
-                {{- end }}
             </div>
 
             <h1 class="article-title" itemprop="headline">{{ .Title }}</h1>
 
-            {{- if $description -}}
+            {{- if and $description (ne $category "writing") -}}
             <p class="article-dek">{{ $description }}</p>
             {{- end }}
 
+            {{ with .Params.audio }}<p><a data-play-track="{{ . }}" href="{{ . }}">함께 듣기 · {{ $.Params.audio_title }}</a></p>{{ end }}
             <div class="article-meta">
                 <div class="author-info">
                     <span class="author-avatar" aria-hidden="true">L</span>
@@ -142,15 +134,13 @@
                 <span class="meta-divider">/</span>
                 <time datetime="{{ $publishDate.Format "2006-01-02" }}">{{ $publishDate.Format "2006.01.02" }}</time>
                 <span class="meta-divider">/</span>
-                <span class="reading-time">{{ .ReadingTime }} min read</span>
-                <span class="meta-divider">/</span>
-                <span class="word-count">{{ .WordCount }} words</span>
+                <span class="reading-time">{{ with .Params.experience_minutes }}체험 약 {{ . }}분{{ else }}읽기 {{ .ReadingTime }}분{{ end }}</span>{{ if gt $lastmod.Unix $publishDate.Unix }} · 수정 {{ $lastmod.Format "2006.01.02" }}{{ end }}
             </div>
 
             <div class="article-signals" aria-label="Article signals">
-                {{- if in .RawContent "ai_summary" -}}<span>AI Summary</span>{{- end -}}
-                {{- if in .RawContent "interactiveframe" -}}<span>Interactive Explainer</span>{{- end -}}
-                {{- with $categoryDetail -}}<span>{{ .note }}</span>{{- end -}}
+                {{- if in .RawContent "ai_summary" -}}<span>AI 요약</span>{{- end -}}
+                {{- if in .RawContent "interactiveframe" -}}<span>인터랙티브 해설</span>{{- end -}}
+
             </div>
         </div>
     </header>
@@ -159,7 +149,7 @@
         {{- if $hasToc -}}
         <aside class="article-toc-band" aria-label="Table of contents">
             <div class="toc-wrapper">
-                <h2 class="toc-title">On This Page</h2>
+                <h2 class="toc-title">목차</h2>
                 <nav class="toc-nav">
                     {{ $toc }}
                 </nav>
@@ -171,10 +161,14 @@
         </div>
     </div>
 
+    {{ $current := .File.ContentBaseName }}{{ $paths := where site.Data.journal.paths "posts" "intersect" (slice $current) }}
+    {{ with $paths }}<section class="related-posts"><h2 class="related-posts-title">이 질문으로 이어 읽기</h2>
+    {{ range . }}{{ $path := . }}<p>{{ .question }}</p><div class="related-posts-grid">{{ range $i,$key := .posts }}{{ if ne $current $key }}{{ with site.GetPage (printf "/posts/%s" $key) }}<a class="related-post-card" href="{{ .RelPermalink }}"><h3 class="related-post-title">{{ .Title }}</h3><p>{{ index $path.reasons $i }}</p></a>{{ end }}{{ end }}{{ end }}</div>{{ end }}</section>
+    {{ else }}
     {{- $related := .Site.RegularPages.Related . | first 3 -}}
     {{- with $related -}}
     <section class="related-posts" aria-labelledby="related-posts-title">
-        <h2 id="related-posts-title" class="related-posts-title">Related Reading</h2>
+        <h2 id="related-posts-title" class="related-posts-title">함께 읽을 글</h2>
         <div class="related-posts-grid">
             {{- range . -}}
             <a href="{{ .RelPermalink }}" class="related-post-card">
@@ -191,10 +185,11 @@
     </section>
     {{- end -}}
 
+    {{ end }}
     <footer class="article-footer">
         {{ with .Params.tags }}
         <section class="article-tags" aria-labelledby="article-tags-title">
-            <h2 id="article-tags-title" class="section-title">Tags</h2>
+            <h2 id="article-tags-title" class="section-title">태그</h2>
             <div class="tag-list">
                 {{ range . }}
                 <a href="{{ "tags/" | absURL }}{{ . | urlize }}" class="tag-item">#{{ . }}</a>
@@ -204,7 +199,7 @@
         {{ end }}
 
         <section class="share-section" aria-labelledby="share-title">
-            <h2 id="share-title" class="section-title">Share</h2>
+            <h2 id="share-title" class="section-title">공유하기</h2>
             <div class="share-buttons">
                 <button class="share-btn" type="button" data-share="twitter" title="Share on Twitter">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -223,7 +218,7 @@
                         <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
                         <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
                     </svg>
-                    <span>Copy Link</span>
+                    <span>링크 복사</span>
                 </button>
             </div>
         </section>
@@ -232,14 +227,14 @@
         <nav class="post-nav" aria-label="Post navigation">
             {{ with .PrevInSection }}
             <a href="{{ .RelPermalink }}" class="nav-item prev">
-                <span class="nav-label">Previous</span>
+                <span class="nav-label">이전 글</span>
                 <span class="nav-title">{{ .Title }}</span>
             </a>
             {{ end }}
 
             {{ with .NextInSection }}
             <a href="{{ .RelPermalink }}" class="nav-item next">
-                <span class="nav-label">Next</span>
+                <span class="nav-label">다음 글</span>
                 <span class="nav-title">{{ .Title }}</span>
             </a>
             {{ end }}

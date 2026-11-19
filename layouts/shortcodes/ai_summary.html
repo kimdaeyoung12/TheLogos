@@ -1,3 +1,4 @@
+{{ if in (.Page.Params.categories | default (slice)) "writing" }}<details><summary>AI 요약 보기</summary>{{ .Inner | markdownify }}</details>{{ else }}
 <div
     class="ai-summary-box my-6 p-5 rounded-lg bg-indigo-50/50 dark:bg-slate-800/50 backdrop-blur-sm border border-indigo-100 dark:border-indigo-500/20 shadow-sm relative overflow-hidden group">
     <div
@@ -12,7 +13,7 @@
                         stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                         <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
                     </svg>
-                    AI Summary
+                    AI 요약
                 </span>
             </div>
             <div class="text-slate-700 dark:text-slate-300 text-sm md:text-base leading-relaxed break-keep [&>p]:m-0">
@@ -21,3 +22,4 @@
         </div>
     </div>
 </div>
+{{ end }}

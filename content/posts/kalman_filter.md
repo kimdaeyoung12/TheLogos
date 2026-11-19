@@ -6,7 +6,7 @@ slug = "kalman-filter"
 categories = ["engineering"]
 tags = ["Kalman Filter", "확률론", "상태추정", "센서융합", "제어공학", "마코프 확장"]
 mentions = ["Kalman Filter", "Kalman Gain", "State Estimation", "Sensor Fusion", "Prediction", "Update"]
-description = "칼만 필터는 예측과 측정을 반복적으로 결합해 노이즈가 있는 데이터 속에서 현재 상태를 추정하는 알고리즘이다. GPS, IMU, 컴퓨터 비전, 제어 시스템처럼 현실의 측정값이 흔들리는 분야에서 핵심 도구로 쓰인다."
+description = "흔들리는 센서값과 방금 전의 예측을 어느 비율로 믿을지, 위치 추정의 한 장면에서 살펴봅니다."
 +++
 
 {{< ai_summary >}}

@@ -50,10 +50,11 @@
 
 <div class="thelogos-interactive-frame-shell">
   <iframe src="{{ $src }}" title="{{ $title }}" loading="lazy" scrolling="no" style="height: {{ $minHeight }}px;" data-min-height="{{ $minHeight }}"></iframe>
+  <p class="thelogos-interactive-frame-fallback"><a href="{{ $src }}">큰 화면에서 해설 열기 ↗</a></p>
   <noscript>
     <p class="thelogos-interactive-frame-fallback">
-      JavaScript is required to display this interactive explainer.
-      <a href="{{ $src }}">Open the explainer directly</a>.
+      화면 안에서 조작하려면 자바스크립트를 켜 주세요.
+      <a href="{{ $src }}">해설 바로 열기</a>.
     </p>
   </noscript>
 </div>

@@ -6,7 +6,7 @@ slug = "deflated-sharpe-ratio"
 categories = ["engineering"]
 tags = ["Deflated Sharpe Ratio", "DSR", "Quant", "Backtest", "Overfitting", "Sharpe Ratio", "마코프 확장"]
 mentions = ["Deflated Sharpe Ratio", "Sharpe Ratio", "Backtest Overfitting", "Selection Bias", "Skewness", "Kurtosis"]
-description = "DSR은 높은 샤프지수가 실제 투자 실력인지, 많은 후보를 테스트하다 우연히 좋은 결과를 고른 것인지 판단하기 위한 통계적 검증 도구다."
+description = "수많은 전략 중 성적이 가장 좋아 보이는 하나를 골랐을 때, 그 선택 자체가 결과에 미친 영향을 따져 봅니다."
 +++
 
 {{< ai_summary >}}

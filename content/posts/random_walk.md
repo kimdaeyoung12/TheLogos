@@ -2,11 +2,12 @@
 title = "랜덤워크(Random Walk): 우연한 한 걸음이 만드는 장기 패턴"
 date = 2026-06-16T00:30:00+09:00
 draft = false
+image = "/images/posts/random_walk-cover.jpg"
 slug = "random-walk"
 categories = ["engineering"]
 tags = ["Random Walk", "확률과정", "마코프 체인", "금융", "확산", "마코프 확장"]
 mentions = ["Random Walk", "Diffusion", "Markov Chain", "Gambler's Ruin", "Brownian Motion"]
-description = "랜덤워크는 매 순간 무작위로 한 걸음씩 이동하는 확률 과정이다. 개별 움직임은 단순하지만 시간이 지나면 확산, 도박사의 파산, 금융 가격 모델 같은 중요한 현상을 설명한다."
+description = "한 걸음의 방향은 예측하기 어렵습니다. 그런 걸음이 쌓이면 출발점에서 얼마나 멀어질까요?"
 +++
 
 {{< ai_summary >}}

@@ -5,7 +5,7 @@ draft = false
 categories = ["religion"]
 tags = ["AI", "알고리즘", "기독교공동체", "교회", "가치정렬"]
 mentions = ["Algorithm", "Christian Community", "Platform", "Alignment", "Public Good"]
-description = "AI의 가치 정렬을 무비판적으로 수용할 때 생기는 위험과, 진리에 가까운 가치로 자신을 재정렬하는 공동체적 담론의 필요성을 탐구합니다."
+description = "추천 피드가 익숙한 의견을 되돌려 줄 때, 공동체가 서로의 판단을 점검할 방법을 묻습니다."
 +++
 
 {{< ai_summary >}}
