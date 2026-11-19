@@ -975,3 +975,8 @@ blockquote.instagram-media > a:not(:first-of-type),
 .article-content {min-width:0;overflow-wrap:anywhere}
 .article-content>table {display:block;max-width:100%;overflow-x:auto}
 @media(max-width:640px){.article-content>p {font-size:18px}}
+
+.article--post,.dark .article--post {background:var(--folio-paper);--article-ink:var(--folio-ink);--article-surface:var(--folio-surface);--article-muted:var(--folio-muted);--article-line:var(--folio-line)}
+.article--post .header-container {border:0;border-bottom:1px solid var(--folio-line);border-radius:0;background:transparent;box-shadow:none}
+.article--post .article-title {font-family:"Nanum Myeongjo",Batang,serif;letter-spacing:-.045em}
+.article--post .article-content {border-radius:2px}.article--post .article-content>p {max-width:46rem;margin-inline:auto}

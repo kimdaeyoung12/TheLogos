@@ -44,6 +44,7 @@ const mapHost = byId("atlas-map");
 const chart = byId("topic-chart");
 function selectTopic(topic) {
   selectedTopic = topic;
+  byId("gallery-heading").textContent = topic ? topic + "에 담긴 꿈" : "모두의 꿈";
   for (const control of [...chart.children,...mapHost.querySelectorAll("[data-topic]")]) {
     control.setAttribute("aria-pressed", String(control.dataset.topic === (topic || "")));
   }

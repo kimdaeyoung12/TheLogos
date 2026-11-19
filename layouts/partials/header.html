@@ -16,13 +16,14 @@
             <a class="text-sm font-medium hover:text-design-primary transition-colors text-gray-700 dark:text-gray-300 drop-shadow-sm"
                 href="{{ "" | absLangURL }}">홈</a>
             <a class="text-sm font-medium hover:text-design-primary transition-colors text-gray-700 dark:text-gray-300 drop-shadow-sm"
-                href="{{ "posts/" | absLangURL }}">글 검색</a>
+                href="{{ "posts/" | absLangURL }}">전체 글</a>
             <a class="text-sm font-medium hover:text-design-primary transition-colors text-gray-700 dark:text-gray-300 drop-shadow-sm"
                 href="{{ "about/" | absLangURL }}">소개</a>
-        </nav>
+        <a href="/yeobaek/">여백</a></nav>
 
         <!-- Right Side Actions -->
         <div class="flex items-center gap-4">
+            <button type="button" id="find-open" aria-haspopup="dialog">검색</button>
             <!-- Theme Toggle -->
             <button id="theme-toggle"
                 class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-gray-700 dark:text-white"
@@ -74,11 +75,13 @@
         class="hidden md:hidden flex-col bg-white dark:bg-design-background-dark border-t border-gray-100 dark:border-white/5 py-4 px-6 gap-4"
         aria-hidden="true">
         <a class="text-base font-medium text-gray-700 dark:text-gray-300" href="{{ "" | absLangURL }}">홈</a>
-        <a class="text-base font-medium text-gray-700 dark:text-gray-300" href="{{ "posts/" | absLangURL }}">글 검색</a>
+        <a class="text-base font-medium text-gray-700 dark:text-gray-300" href="{{ "posts/" | absLangURL }}">전체 글</a>
         <a class="text-base font-medium text-gray-700 dark:text-gray-300" href="{{ "about/" | absLangURL }}">소개</a>
         <a class="text-base font-medium text-gray-700 dark:text-gray-300" href="{{ "network/" | absLangURL }}">지식지도</a>
+        <a href="/yeobaek/">여백 꿈 노트</a>
     </div>
 </header>
+{{ partialCached "find-dialog.html" . }}
 
 <script>
     function updateThemeIcons() {

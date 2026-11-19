@@ -32,3 +32,13 @@ main,header {max-width:1000px}
 #start {max-width:690px;margin:55px auto 80px}
 @media(max-width:480px){main,header{padding-left:14px;padding-right:14px}.hero img{width:55px}.sheet{padding:18px 14px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.territory{transition:none}}
+
+header,main{max-width:1190px}.hero,.sheet[aria-labelledby=write]{max-width:800px;margin-inline:auto}
+.atlas-spread{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:clamp(18px,3vw,38px);align-items:start}
+.atlas-reading{border-left:1px solid #c3cbbb;padding-left:20px}
+.atlas-reading h3{font:600 1.35rem/1.4 Batang,serif;margin:0}
+.atlas-reading #gallery{display:block;margin:10px 0;max-height:30rem;overflow-y:auto;overscroll-behavior:contain}
+.atlas-reading #gallery li{border:0;border-top:1px solid #cbd4c9;border-radius:0;background:transparent;padding:12px 4px}
+.atlas-reading #gallery small{font-weight:700}.atlas-reading #gallery small::before{content:"";display:inline-block;width:.6em;height:.6em;margin-right:6px;border-radius:50%;background:var(--swatch)}
+#atlas-map:not(:has(svg)){padding:20px}.atlas-plot{min-width:0}#write{scroll-margin-top:24px}
+@media(max-width:780px){.atlas-spread{grid-template-columns:1fr}.atlas-reading{padding:0;border-left:0}.atlas-reading #gallery{max-height:none}.atlas-reading h3{margin-top:0}}

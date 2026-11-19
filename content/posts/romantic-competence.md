@@ -2,7 +2,6 @@
 title = "사랑은 감정이 아니라, 연습되는 역량이기도 하다"
 date = 2026-07-11T00:00:00+09:00
 draft = false
-image = "/images/posts/romantic-competence-cover.jpg"
 slug = "romantic-competence"
 categories = ["writing"]
 tags = ["사랑", "관계", "로맨틱 역량", "감정 조절", "상호성"]

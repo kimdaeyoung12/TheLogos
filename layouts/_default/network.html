@@ -7,7 +7,7 @@
     <header class="network-heading">
         <p>The Logos Map</p>
         <h1>{{ .Title }}</h1>
-        <span>{{ .Description }}</span>
+        <span>{{ .Description }}</span><a class="directory-jump" href="#network-directory">분야별 목록으로 이동 ↓</a>
     </header>
 
     <div class="network-search-container">
@@ -37,7 +37,15 @@
             </a>
         </div>
     </div>
-</section><details style="max-width:900px;margin:24px auto;padding:16px"><summary>주제별 글 목록으로 지식지도 탐색</summary>{{ range $key,$cat := site.Data.categories }}<h2>{{ $cat.name }}</h2><ul>{{ range where (where site.RegularPages "Section" "posts") "Params.categories" "intersect" (slice $key) }}<li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>{{ end }}</ul>{{ end }}</details>
+</section>
+<section id="network-directory" class="folio-directory" aria-label="분야별 글 목록"><h2>분야별로 읽기</h2>
+{{ range $key,$cat := site.Data.categories }}
+  {{ $pages := where (where site.RegularPages "Section" "posts") "Params.categories" "intersect" (slice $key) }}
+  <details><summary>{{ $cat.name }} · {{ len $pages }}편</summary>
+    <ul>{{ range $pages.ByDate.Reverse }}<li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>{{ end }}</ul>
+  </details>
+{{ end }}
+</section>
 
 <style>
     .graph-section {

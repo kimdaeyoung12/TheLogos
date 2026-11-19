@@ -205,6 +205,7 @@
     <link rel="stylesheet" href="{{ $home_css.Permalink }}" integrity="{{ $home_css.Data.Integrity }}">
     {{- end }}
 
+    {{ $folio := resources.Get "css/editorial.css" | minify | fingerprint }}<link rel="stylesheet" href="{{ $folio.RelPermalink }}">
     <script src="/js/restore-nav.js" defer></script>
 </head>
 

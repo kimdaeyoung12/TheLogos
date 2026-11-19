@@ -1,0 +1,14 @@
+{{ $entries := slice }}
+{{ range (where site.RegularPages "Section" "posts").ByDate.Reverse }}
+  {{ $entries = $entries | append (dict "title" .Title "href" .RelPermalink "tags" (.Params.tags | default slice) "intro" (partial "card-description.html" .)) }}
+{{ end }}
+{{ $index := resources.FromString "search/articles.json" ($entries | jsonify) | fingerprint }}
+<dialog id="find-dialog" class="find-dialog" data-index="{{ $index.RelPermalink }}" aria-labelledby="find-title">
+  <div class="find-head"><h2 id="find-title">글 빠른 찾기</h2><button type="button" data-close>닫기</button></div>
+  <label for="find-query">제목·주제·태그</label>
+  <input id="find-query" type="search" autocomplete="off" placeholder="예: 칼만 필터">
+  <p role="status" id="find-status"></p><ul id="find-results"></ul>
+  <a href="/posts/" id="find-archive">전체 글에서 찾기 →</a>
+</dialog>
+{{ $script := resources.Get "js/find.js" | js.Build (dict "minify" true) | fingerprint }}
+<script defer src="{{ $script.RelPermalink }}"></script>

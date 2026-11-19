@@ -402,3 +402,14 @@ html.dark body:has(.archive-page) {
         transform: none;
     }
 }
+
+.archive-page,.dark .archive-page {background:var(--folio-paper);color:var(--folio-ink);--archive-ink:var(--folio-ink);--archive-muted:var(--folio-muted);--archive-subtle:var(--folio-muted);--archive-line:var(--folio-line)}
+.archive-hero {border-bottom:1px solid var(--folio-line);align-items:center}.archive-hero h1 {font-family:"Nanum Myeongjo",Batang,serif;font-size:clamp(2.4rem,6vw,4.6rem)}
+.archive-shelf {max-width:1180px;margin:26px auto;display:grid;grid-template-columns:minmax(160px,220px) minmax(0,1fr);align-items:start;gap:clamp(18px,4vw,64px)}
+.archive-shelf .archive-filters {display:grid;grid-template-columns:1fr;gap:6px;margin:0;position:sticky;top:84px}
+.archive-filter {min-height:46px;border-radius:6px}.archive-results{min-width:0}#archive-count{margin:0 0 8px;color:var(--folio-muted);font-size:.9rem}
+.archive-shelf .archive-grid {display:block}.archive-grid .archive-card {min-height:0;background:transparent;border:0;border-radius:0;border-top:1px solid var(--folio-line);padding:16px 4px;box-shadow:none;transform:none}.archive-card__topline{display:none}
+.archive-card__meta,.archive-card__tags {padding:0}.archive-card__meta{justify-content:flex-start;gap:12px}.archive-card__category{color:var(--folio-gold)}
+.archive-card__title,.archive-card__summary,.archive-card__signals,.archive-card__tags{margin:7px 0 0}.archive-card__title{font-size:clamp(1.12rem,2vw,1.55rem)}.archive-card__tags{border:0}
+.archive-card:hover .archive-card__title a {text-decoration:underline}.archive-card__signals span {background:transparent;border:0;padding:0}.archive-card__signals span+span::before {content:"· ";color:var(--folio-muted)}
+@media(max-width:760px){.archive-shelf{display:block}.archive-shelf .archive-filters{position:static;display:flex;flex-wrap:wrap;margin-bottom:16px}.archive-filter small,.archive-filter__icon{display:none}.archive-filter{min-height:40px;padding:6px 11px}.archive-hero{display:block}.archive-search{margin-top:16px}}

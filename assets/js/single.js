@@ -109,6 +109,19 @@
     }
 
     function initArticlePage() {
+        const reader = document.getElementById('large-reading');
+        if (reader) {
+            const update = on => {
+                document.documentElement.classList.toggle('large-reading',on);
+                reader.setAttribute('aria-pressed',String(on));
+            };
+            try {update(localStorage.getItem('logos-large-reading')==='yes');} catch {}
+            reader.onclick=()=>{
+                const on=reader.getAttribute('aria-pressed')!=='true';
+                update(on);
+                try {localStorage.setItem('logos-large-reading',on?'yes':'no');} catch {}
+            };
+        }
         initTableOfContents();
         initArticleSharing();
     }

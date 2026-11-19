@@ -5,7 +5,7 @@
 <body><header><a href="/">THE LOGOS</a><a href="#atlas">함께 나눈 꿈 ↓</a></header>
 <main><section class="hero"><img src="mark.png" width="78" height="78" alt="여백"><h1>당신의 공백을<br>꿈으로 채우세요</h1><p>언젠가 해 보고 싶은 일 하나와,<br>그쪽으로 내일 내디딜 작은 걸음을 적어 보세요.</p><div class="hero-actions"><a href="#write">내 꿈 쓰기</a><a href="#atlas">꿈 지도 둘러보기 ↓</a></div></section>
 <section id="atlas" class="sheet" aria-labelledby="atlas-title"><h2 id="atlas-title">함께 나눈 꿈</h2><p>같은 주제로 공개한 꿈이 많을수록 그 주제의 땅이 넓어집니다. 지도에서 한 곳을 골라 그 안의 꿈을 읽어 보세요.</p>
-<div id="atlas-map">꿈 지도를 불러오는 중입니다.</div><div id="topic-chart" role="group" aria-label="주제별 공개 꿈 수"></div><p id="atlas-status" role="status"></p><ul id="gallery"></ul><button id="more-dreams" hidden>다음 꿈 12개 보기</button><button id="atlas-refresh">다시 불러오기</button><noscript>꿈 지도를 보려면 자바스크립트를 켜 주세요.</noscript></section>
+<div class="atlas-spread"><div class="atlas-plot"><div id="atlas-map">꿈 지도를 불러오는 중입니다.</div><div id="topic-chart" role="group" aria-label="주제별 공개 꿈 수"></div></div><div class="atlas-reading"><h3 id="gallery-heading">모두의 꿈</h3><p id="atlas-status" role="status"></p><ul id="gallery"></ul><button id="more-dreams" hidden>다음 꿈 12개 보기</button><button id="atlas-refresh">다시 불러오기</button></div></div><noscript>꿈 지도를 보려면 자바스크립트를 켜 주세요.</noscript></section>
 <section class="sheet" aria-labelledby="write"><h2 id="write">내 꿈 한 줄</h2>
 <form><label for="dream">어떤 하루를 만들어 보고 싶나요?</label><textarea id="dream" required minlength="5" maxlength="400" rows="4" placeholder="언젠가 동네에 작은 책방을 열고 싶다. 토요일엔 좋아하는 책 세 권으로 친구를 초대해야지."></textarea>
 <div class="trap" aria-hidden="true"><label>Website<input id="website" tabindex="-1" autocomplete="off"></label></div>

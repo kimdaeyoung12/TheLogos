@@ -2,7 +2,6 @@
 title = "랜덤워크(Random Walk): 우연한 한 걸음이 만드는 장기 패턴"
 date = 2026-06-16T00:30:00+09:00
 draft = false
-image = "/images/posts/random_walk-cover.jpg"
 slug = "random-walk"
 categories = ["engineering"]
 tags = ["Random Walk", "확률과정", "마코프 체인", "금융", "확산", "마코프 확장"]

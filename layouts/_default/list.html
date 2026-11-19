@@ -14,12 +14,12 @@
 
 <section class="archive-page">
     <header class="archive-hero">
-        <p class="archive-eyebrow">The Logos</p>
+        <div><p class="archive-eyebrow">The Logos · 아카이브</p>
         <h1>전체 글</h1>
         <p class="archive-lead">
             신학, 철학, 공학, 짧은 산문을 하나의 지식 지도처럼 탐색합니다. 글의 주제와 태그,
             AI 요약, 인터랙티브 해설 여부를 먼저 보고 깊게 들어갈 수 있습니다.
-        </p>
+        </p></div>
 
         <form class="archive-search" role="search" onsubmit="return false;">
             <label class="sr-only" for="search-input">글 검색</label>
@@ -39,7 +39,7 @@
         </form>
     </header>
 
-    <nav class="archive-filters" aria-label="분야 선택">
+    <div class="archive-shelf"><nav class="archive-filters" aria-label="분야 선택">
         <button class="archive-filter is-active filter-btn" type="button" data-category="all">
             <span class="archive-filter__icon" aria-hidden="true">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -74,6 +74,7 @@
         {{- end }}
     </nav>
 
+    <div class="archive-results"><p id="archive-count" role="status">전체 {{ len $posts }}편</p>
     <div class="archive-grid timeline-items" aria-live="polite">
         {{- range $posts }}
         {{- $category := "other" -}}
@@ -126,7 +127,7 @@
         <p>조건에 맞는 글이 없습니다.</p>
         <button type="button" id="archive-reset">검색 조건 지우기</button>
     </div>
-</section>
+</div></div></section>
 
 <script>
     (function () {
@@ -155,12 +156,14 @@
                 item.hidden = !show;
                 if (show) visibleCount += 1;
             });
+            document.getElementById('archive-count').textContent = '검색 결과 ' + visibleCount + '편';
             if (emptyState) emptyState.hidden = visibleCount !== 0;
         }
 
         function setCategory(category, updateUrl) {
             currentFilter = category;
             filterBtns.forEach((btn) => {
+                btn.setAttribute('aria-pressed', String(btn.dataset.category === category));
                 btn.classList.toggle('is-active', btn.dataset.category === category);
             });
 
@@ -168,7 +171,7 @@
                 const url = new URL(window.location.href);
                 if (category === 'all') url.searchParams.delete('category');
                 else url.searchParams.set('category', category);
-                window.history.pushState({}, '', url);
+                window.history.replaceState(window.history.state, '', url);
             }
 
             window.dispatchEvent(new CustomEvent('category-changed', { detail: { category } }));
@@ -182,6 +185,10 @@
         if (searchInput) {
             searchInput.addEventListener('input', () => {
                 currentQuery = normalize(searchInput.value);
+                const address = new URL(location.href);
+                if (currentQuery) address.searchParams.set('q',searchInput.value.trim());
+                else address.searchParams.delete('q');
+                history.replaceState(history.state,'',address);
                 if (searchClear) searchClear.hidden = currentQuery.length === 0;
                 applyState();
             });
@@ -189,7 +196,7 @@
 
         if (searchClear) {
             searchClear.addEventListener('click', () => {
-                if (searchInput) searchInput.value = '';
+                if (searchInput) { searchInput.value = ''; searchInput.dispatchEvent(new Event('input')); }
                 currentQuery = '';
                 searchClear.hidden = true;
                 applyState();
@@ -199,13 +206,14 @@
 
         if (resetBtn) {
             resetBtn.addEventListener('click', () => {
-                if (searchInput) searchInput.value = '';
+                if (searchInput) { searchInput.value = ''; searchInput.dispatchEvent(new Event('input')); }
                 currentQuery = '';
                 if (searchClear) searchClear.hidden = true;
                 setCategory('all', true);
             });
         }
 
+        setCategory('all',false);
         const params = new URLSearchParams(window.location.search);
         const initialCategory = params.get('category');
         if (initialCategory && filterBtns.some((btn) => btn.dataset.category === initialCategory)) {

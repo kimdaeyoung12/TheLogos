@@ -252,7 +252,7 @@
             }, 1000);
         } catch (error) {
             console.error('[KnowledgeGraph] Failed to render graph:', error);
-            setStatus(container, 'Network failed to load. Try refreshing this page.', true);
+            setStatus(container, '지도를 불러오지 못했습니다. 분야별 목록에서 글을 선택할 수 있습니다.', true);
             container.dataset.graphInitialized = 'false';
         }
     }

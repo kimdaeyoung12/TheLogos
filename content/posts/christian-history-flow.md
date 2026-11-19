@@ -3,7 +3,6 @@ title = "기독교 역사 전체 흐름: 신앙고백으로 읽는 교회사와 
 date = 2026-07-04T00:00:00+09:00
 experience_minutes = 8
 draft = false
-image = "/images/posts/christian-history-flow-cover.jpg"
 slug = "christian-history-flow"
 categories = ["religion"]
 tags = ["기독교 역사", "교회사", "신앙고백", "서양철학사", "과학사"]
